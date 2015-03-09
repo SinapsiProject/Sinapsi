@@ -1,2 +1,2 @@
-# Sinaps
+# Sinapsi
 Distributed intelligent automation system
