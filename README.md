@@ -7,6 +7,7 @@ Distributed intelligent automation system
 - **Macro** :list of action activated by triggers  
 - **Trigger**  
 - **Action**  
+   
 ###ER  
 _User_   1 -—> n _Device_  
 _User_   1 —-> n _Macro_  
