@@ -31,5 +31,6 @@ can be used on other devices to make them visible to the devices that we have al
 ####Action/Trigger registration
 When a client connects to the web service for the first time, it send the list of triggers that can activate and the list of
 actions that can perform.
-  
-######Authors: _Marco Grillo_, _Ayoub Ouarrak_, _Giuseppe Petrosino_
+    
+   
+#####Authors: _Marco Grillo_, _Ayoub Ouarrak_, _Giuseppe Petrosino_
