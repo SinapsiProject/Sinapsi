@@ -25,7 +25,7 @@ The user can create two type of macro, local macro and global macro. In a local 
 device that will waits for the activation of the trigger, in the global macro, the actions are performed in other devices.
     
 ####Connecting devices
-The client application will provide an authentication system by e-mail or a Google account, the same e-mail  
+The client application will provide an authentication system by e-mail or a Google account, the same e-mail
 can be used on other devices to make them visible to the devices that we have already connected to the web service.
    
 ####Action/Trigger registration
