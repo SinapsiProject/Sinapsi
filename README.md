@@ -11,4 +11,7 @@ iOS devices and will allow a voice interface to interact with other devices.
 
 ##Database  
 ###ER  
-![alt tag](http://i60.tinypic.com/73ed0i.png)  
+![alt tag](http://i60.tinypic.com/73ed0i.png)    
+
+
+Authors: Grillo Marco, Ouarrak Ayoub, Petrosino Giuseppe
