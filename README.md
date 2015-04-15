@@ -14,4 +14,4 @@ iOS devices and will allow a voice interface to interact with other devices.
 ![alt tag](http://i60.tinypic.com/73ed0i.png)    
 
 
-Authors: _Marco Grillo_, _Ayoub Ouarrak_, _Giuseppe Petrosino_
+######Authors: _Marco Grillo_, _Ayoub Ouarrak_, _Giuseppe Petrosino_
