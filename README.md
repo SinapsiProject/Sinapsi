@@ -5,7 +5,7 @@ Distributed intelligent automation system
 - **User** :email/password/google/IFTTT  
 - **Device** :metadata (triggers & action allowed)  
 - **Macro** :list of action activated by triggers  
-- **Trigger**   
+- **Trigger**  
 - **Action**  
 ###ER  
 _User_   1 -—> n _Device_  
