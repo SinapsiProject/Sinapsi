@@ -15,28 +15,28 @@ import java.util.ResourceBundle;
  *
  */
 public class DatabaseManager {
-	private String url;
-	private String driver;
+    private String url;
+    private String driver;
 	
-	/**
-	 * Class constructor
-	 */
-	public DatabaseManager() {
-		ResourceBundle bundle = ResourceBundle.getBundle("configuration");
-		url = bundle.getString("database.url");
-		driver = bundle.getString("database.driver");
+    /**
+     * Class constructor
+     */
+    public DatabaseManager() {
+        ResourceBundle bundle = ResourceBundle.getBundle("configuration");
+        url = bundle.getString("database.url");
+        driver = bundle.getString("database.driver");
 		
-		try{
-			Class.forName(driver);  
-		} catch(Throwable t) {
-			t.printStackTrace();
-		}
-	}
+        try{
+            Class.forName(driver);  
+        } catch(Throwable t) {
+            t.printStackTrace();
+        }
+    }
 	
-	/**
-	 * Establish connection to the db
-	 * 
-	 * @return Connection object
+    /**
+     * Establish connection to the db
+     * 
+     * @return Connection object
 	 * @throws SQLException
 	 */
 	private Connection connect() throws SQLException {
