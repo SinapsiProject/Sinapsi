@@ -3,7 +3,9 @@ package com.sinapsi.model;
 import java.util.List;
 
 /**
- * Macro component interface
+ * MacroComponent interface
+ * Every part of a macro (i.e. triggers and actions)
+ * should implement this interface.
  *
  */
 public interface MacroComponent {
