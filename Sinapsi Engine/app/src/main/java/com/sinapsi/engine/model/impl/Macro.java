@@ -1,11 +1,16 @@
 package com.sinapsi.engine.model.impl;
 
+import com.sinapsi.engine.model.Action;
 import com.sinapsi.engine.model.MacroInterface;
+import com.sinapsi.engine.model.Trigger;
+import java.util.List;
 
 /**
  * Created by Ayoub on 17/04/15.
  */
 public class Macro implements MacroInterface {
+    private Trigger trigger;
+    private List<Action> actions;
     private String name;
     private int id;
 

@@ -5,6 +5,6 @@ package com.sinapsi.engine.model;
  * @author Ayoub
  *
  */
-public interface Trigger {
+public interface Trigger extends Parameterized, DistributedComponent {
     public void onActivate(Event e, SystemFacade s);
 }

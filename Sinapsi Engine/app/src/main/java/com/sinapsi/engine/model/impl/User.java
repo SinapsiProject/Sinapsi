@@ -1,6 +1,7 @@
 package com.sinapsi.engine.model.impl;
 
 import com.sinapsi.engine.model.UserInterface;
+import java.util.List;
 
 /**
  * Implementation of the user interface
@@ -8,6 +9,7 @@ import com.sinapsi.engine.model.UserInterface;
  * Created by Ayoub on 17/04/15.
  */
 public class User implements UserInterface {
+    private List<Device> devices;
     private int id;
     private String email;
     private String password;

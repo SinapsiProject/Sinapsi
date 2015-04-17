@@ -5,6 +5,6 @@ package com.sinapsi.engine.model;
  * @author Ayoub
  *
  */
-public interface Action {
+public interface Action extends Parameterized, DistributedComponent{
     public void active(SystemFacade s);
 }

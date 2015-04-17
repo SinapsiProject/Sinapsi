@@ -5,6 +5,6 @@ package com.sinapsi.engine.model;
  * @author Ayoub
  *
  */
-public interface DistributedComponent {
+public interface DistributedComponent extends MacroComponent {
     public DeviceInterface getExecutionDevice();
 }
