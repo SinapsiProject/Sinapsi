@@ -33,4 +33,11 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>java</name>
+			<type>2</type>
+			<location>/Users/Ayoub/Desktop/Git/Sinapsi/Sinapsi Engine/app/src/main/java</location>
+		</link>
+	</linkedResources>
 </projectDescription>

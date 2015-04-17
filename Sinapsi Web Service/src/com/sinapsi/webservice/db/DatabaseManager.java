@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
-
 import com.sinapsi.engine.model.FactoryModel;
 import com.sinapsi.engine.model.UserInterface;
 
