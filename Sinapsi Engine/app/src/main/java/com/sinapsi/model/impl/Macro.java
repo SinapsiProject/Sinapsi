@@ -6,7 +6,8 @@ import com.sinapsi.model.Trigger;
 import java.util.List;
 
 /**
- * Created by Ayoub on 17/04/15.
+ * Implementation of the macro interface
+ *
  */
 public class Macro implements MacroInterface {
     private Trigger trigger;

@@ -3,7 +3,6 @@ package com.sinapsi.model;
 /**
  * The default Model Factory Interface
  *
- * @author Ayoub
  */
 public interface FactoryModel {
 

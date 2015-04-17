@@ -6,7 +6,6 @@ import java.util.List;
 /**
  * Implementation of the user interface
  *
- * Created by Ayoub on 17/04/15.
  */
 public class User implements UserInterface {
     private List<Device> devices;

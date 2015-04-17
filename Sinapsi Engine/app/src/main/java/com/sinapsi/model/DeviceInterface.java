@@ -2,7 +2,6 @@ package com.sinapsi.model;
 
 /**
  * Device Interface
- * @author Ayoub
  *
  */
 public interface DeviceInterface {

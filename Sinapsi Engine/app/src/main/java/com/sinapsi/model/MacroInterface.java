@@ -2,7 +2,6 @@ package com.sinapsi.model;
 
 /**
  * Macro interface
- * @author Ayoub
  *
  */
 public interface MacroInterface {

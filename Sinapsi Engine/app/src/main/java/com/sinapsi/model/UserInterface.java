@@ -2,7 +2,6 @@ package com.sinapsi.model;
 
 /**
  * User interface
- * @author Ayoub
  *
  */
 public interface UserInterface {

@@ -6,7 +6,6 @@ import com.sinapsi.model.UserInterface;
 /**
  * Implementation of the device interface
  *
- * Created by Ayoub on 17/04/15.
  */
 public class Device implements DeviceInterface {
     private int id;

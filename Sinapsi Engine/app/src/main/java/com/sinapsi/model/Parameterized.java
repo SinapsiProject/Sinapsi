@@ -2,7 +2,6 @@ package com.sinapsi.model;
 
 /**
  * Parameterized interface
- * @author Ayoub
  *
  */
 public interface Parameterized {
