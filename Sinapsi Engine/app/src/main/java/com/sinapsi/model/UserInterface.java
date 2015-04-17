@@ -1,4 +1,4 @@
-package com.sinapsi.engine.model;
+package com.sinapsi.model;
 
 /**
  * User interface

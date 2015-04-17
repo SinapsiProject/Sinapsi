@@ -1,8 +1,8 @@
-package com.sinapsi.engine.model.impl;
+package com.sinapsi.model.impl;
 
-import com.sinapsi.engine.model.Action;
-import com.sinapsi.engine.model.MacroInterface;
-import com.sinapsi.engine.model.Trigger;
+import com.sinapsi.model.Action;
+import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.Trigger;
 import java.util.List;
 
 /**

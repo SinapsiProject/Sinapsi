@@ -1,7 +1,7 @@
-package com.sinapsi.engine.model.impl;
+package com.sinapsi.model.impl;
 
-import com.sinapsi.engine.model.DeviceInterface;
-import com.sinapsi.engine.model.UserInterface;
+import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.model.UserInterface;
 
 /**
  * Implementation of the device interface

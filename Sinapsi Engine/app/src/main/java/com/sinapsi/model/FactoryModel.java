@@ -1,4 +1,4 @@
-package com.sinapsi.engine.model;
+package com.sinapsi.model;
 
 public interface FactoryModel {
     public UserInterface newUser(int id, String email, String passowrd);
