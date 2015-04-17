@@ -1,7 +1,12 @@
 package com.sinapsi.model;
 
 /**
- * Parameterized interface
+ * Parameterized interface.
+ * Every class that needs to indicate formal parameters
+ * for its instantiation (i.e. when a new trigger for a macro is defined)
+ * or needs to get and extract actual parameters at
+ * "execution time" (i.e. when a trigger activates)
+ * should implement this interface.
  * @author Ayoub
  *
  */

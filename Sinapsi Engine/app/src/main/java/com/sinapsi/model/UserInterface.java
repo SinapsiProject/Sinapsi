@@ -1,7 +1,8 @@
 package com.sinapsi.model;
 
 /**
- * User interface
+ * User interface.
+ * Pure model support interface for the User class.
  * @author Ayoub
  *
  */
