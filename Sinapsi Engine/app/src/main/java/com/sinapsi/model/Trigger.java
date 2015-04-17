@@ -5,7 +5,6 @@ package com.sinapsi.model;
  * by every class implementing every different type of trigger.
  * For example, classes like TriggerWifi and TriggerSMS should
  * implement this interface
- * @author Ayoub
  *
  */
 public interface Trigger extends Parameterized, DistributedComponent {

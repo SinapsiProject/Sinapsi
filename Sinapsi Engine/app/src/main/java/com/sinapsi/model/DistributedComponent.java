@@ -3,7 +3,6 @@ package com.sinapsi.model;
 /**
  * DistributedComponent interface. Every component that can be
  * part of a distributed macro, should implement this interface.
- * @author Ayoub
  *
  */
 public interface DistributedComponent extends MacroComponent {

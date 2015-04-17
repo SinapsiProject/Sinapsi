@@ -4,7 +4,6 @@ import java.util.List;
 
 /**
  * Macro component interface
- * @author Ayoub
  *
  */
 public interface MacroComponent {

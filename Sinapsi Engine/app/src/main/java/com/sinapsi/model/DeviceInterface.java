@@ -3,7 +3,6 @@ package com.sinapsi.model;
 /**
  * Device Interface.
  * Pure model support interface for the Device class.
- * @author Ayoub
  *
  */
 public interface DeviceInterface {

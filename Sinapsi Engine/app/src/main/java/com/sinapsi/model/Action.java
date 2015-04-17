@@ -6,10 +6,8 @@ package com.sinapsi.model;
  * For example, classes like ActionNotification and ActionSMS should
  * implement this interface.
  *
- * @author Ayoub
- *
  */
-public interface Action extends Parameterized, DistributedComponent{
+public interface Action extends Parameterized, DistributedComponent {
 
     /**
      * Method to be implemented in order to be called by

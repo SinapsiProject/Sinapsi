@@ -7,7 +7,6 @@ package com.sinapsi.model;
  * or needs to get and extract actual parameters at
  * "execution time" (i.e. when a trigger activates)
  * should implement this interface.
- * @author Ayoub
  *
  */
 public interface Parameterized {

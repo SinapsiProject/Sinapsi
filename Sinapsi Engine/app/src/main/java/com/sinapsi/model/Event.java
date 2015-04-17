@@ -6,7 +6,6 @@ package com.sinapsi.model;
  * when this is activated from a system event, in order
  * to get eventually required infos about the event that
  * activated the Trigger.
- * @author Ayoub
  *
  */
 public interface Event {
