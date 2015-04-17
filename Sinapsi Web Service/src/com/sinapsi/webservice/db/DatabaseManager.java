@@ -1,4 +1,4 @@
-package com.sinapsi.db;
+package com.sinapsi.webservice.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,6 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
 
+import com.sinapsi.engine.model.FactoryModel;
+import com.sinapsi.engine.model.UserInterface;
+
 /**
  * This class gives a database interface to the clients, performing queries and
  * returning data from the database
@@ -16,6 +19,7 @@ import java.util.ResourceBundle;
  *
  */
 public class DatabaseManager {
+    private FactoryModel factory;
     private String url;
     private String driver;
 
@@ -23,6 +27,7 @@ public class DatabaseManager {
      * Class constructor
      */
     public DatabaseManager() {
+        //TODO create concrete model factory
         ResourceBundle bundle = ResourceBundle.getBundle("configuration");
         url = bundle.getString("database.url");
         driver = bundle.getString("database.driver");
@@ -83,9 +88,31 @@ public class DatabaseManager {
      * 
      * @param email
      * @param password
+     * @throws Exception 
      */
-    private void registerUser(String email, String password) {
-
+    private UserInterface registerUser(String email, String password) throws Exception {
+        Connection c = null; 
+        PreparedStatement s = null;
+        ResultSet r = null;
+        UserInterface user = null;
+        try {
+            c = connect();
+            s = c.prepareStatement("INSERT INTO users(email, password) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+            s.setString(1, email);
+            s.setString(2, Password.getSaltedHash(password));
+            s.execute();
+            r = s.getGeneratedKeys();
+            r.next();
+            
+            int id = r.getInt(1);
+            user = factory.newUser(id, email, email);
+            
+        } catch(SQLException e) {
+            disconnect(c, s, r);
+            throw e;
+        }
+        disconnect(c, s);
+        return user;
     }
 
     /**
@@ -93,8 +120,27 @@ public class DatabaseManager {
      * 
      * @param email
      * @param passowrd
+     * @throws Exception 
      */
-    private void loginUser(String email, String passowrd) {
-
+    private boolean loginUser(String email, String password) throws Exception {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        boolean passwordMatch = false;
+        try {
+            c = connect();
+            s = c.prepareStatement("SELECT * FROM users WHERE email = ?");
+            s.setString(1, email);
+            r = s.executeQuery();
+            if(r.next()) {
+                // true if the password match the hash of the stored password, false otherwise
+                passwordMatch =  Password.check(password, r.getString("password"));
+            }
+        }catch(SQLException ex) {
+            disconnect(c, s, r);
+            throw ex;
+        }
+        disconnect(c, s, r);
+        return passwordMatch;
     }
 }
