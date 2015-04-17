@@ -7,14 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
-import com.sinapsi.engine.model.FactoryModel;
-import com.sinapsi.engine.model.UserInterface;
+import com.sinapsi.model.FactoryModel;
+import com.sinapsi.model.UserInterface;
 
 /**
  * This class gives a database interface to the clients, performing queries and
  * returning data from the database
- * 
- * @author Ayoub Ouarrak
  *
  */
 public class DatabaseManager {
