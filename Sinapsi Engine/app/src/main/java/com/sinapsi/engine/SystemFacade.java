@@ -1,4 +1,7 @@
-package com.sinapsi.model;
+package com.sinapsi.engine;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Empty system facade interface.
@@ -6,7 +9,10 @@ package com.sinapsi.model;
  * system resources management.
  *
  */
-public interface SystemFacade {
+public class SystemFacade {
+
+    private Map<String, Object> services = new HashMap<>();
+    private Map<String, Integer> systemFeatures = new HashMap<>();
 
     /**
      * Getter for system services.
@@ -17,7 +23,9 @@ public interface SystemFacade {
      *         then should be down-casted to the needed
      *         class by the service consumer.
      */
-    public Object getSystemService(String key);
+    public Object getSystemService(String key){
+        return services.get(key);
+    }
 
     /**
      * Setter for system services.
@@ -25,8 +33,13 @@ public interface SystemFacade {
      *            in a data structure like a map.
      *            Tip: use String constants
      * @param o the Object instance of the service.
+     * @return the invocation object itself, to allow method
+     *         chaining.
      */
-    public void addSystemService(String key, Object o);
+    public SystemFacade addSystemService(String key, Object o){
+        services.put(key, o);
+        return this;
+    }
 
     /**
      * Method used to check the if the system meets a
@@ -38,7 +51,10 @@ public interface SystemFacade {
      *         if the 'required' parameter is greater than the
      *         value set by the system. true otherwise.
      */
-    public boolean checkRequirement(String key, int required);
+    public boolean checkRequirement(String key, int required){
+        Integer x = systemFeatures.get(key);
+        return x != null && required >= x;
+    }
 
     /**
      * Method called by the client at startup to set all the
@@ -49,7 +65,12 @@ public interface SystemFacade {
      *              (for example, 0 for missing and 1 for present,
      *              or in other cases, the version number of a
      *              particular API/library/system software).
+     * @return the invocation object itself, to allow method
+     *         chaining.
      */
-    public void setRequirementSpec(String key, int value);
+    public SystemFacade setRequirementSpec(String key, int value){
+        systemFeatures.put(key,value);
+        return this;
+    }
 
 }

@@ -1,5 +1,7 @@
 package com.sinapsi.model;
 
+import com.sinapsi.engine.SystemFacade;
+
 /**
  * Trigger interface. This interface must be implemented
  * by every class implementing every different type of trigger.

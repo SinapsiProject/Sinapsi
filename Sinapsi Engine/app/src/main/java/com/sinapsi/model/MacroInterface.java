@@ -1,5 +1,7 @@
 package com.sinapsi.model;
 
+import com.sinapsi.engine.SystemFacade;
+
 import java.util.List;
 
 /**
