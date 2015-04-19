@@ -8,6 +8,7 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.Event;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.Trigger;
+import com.sinapsi.utils.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.utils.SinapsiJSONUtils;
 
@@ -76,25 +77,12 @@ public class TriggerWifi extends Trigger {
 
     @Override
     protected JSONObject getFormalParametersJSON() throws JSONException{
+        return new FormalParamBuilder()
+                .put("wifi_status", SinapsiJSONUtils.enumValuesToJSONArray(SwitchStatusChoices.class), true)
+                .put("wifi_connection_status", SinapsiJSONUtils.enumValuesToJSONArray(ConnectionStatusChoices.class), true)
+                .put("wifi_ssid", FormalParamBuilder.TYPE_STRING, true)
+                .create();
 
-        return new JSONObject().put("formal_parameters", new JSONArray()
-
-                .put(new JSONObject()
-                        .put("name", "wifi_status")
-                        .put("type", "choice")
-                        .put("choiceEntries", SinapsiJSONUtils.enumValuesToJSONArray(SwitchStatusChoices.class))
-                        .put("optional", true)) //by default all trigger parameters are optional
-
-                .put(new JSONObject()
-                        .put("name", "wifi_connection_status")
-                        .put("type", "choice")
-                        .put("choiceEntries", SinapsiJSONUtils.enumValuesToJSONArray(ConnectionStatusChoices.class))
-                        .put("optional", true))
-
-                .put(new JSONObject()
-                        .put("name", "wifi_ssid")
-                        .put("type", "string")
-                        .put("optional", true)));
     }
 
 }
