@@ -5,9 +5,9 @@ import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.parameters.SwitchStatusChoices;
+import com.sinapsi.utils.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,14 +22,12 @@ import java.util.HashMap;
  * it relies on other facades/adapters like SystemFacade and
  * WifiAdapter.
  */
-public class ActionWifiState implements Action{
+public class ActionWifiState extends Action{
 
     public static final int ACTION_WIFI_STATE_ID = 1;
 
     public static final String ACTION_WIFI_STATE = "ACTION_WIFI_STATE";
 
-    private DeviceInterface executionDevice;
-    private String params;
 
     /**
      * Creates a new ActionWifiState instance.
@@ -37,8 +35,7 @@ public class ActionWifiState implements Action{
      * @param params the JSON string containing the actual parameters
      */
     public ActionWifiState(DeviceInterface executionDevice, String params){
-        this.executionDevice = executionDevice;
-        this.params = params;
+        super(executionDevice, params);
     }
 
     @Override
@@ -46,21 +43,7 @@ public class ActionWifiState implements Action{
         //if s is the execution device of this action instance
         if(executionDevice.getId() == s.getId()) {
             WifiAdapter wa = (WifiAdapter) s.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
-            JSONObject o = null;
-            try {
-                o = new JSONObject(params);
-            } catch (JSONException e1) {
-                //actual parameters string is not well-formed
-                e1.printStackTrace();
-                return;
-            }
-            JSONObject pjo;
-            try {
-                pjo = o.getJSONObject("parameters");
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-                return;
-            }
+            JSONObject pjo = getParamsObj(params);
             boolean activate;
             try {
                 activate = pjo.getBoolean("wifi_switch");
@@ -83,7 +66,7 @@ public class ActionWifiState implements Action{
 
     @Override
     public int getId() {
-        return 1;
+        return ACTION_WIFI_STATE_ID;
     }
 
     @Override
@@ -104,28 +87,11 @@ public class ActionWifiState implements Action{
     }
 
     @Override
-    public String getFormalParameters() {
-        JSONObject result = null;
-        try{
-            result = new JSONObject().put("formal_parameters", new JSONArray()
-
-                    .put(new JSONObject()
-                            .put("name", "wifi_switch")
-                            .put("type", "boolean_on_off")
-                            .put("optional", false)));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return result!=null ? result.toString() : null;
+    protected JSONObject getFormalParametersJSON() throws JSONException {
+        return new FormalParamBuilder()
+                .put("wifi_switch","boolean_on_off",false)
+                .create();
     }
 
-    @Override
-    public String getActualParameters() {
-        return params;
-    }
 
-    @Override
-    public void setActualParameters(String params) {
-        this.params = params;
-    }
 }

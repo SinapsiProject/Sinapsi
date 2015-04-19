@@ -18,6 +18,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
     protected String params;
     protected MacroInterface macro;
 
+
     public Trigger(DeviceInterface executionDevice, String parameters, MacroInterface macro){
         this.executionDevice = executionDevice;
         this.params = parameters;
