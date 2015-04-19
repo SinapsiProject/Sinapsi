@@ -1,12 +1,12 @@
 package com.sinapsi.model;
 
-import com.sinapsi.engine.SystemFacade;
+import com.sinapsi.engine.system.SystemFacade;
 
 /**
  * Trigger interface. This interface must be implemented
  * by every class implementing every different type of trigger.
  * For example, classes like TriggerWifi and TriggerSMS should
- * implement this interface
+ * implement this interface.
  *
  */
 public interface Trigger extends Parameterized, DistributedComponent {
@@ -22,4 +22,6 @@ public interface Trigger extends Parameterized, DistributedComponent {
      *          main infos and services
      */
     public void onActivate(Event e, SystemFacade s);
+
+    //TODO: add setEnabled(boolean,ActivationManager);
 }

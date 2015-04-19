@@ -2,7 +2,7 @@ package com.sinapsi.model.impl;
 
 import com.sinapsi.model.Action;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.engine.SystemFacade;
+import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.Trigger;
 
 import java.util.ArrayList;

@@ -1,6 +1,8 @@
 package com.sinapsi.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * MacroComponent interface
@@ -42,8 +44,10 @@ public interface MacroComponent {
      * needed to specify what are the system requirements the
      * device has to meet for the MacroComponent to be used.
      *
-     * @return a List of String keys: each key represents
-     * a system feature on the device.
+     * @return a Map of requirements: each key represents
+     * a system feature on the device, and the integer is the minimum
+     * value the system has to meet in order to make this component
+     * available.
      */
-    public List<String> getSystemRequirementKeys();
+    public HashMap<String,Integer> getSystemRequirementKeys();
 }
