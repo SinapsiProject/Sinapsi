@@ -25,15 +25,11 @@ import java.util.HashMap;
  * Notice that this trigger is completely platform-independent:
  * it relies on other facades/adapters like SystemFacade and WifiAdapter.
  */
-public class TriggerWifi implements Trigger {
+public class TriggerWifi extends Trigger {
 
     public static final int TRIGGER_WIFI_ID = 1;
 
     public static final String TRIGGER_WIFI = "TRIGGER_WIFI";
-
-    private DeviceInterface executionDevice;
-    private String params;
-    private MacroInterface macro;
 
     /**
      * Creates a new TriggerWifi instance.
@@ -42,61 +38,9 @@ public class TriggerWifi implements Trigger {
      * @param macro the macro which is going to be activated by this trigger
      */
     public TriggerWifi(DeviceInterface executionDevice, String parameters, MacroInterface macro){
-        this.executionDevice = executionDevice;
-        this.params = parameters;
-        this.macro = macro;
+        super(executionDevice, parameters, macro);
     }
 
-    @Override
-    public void onActivate(Event e, DeviceInterface di) {
-        SystemFacade s = di.getSystemFacade();
-        if (!s.checkRequirements(this))
-            throw new RuntimeException("Requirements not met at execution phase");//TODO: new exception class?
-
-        WifiAdapter wa = (WifiAdapter) s.getSystemService(SystemFacade.SERVICE_WIFI);
-
-        //checks the parameters
-        //TODO: automate this process in another method (probably Trigger should be promoted to abstract class)
-        JSONObject o = null;
-        try {
-            o = new JSONObject(params);
-        } catch (JSONException e1) {
-            //actual parameters string is not well-formed
-            e1.printStackTrace();
-            return;
-        }
-        JSONObject pjo;
-        try {
-            pjo = o.getJSONObject("parameters");
-        } catch (JSONException e1) {
-            /*
-            there is no parameters array, and, because all trigger parameters
-            are optional, and are meant to filter the events, this means 'just
-            activate the macro every time (i.e. either when wifi sets on and off)
-            */
-            e1.printStackTrace();
-            macro.execute(di);
-            return;
-        }
-        if (!pjo.optString("wifi_status").equals(wa.getStatus().toString())&&!pjo.optString("wifi_status").isEmpty()){
-            return;
-        }
-        if (!pjo.optString("wifi_connection_status").equals(wa.getConnectionStatus().toString())&&!pjo.optString("wifi_connection_status").isEmpty()){
-            return;
-        }
-        if (!pjo.optString("wifi_ssid").equals(wa.getSSID())&&!pjo.optString("wifi_ssid").isEmpty()){
-            return;
-        }
-        //if all parameters are met or are null, start the macro
-        macro.execute(di);
-
-
-    }
-
-    @Override
-    public DeviceInterface getExecutionDevice() {
-        return executionDevice;
-    }
 
     @Override
     public int getId() {
@@ -113,6 +57,16 @@ public class TriggerWifi implements Trigger {
         return 1;
     }
 
+
+    @Override
+    protected JSONObject extractParameterValues(Event e, DeviceInterface di) throws JSONException {
+        WifiAdapter wa = (WifiAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
+        return new JSONObject()
+                .put("wifi_status", wa.getStatus().toString())
+                .put("wifi_connection_status", wa.getConnectionStatus().toString())
+                .put("wifi_ssid", wa.getSSID());
+    }
+
     @Override
     public HashMap<String,Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>()
@@ -121,42 +75,26 @@ public class TriggerWifi implements Trigger {
     }
 
     @Override
-    public String getFormalParameters() {
-        JSONObject result = null;
-        try {
-            result = new JSONObject().put("formal_parameters", new JSONArray()
+    protected JSONObject getFormalParametersJSON() throws JSONException{
 
-                    .put(new JSONObject()
-                            .put("name", "wifi_status")
-                            .put("type", "choice")
-                            .put("choiceEntries", SinapsiJSONUtils.enumValuesToJSONArray(SwitchStatusChoices.class))
-                            .put("optional", true)) //by default all trigger parameters are optional
+        return new JSONObject().put("formal_parameters", new JSONArray()
 
-                    .put(new JSONObject()
-                            .put("name", "wifi_connection_status")
-                            .put("type", "choice")
-                            .put("choiceEntries", SinapsiJSONUtils.enumValuesToJSONArray(ConnectionStatusChoices.class))
-                            .put("optional", true))
+                .put(new JSONObject()
+                        .put("name", "wifi_status")
+                        .put("type", "choice")
+                        .put("choiceEntries", SinapsiJSONUtils.enumValuesToJSONArray(SwitchStatusChoices.class))
+                        .put("optional", true)) //by default all trigger parameters are optional
 
-                    .put(new JSONObject()
-                            .put("name", "wifi_ssid")
-                            .put("type", "string")
-                            .put("optional", true)));
+                .put(new JSONObject()
+                        .put("name", "wifi_connection_status")
+                        .put("type", "choice")
+                        .put("choiceEntries", SinapsiJSONUtils.enumValuesToJSONArray(ConnectionStatusChoices.class))
+                        .put("optional", true))
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return result!=null ? result.toString() : null;
+                .put(new JSONObject()
+                        .put("name", "wifi_ssid")
+                        .put("type", "string")
+                        .put("optional", true)));
     }
 
-    @Override
-    public String getActualParameters() {
-        return params;
-    }
-
-    @Override
-    public void setActualParameters(String params) {
-        this.params = params;
-    }
 }
