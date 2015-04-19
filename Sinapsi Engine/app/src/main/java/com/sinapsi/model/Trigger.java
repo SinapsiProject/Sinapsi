@@ -1,5 +1,7 @@
 package com.sinapsi.model;
 
+import com.sinapsi.engine.ActivationManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,8 +55,14 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
 
     }
 
-    //TODO: add setEnabled(boolean,ActivationManager);
 
+    public void register(ActivationManager am){
+        am.addToNotifyList(this);
+    }
+
+    public void unregister(ActivationManager am){
+        am.removeFromNotifyList(this);
+    }
     @Override
     public DeviceInterface getExecutionDevice() {
         return executionDevice;
