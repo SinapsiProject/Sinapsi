@@ -1,5 +1,6 @@
 package com.sinapsi.model.impl;
 
+import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 
@@ -14,6 +15,29 @@ public class Device implements DeviceInterface {
     private String model;
     private String type;
     private UserInterface user;
+
+    private SystemFacade systemFacade;
+
+    /**
+     * Device ctor.
+     * @param id the Sinapsi id of this device
+     * @param name the device's chosen name (i.e. "Work phone")
+     * @param model the device's model (i.e. "Nexus 5")
+     * @param type the device type (i.e. "AndroidSmartphone")
+     * @param clientVersion the version of the Sinapsi client installed on this device
+     * @param user the owner of this device
+     * @param sf the system facade of this device (use null for remote devices)
+     *           TODO: or use another SF where there is a set of remote calls
+     */
+    public Device(int id, String name, String model, String type, int clientVersion, UserInterface user, SystemFacade sf){
+        this.id = id;
+        this.name = name;
+        this.model = model;
+        this.type = type;
+        this.version = clientVersion;
+        this.user = user;
+        this.systemFacade = sf;
+    }
 
     /**
      * Return the id of the device
@@ -112,5 +136,15 @@ public class Device implements DeviceInterface {
     @Override
     public void setVersion(int ver) {
         version = ver;
+    }
+
+    @Override
+    public SystemFacade getSystemFacade() {
+        return systemFacade;
+    }
+
+    @Override
+    public void setSystemFacade(SystemFacade sf) {
+        this.systemFacade = sf;
     }
 }

@@ -1,5 +1,6 @@
 package com.sinapsi.engine.system;
 
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 
 import java.util.HashMap;

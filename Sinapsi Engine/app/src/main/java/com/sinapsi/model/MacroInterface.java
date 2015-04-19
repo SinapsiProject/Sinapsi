@@ -1,6 +1,7 @@
 package com.sinapsi.model;
 
 import com.sinapsi.engine.system.SystemFacade;
+import com.sinapsi.model.impl.Device;
 
 import java.util.List;
 
@@ -20,5 +21,5 @@ public interface MacroInterface {
     public void setTrigger(Trigger t);
     public Trigger getTrigger();
 
-    public void execute(SystemFacade fs);
+    public void execute(DeviceInterface fs);
 }

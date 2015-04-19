@@ -18,10 +18,10 @@ public interface Trigger extends Parameterized, DistributedComponent {
      * engine on success.
      * @param e Event object containing infos about the system event
      *          that activated this trigger
-     * @param s SystemFacade object to give a way to access system
-     *          main infos and services
+     * @param di Device object to give a way to access device
+     *           and system main infos and services
      */
-    public void onActivate(Event e, SystemFacade s);
+    public void onActivate(Event e, DeviceInterface di);
 
     //TODO: add setEnabled(boolean,ActivationManager);
 }

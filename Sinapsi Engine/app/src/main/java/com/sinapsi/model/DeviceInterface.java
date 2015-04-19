@@ -1,5 +1,7 @@
 package com.sinapsi.model;
 
+import com.sinapsi.engine.system.SystemFacade;
+
 /**
  * Device Interface.
  * Pure model support interface for the Device class.
@@ -18,4 +20,7 @@ public interface DeviceInterface {
     public void setType(String type);
     public void setUser(UserInterface user);
     public void setVersion(int version);
+
+    public SystemFacade getSystemFacade();
+    public void setSystemFacade(SystemFacade sf);
 }

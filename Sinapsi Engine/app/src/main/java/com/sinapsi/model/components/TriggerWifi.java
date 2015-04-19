@@ -22,8 +22,8 @@ import java.util.HashMap;
  * the wifi state or the wifi connection state changes. This
  * trigger can be parametrized by the status or by the ssid the
  * wifi is connected to.
- * Notice that this class is completely platform-independent:
- * it relies on other classes/adapters like SystemFacade and WifiAdapter.
+ * Notice that this trigger is completely platform-independent:
+ * it relies on other facades/adapters like SystemFacade and WifiAdapter.
  */
 public class TriggerWifi implements Trigger {
 
@@ -36,7 +36,7 @@ public class TriggerWifi implements Trigger {
     private MacroInterface macro;
 
     /**
-     * creates a new TriggerWifi.
+     * Creates a new TriggerWifi instance.
      * @param executionDevice the device on which this trigger is activated
      * @param parameters the JSON string containing the actual parameters
      * @param macro the macro which is going to be activated by this trigger
@@ -48,7 +48,8 @@ public class TriggerWifi implements Trigger {
     }
 
     @Override
-    public void onActivate(Event e, SystemFacade s) {
+    public void onActivate(Event e, DeviceInterface di) {
+        SystemFacade s = di.getSystemFacade();
         if (!s.checkRequirements(this))
             throw new RuntimeException("Requirements not met at execution phase");//TODO: new exception class?
 
@@ -60,7 +61,7 @@ public class TriggerWifi implements Trigger {
         try {
             o = new JSONObject(params);
         } catch (JSONException e1) {
-            //formal parameters string is not well-formed
+            //actual parameters string is not well-formed
             e1.printStackTrace();
             return;
         }
@@ -74,7 +75,7 @@ public class TriggerWifi implements Trigger {
             activate the macro every time (i.e. either when wifi sets on and off)
             */
             e1.printStackTrace();
-            macro.execute(s);
+            macro.execute(di);
             return;
         }
         if (!pjo.optString("wifi_status").equals(wa.getStatus().toString())&&!pjo.optString("wifi_status").isEmpty()){
@@ -87,7 +88,7 @@ public class TriggerWifi implements Trigger {
             return;
         }
         //if all parameters are met or are null, start the macro
-        macro.execute(s);
+        macro.execute(di);
 
 
     }
@@ -123,7 +124,7 @@ public class TriggerWifi implements Trigger {
     public String getFormalParameters() {
         JSONObject result = null;
         try {
-            result = new JSONObject().put("formalParameters", new JSONArray()
+            result = new JSONObject().put("formal_parameters", new JSONArray()
 
                     .put(new JSONObject()
                             .put("name", "wifi_status")

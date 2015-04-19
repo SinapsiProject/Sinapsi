@@ -1,7 +1,5 @@
 package com.sinapsi.model;
 
-import com.sinapsi.engine.system.SystemFacade;
-
 /**
  * Action interface. This interface must be implemented
  * by every class implementing every different type of action.
@@ -16,9 +14,9 @@ public interface Action extends Parameterized, DistributedComponent {
      * the engine when an action instance should do his work
      * inside a macro.
      *
-     * @param s passed by the MacroEngine, used to give access
-     *          to eventual system-dependant calls needed by
-     *          the action
+     * @param di passed by the MacroEngine, used to give access
+     *           to eventual system-dependant calls needed by
+     *           the action
      */
-    public void activate(SystemFacade s);
+    public void activate(DeviceInterface di);
 }

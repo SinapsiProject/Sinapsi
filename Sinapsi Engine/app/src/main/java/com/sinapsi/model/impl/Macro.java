@@ -1,6 +1,7 @@
 package com.sinapsi.model.impl;
 
 import com.sinapsi.model.Action;
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.Trigger;
@@ -98,9 +99,11 @@ public class Macro implements MacroInterface {
      * Starts the execution of the macro. This method
      * should be called on a separate thread, in order
      * to multiple macros to be executed concurrently.
+     * @param sf the device where the macro starts the
+     *           execution.
      */
     @Override
-    public void execute(SystemFacade sf) {
+    public void execute(DeviceInterface sf) {
         //TODO: create the concept of "macro execution" and implement
         //TODO: it in a class. Could be useful for async actions, either
         //TODO: to stop and restart the execution of the macro.
