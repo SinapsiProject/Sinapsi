@@ -7,6 +7,14 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <activity android:name="com.sinapsi.android.activity.WelcomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"></action>
+                <category android:name="android.intent.category.LAUNCHER"></category>
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name="com.sinapsi.android.activators.BroadcastActivator"
             android:enabled="true"
