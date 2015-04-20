@@ -5,7 +5,7 @@ import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.parameters.SwitchStatusChoices;
-import com.sinapsi.utils.FormalParamBuilder;
+import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
 import org.json.JSONException;
@@ -89,7 +89,7 @@ public class ActionWifiState extends Action{
     @Override
     protected JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
-                .put("wifi_switch","boolean_on_off",false)
+                .put("wifi_switch", FormalParamBuilder.BoolStyles.ON_OFF,false)
                 .create();
     }
 

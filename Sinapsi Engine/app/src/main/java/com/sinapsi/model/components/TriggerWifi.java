@@ -5,14 +5,13 @@ import com.sinapsi.model.parameters.ConnectionStatusChoices;
 import com.sinapsi.model.parameters.SwitchStatusChoices;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.Event;
+import com.sinapsi.engine.Event;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.Trigger;
-import com.sinapsi.utils.FormalParamBuilder;
+import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.utils.SinapsiJSONUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,7 +79,7 @@ public class TriggerWifi extends Trigger {
         return new FormalParamBuilder()
                 .put("wifi_status", SinapsiJSONUtils.enumValuesToJSONArray(SwitchStatusChoices.class), true)
                 .put("wifi_connection_status", SinapsiJSONUtils.enumValuesToJSONArray(ConnectionStatusChoices.class), true)
-                .put("wifi_ssid", FormalParamBuilder.TYPE_STRING, true)
+                .put("wifi_ssid", FormalParamBuilder.Types.STRING, true)
                 .create();
 
     }

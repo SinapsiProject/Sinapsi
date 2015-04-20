@@ -1,18 +1,18 @@
 package com.sinapsi.engine.system;
 
-import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Empty system facade interface.
+ * SystemFacade class.
  * Used by components and engine for requirements check and
  * system resources management.
  *
  */
 public class SystemFacade {
+
 
     private Map<String, Object> services = new HashMap<>();
     private Map<String, Integer> systemFeatures = new HashMap<>();
@@ -111,7 +111,9 @@ public class SystemFacade {
 
 
     public static final String REQUIREMENT_WIFI = "REQUIREMENT_WIFI";
+    public static final String REQUIREMENT_SMS_READ = "REQUIREMENT_SMS_READ";
 
     public static final String SERVICE_WIFI = "SERVICE_WIFI";
+
 
 }
