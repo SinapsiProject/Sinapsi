@@ -15,13 +15,17 @@ import com.sinapsi.model.components.TriggerWifi;
 import java.util.Arrays;
 
 /**
- * Created by Giuseppe on 20/04/15.
+ * ActivationManager - implementation for the Android platform.
+ * This handles the trigger activation using android-exclusive
+ * mechanisms like BroadcastReceivers.
  */
 public class AndroidActivationManager implements ActivationManager {
 
     private ContextWrapper contextWrapper;
     private DeviceInterface deviceInterface;
 
+    //TODO: move this initialization in a ctor, which checks
+    //----: if wifi is available on the deviceInterface
     private BroadcastActivator wifiActivator = new BroadcastActivator(
             newIntentFilter(new String[]{
                     "android.net.wifi.STATE_CHANGE",
@@ -37,6 +41,12 @@ public class AndroidActivationManager implements ActivationManager {
             wifiActivator
     };
 
+    /**
+     * Creates a new AndroidActivationManager instance with the specified
+     * ContextWrapper and DeviceInterface.
+     * @param cw the contextWrapper
+     * @param di the deviceInterface
+     */
     public AndroidActivationManager(ContextWrapper cw, DeviceInterface di){
         this.contextWrapper = cw;
         this.deviceInterface = di;
@@ -56,6 +66,10 @@ public class AndroidActivationManager implements ActivationManager {
         manageRegistrations();
     }
 
+    /**
+     * Used to register the broadcast receivers on the system only
+     * when needed.
+     */
     private void manageRegistrations(){
         for(BroadcastActivator ba: activators){
             if(ba.getTriggersCount() == 0 && ba.isRegistered())
@@ -66,6 +80,12 @@ public class AndroidActivationManager implements ActivationManager {
         }
     }
 
+    /**
+     * Helper method to create a new intent filter.
+     * @param actions an array containing the actions of
+     *                this intent filter
+     * @return a new IntentFilter instance.
+     */
     public static IntentFilter newIntentFilter(String[] actions){
         IntentFilter iF = new IntentFilter();
         for(String s: actions){
