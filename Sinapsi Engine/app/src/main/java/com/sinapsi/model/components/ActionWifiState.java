@@ -51,8 +51,8 @@ public class ActionWifiState extends Action{
                 e.printStackTrace();
                 return;
             }
-            if (activate) wa.setStatus(SwitchStatusChoices.ENABLED);
-            else wa.setStatus(SwitchStatusChoices.DISABLED);
+            if (activate) wa.setStatus(true);
+            else wa.setStatus(false);
         }else{
             //if s is not the execution device of this action instance
             //TODO: remote action

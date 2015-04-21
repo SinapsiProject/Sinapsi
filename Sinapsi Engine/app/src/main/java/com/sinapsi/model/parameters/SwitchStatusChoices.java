@@ -7,6 +7,6 @@ package com.sinapsi.model.parameters;
 public enum SwitchStatusChoices {
     ENABLING,
     ENABLED,
-    DISBLING,
+    DISABLING,
     DISABLED
 }

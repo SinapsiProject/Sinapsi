@@ -1,4 +1,4 @@
-package com.sinapsi.android.activators;
+package com.sinapsi.android.system;
 
 import android.content.Context;
 import android.content.ContextWrapper;

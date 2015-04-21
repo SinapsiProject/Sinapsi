@@ -16,7 +16,7 @@
         </activity>
 
         <receiver
-            android:name="com.sinapsi.android.activators.BroadcastActivator"
+            android:name="com.sinapsi.android.system.BroadcastActivator"
             android:enabled="true"
             android:exported="true" >
         </receiver>
