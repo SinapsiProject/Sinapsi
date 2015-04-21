@@ -8,10 +8,6 @@ Sinapsi gives the ability to perform actions on multiple devices, not necessaril
 thus generating a network of distributed devices which act and react each other.
 Sinapsi will be able to run on Android, Windows, Linux and Mac. Future updates will make Sinapsi available on 
 iOS devices, introducing a voice interface to communicate with other devices.
-
-##Database  
-###ER  
-![alt tag](http://i60.tinypic.com/73ed0i.png)    
    
 ##Model
 ###Web service
