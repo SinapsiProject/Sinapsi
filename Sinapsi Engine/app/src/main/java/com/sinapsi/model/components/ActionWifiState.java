@@ -4,7 +4,7 @@ import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.parameters.SwitchStatusChoices;
+import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
@@ -28,14 +28,15 @@ public class ActionWifiState extends Action{
 
     public static final String ACTION_WIFI_STATE = "ACTION_WIFI_STATE";
 
-
     /**
-     * Creates a new ActionWifiState instance.
-     * @param executionDevice the device on wich this action is going to be executed
-     * @param params the JSON string containing the actual parameters
+     * Default ctor, needed by ComponentLoader to create an instance
+     * with java reflection.
+     * DO NOT DIRECTLY CALL THIS: THIS SHOULD BE CALLED ONLY BY
+     * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
+     * INSTEAD.
      */
-    public ActionWifiState(DeviceInterface executionDevice, String params){
-        super(executionDevice, params);
+    public ActionWifiState(){
+        super();
     }
 
     @Override
@@ -60,11 +61,6 @@ public class ActionWifiState extends Action{
     }
 
     @Override
-    public DeviceInterface getExecutionDevice() {
-        return executionDevice;
-    }
-
-    @Override
     public int getId() {
         return ACTION_WIFI_STATE_ID;
     }
@@ -78,6 +74,7 @@ public class ActionWifiState extends Action{
     public int getMinVersion() {
         return 1;
     }
+
 
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {

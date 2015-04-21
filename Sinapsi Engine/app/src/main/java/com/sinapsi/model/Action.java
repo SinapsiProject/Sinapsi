@@ -16,7 +16,25 @@ public abstract class Action implements Parameterized, DistributedComponent {
     protected DeviceInterface executionDevice;
     protected String params;
 
-    public Action(DeviceInterface executionDevice, String params){
+
+    /**
+     * Default ctor, needed by ComponentLoader to create an instance
+     * with java reflection.
+     * DO NOT DIRECTLY CALL THIS: THIS SHOULD BE CALLED ONLY BY
+     * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
+     * INSTEAD.
+     */
+    public Action(){
+        executionDevice = null;
+        params = null;
+    }
+
+    /**
+     * Initializes the new Action instance.
+     * @param executionDevice the device on which this action is going to be executed
+     * @param params the JSON string containing the actual parameters
+     */
+    public void init(DeviceInterface executionDevice, String params){
         this.executionDevice = executionDevice;
         this.params = params;
     }
@@ -40,6 +58,16 @@ public abstract class Action implements Parameterized, DistributedComponent {
     @Override
     public void setActualParameters(String params) {
         this.params = params;
+    }
+
+    @Override
+    public ComponentTypes getComponentType() {
+        return ComponentTypes.ACTION;
+    }
+
+    @Override
+    public DeviceInterface getExecutionDevice() {
+        return executionDevice;
     }
 
 

@@ -40,6 +40,13 @@ public interface MacroComponent {
     public int getMinVersion();
 
     /**
+     * Method to needed to specify the type of the component
+     * (i.e. a Trigger or an Action).
+     * @return this component's type
+     */
+    public ComponentTypes getComponentType();
+
+    /**
      * Method to be implemented by each class of MacroComponent,
      * needed to specify what are the system requirements the
      * device has to meet for the MacroComponent to be used.
@@ -50,4 +57,9 @@ public interface MacroComponent {
      * available.
      */
     public HashMap<String,Integer> getSystemRequirementKeys();
+
+    public enum ComponentTypes{
+        TRIGGER,
+        ACTION
+    }
 }

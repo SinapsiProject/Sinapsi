@@ -31,14 +31,16 @@ public class TriggerWifi extends Trigger {
 
     public static final String TRIGGER_WIFI = "TRIGGER_WIFI";
 
+
     /**
-     * Creates a new TriggerWifi instance.
-     * @param executionDevice the device on which this trigger is activated
-     * @param parameters the JSON string containing the actual parameters
-     * @param macro the macro which is going to be activated by this trigger
+     * Default ctor, needed by ComponentLoader to create an instance
+     * with java reflection.
+     * DO NOT DIRECTLY CALL THIS: THIS SHOULD BE CALLED ONLY BY
+     * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
+     * INSTEAD.
      */
-    public TriggerWifi(DeviceInterface executionDevice, String parameters, MacroInterface macro){
-        super(executionDevice, parameters, macro);
+    public TriggerWifi(){
+        super();
     }
 
 

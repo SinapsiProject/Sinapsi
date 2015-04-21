@@ -24,14 +24,16 @@ public class TriggerSMS extends Trigger{
     public static final int TRIGGER_SMS_ID = 2;
     public static final String TRIGGER_SMS = "TRIGGER_SMS";
 
+
     /**
-     * Creates a new TriggerSMS instance.
-     * @param executionDevice the device on which this trigger is activated
-     * @param parameters the JSON string containing the actual parameters
-     * @param macro the macro which is going to be activated by this trigger
+     * Default ctor, needed by ComponentLoader to create an instance
+     * with java reflection.
+     * DO NOT DIRECTLY CALL THIS: THIS SHOULD BE CALLED ONLY BY
+     * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
+     * INSTEAD.
      */
-    public TriggerSMS(DeviceInterface executionDevice, String parameters, MacroInterface macro) {
-        super(executionDevice, parameters, macro);
+    public TriggerSMS(){
+        super();
     }
 
 

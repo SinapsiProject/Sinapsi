@@ -22,8 +22,27 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
     protected String params;
     protected MacroInterface macro;
 
+    /**
+     * Default ctor, needed by ComponentLoader to create an instance
+     * with java reflection.
+     * DO NOT DIRECTLY CALL THIS: THIS SHOULD BE CALLED ONLY BY
+     * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
+     * INSTEAD.
+     */
+    public Trigger() {
+        executionDevice = null;
+        params = null;
+        macro = null;
+    }
 
-    public Trigger(DeviceInterface executionDevice, String parameters, MacroInterface macro) {
+
+    /**
+     * Initializes the new trigger instance.
+     * @param executionDevice the device on which this action is going to be executed
+     * @param parameters the JSON string containing the actual parameters
+     * @param macro the macro that will be executed when this trigger activates
+     */
+    public void init(DeviceInterface executionDevice, String parameters, MacroInterface macro) {
         this.executionDevice = executionDevice;
         this.params = parameters;
         this.macro = macro;
@@ -84,6 +103,10 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
         this.params = params;
     }
 
+    @Override
+    public ComponentTypes getComponentType() {
+        return ComponentTypes.TRIGGER;
+    }
 
     /**
      * Method called by Activate in order to check at execution phase
