@@ -35,9 +35,24 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>engine</name>
+			<type>2</type>
+			<location>C:/Users/Marco/Documents/GitHub/Sinapsi/Sinapsi Engine/app/src/main/java/com/sinapsi/engine</location>
+		</link>
+		<link>
 			<name>java</name>
 			<type>2</type>
-			<location>/Users/Ayoub/Desktop/Git/Sinapsi/Sinapsi Engine/app/src/main/java</location>
+			<location>C:/Users/Marco/Documents/GitHub/Sinapsi/Sinapsi Engine/app/src/main/java</location>
+		</link>
+		<link>
+			<name>model</name>
+			<type>2</type>
+			<location>C:/Users/Marco/Documents/GitHub/Sinapsi/Sinapsi Engine/app/src/main/java/com/sinapsi/model</location>
+		</link>
+		<link>
+			<name>utils</name>
+			<type>2</type>
+			<location>C:/Users/Marco/Documents/GitHub/Sinapsi/Sinapsi Engine/app/src/main/java/com/sinapsi/utils</location>
 		</link>
 	</linkedResources>
 </projectDescription>
