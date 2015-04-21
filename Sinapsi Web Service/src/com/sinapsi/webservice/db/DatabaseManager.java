@@ -7,8 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
-import com.sinapsi.model.FactoryModel;
-import com.sinapsi.model.UserInterface;
+import java.util.List;
+import com.sinapsi.model.*;
 
 /**
  * This class gives a database interface to the clients, performing queries and
@@ -81,13 +81,13 @@ public class DatabaseManager {
     }
 
     /**
-     * Register a new user to the system
+     * Insert new user in the db
      * 
      * @param email
      * @param password
      * @throws Exception 
      */
-    private UserInterface registerUser(String email, String password) throws Exception {
+    public UserInterface newUser(String email, String password) throws Exception {
         Connection c = null; 
         PreparedStatement s = null;
         ResultSet r = null;
@@ -113,13 +113,13 @@ public class DatabaseManager {
     }
 
     /**
-     * Login the user to the system
+     * Check if exist a user in the db with email and password 
      * 
      * @param email
      * @param passowrd
      * @throws Exception 
      */
-    private boolean loginUser(String email, String password) throws Exception {
+    public boolean checkUser(String email, String password) throws Exception {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
@@ -139,5 +139,101 @@ public class DatabaseManager {
         }
         disconnect(c, s, r);
         return passwordMatch;
+    }
+    
+    /**
+     * Return user by id
+     * 
+     * @param id id of the user
+     * @return user
+     * @throws SQLException 
+     */
+    public UserInterface getUserById(int id) throws SQLException {
+    	 Connection c = null;
+         PreparedStatement s = null;
+         ResultSet r = null;
+         UserInterface user = null;
+         
+         try {
+             c = connect();
+             s = c.prepareStatement("SELECT * FROM users WHERE id = ?");
+             s.setInt(1, id);
+             r = s.executeQuery();
+             if(r.next()) 
+                 user = factory.newUser(id, r.getString("email"), r.getString("password"));
+             
+         }catch(SQLException ex) {
+             disconnect(c, s, r);
+             throw ex;
+         }
+         disconnect(c, s, r);
+         return user;
+    }
+    
+    /**
+     * Return user by email
+     * 
+     * @param email
+     * @return user
+     * @throws SQLException
+     */
+    public UserInterface getUserByEmail(String email) throws SQLException {
+   	 Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        UserInterface user = null;
+        
+        try {
+            c = connect();
+            s = c.prepareStatement("SELECT * FROM users WHERE email = ?");
+            s.setString(1, email);
+            r = s.executeQuery();
+            if(r.next()) 
+                user = factory.newUser(r.getInt("id"), email, r.getString("password"));
+            
+        }catch(SQLException ex) {
+            disconnect(c, s, r);
+            throw ex;
+        }
+        disconnect(c, s, r);
+        return user;
+   }
+    
+    /**
+     * Return all device linked to user email
+     * 
+     * @param email email of user
+     * @return list of devices
+     * @throws SQLException 
+     */
+    public List<DeviceInterface> getUserDevices(String email) throws SQLException {
+    	UserInterface user =  getUserByEmail(email);
+    	Connection c = null;
+    	PreparedStatement s = null;
+    	ResultSet r = null;
+    	List<DeviceInterface> devices = null;
+    	
+    	try {
+    		c = connect();
+    		String query ="SELECT * FROM device WHERE iduser = (SELECT id FROM users WHERE email = ?";
+    		s = c.prepareStatement(query);
+    		s.setString(1, email);
+    		r = s.executeQuery();
+    		
+    		while(r.next()) {
+    			int id = r.getInt("id");
+    			String name = r.getString("name");
+    			String model = r.getString("model");
+    			String type = r.getString("type");
+    			int version = r.getInt("version");
+    			DeviceInterface device = factory.newDevice(id, name, model, type, user, version);
+    		}
+    		
+    	} catch(SQLException ex) {
+    		disconnect(c, s, r);
+    		throw ex;
+    	}
+    	
+    	return null;
     }
 }
