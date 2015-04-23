@@ -3,33 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#ffc3cfd5"
-    android:id="@+id/welcome_layout">
+    android:background="#ffbbbbbb"
+    android:id="@+id/welcome_layout_land"
+    android:weightSum="1">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo"
-        android:id="@+id/logo"
-        android:scaleType="centerInside"
-        android:background="#ffc3cfd5" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="143dp"
+        android:layout_weight="0.11">
+        android:background="#ffc3cfd5"
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/logo"
+            android:id="@+id/logo"
+            android:background="#ffc3cfd5" />
+    </RelativeLayout>
 
     <TextView
-        android:editable="false"
-        android:id="@+id/signUp_text"
+        android:id="@id/signUp_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="New to Sinapsi? Sign Up"
         android:gravity="center"
         android:textSize="25dp"
         android:clickable="true"
+        android:layout_marginTop="26dp"
         android:background="#ffc3cfd5"
         android:textColor="#ff20647f" />
 
     <TextView
-        android:editable="false"
-        android:id="@+id/signIn_text"
+        android:id="@id/signIn_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Sign In"

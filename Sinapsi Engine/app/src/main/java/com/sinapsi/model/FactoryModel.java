@@ -37,4 +37,5 @@ public interface FactoryModel {
      * @return a new MacroInterface instance
      */
     public MacroInterface newMacro(String name, int id);
+    
 }
