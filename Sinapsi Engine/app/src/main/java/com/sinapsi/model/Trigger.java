@@ -3,8 +3,8 @@ package com.sinapsi.model;
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.ExecutionInterface;
-import com.sinapsi.model.parameters.StringMatchingModeChoices;
 import com.sinapsi.model.parameters.FormalParamBuilder;
+import com.sinapsi.model.parameters.StringMatchingModeChoices;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -4,8 +4,6 @@ import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.Action;
-import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
@@ -42,23 +40,19 @@ public class ActionWifiState extends Action{
 
     @Override
     public void activate(ExecutionInterface s) {
-        //if s is the execution device of this action instance
-        if(executionDevice.getId() == s.getDevice().getId()) {
-            WifiAdapter wa = (WifiAdapter) s.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
-            JSONObject pjo = getParamsObj(params);
-            boolean activate;
-            try {
-                activate = pjo.getBoolean("wifi_switch");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return;
-            }
-            if (activate) wa.setStatus(true);
-            else wa.setStatus(false);
-        }else{
-            //if s is not the execution device of this action instance
-            //TODO: remote action
+
+        WifiAdapter wa = (WifiAdapter) s.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
+        JSONObject pjo = getParamsObj(params);
+        boolean activate;
+        try {
+            activate = pjo.getBoolean("wifi_switch");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
         }
+        if (activate) wa.setStatus(true);
+        else wa.setStatus(false);
+
     }
 
     @Override

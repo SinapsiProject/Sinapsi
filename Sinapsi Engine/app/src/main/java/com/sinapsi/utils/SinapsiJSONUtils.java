@@ -3,7 +3,6 @@ package com.sinapsi.utils;
 import org.json.JSONArray;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Collection of static methods to convert Sinapsi-related

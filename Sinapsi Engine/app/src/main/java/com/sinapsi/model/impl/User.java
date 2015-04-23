@@ -1,6 +1,7 @@
 package com.sinapsi.model.impl;
 
 import com.sinapsi.model.UserInterface;
+
 import java.util.List;
 
 /**

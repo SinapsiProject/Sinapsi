@@ -1,9 +1,7 @@
 package com.sinapsi.android.activity;
 
 import android.app.Activity;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.sinapsi.engine.R;
 

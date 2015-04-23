@@ -1,7 +1,5 @@
 package com.sinapsi.model;
 
-import com.sinapsi.engine.system.SystemFacade;
-
 /**
  * Device Interface.
  * Pure model support interface for the Device class.

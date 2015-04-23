@@ -1,15 +1,13 @@
 package com.sinapsi.model.components;
 
+import com.sinapsi.engine.Event;
 import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.parameters.ConnectionStatusChoices;
-import com.sinapsi.model.parameters.SwitchStatusChoices;
 import com.sinapsi.engine.system.WifiAdapter;
-import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.engine.Event;
-import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.Trigger;
+import com.sinapsi.model.parameters.ConnectionStatusChoices;
 import com.sinapsi.model.parameters.FormalParamBuilder;
+import com.sinapsi.model.parameters.SwitchStatusChoices;
 import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.utils.SinapsiJSONUtils;
 

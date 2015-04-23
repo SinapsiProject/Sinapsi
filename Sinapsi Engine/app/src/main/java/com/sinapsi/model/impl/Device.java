@@ -1,6 +1,5 @@
 package com.sinapsi.model.impl;
 
-import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 

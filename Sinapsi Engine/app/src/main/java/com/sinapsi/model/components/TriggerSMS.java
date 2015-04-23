@@ -1,10 +1,8 @@
 package com.sinapsi.model.components;
 
+import com.sinapsi.engine.Event;
 import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.engine.Event;
-import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.Trigger;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;

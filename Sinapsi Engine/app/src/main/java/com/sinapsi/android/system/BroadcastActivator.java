@@ -6,9 +6,8 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import com.sinapsi.engine.ExecutionInterface;
-import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.engine.Event;
+import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.model.Trigger;
 
 import java.util.ArrayList;

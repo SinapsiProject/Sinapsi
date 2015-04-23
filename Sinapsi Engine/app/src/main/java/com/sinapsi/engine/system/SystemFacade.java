@@ -14,6 +14,7 @@ import java.util.Map;
 public class SystemFacade {
 
 
+
     private Map<String, Object> services = new HashMap<>();
     private Map<String, Integer> systemFeatures = new HashMap<>();
 
@@ -112,8 +113,10 @@ public class SystemFacade {
 
     public static final String REQUIREMENT_WIFI = "REQUIREMENT_WIFI";
     public static final String REQUIREMENT_SMS_READ = "REQUIREMENT_SMS_READ";
+    public static final String REQUIREMENT_SMS_SEND = "REQUIREMENT_SMS_SEND";
+
 
     public static final String SERVICE_WIFI = "SERVICE_WIFI";
-
+    public static final String SERVICE_SMS = "SERVICE_SMS";
 
 }

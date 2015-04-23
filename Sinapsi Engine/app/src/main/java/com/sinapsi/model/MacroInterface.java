@@ -1,8 +1,6 @@
 package com.sinapsi.model;
 
 import com.sinapsi.engine.ExecutionInterface;
-import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.impl.Device;
 
 import java.util.List;
 
