@@ -6,8 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.List;
+
 import com.sinapsi.model.*;
 
 /**
@@ -211,7 +213,7 @@ public class DatabaseManager {
     	Connection c = null;
     	PreparedStatement s = null;
     	ResultSet r = null;
-    	List<DeviceInterface> devices = null;
+    	List<DeviceInterface> devices = new ArrayList<DeviceInterface>();
     	
     	try {
     		c = connect();
@@ -227,13 +229,36 @@ public class DatabaseManager {
     			String type = r.getString("type");
     			int version = r.getInt("version");
     			DeviceInterface device = factory.newDevice(id, name, model, type, user, version);
+    			devices.add(device);
     		}
     		
     	} catch(SQLException ex) {
     		disconnect(c, s, r);
     		throw ex;
     	}
-    	
-    	return null;
+    	disconnect(c, s, r);
+    	return devices;
     }
+
+    /**
+     * Return action by id
+     * 
+     * @param id
+     * @return action
+     */
+   /* public String getActionName(int id) throws SQLException {
+    	Connection c = null;
+    	PreparedStatement s = null;
+    	ResultSet r = null;
+    	Action action = null;
+    	try {
+    		c = connect();
+    	} catch(SQLException ex) {
+    		disconnect(c, s, r);
+    		throw ex;
+    	}
+    	
+    	disconnect(c, s, r);
+    	return action;
+    }*/
 }
