@@ -1,5 +1,7 @@
 package com.sinapsi.model;
 
+import com.sinapsi.engine.ExecutionInterface;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,7 +50,7 @@ public abstract class Action implements Parameterized, DistributedComponent {
      *           to eventual system-dependant calls needed by
      *           the action
      */
-    public abstract void activate(DeviceInterface di);
+    public abstract void activate(ExecutionInterface di);
 
     @Override
     public String getActualParameters() {

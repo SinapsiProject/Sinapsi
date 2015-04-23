@@ -1,5 +1,6 @@
 package com.sinapsi.model.components;
 
+import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.Action;
@@ -40,9 +41,9 @@ public class ActionWifiState extends Action{
     }
 
     @Override
-    public void activate(DeviceInterface s) {
+    public void activate(ExecutionInterface s) {
         //if s is the execution device of this action instance
-        if(executionDevice.getId() == s.getId()) {
+        if(executionDevice.getId() == s.getDevice().getId()) {
             WifiAdapter wa = (WifiAdapter) s.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
             JSONObject pjo = getParamsObj(params);
             boolean activate;

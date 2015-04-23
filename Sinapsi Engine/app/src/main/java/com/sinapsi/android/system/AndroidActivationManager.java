@@ -9,7 +9,7 @@ import android.telephony.SmsMessage;
 import com.sinapsi.android.utils.IntentUtils;
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
-import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.model.Trigger;
 import com.sinapsi.model.components.TriggerSMS;
 import com.sinapsi.model.components.TriggerWifi;
@@ -22,15 +22,15 @@ import com.sinapsi.model.components.TriggerWifi;
 public class AndroidActivationManager implements ActivationManager {
 
     private ContextWrapper contextWrapper;
-    private DeviceInterface deviceInterface;
+    private ExecutionInterface executionInterface;
 
     //TODO: move this initialization in a ctor, which checks
-    //----: if wifi is available on the deviceInterface
+    //----: if wifi is available on the executionInterface
     private BroadcastActivator wifiActivator = new BroadcastActivator(
             newIntentFilter(new String[]{
                     "android.net.wifi.STATE_CHANGE",
                     "android.net.wifi.WIFI_STATE_CHANGED"
-            }), contextWrapper, deviceInterface) {
+            }), contextWrapper, executionInterface) {
         @Override
         public Event extractEventInfo(Context c, Intent i) {
             return null;
@@ -41,7 +41,7 @@ public class AndroidActivationManager implements ActivationManager {
     private BroadcastActivator smsActivator = new BroadcastActivator(
             newIntentFilter(new String[]{
                     "android.provider.Telephony.SMS_RECEIVED"
-            }), contextWrapper, deviceInterface) {
+            }), contextWrapper, executionInterface) {
         @Override
         public Event extractEventInfo(Context c, Intent intent) {
             try {
@@ -71,11 +71,11 @@ public class AndroidActivationManager implements ActivationManager {
      * ContextWrapper and DeviceInterface.
      *
      * @param cw the contextWrapper
-     * @param di the deviceInterface
+     * @param di the executionInterface
      */
-    public AndroidActivationManager(ContextWrapper cw, DeviceInterface di) {
+    public AndroidActivationManager(ContextWrapper cw, ExecutionInterface di) {
         this.contextWrapper = cw;
-        this.deviceInterface = di;
+        this.executionInterface = di;
     }
 
     @Override

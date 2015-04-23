@@ -1,5 +1,6 @@
 package com.sinapsi.model.impl;
 
+import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
@@ -103,7 +104,7 @@ public class Macro implements MacroInterface {
      *           execution.
      */
     @Override
-    public void execute(DeviceInterface sf) {
+    public void execute(ExecutionInterface sf) {
         //TODO: create the concept of "macro execution" and implement
         //TODO: it in a class. Could be useful for async actions, either
         //TODO: to stop and restart the execution of the macro.
