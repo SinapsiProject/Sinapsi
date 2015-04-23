@@ -6,6 +6,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.engine.Event;
 import com.sinapsi.model.Trigger;
@@ -22,7 +23,7 @@ import java.util.List;
 public abstract class BroadcastActivator extends BroadcastReceiver {
     private ContextWrapper contextWrapper;
     private IntentFilter intentFilter;
-    private DeviceInterface deviceInterface;
+    private ExecutionInterface deviceInterface;
     private boolean registered = false;
 
     private List<Trigger> triggers = new ArrayList<>();
@@ -35,7 +36,7 @@ public abstract class BroadcastActivator extends BroadcastReceiver {
      * @param di the device interface, passed to triggers
      *           when activated.
      */
-    public BroadcastActivator(IntentFilter iF, ContextWrapper cw, DeviceInterface di) {
+    public BroadcastActivator(IntentFilter iF, ContextWrapper cw, ExecutionInterface di) {
         contextWrapper = cw;
         intentFilter = iF;
         deviceInterface = di;

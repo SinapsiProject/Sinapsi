@@ -1,5 +1,6 @@
 package com.sinapsi.model;
 
+import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.impl.Device;
 
@@ -21,5 +22,5 @@ public interface MacroInterface {
     public void setTrigger(Trigger t);
     public Trigger getTrigger();
 
-    public void execute(DeviceInterface fs);
+    public void execute(ExecutionInterface fs);
 }

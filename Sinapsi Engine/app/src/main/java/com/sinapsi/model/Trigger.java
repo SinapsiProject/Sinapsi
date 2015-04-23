@@ -2,6 +2,7 @@ package com.sinapsi.model;
 
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
+import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.model.parameters.StringMatchingModeChoices;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 
@@ -58,7 +59,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      * @param di Device object to give a way to access device
      *           and system main infos and services
      */
-    public void onActivate(Event e, DeviceInterface di) {
+    public void onActivate(Event e, ExecutionInterface di) {
         //override this if you want to do something else on trigger activation
     }
 
@@ -70,7 +71,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      * @param di Device object to give a way to access device
      *           and system main infos and services
      */
-    public void activate(Event e, DeviceInterface di) {
+    public void activate(Event e, ExecutionInterface di) {
         if (checkParameters(e, di)) {
             onActivate(e, di);
             macro.execute(di);
@@ -120,7 +121,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      * @return true if each one of the actual parameters equals the
      * extracted parameter from system/event's state.
      */
-    protected boolean checkParameters(Event e, DeviceInterface di) {
+    protected boolean checkParameters(Event e, ExecutionInterface di) {
         if (getActualParameters() == null) return true;
 
         JSONObject actualParameterObj;
@@ -246,5 +247,5 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      * @return just return null if no values are supposed to be set,
      * or a JSONObject containing the parameters.
      */
-    protected abstract JSONObject extractParameterValues(Event e, DeviceInterface di) throws JSONException;
+    protected abstract JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException;
 }

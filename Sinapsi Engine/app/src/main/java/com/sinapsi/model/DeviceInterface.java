@@ -21,6 +21,5 @@ public interface DeviceInterface {
     public void setUser(UserInterface user);
     public void setVersion(int version);
 
-    public SystemFacade getSystemFacade();
-    public void setSystemFacade(SystemFacade sf);
+
 }

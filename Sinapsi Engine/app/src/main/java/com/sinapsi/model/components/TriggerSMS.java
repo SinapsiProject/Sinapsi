@@ -1,5 +1,6 @@
 package com.sinapsi.model.components;
 
+import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.engine.Event;
@@ -46,7 +47,7 @@ public class TriggerSMS extends Trigger{
     }
 
     @Override
-    protected JSONObject extractParameterValues(Event e, DeviceInterface di) throws JSONException {
+    protected JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException {
         return e.getJSONObject();
     }
 

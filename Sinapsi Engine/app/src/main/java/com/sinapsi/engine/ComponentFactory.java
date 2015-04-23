@@ -1,5 +1,6 @@
 package com.sinapsi.engine;
 
+import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
@@ -59,25 +60,25 @@ public class ComponentFactory {
 
     /**
      * Used to get if a specific component meets the requirements needed
-     * to be available on a specific device.
+     * to be available on a specific system facade.
      * @param componentName the component name
      * @param componentType the component type
-     * @param di the device
+     * @param di the system facade
      * @return true if the component is available on the device, false
      *         otherwise
      */
-    public boolean getAvailabilityOnDevice(String componentName, MacroComponent.ComponentTypes componentType, DeviceInterface di){
+    public boolean getAvailabilityOnDevice(String componentName, MacroComponent.ComponentTypes componentType, SystemFacade di){
         MacroComponent c = loader.newComponentInstance(componentType, componentName);
         if (c == null) throw new ComponentNotFoundException(componentName, componentType);
-        return di.getSystemFacade().checkRequirements(c);
+        return di.checkRequirements(c);
     }
 
     /**
-     * Get a list of all trigger names available on a specific device.
-     * @param di the device
+     * Get a list of all trigger names available on a specific system facade.
+     * @param di the system facade
      * @return a List of String names
      */
-    public List<String> getAvailableTriggerNamesOnDevice(DeviceInterface di){
+    public List<String> getAvailableTriggerNamesOnDevice(SystemFacade di){
         List<String> result = new ArrayList<>();
         for(String x: loader.getTriggerKeys()){
             if(getAvailabilityOnDevice(x, MacroComponent.ComponentTypes.TRIGGER,di))
@@ -88,10 +89,10 @@ public class ComponentFactory {
 
     /**
      * Get a list of all action names available on a specific device.
-     * @param di the device
+     * @param di the system facade
      * @return a List of String names
      */
-    public List<String> getAvailableActionNamesOnDevice(DeviceInterface di){
+    public List<String> getAvailableActionNamesOnDevice(SystemFacade di){
         List<String> result = new ArrayList<>();
         for(String x: loader.getActionKeys()){
             if(getAvailabilityOnDevice(x, MacroComponent.ComponentTypes.ACTION,di))
