@@ -15,7 +15,7 @@ import retrofit.RestAdapter;
 public class WebServiceFacade {
     private RetrofitInterface retrofit;
 
-    public WebServiceFacade(){
+    public WebServiceFacade() {
         String exampleUrl = "http://www.sinapsi.com";
 
         //TODO: set a GSON converter with type adapters to convert

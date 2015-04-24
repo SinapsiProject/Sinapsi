@@ -27,3 +27,17 @@ local.properties
 # TeXlipse plugin
 .texlipse
 RemoteSystemsTempFiles
+
+Sinapsi Engine/.idea/workspace.xml
+
+# Android studio various (by parsleyj)
+Sinapsi Engine/.gradle
+Sinapsi Engine/local.properties
+Sinapsi Engine/.idea/libraries/support_v4_21_0_3.xml
+Sinapsi Engine/.idea/libraries
+Sinapsi Engine/.DS_Store
+Sinapsi Engine/build
+
+Sinapsi Engine/.idea/libraries/support_v4_21_0_3.xml
+
+Sinapsi Engine/.idea/libraries/support_v4_21_0_3.xml
