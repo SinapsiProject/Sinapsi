@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
@@ -14,21 +14,23 @@ import com.sinapsi.model.impl.User;
 import com.sinapsi.webservice.db.DatabaseManager;
 
 /**
- * Servlet that receives email and password from client and, after a check,
- * returns the user object
- *
+ * Servlet implementation class LoginServlet
  */
-@SuppressWarnings("serial")
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("applications/json");
-		PrintWriter out = resp.getWriter();
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("applications/json");
+		PrintWriter out = response.getWriter();
 		DatabaseManager db = new DatabaseManager();
 		
 		try {
-			String email = req.getParameter("email");
-			String pwd = req.getParameter("password"); 
+			String email = request.getParameter("email");
+			String pwd = request.getParameter("password"); 
 			if(db.checkUser(email, pwd)) {
 				Gson gson = new Gson();
 				User u = (User)db.getUserByEmail(email);
@@ -36,7 +38,6 @@ public class LoginServlet extends HttpServlet {
 			} else {
 				Gson gson = new Gson();
 				User user = (User) db.newUser(email, pwd);
-				
 				user.errorOccured(true);
 				user.setErrorDescription("Login error");
 				
@@ -46,9 +47,12 @@ public class LoginServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		doGet(req, resp);
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
+
 }
