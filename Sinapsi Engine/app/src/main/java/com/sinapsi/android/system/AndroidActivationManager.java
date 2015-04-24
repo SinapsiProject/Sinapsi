@@ -11,8 +11,8 @@ import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.model.Trigger;
-import com.sinapsi.model.components.TriggerSMS;
-import com.sinapsi.model.components.TriggerWifi;
+import com.sinapsi.engine.components.TriggerSMS;
+import com.sinapsi.engine.components.TriggerWifi;
 
 /**
  * ActivationManager - implementation for the Android platform.

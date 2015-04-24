@@ -2,9 +2,9 @@ package com.sinapsi.engine;
 
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
-import com.sinapsi.model.components.ActionWifiState;
-import com.sinapsi.model.components.TriggerSMS;
-import com.sinapsi.model.components.TriggerWifi;
+import com.sinapsi.engine.components.ActionWifiState;
+import com.sinapsi.engine.components.TriggerSMS;
+import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.model.impl.Macro;
 
 import java.util.HashMap;
