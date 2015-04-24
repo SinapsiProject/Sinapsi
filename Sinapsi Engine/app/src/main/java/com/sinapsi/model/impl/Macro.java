@@ -13,7 +13,7 @@ import java.util.List;
  * A macro is a list of actions activated by a trigger.
  *
  */
-public class Macro implements MacroInterface {
+public class Macro extends ComunicationError implements MacroInterface {
     private Trigger trigger;
     private List<Action> actions;
     private String name;

@@ -8,7 +8,7 @@ import java.util.List;
  * Implementation of the user interface
  *
  */
-public class User implements UserInterface {
+public class User extends ComunicationError implements UserInterface {
     private List<Device> devices;
     private int id;
     private String email;

@@ -28,20 +28,19 @@ public class LoginServlet extends HttpServlet {
 		
 		try {
 			String email = req.getParameter("email");
-			if(db.checkUser(email, req.getParameter("password"))) {
-				//out.print(1);
-				
-				/*L'user viene convertito in una stringa JSON,
-					inviato al client dove retrofit (che al suo
-					interno ha GSON) lo riconverte in un oggetto
-				 	User. Vedere, sul client android, la chiamata
-					'public User login(String email, String password)'
-					all'interno di RetrofitInterface.java*/
+			String pwd = req.getParameter("password"); 
+			if(db.checkUser(email, pwd)) {
 				Gson gson = new Gson();
 				User u = (User)db.getUserByEmail(email);
 				out.print(gson.toJson(u)); 
 			} else {
-				out.print(0);
+				Gson gson = new Gson();
+				User user = (User) db.newUser(email, pwd);
+				
+				user.errorOccured(true);
+				user.setErrorDescription("Login error");
+				
+				out.print(gson.toJson(user));
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

@@ -5,7 +5,7 @@ package com.sinapsi.model;
  * Pure model support interface for the Device class.
  *
  */
-public interface DeviceInterface {
+public interface DeviceInterface  {
     public int getId();
     public int getVersion();
     public String getName();

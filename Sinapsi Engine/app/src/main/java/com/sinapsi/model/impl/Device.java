@@ -7,7 +7,7 @@ import com.sinapsi.model.UserInterface;
  * Implementation of the device interface
  *
  */
-public class Device implements DeviceInterface {
+public class Device extends ComunicationError implements DeviceInterface {
     private int id;
     private int version;
     private String name;
