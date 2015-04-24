@@ -1,4 +1,4 @@
-package com.sinapsi.model.components;
+package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
