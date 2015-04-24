@@ -1,6 +1,7 @@
 package com.sinapsi.android.client;
 
 import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.model.impl.User;
 
 import java.util.List;
 
@@ -44,5 +45,13 @@ public interface RetrofitInterface {
     public String loginUser(
             @Query("email") String email,
             @Body String password);
+
+
+    //Ok, altro esempio di login, in modo che combaci con la servlet:
+
+    @GET("/LoginServlet")
+    public User login(@Query("email") String email,
+                      @Query("password") String password);
+
 
 }
