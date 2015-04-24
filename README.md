@@ -1,5 +1,4 @@
-
-![GitHub Logo](http://s4.postimg.org/dkvk01ecr/logo_2.png)  
+![alt tag](http://s4.postimg.org/dkvk01ecr/logo_2.png)  
 _Distributed intelligent automation system_  
   
 Sinapsi gives you the ability to interconnect your devices in a very simple way; using a macro editor you can define a 
