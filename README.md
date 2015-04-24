@@ -1,5 +1,5 @@
 ![alt tag](http://i61.tinypic.com/1zzszt0.png)  
-_Distributed intelligent automation system_  
+->***Distributed intelligent automation system***<-
   
 Sinapsi gives you the ability to interconnect your devices in a very simple way; using a macro editor you can define a 
 set of actions to be performed when a trigger is activated. For example, with a well formed macro, you can display a 
