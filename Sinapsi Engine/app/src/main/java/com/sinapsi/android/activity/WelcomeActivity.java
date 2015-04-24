@@ -1,16 +1,10 @@
 package com.sinapsi.android.activity;
 
 import android.app.Activity;
-<<<<<<< HEAD
-import android.os.Bundle;
-=======
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
->>>>>>> origin/master
 
 import com.sinapsi.engine.R;
 
