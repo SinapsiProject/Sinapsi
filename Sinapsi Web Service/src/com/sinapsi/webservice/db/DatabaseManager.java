@@ -87,8 +87,8 @@ public class DatabaseManager {
     /**
      * Insert new user in the db
      * 
-     * @param email
-     * @param password
+     * @param email email of the new user
+     * @param password password of the news user
      * @throws Exception 
      */
     public UserInterface newUser(String email, String password) throws Exception {
@@ -106,7 +106,7 @@ public class DatabaseManager {
             r.next();
             
             int id = r.getInt(1);
-            user = factory.newUser(id, email, email);
+            user = factory.newUser(id, email, password);
             
         } catch(SQLException e) {
             disconnect(c, s, r);
@@ -219,7 +219,7 @@ public class DatabaseManager {
     	
     	try {
     		c = connect();
-    		String query ="SELECT * FROM device WHERE iduser = (SELECT id FROM users WHERE email = ?";
+    		String query ="SELECT * FROM device WHERE iduser = (SELECT id FROM users WHERE email = ?)";
     		s = c.prepareStatement(query);
     		s.setString(1, email);
     		r = s.executeQuery();
@@ -243,24 +243,36 @@ public class DatabaseManager {
     }
 
     /**
-     * Return action by id
+     * Return the available Actions offered by a specific device
      * 
-     * @param id
-     * @return action
+     * @param idDevice id device
+     * @return list of actions
+     * @throws SQLException 
      */
-   /* public String getActionName(int id) throws SQLException {
+   /* public List<Action> getAvailableAction(int idDevice) throws SQLException {
     	Connection c = null;
     	PreparedStatement s = null;
     	ResultSet r = null;
-    	Action action = null;
+    	List<Action> actions = new ArrayList<Action>();
+    	
     	try {
     		c = connect();
+    		String query = "SELECT * FROM action WHERE id = (SELECT * FROM availableaction WHERE iddevice = ?)";
+    		s = c.prepareStatement(query);
+    		s.setInt(1, idDevice);
+    		r = s.executeQuery();
+    		
+    		while(r.next()) {
+    			int id = r.getInt("id");
+    			int minVersion = r.getInt("minversion");
+    			String name = r.getString("name");
+    		}
+    		
     	} catch(SQLException ex) {
     		disconnect(c, s, r);
     		throw ex;
     	}
-    	
     	disconnect(c, s, r);
-    	return action;
+    	return null;
     }*/
 }
