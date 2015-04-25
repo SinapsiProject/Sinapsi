@@ -2,11 +2,13 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.google.gson.Gson;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.webservice.db.DatabaseManager;
@@ -25,15 +27,25 @@ public class RegistrationServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		DatabaseManager db = new DatabaseManager();
 		response.setContentType("application/json");
+		String email = request.getParameter("email");
+		String pwd = request.getParameter("password"); 
 		
 		try {
-			String email = request.getParameter("email");
-			String pwd = request.getParameter("password"); 
-			User user = (User) db.newUser(email, pwd);
-			Gson gson = new Gson();
-			
-			out.print(gson.toJson(user)); 
-			out.flush(); 
+			// user already exist
+			if(db.checkUser(email, pwd)) {
+				User user = (User) db.getUserByEmail(email);
+				user.errorOccured(true);
+				user.setErrorDescription("User already exist");
+				Gson gson = new Gson();
+				out.print(gson.toJson(user)); 
+				out.flush(); 
+			} else {
+				User user = (User) db.newUser(email, pwd);
+				Gson gson = new Gson();
+				
+				out.print(gson.toJson(user)); 
+				out.flush(); 
+			}
 			
 		} catch(Exception e) {
 			e.printStackTrace();

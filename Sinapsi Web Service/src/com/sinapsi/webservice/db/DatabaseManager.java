@@ -249,7 +249,7 @@ public class DatabaseManager {
      * @return list of actions
      * @throws SQLException 
      */
-   /* public List<Action> getAvailableAction(int idDevice) throws SQLException {
+     public List<Action> getAvailableAction(int idDevice) throws SQLException {
     	Connection c = null;
     	PreparedStatement s = null;
     	ResultSet r = null;
@@ -266,6 +266,7 @@ public class DatabaseManager {
     			int id = r.getInt("id");
     			int minVersion = r.getInt("minversion");
     			String name = r.getString("name");
+    			
     		}
     		
     	} catch(SQLException ex) {
@@ -274,5 +275,5 @@ public class DatabaseManager {
     	}
     	disconnect(c, s, r);
     	return null;
-    }*/
+    }
 }
