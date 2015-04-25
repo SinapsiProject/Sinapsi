@@ -3,6 +3,7 @@
  */
 package com.sinapsi.model.impl;
 
+import com.sinapsi.model.ActionInterface;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.MacroInterface;
@@ -14,8 +15,8 @@ import com.sinapsi.model.UserInterface;
  */
 public class FactoryModel implements FactoryModelInterface {
 
-	/**
-	 * New user
+	/* (non-Javadoc)
+	 * @see com.sinapsi.model.FactoryModelInterface#newUser(int, java.lang.String, java.lang.String)
 	 */
 	@Override
 	public UserInterface newUser(int id, String email, String password) {
@@ -36,6 +37,14 @@ public class FactoryModel implements FactoryModelInterface {
 	@Override
 	public MacroInterface newMacro(String name, int id) {
 		return new Macro(id, name);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.sinapsi.model.FactoryModelInterface#newActionAbstraction(int, int, java.lang.String)
+	 */
+	@Override
+	public ActionInterface newActionAbstraction(int id, int minVersion, String name) {
+		return new ActionAbstraction(id, minVersion, name);
 	}
 
 }

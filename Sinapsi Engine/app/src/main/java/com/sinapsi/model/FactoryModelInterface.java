@@ -38,4 +38,13 @@ public interface FactoryModelInterface {
      */
     public MacroInterface newMacro(String name, int id);
     
+    /**
+     * Should create a new action abstract representation
+     * @param id the id of the abstract action
+     * @param minVersion min version of the abstract action
+     * @param name the name of the abstract action
+     * @return
+     */
+    public ActionInterface newActionAbstraction(int id, int minVersion, String name);
+    
 }

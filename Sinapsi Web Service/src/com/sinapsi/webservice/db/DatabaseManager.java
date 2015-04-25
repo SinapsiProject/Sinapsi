@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import java.util.List;
 
 import com.sinapsi.model.*;
+import com.sinapsi.model.impl.ActionAbstraction;
 import com.sinapsi.model.impl.FactoryModel;
 
 /**
@@ -249,11 +250,11 @@ public class DatabaseManager {
      * @return list of actions
      * @throws SQLException 
      */
-     public List<Action> getAvailableAction(int idDevice) throws SQLException {
+     public List<ActionInterface> getAvailableAction(int idDevice) throws SQLException {
     	Connection c = null;
     	PreparedStatement s = null;
     	ResultSet r = null;
-    	List<Action> actions = new ArrayList<Action>();
+    	List<ActionInterface> actions = new ArrayList<ActionInterface>();
     	
     	try {
     		c = connect();
@@ -266,7 +267,8 @@ public class DatabaseManager {
     			int id = r.getInt("id");
     			int minVersion = r.getInt("minversion");
     			String name = r.getString("name");
-    			
+    			ActionInterface action = factory.newActionAbstraction(id, minVersion, name);
+    			actions.add(action);
     		}
     		
     	} catch(SQLException ex) {
@@ -274,6 +276,6 @@ public class DatabaseManager {
     		throw ex;
     	}
     	disconnect(c, s, r);
-    	return null;
+    	return actions;
     }
 }
