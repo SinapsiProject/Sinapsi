@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import java.util.List;
 
 import com.sinapsi.model.*;
+import com.sinapsi.model.impl.FactoryModel;
 
 /**
  * This class gives a database interface to the clients, performing queries and
@@ -18,7 +19,7 @@ import com.sinapsi.model.*;
  *
  */
 public class DatabaseManager {
-    private FactoryModel factory;
+    private FactoryModelInterface factory;
     private String url;
     private String driver;
 
@@ -27,6 +28,7 @@ public class DatabaseManager {
      */
     public DatabaseManager() {
         //TODO create concrete model factory
+    	factory = new FactoryModel();
         ResourceBundle bundle = ResourceBundle.getBundle("configuration");
         url = bundle.getString("database.url");
         driver = bundle.getString("database.driver");
@@ -45,7 +47,7 @@ public class DatabaseManager {
      * @throws SQLException
      */
     private Connection connect() throws SQLException {
-        return DriverManager.getConnection(url);
+        return DriverManager.getConnection(url, "andrej", "ragnarock");
     }
 
     /**

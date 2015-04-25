@@ -25,7 +25,8 @@ public class Device extends ComunicationError implements DeviceInterface {
      * @param clientVersion the version of the Sinapsi client installed on this device
      * @param user the owner of this device
      */
-    public Device(int id, String name, String model, String type, int clientVersion, UserInterface user){
+    Device(int id, String name, String model, String type, int clientVersion, UserInterface user){
+    	super();
         this.id = id;
         this.name = name;
         this.model = model;

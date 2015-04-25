@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.webservice.db.DatabaseManager;
 
 /**
@@ -24,24 +26,36 @@ public class LoginServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("applications/json");
 		PrintWriter out = response.getWriter();
 		DatabaseManager db = new DatabaseManager();
-		
+		response.setContentType("application/json");
 		try {
 			String email = request.getParameter("email");
 			String pwd = request.getParameter("password"); 
-			if(db.checkUser(email, pwd)) {
-				Gson gson = new Gson();
-				User u = (User)db.getUserByEmail(email);
-				out.print(gson.toJson(u)); 
+			User user =  (User)db.getUserByEmail(email);
+			Gson gson = new Gson();
+			
+			
+			if (user != null) {
+				// the user is ok
+				if(db.checkUser(email, pwd)) {
+					out.print(gson.toJson(user)); 
+					out.flush(); 
+				// login error, (email incorrect or password incorrect
+				} else {
+					user.errorOccured(true);
+					user.setErrorDescription("Login error");
+					out.print(gson.toJson(user));
+					out.flush();
+				}
+			// the user doesn't exist in the db
 			} else {
-				Gson gson = new Gson();
-				User user = (User) db.newUser(email, pwd);
+				FactoryModelInterface factory = new FactoryModel();
+				user = (User) factory.newUser(0, email, pwd);
 				user.errorOccured(true);
-				user.setErrorDescription("Login error");
-				
+				user.setErrorDescription("User doest exist");
 				out.print(gson.toJson(user));
+				out.flush();	
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

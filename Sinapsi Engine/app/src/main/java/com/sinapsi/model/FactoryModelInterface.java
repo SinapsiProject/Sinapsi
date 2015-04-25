@@ -4,7 +4,7 @@ package com.sinapsi.model;
  * The default Model Factory Interface
  *
  */
-public interface FactoryModel {
+public interface FactoryModelInterface {
 
     /**
      * Should create a new instance of UserInterface
@@ -27,7 +27,7 @@ public interface FactoryModel {
      * @param version the version of the sinapsi client running on a device
      * @return a new DeviceInterface instance
      */
-    public DeviceInterface newDevice(int id, String name, String model, String type, UserInterface user, int version);
+    public DeviceInterface newDevice(int id, String name, String model, String type, UserInterface user, int clientVersion);
 
     /**
      * Should create a new instance of MacroInterface

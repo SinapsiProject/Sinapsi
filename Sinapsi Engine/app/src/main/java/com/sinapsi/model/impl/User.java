@@ -14,6 +14,13 @@ public class User extends ComunicationError implements UserInterface {
     private String email;
     private String password;
 
+    User(int Id, String mail, String pwd) {
+    	super();
+    	id = Id;
+    	password = pwd;
+    	email = mail;
+    }
+    
     /**
      * Return the id of the user
      * @return id

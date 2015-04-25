@@ -24,7 +24,8 @@ public class Macro extends ComunicationError implements MacroInterface {
      * @param id the macro's id
      * @param name the macro's name
      */
-    public Macro(int id, String name){
+   Macro(int id, String name){
+	    super();
         this.id = id;
         this.name = name;
         actions = new ArrayList<>();

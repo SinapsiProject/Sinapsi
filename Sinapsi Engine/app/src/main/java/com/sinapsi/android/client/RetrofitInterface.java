@@ -49,7 +49,7 @@ public interface RetrofitInterface {
 
     //Ok, altro esempio di login, in modo che combaci con la servlet:
 
-    @GET("/LoginServlet")
+    @GET("/login")
     public User login(@Query("email") String email,
                       @Query("password") String password);
 
