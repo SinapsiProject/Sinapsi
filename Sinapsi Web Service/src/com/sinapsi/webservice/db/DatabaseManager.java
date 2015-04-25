@@ -257,7 +257,7 @@ public class DatabaseManager {
     	
     	try {
     		c = connect();
-    		String query = "SELECT * FROM action WHERE id = (SELECT * FROM availableaction WHERE iddevice = ?)";
+    		String query = "SELECT * FROM action, availableaction WHERE action.id = availableaction.idaction AND iddevice = ?)";
     		s = c.prepareStatement(query);
     		s.setInt(1, idDevice);
     		r = s.executeQuery();
