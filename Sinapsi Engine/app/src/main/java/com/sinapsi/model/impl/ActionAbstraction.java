@@ -6,7 +6,7 @@ import com.sinapsi.model.ActionInterface;
  * Abstraction of Action, this class is not the real representation of Action object, but gives support to database manager
  * 
  */
-public class ActionAbstraction implements ActionInterface {
+public class ActionAbstraction extends ComunicationError implements ActionInterface {
 	private int id;
 	private int minVersion;
 	private String name;
@@ -15,6 +15,7 @@ public class ActionAbstraction implements ActionInterface {
 	 * Default ctor
 	 */
 	public ActionAbstraction(int ID, int minVer, String n) {
+		super();
 		id = ID;
 		minVersion = minVer;
 		name = n;

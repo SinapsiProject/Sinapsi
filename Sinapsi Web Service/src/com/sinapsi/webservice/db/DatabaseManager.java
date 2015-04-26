@@ -220,7 +220,7 @@ public class DatabaseManager {
     	
     	try {
     		c = connect();
-    		String query ="SELECT * FROM device WHERE iduser = (SELECT id FROM users WHERE email = ?)";
+    		String query ="SELECT * FROM device, users WHERE device.iduser = users.id and email = ?)";
     		s = c.prepareStatement(query);
     		s.setString(1, email);
     		r = s.executeQuery();
