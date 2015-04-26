@@ -7,6 +7,7 @@ import com.sinapsi.model.ActionInterface;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.TriggerInterface;
 import com.sinapsi.model.UserInterface;
 
 /**
@@ -45,6 +46,14 @@ public class FactoryModel implements FactoryModelInterface {
 	@Override
 	public ActionInterface newActionAbstraction(int id, int minVersion, String name) {
 		return new ActionAbstraction(id, minVersion, name);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.sinapsi.model.FactoryModelInterface#newTriggerAbstraction(int, int, java.lang.String)
+	 */
+	@Override
+	public TriggerInterface newTriggerAbstraction(int id, int minVersion, String name) {
+		return new TriggerAbstraction(id, minVersion, name);
 	}
 
 }

@@ -1,12 +1,12 @@
 package com.sinapsi.model.impl;
 
-import com.sinapsi.model.ActionInterface;
+import com.sinapsi.model.TriggerInterface;
 
 /**
- * Abstraction of Action, this class is not the real representation of Action object, but gives support to database manager
+ * Abstraction of Trigger, this class is not the real representation of Trigger object, but gives support to database manager
  * 
  */
-public class ActionAbstraction extends ComunicationError implements ActionInterface {
+public class TriggerAbstraction extends ComunicationError implements TriggerInterface {
 	private int id;
 	private int minVersion;
 	private String name;
@@ -14,7 +14,7 @@ public class ActionAbstraction extends ComunicationError implements ActionInterf
 	/**
 	 * Default ctor
 	 */
-	public ActionAbstraction(int ID, int minVer, String n) {
+	public TriggerAbstraction(int ID, int minVer, String n) {
 		super();
 		id = ID;
 		minVersion = minVer;

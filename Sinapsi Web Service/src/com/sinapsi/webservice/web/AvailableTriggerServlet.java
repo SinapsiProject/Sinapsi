@@ -2,7 +2,6 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,19 +10,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.sinapsi.model.ActionInterface;
+import com.sinapsi.model.TriggerInterface;
 import com.sinapsi.webservice.db.DatabaseManager;
 
 /**
- * Servlet implementation class AvailableActionServlet
+ * Servlet implementation class AvailableTriggerServlet
  */
-@WebServlet("/available_actions")
-public class AvailableActionServlet extends HttpServlet {
+@WebServlet("/available_triggers")
+public class AvailableTriggerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -36,9 +32,9 @@ public class AvailableActionServlet extends HttpServlet {
 		int idDevice = Integer.parseInt(request.getParameter("device"));
 		
 		try {
-			List<ActionInterface> actions = db.getAvailableAction(idDevice);
+			List<TriggerInterface> triggers = db.getAvailableTrigger(idDevice);
 			Gson gson = new Gson();
-			out.print(gson.toJson(actions)); 
+			out.print(gson.toJson(triggers)); 
 			out.flush(); 
 		} catch(Exception ex) {
 			ex.printStackTrace();
@@ -49,7 +45,7 @@ public class AvailableActionServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		// TODO Auto-generated method stub
 	}
 
 }

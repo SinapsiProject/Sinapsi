@@ -47,4 +47,13 @@ public interface FactoryModelInterface {
      */
     public ActionInterface newActionAbstraction(int id, int minVersion, String name);
     
+    /**
+     * Should create a new trigger abstract representation
+     * @param id the id of the abstract trigger
+     * @param minVersion min version of the abstract trigger
+     * @param name the name of the abstract trigger
+     * @return
+     */
+    public TriggerInterface newTriggerAbstraction(int id, int minVersion, String name);
+    
 }

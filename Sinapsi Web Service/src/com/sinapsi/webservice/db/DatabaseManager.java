@@ -220,7 +220,7 @@ public class DatabaseManager {
     	
     	try {
     		c = connect();
-    		String query ="SELECT * FROM device, users WHERE device.iduser = users.id and email = ?)";
+    		String query ="SELECT * FROM device, users WHERE device.iduser = users.id and email = ?";
     		s = c.prepareStatement(query);
     		s.setString(1, email);
     		r = s.executeQuery();
@@ -258,7 +258,7 @@ public class DatabaseManager {
     	
     	try {
     		c = connect();
-    		String query = "SELECT * FROM action, availableaction WHERE action.id = availableaction.idaction AND iddevice = ?)";
+    		String query = "SELECT * FROM action, availableaction WHERE action.id = availableaction.idaction AND iddevice = ?";
     		s = c.prepareStatement(query);
     		s.setInt(1, idDevice);
     		r = s.executeQuery();
@@ -278,4 +278,39 @@ public class DatabaseManager {
     	disconnect(c, s, r);
     	return actions;
     }
+
+    /**
+     * Return the available Trigegrs offered by a specific device
+     * @param idDevice
+     * @return
+     * @throws SQLException 
+     */
+	public List<TriggerInterface> getAvailableTrigger(int idDevice) throws SQLException {
+		Connection c = null;
+    	PreparedStatement s = null;
+    	ResultSet r = null;
+    	List<TriggerInterface> triggers = new ArrayList<TriggerInterface>();
+    	
+    	try {
+    		c = connect();
+    		String query = "SELECT * FROM trigger, availabletrigger WHERE trigger.id = availabletrigger.idtrigger AND iddevice = ?";
+    		s = c.prepareStatement(query);
+    		s.setInt(1, idDevice);
+    		r = s.executeQuery();
+    		
+    		while(r.next()) {
+    			int id = r.getInt("id");
+    			int minVersion = r.getInt("minversion");
+    			String name = r.getString("name");
+    			TriggerInterface trigger = factory.newTriggerAbstraction(id, minVersion, name);
+    			triggers.add(trigger);
+    		}
+    		
+    	} catch(SQLException ex) {
+    		disconnect(c, s, r);
+    		throw ex;
+    	}
+    	disconnect(c, s, r);
+    	return triggers;
+	}
 }
