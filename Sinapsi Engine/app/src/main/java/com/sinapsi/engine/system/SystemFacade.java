@@ -68,6 +68,7 @@ public class SystemFacade {
      */
     public boolean checkRequirements(MacroComponent component){
         HashMap<String, Integer> requirements = component.getSystemRequirementKeys();
+        if(requirements==null) return true;
         for(String s :requirements.keySet()){
             if(!checkRequirement(s,requirements.get(s)))
                 return false;
