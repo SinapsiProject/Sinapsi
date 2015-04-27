@@ -115,6 +115,7 @@ public class SystemFacade {
     public static final String REQUIREMENT_WIFI = "REQUIREMENT_WIFI";
     public static final String REQUIREMENT_SMS_READ = "REQUIREMENT_SMS_READ";
     public static final String REQUIREMENT_SMS_SEND = "REQUIREMENT_SMS_SEND";
+    public static final String REQUIREMENT_LUA = "REQUIREMENT_LUA";
 
 
     public static final String SERVICE_WIFI = "SERVICE_WIFI";
