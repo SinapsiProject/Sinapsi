@@ -140,7 +140,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
             WebServiceFacade wsf = new WebServiceFacade();
-            wsf.getRetrofit().login("pippo", "pinco", new Callback<User>() {
+            wsf.getRetrofit().login(email, password, new Callback<User>() {
                 @Override
                 public void success(User user, Response response) {
                     if(user.isErrorOccured()){
@@ -189,7 +189,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     }
 
     private boolean isPasswordValid(String password) {
-        return password.length() > 8;
+        return password.length() >= 8;
     }
 
     /**
