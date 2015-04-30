@@ -5,6 +5,7 @@ import com.sinapsi.model.impl.User;
 
 import java.util.List;
 
+import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -22,16 +23,19 @@ public interface RetrofitInterface {
      * sia "http://www.sinapsi.com" (per vedere come questa viene
      * prefissa vedere WebServiceFacade), e che l'email passata sia
      * "banane@ananas.org" allora la richiesta HTTP finale sara':
-     * "GET http://www.sinapsi.com/devices?action=getAllDevicesByUser&email=banane%40ananas.org"
+     * "GET http://www.sinapsi.com/devices_connected?email=banane%40ananas.org"
      * @param email
      * @return
      */
-    @GET("/devices?action=getAllDevicesByUser")
+    @GET("/devices_connected")
     public List<DeviceInterface> getAllDevicesByUser(
-            @Query(value = "email") String email);
-    //TODO: ^^ this should be also a POST request and the
-    //TODO: authentication token returned by loginUser()
-    //TODO: must be sent as encrypted body
+            @Query("email") String email);
+
+    @POST("/devices_connected")
+    public List<DeviceInterface> getAllDevicesByUser(
+            @Query("email") String email,
+            @Body String authToken);
+
 
 
     /**
@@ -48,10 +52,10 @@ public interface RetrofitInterface {
 
 
     //Ok, altro esempio di login, in modo che combaci con la servlet:
-
     @GET("/login")
-    public User login(@Query("email") String email,
-                      @Query("password") String password);
+    public void login(@Query("email") String email,
+                      @Query("password") String password,
+                      Callback<User> cb);
 
 
 }

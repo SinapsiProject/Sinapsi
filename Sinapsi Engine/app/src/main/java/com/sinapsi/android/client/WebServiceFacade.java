@@ -1,10 +1,14 @@
 package com.sinapsi.android.client;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.sinapsi.android.AppConsts;
 import com.sinapsi.model.DeviceInterface;
 
 import java.util.List;
 
 import retrofit.RestAdapter;
+import retrofit.converter.GsonConverter;
 
 /**
  * WebService draft class.
@@ -13,19 +17,19 @@ import retrofit.RestAdapter;
  * variable.
  */
 public class WebServiceFacade {
+
+
     private RetrofitInterface retrofit;
 
     public WebServiceFacade() {
-        String exampleUrl = "http://www.sinapsi.com";
 
-        //TODO: set a GSON converter with type adapters to convert
-        //TODO:     json strings to Sinapsi model objects. Then
-        //TODO:     add it to restAdapter by calling setConverter()
+        Gson gson = new GsonBuilder().create();
 
         //crea un nuovo rest adapter con le impostazioni di
         //default e l'url come endpoint
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(exampleUrl)
+                .setEndpoint(AppConsts.SINAPSI_URL)
+                .setConverter(new GsonConverter(gson))
                 .build();
 
         //tramite la java reflection e le annotazioni, restAdapter
@@ -35,9 +39,7 @@ public class WebServiceFacade {
         retrofit = restAdapter.create(RetrofitInterface.class);
     }
 
-    public void exampleCall(){
-        List<DeviceInterface> devices= retrofit.getAllDevicesByUser("banana@ananas.com");
-
-        //do something
+    public RetrofitInterface getRetrofit() {
+        return retrofit;
     }
 }
