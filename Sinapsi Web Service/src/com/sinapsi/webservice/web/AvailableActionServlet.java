@@ -1,5 +1,6 @@
 package com.sinapsi.webservice.web;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.ActionInterface;
 import com.sinapsi.webservice.db.DatabaseManager;
 
@@ -49,7 +51,23 @@ public class AvailableActionServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		StringBuffer jb = new StringBuffer();
+		String line = null;
+		Gson gson = new Gson();
+		try {
+			BufferedReader reader = request.getReader();
+		    while ((line = reader.readLine()) != null)
+		      jb.append(line);
+		    
+		} catch (Exception e) { 
+			e.printStackTrace(); 
+		}
 
+		String jsonstring = jb.toString();
+		//DEBUG
+		System.out.println(jsonstring);
+		ArrayList<ActionInterface> list = gson.fromJson(jsonstring, new TypeToken<ArrayList<ActionInterface>>(){}.getType());
+		System.out.println(list.size());
 	}
 
 }
