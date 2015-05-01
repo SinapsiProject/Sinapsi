@@ -23,14 +23,24 @@ public class WelcomeActivity extends Activity {
         setContentView(R.layout.welcome_layout);
 
         TextView signUp = (TextView) findViewById(R.id.signUp_text);
-        final Intent login = new Intent(this, LoginActivity.class);
-        //login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        final Intent register = new Intent(this, RegisterActivity.class);
 
         signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(register, 0);
+            }
+        });
+
+
+        TextView signIn = (TextView) findViewById(R.id.signIn_text);
+        final Intent login = new Intent(this, LoginActivity.class);
+        signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivityForResult(login, 0);
             }
         });
+
     }
 }

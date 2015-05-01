@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * TODO: doku
  */
-public class ComponentLoader {
+public class  ComponentLoader {
 
     private Class<? extends MacroComponent>[] classes;
 

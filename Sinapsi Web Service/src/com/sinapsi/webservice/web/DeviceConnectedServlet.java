@@ -16,7 +16,7 @@ import com.sinapsi.webservice.db.DatabaseManager;
 
 /**
  * Servlet implementation class DeviceConnectedServlet
- */
+ */ 
 @WebServlet("/devices_connected")
 public class DeviceConnectedServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;

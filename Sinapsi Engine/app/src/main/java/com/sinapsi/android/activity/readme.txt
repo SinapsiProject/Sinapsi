@@ -1,1 +1,0 @@
-package for android activities
