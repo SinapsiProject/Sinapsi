@@ -9,9 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.List;
-
 import com.sinapsi.model.*;
-import com.sinapsi.model.impl.ActionAbstraction;
 import com.sinapsi.model.impl.FactoryModel;
 
 /**
@@ -28,8 +26,7 @@ public class DatabaseManager {
      * Class constructor
      */
     public DatabaseManager() {
-        //TODO create concrete model factory
-    	factory = new FactoryModel();
+        factory = new FactoryModel();
         ResourceBundle bundle = ResourceBundle.getBundle("configuration");
         url = bundle.getString("database.url");
         driver = bundle.getString("database.driver");
@@ -43,7 +40,6 @@ public class DatabaseManager {
 
     /**
      * Establish connection to the db
-     * 
      * @return Connection object
      * @throws SQLException
      */
@@ -53,7 +49,6 @@ public class DatabaseManager {
 
     /**
      * Disconnect from the db
-     * 
      * @param c Connection object
      * @param s Statement object
      */
@@ -63,7 +58,6 @@ public class DatabaseManager {
 
     /**
      * Disconnect from the db
-     * 
      * @param c Connection object
      * @param s Statement object
      * @param r Resultset object
@@ -87,13 +81,12 @@ public class DatabaseManager {
 
     /**
      * Insert new user in the db
-     * 
      * @param email email of the new user
      * @param password password of the news user
-     * @throws Exception 
+     * @throws Exception
      */
     public UserInterface newUser(String email, String password) throws Exception {
-        Connection c = null; 
+        Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
         UserInterface user = null;
@@ -105,11 +98,11 @@ public class DatabaseManager {
             s.execute();
             r = s.getGeneratedKeys();
             r.next();
-            
+
             int id = r.getInt(1);
             user = factory.newUser(id, email, password);
-            
-        } catch(SQLException e) {
+
+        } catch (SQLException e) {
             disconnect(c, s, r);
             throw e;
         }
@@ -118,11 +111,10 @@ public class DatabaseManager {
     }
 
     /**
-     * Check if exist a user in the db with email and password 
-     * 
-     * @param email
-     * @param passowrd
-     * @throws Exception 
+     * Check if exist a user in the db with email and password
+     * @param email email to check
+     * @param passowrd password to check
+     * @throws Exception
      */
     public boolean checkUser(String email, String password) throws Exception {
         Connection c = null;
@@ -134,183 +126,180 @@ public class DatabaseManager {
             s = c.prepareStatement("SELECT * FROM users WHERE email = ?");
             s.setString(1, email);
             r = s.executeQuery();
-            if(r.next()) {
-                // true if the password match the hash of the stored password, false otherwise
-                passwordMatch =  Password.check(password, r.getString("password"));
+            if (r.next()) {
+                // true if the password match the hash of the stored password,
+                // false otherwise
+                passwordMatch = Password.check(password, r.getString("password"));
             }
-        }catch(SQLException ex) {
+        } catch (SQLException ex) {
             disconnect(c, s, r);
             throw ex;
         }
         disconnect(c, s, r);
         return passwordMatch;
     }
-    
+
     /**
      * Return user by id
-     * 
      * @param id id of the user
-     * @return user
-     * @throws SQLException 
-     */
-    public UserInterface getUserById(int id) throws SQLException {
-    	 Connection c = null;
-         PreparedStatement s = null;
-         ResultSet r = null;
-         UserInterface user = null;
-         
-         try {
-             c = connect();
-             s = c.prepareStatement("SELECT * FROM users WHERE id = ?");
-             s.setInt(1, id);
-             r = s.executeQuery();
-             if(r.next()) 
-                 user = factory.newUser(id, r.getString("email"), r.getString("password"));
-             
-         }catch(SQLException ex) {
-             disconnect(c, s, r);
-             throw ex;
-         }
-         disconnect(c, s, r);
-         return user;
-    }
-    
-    /**
-     * Return user by email
-     * 
-     * @param email
-     * @return user
+     * @return user user to return
      * @throws SQLException
      */
-    public UserInterface getUserByEmail(String email) throws SQLException {
-   	 Connection c = null;
+    public UserInterface getUserById(int id) throws SQLException {
+        Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
         UserInterface user = null;
-        
+
         try {
             c = connect();
-            s = c.prepareStatement("SELECT * FROM users WHERE email = ?");
-            s.setString(1, email);
+            s = c.prepareStatement("SELECT * FROM users WHERE id = ?");
+            s.setInt(1, id);
             r = s.executeQuery();
-            if(r.next()) 
-                user = factory.newUser(r.getInt("id"), email, r.getString("password"));
-            
-        }catch(SQLException ex) {
+            if (r.next())
+                user = factory.newUser(id, r.getString("email"), r.getString("password"));
+
+        } catch (SQLException ex) {
             disconnect(c, s, r);
             throw ex;
         }
         disconnect(c, s, r);
         return user;
-   }
-    
+    }
+
+    /**
+     * Return user by email
+     * @param email email of the user 
+     * @return user to return
+     * @throws SQLException
+     */
+    public UserInterface getUserByEmail(String email) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        UserInterface user = null;
+
+        try {
+            c = connect();
+            s = c.prepareStatement("SELECT * FROM users WHERE email = ?");
+            s.setString(1, email);
+            r = s.executeQuery();
+            if (r.next())
+                user = factory.newUser(r.getInt("id"), email, r.getString("password"));
+
+        } catch (SQLException ex) {
+            disconnect(c, s, r);
+            throw ex;
+        }
+        disconnect(c, s, r);
+        return user;
+    }
+
     /**
      * Return all device linked to user email
-     * 
      * @param email email of user
      * @return list of devices
-     * @throws SQLException 
+     * @throws SQLException
      */
     public List<DeviceInterface> getUserDevices(String email) throws SQLException {
-    	UserInterface user =  getUserByEmail(email);
-    	Connection c = null;
-    	PreparedStatement s = null;
-    	ResultSet r = null;
-    	List<DeviceInterface> devices = new ArrayList<DeviceInterface>();
-    	
-    	try {
-    		c = connect();
-    		String query ="SELECT * FROM device, users WHERE device.iduser = users.id and email = ?";
-    		s = c.prepareStatement(query);
-    		s.setString(1, email);
-    		r = s.executeQuery();
-    		
-    		while(r.next()) {
-    			int id = r.getInt("id");
-    			String name = r.getString("name");
-    			String model = r.getString("model");
-    			String type = r.getString("type");
-    			int version = r.getInt("version");
-    			DeviceInterface device = factory.newDevice(id, name, model, type, user, version);
-    			devices.add(device);
-    		}
-    		
-    	} catch(SQLException ex) {
-    		disconnect(c, s, r);
-    		throw ex;
-    	}
-    	disconnect(c, s, r);
-    	return devices;
+        UserInterface user = getUserByEmail(email);
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<DeviceInterface> devices = new ArrayList<DeviceInterface>();
+
+        try {
+            c = connect();
+            String query = "SELECT * FROM device, users WHERE device.iduser = users.id and email = ?";
+            s = c.prepareStatement(query);
+            s.setString(1, email);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                int id = r.getInt("id");
+                String name = r.getString("name");
+                String model = r.getString("model");
+                String type = r.getString("type");
+                int version = r.getInt("version");
+                DeviceInterface device = factory.newDevice(id, name, model, type, user, version);
+                devices.add(device);
+            }
+
+        } catch (SQLException ex) {
+            disconnect(c, s, r);
+            throw ex;
+        }
+        disconnect(c, s, r);
+        return devices;
     }
 
     /**
      * Return the available Actions offered by a specific device
-     * 
      * @param idDevice id device
      * @return list of actions
-     * @throws SQLException 
+     * @throws SQLException
      */
-     public List<ActionInterface> getAvailableAction(int idDevice) throws SQLException {
-    	Connection c = null;
-    	PreparedStatement s = null;
-    	ResultSet r = null;
-    	List<ActionInterface> actions = new ArrayList<ActionInterface>();
-    	
-    	try {
-    		c = connect();
-    		String query = "SELECT * FROM action, availableaction WHERE action.id = availableaction.idaction AND iddevice = ?";
-    		s = c.prepareStatement(query);
-    		s.setInt(1, idDevice);
-    		r = s.executeQuery();
-    		
-    		while(r.next()) {
-    			int id = r.getInt("id");
-    			int minVersion = r.getInt("minversion");
-    			String name = r.getString("name");
-    			ActionInterface action = factory.newActionAbstraction(id, minVersion, name);
-    			actions.add(action);
-    		}
-    		
-    	} catch(SQLException ex) {
-    		disconnect(c, s, r);
-    		throw ex;
-    	}
-    	disconnect(c, s, r);
-    	return actions;
+    public List<ActionInterface> getAvailableAction(int idDevice) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<ActionInterface> actions = new ArrayList<ActionInterface>();
+
+        try {
+            c = connect();
+            String query = "SELECT * FROM action, availableaction WHERE action.id = availableaction.idaction AND iddevice = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idDevice);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                int id = r.getInt("id");
+                int minVersion = r.getInt("minversion");
+                String name = r.getString("name");
+                ActionInterface action = factory.newActionAbstraction(id, minVersion, name);
+                actions.add(action);
+            }
+
+        } catch (SQLException ex) {
+            disconnect(c, s, r);
+            throw ex;
+        }
+        disconnect(c, s, r);
+        return actions;
     }
 
     /**
      * Return the available Trigegrs offered by a specific device
-     * @param idDevice
-     * @return
-     * @throws SQLException 
+     * @param idDevice id of the device
+     * @return list of trigger
+     * @throws SQLException
      */
-	public List<TriggerInterface> getAvailableTrigger(int idDevice) throws SQLException {
-		Connection c = null;
-    	PreparedStatement s = null;
-    	ResultSet r = null;
-    	List<TriggerInterface> triggers = new ArrayList<TriggerInterface>();
-    	
-    	try {
-    		c = connect();
-    		String query = "SELECT * FROM trigger, availabletrigger WHERE trigger.id = availabletrigger.idtrigger AND iddevice = ?";
-    		s = c.prepareStatement(query);
-    		s.setInt(1, idDevice);
-    		r = s.executeQuery();
-    		
-    		while(r.next()) {
-    			int id = r.getInt("id");
-    			int minVersion = r.getInt("minversion");
-    			String name = r.getString("name");
-    			TriggerInterface trigger = factory.newTriggerAbstraction(id, minVersion, name);
-    			triggers.add(trigger);
-    		}
-    		
-    	} catch(SQLException ex) {
-    		disconnect(c, s, r);
-    		throw ex;
-    	}
-    	disconnect(c, s, r);
-    	return triggers;
-	}
+    public List<TriggerInterface> getAvailableTrigger(int idDevice) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<TriggerInterface> triggers = new ArrayList<TriggerInterface>();
+
+        try {
+            c = connect();
+            String query = "SELECT * FROM trigger, availabletrigger WHERE trigger.id = availabletrigger.idtrigger AND iddevice = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idDevice);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                int id = r.getInt("id");
+                int minVersion = r.getInt("minversion");
+                String name = r.getString("name");
+                TriggerInterface trigger = factory.newTriggerAbstraction(id, minVersion, name);
+                triggers.add(trigger);
+            }
+
+        } catch (SQLException ex) {
+            disconnect(c, s, r);
+            throw ex;
+        }
+        disconnect(c, s, r);
+        return triggers;
+    }
 }
