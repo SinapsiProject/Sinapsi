@@ -1,6 +1,6 @@
 package com.sinapsi.engine.components;
 
-import com.sinapsi.engine.ExecutionInterface;
+import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.parameters.FormalParamBuilder;
@@ -25,7 +25,7 @@ public class ActionSetVariable extends Action {
     public static final int ACTION_SET_VARIABLE_ID = 4;
 
     @Override
-    public void activate(ExecutionInterface di) {
+    public void activate(final ExecutionInterface di) {
         JSONObject pjo = getParamsObj(params);
         String strname = null;
         String strscope = null;

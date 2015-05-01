@@ -1,7 +1,7 @@
 package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.Event;
-import com.sinapsi.engine.ExecutionInterface;
+import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.Trigger;

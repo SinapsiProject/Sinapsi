@@ -1,6 +1,6 @@
 package com.sinapsi.model;
 
-import com.sinapsi.engine.ExecutionInterface;
+import com.sinapsi.engine.execution.ExecutionInterface;
 
 import java.util.List;
 

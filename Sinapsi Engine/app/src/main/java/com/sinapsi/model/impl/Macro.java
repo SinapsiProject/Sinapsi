@@ -1,6 +1,7 @@
 package com.sinapsi.model.impl;
 
-import com.sinapsi.engine.ExecutionInterface;
+import com.sinapsi.engine.execution.ActionListExecution;
+import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.Trigger;
@@ -99,16 +100,12 @@ public class Macro extends ComunicationError implements MacroInterface {
      * Starts the execution of the macro. This method
      * should be called on a separate thread, in order
      * to multiple macros to be executed concurrently.
-     * @param sf the device where the macro starts the
-     *           execution.
+     * @param sf the execution interface representing
+     *           this macro's execution.
      */
     @Override
     public void execute(ExecutionInterface sf) {
-        //TODO: create the concept of "macro execution" and implement
-        //TODO: it in a class. Could be useful for async actions, either
-        //TODO: to stop and restart the execution of the macro.
-        for(Action a: actions){
-            a.activate(sf);
-        }
+        sf.pushScope(new ActionListExecution(actions));
+        sf.execute();
     }
 }

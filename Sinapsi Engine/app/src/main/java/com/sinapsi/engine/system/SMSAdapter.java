@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Interface used to adapt various system calls
- * to get wifi infos or manage wifi status or connections.
+ * to send or read SMSs.
  */
 public interface SMSAdapter{
 

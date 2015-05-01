@@ -1,6 +1,6 @@
 package com.sinapsi.engine.components;
 
-import com.sinapsi.engine.ExecutionInterface;
+import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.parameters.FormalParamBuilder;
@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
@@ -31,7 +30,7 @@ public class ActionLuaScript extends Action{
     public static final int ACTION_LUA_SCRIPT_ID = 3; //TODO: reorganize ids
 
     @Override
-    public void activate(ExecutionInterface di) {
+    public void activate(final ExecutionInterface di) {
         String scriptText;
         JSONObject pjo = getParamsObj(params);
         try{

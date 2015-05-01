@@ -2,7 +2,7 @@ package com.sinapsi.model;
 
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
-import com.sinapsi.engine.ExecutionInterface;
+import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.model.parameters.StringMatchingModeChoices;
 

@@ -1,6 +1,6 @@
 package com.sinapsi.engine.components;
 
-import com.sinapsi.engine.ExecutionInterface;
+import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SMSAdapter;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.Action;
@@ -28,7 +28,7 @@ public class ActionSendSMS extends Action {
     public static final String ACTION_SEND_SMS = "ACTION_SEND_SMS";
 
     @Override
-    public void activate(ExecutionInterface di) {
+    public void activate(final ExecutionInterface di) {
         SMSAdapter sa = (SMSAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_SMS);
         JSONObject pjo = getParamsObj(params);
         SMSAdapter.Sms sms = new SMSAdapter.Sms();
