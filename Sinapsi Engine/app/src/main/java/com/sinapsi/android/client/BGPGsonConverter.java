@@ -41,7 +41,7 @@ public class BGPGsonConverter extends GsonConverter {
             cryptedPair =  myGson.fromJson(
                     inStrReader,
                     new TypeToken<HashMap.SimpleEntry<String,String>>(){}.getType());
-
+            
             //
             //TODO: decrypt str from the crypted pair using bgp library
             String uncryptedStr = cryptedPair.getValue();
