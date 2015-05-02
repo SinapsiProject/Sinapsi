@@ -29,7 +29,7 @@ public class WebServiceFacade {
         //default e l'url come endpoint
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
-                .setConverter(new GsonConverter(gson))
+                .setConverter(new BGPGsonConverter(gson))
                 .build();
 
         //tramite la java reflection e le annotazioni, restAdapter

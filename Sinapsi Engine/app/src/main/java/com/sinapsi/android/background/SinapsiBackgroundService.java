@@ -54,7 +54,7 @@ public class SinapsiBackgroundService extends Service {
                     di.getId(),
                     new RemoteExecutionDescriptor(
                             ei.getLocalVars(),
-                            ei.getExecutionStack()));
+                            ei.getExecutionStackIndexes()));
         }
     };
 

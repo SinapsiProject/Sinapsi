@@ -11,18 +11,18 @@ import java.util.Deque;
  */
 public class RemoteExecutionDescriptor {
     private VariableManager localVariables;
-    private Deque<ActionListExecution> stack;
+    private Deque<Integer> indexes;
 
-    public RemoteExecutionDescriptor(VariableManager localVariables, Deque<ActionListExecution> stack){
+    public RemoteExecutionDescriptor(VariableManager localVariables, Deque<Integer> PCstack){
         this.localVariables = localVariables;
-        this.stack = stack;
+        this.indexes = PCstack;
     }
 
     public VariableManager getLocalVariables(){
         return localVariables;
     }
 
-    public Deque<ActionListExecution> getStack(){
-        return stack;
+    public Deque<Integer> getStack(){
+        return indexes;
     }
 }

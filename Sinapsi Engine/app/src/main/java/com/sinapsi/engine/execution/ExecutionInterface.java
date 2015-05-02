@@ -9,6 +9,7 @@ import com.sinapsi.model.MacroInterface;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 
 /**
  * Collection of objects and utilities needed to control execution of
@@ -252,11 +253,11 @@ public class ExecutionInterface {
      * Call this to continue the execution of a remote macro on this device,
      * on this Execution interface.
      * @param localVars the updated localVariables
-     * @param stack the updated execution stack
+     * @param indexes the updated execution stack indexes
      */
-    public void continueExecutionFromRemote(VariableManager localVars, Deque<ActionListExecution> stack){
+    public void continueExecutionFromRemote(VariableManager localVars, Deque<Integer> indexes){
         this.localVars = localVars;
-        this.stack = stack;
+        //TODO: unfold the execution stack from the indexes
         execute();
     }
 
@@ -267,5 +268,19 @@ public class ExecutionInterface {
      */
     public Deque<ActionListExecution> getExecutionStack() {
         return stack;
+    }
+
+    /**
+     * returns a stack of integers containing all the program counters of the execution stack
+     * @return the stack
+     */
+    public Deque<Integer> getExecutionStackIndexes() {
+        Deque<Integer> result = new ArrayDeque<>();
+        Iterator<ActionListExecution> iale = stack.descendingIterator();
+        while(iale.hasNext()){
+            ActionListExecution ale = iale.next();
+            result.push(ale.getCounter());
+        }
+        return result;
     }
 }
