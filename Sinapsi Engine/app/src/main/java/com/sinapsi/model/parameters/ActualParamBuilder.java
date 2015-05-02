@@ -33,10 +33,13 @@ public class ActualParamBuilder {
      * @param value the value of the parameter
      * @return the invocation object itself, to allow method
      *         chaining.
-     * @throws JSONException
      */
-    public ActualParamBuilder put(String name, String value) throws JSONException{
-        par.put(name, value);
+    public ActualParamBuilder put(String name, String value){
+        try {
+            par.put(name, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -46,10 +49,13 @@ public class ActualParamBuilder {
      * @param value the value of the parameter
      * @return the invocation object itself, to allow method
      *         chaining.
-     * @throws JSONException
      */
-    public ActualParamBuilder put(String name, Boolean value) throws JSONException{
-        par.put(name, value);
+    public ActualParamBuilder put(String name, Boolean value){
+        try {
+            par.put(name, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -59,10 +65,13 @@ public class ActualParamBuilder {
      * @param value the value of the parameter
      * @return the invocation object itself, to allow method
      *         chaining.
-     * @throws JSONException
      */
-    public ActualParamBuilder put(String name, Integer value) throws JSONException{
-        par.put(name, value);
+    public ActualParamBuilder put(String name, Integer value){
+        try {
+            par.put(name, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -73,25 +82,32 @@ public class ActualParamBuilder {
      * @param matchingMode the matching mode of this string
      * @return the invocation object itself, to allow method
      *         chaining.
-     * @throws JSONException
      */
     public ActualParamBuilder put(String name,
                                   String value,
-                                  StringMatchingModeChoices matchingMode)
-                                  throws JSONException{
-        par.put(name, new JSONObject()
-                .put("advancedType", FormalParamBuilder.Types.STRING_ADVANCED.toString())
-                .put("value", value)
-                .put("matchingMode", matchingMode.toString()));
+                                  StringMatchingModeChoices matchingMode){
+        try {
+            par.put(name, new JSONObject()
+                    .put("advancedType", FormalParamBuilder.Types.STRING_ADVANCED.toString())
+                    .put("value", value)
+                    .put("matchingMode", matchingMode.toString()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
     /**
      * Creates a new JSONObject containing infos about the parameters.
      * @return the JSONObject
-     * @throws JSONException
+     *
      */
-    public JSONObject create() throws JSONException {
-        return obj.put("parameters", par);
+    public JSONObject create(){
+        try {
+            obj.put("parameters", par);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj;
     }
 }

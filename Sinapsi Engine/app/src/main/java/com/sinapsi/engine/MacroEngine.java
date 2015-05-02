@@ -12,6 +12,7 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.engine.components.ActionWifiState;
 import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerWifi;
+import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.Macro;
 
 import java.util.Collection;
@@ -29,7 +30,7 @@ public class MacroEngine {
     private ComponentFactory factory;
     private SinapsiLog log;
 
-    private HashMap<String,Macro> macros = new HashMap<>();
+    private HashMap<String,MacroInterface> macros = new HashMap<>();
     //private HashMap<String,Variable> engineVariables = new HashMap<>(); //TODO: for macro variables
 
     /**
@@ -111,7 +112,7 @@ public class MacroEngine {
      * and starts listening for system events.
      * @param m the macro
      */
-    public void addMacro(Macro m){
+    public void addMacro(MacroInterface m){
         m.getTrigger().register(activator);
         macros.put(m.getName(), m);
         log.log("MACROENGINE", "Added macro " + m.getId() + ":'" + m.getName()+"' to the engine");
@@ -122,8 +123,8 @@ public class MacroEngine {
      * macros, registering every trigger on the ActivationManager.
      * @param lm the collection of macros
      */
-    public void addMacros(Collection<Macro> lm){
-        for(Macro m: lm){
+    public void addMacros(Collection<MacroInterface> lm){
+        for(MacroInterface m: lm){
             addMacro(m);
         }
         log.log("MACROENGINE", "Added " + lm.size() + " macros to the engine");

@@ -36,6 +36,12 @@
             android:name="com.sinapsi.android.activity.MacroManagerActivity"
             android:label="@string/title_activity_macro_manager" >
         </activity>
+
+        <service
+            android:name="com.sinapsi.android.background.SinapsiBackgroundService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

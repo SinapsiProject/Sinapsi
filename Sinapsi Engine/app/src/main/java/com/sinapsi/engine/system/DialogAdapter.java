@@ -25,8 +25,8 @@ public interface DialogAdapter {
      *              chooses no
      */
     public void showSimpleConfirmDialog(String message,
-                                        OnDialogChoiceListener onYes,
-                                        OnDialogChoiceListener onNo);
+                                        final OnDialogChoiceListener onYes,
+                                        final OnDialogChoiceListener onNo);
 
     //TODO: add more types of dialogs ( be creative!!! ;) )
 }
