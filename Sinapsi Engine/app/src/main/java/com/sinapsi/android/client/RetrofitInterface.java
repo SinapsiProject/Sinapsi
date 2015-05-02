@@ -1,5 +1,6 @@
 package com.sinapsi.android.client;
 
+import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.impl.User;
 
@@ -17,6 +18,8 @@ import retrofit.http.Query;
  * with mockup RetroFit annotations.
  */
 public interface RetrofitInterface {
+
+    //TODO: eliminare esempi e mettere i veri metodi
 
     /**
      * Esempio di una GET request. Immaginando che la url del server
@@ -56,6 +59,15 @@ public interface RetrofitInterface {
     public void login(@Query("email") String email,
                       @Query("password") String password,
                       Callback<User> cb);
+
+    /**
+     * Call this method to continue the execution of a macro on another device.
+     * @param id the device id
+     * @param red the remote execution descriptor
+     */
+    @POST("/continue_macro")
+    public void continueMacroOnDevice(@Query("device_id") int id,
+                                      @Body RemoteExecutionDescriptor red);
 
 
 }

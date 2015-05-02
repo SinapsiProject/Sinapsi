@@ -7,6 +7,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.sinapsi.android.Lol;
+import com.sinapsi.android.client.WebServiceFacade;
 import com.sinapsi.android.system.AndroidActivationManager;
 import com.sinapsi.android.system.AndroidDialogAdapter;
 import com.sinapsi.android.system.AndroidSMSAdapter;
@@ -16,18 +17,17 @@ import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.components.ActionLog;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.TriggerWifi;
+import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
+import com.sinapsi.engine.execution.WebExecutionInterface;
 import com.sinapsi.engine.log.LogMessage;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.log.SystemLogInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.model.impl.Macro;
-import com.sinapsi.model.impl.User;
 import com.sinapsi.model.parameters.ActualParamBuilder;
-import com.sinapsi.model.parameters.ConnectionStatusChoices;
 import com.sinapsi.model.parameters.SwitchStatusChoices;
 
 import java.util.ArrayList;
@@ -45,6 +45,19 @@ public class SinapsiBackgroundService extends Service {
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
 
+    private WebServiceFacade web = new WebServiceFacade();
+
+    WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
+        @Override
+        public void continueExecutionOnDevice(ExecutionInterface ei, DeviceInterface di) {
+            web.getRetrofit().continueMacroOnDevice(
+                    di.getId(),
+                    new RemoteExecutionDescriptor(
+                            ei.getLocalVars(),
+                            ei.getExecutionStack()));
+        }
+    };
+
     private DeviceInterface device = fm.newDevice(
             0,
             "my_phone",
@@ -53,7 +66,7 @@ public class SinapsiBackgroundService extends Service {
             fm.newUser(0,
                     "my@email.com",
                     "secretpassw"),
-            1); //TODO: initialize this elsewhere with user and device info
+            1); //TODO: initialize this elsewhere (perhaps load from settings or db) with user and device info
 
     /**
      * Default ctor. This initializes and starts the engine and the logging system.
@@ -69,7 +82,7 @@ public class SinapsiBackgroundService extends Service {
 
         SystemFacade sf = createAndroidSystemFacade();
 
-        engine = new MacroEngine(device, new AndroidActivationManager(this), sf, sinapsiLog);
+        engine = new MacroEngine(device, new AndroidActivationManager(this), defaultWebExecutionInterface, sf, sinapsiLog);
         engine.addMacros(loadSavedMacros());
         engine.startEngine();
     }

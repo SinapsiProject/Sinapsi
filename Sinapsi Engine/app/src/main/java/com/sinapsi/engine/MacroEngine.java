@@ -5,6 +5,7 @@ import com.sinapsi.engine.components.ActionLuaScript;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSetVariable;
 import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.engine.execution.WebExecutionInterface;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
@@ -43,6 +44,7 @@ public class MacroEngine {
      */
     public MacroEngine(DeviceInterface currentDevice,
                        ActivationManager activationManager,
+                       WebExecutionInterface wei,
                        SystemFacade sysFacade,
                        SinapsiLog sinapsiLog
                        ){
@@ -53,6 +55,7 @@ public class MacroEngine {
                 new ExecutionInterface(
                         sysFacade,
                         device,
+                        wei,
                         new VariableManager(),
                         sinapsiLog));
         factory = new ComponentFactory(device, log,
@@ -80,6 +83,7 @@ public class MacroEngine {
      */
     public MacroEngine(DeviceInterface currentDevice,
                        ActivationManager activationManager,
+                       WebExecutionInterface wei,
                        SystemFacade sysFacade,
                        SinapsiLog sinapsiLog,
                        Class<? extends MacroComponent>[] componentClasses){
@@ -90,6 +94,7 @@ public class MacroEngine {
                 new ExecutionInterface(
                         sysFacade,
                         device,
+                        wei,
                         new VariableManager(),
                         sinapsiLog));
         factory = new ComponentFactory(device, log, componentClasses);

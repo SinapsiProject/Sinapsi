@@ -3,6 +3,7 @@ package com.sinapsi.engine.execution;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.system.SystemFacade;
+import com.sinapsi.model.Action;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 
@@ -25,6 +26,7 @@ public class ExecutionInterface {
     private VariableManager localVars;
     private SinapsiLog log;
     private Deque<ActionListExecution> stack = new ArrayDeque<>();
+    private WebExecutionInterface webExecutionInterface;
 
     /**
      * Creates a new ExecutionInterface.
@@ -33,10 +35,12 @@ public class ExecutionInterface {
      */
     public ExecutionInterface(SystemFacade system,
                               DeviceInterface device,
+                              WebExecutionInterface webExecution,
                               VariableManager globalVars,
                               SinapsiLog log){
         this.system = system;
         this.device = device;
+        this.webExecutionInterface = webExecution;
         this.localVars = new VariableManager();
 
         this.globalVars = globalVars;
@@ -52,9 +56,12 @@ public class ExecutionInterface {
     public ExecutionInterface cloneInstance(){
         return new ExecutionInterface(this.getSystemFacade(),
                 this.getDevice(),
+                webExecutionInterface,
                 this.getGlobalVars(),
                 this.getLog());
     }
+
+
 
     /**
      * Device getter
@@ -157,7 +164,14 @@ public class ExecutionInterface {
     public void execute(){
         while(!isPaused && !stack.isEmpty() && !isCancelled){
             ActionListExecution ale = stack.peek();
-            ale.executeNext(this);
+            Action a = ale.getNextAction();
+            if(a.getExecutionDevice().getId() == device.getId())
+                ale.executeNext(this);
+            else{
+                webExecutionInterface.continueExecutionOnDevice(this, a.getExecutionDevice());
+                cancel();
+            }
+
             if(ale.isEnded()) popScope();
         }
     }
@@ -234,10 +248,24 @@ public class ExecutionInterface {
         return stack.peek();
     }
 
+    /**
+     * Call this to continue the execution of a remote macro on this device,
+     * on this Execution interface.
+     * @param localVars the updated localVariables
+     * @param stack the updated execution stack
+     */
+    public void continueExecutionFromRemote(VariableManager localVars, Deque<ActionListExecution> stack){
+        this.localVars = localVars;
+        this.stack = stack;
+        execute();
+    }
 
-    //TODO: public void continueOnRemoteDevice(DeviceInterface x, RemoteExecutionManager y);
-    //----: ^^^^ implement here distributed execution ^^^^
 
-
-
+    /**
+     * Getter of the whole execution stack
+     * @return the execution stack
+     */
+    public Deque<ActionListExecution> getExecutionStack() {
+        return stack;
+    }
 }

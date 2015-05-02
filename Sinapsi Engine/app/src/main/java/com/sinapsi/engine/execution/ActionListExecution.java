@@ -111,6 +111,14 @@ public class ActionListExecution {
     }
 
     /**
+     * Gets the action that will be executed if executeNext() is called.
+     * @return the action
+     */
+    public Action getNextAction(){
+        return actions.get(counter);
+    }
+
+    /**
      * Abstract class of listener methods to handle events regarding
      * action list execution.
      */
