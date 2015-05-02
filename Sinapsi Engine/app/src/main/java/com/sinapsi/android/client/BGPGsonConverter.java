@@ -1,5 +1,8 @@
 package com.sinapsi.android.client;
 
+import com.bgp.decryption.Decrypt;
+import com.bgp.encryption.Encrypt;
+import com.bgp.generator.KeyGenerator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -8,7 +11,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.HashMap;
+
+import javax.crypto.SecretKey;
 
 import retrofit.converter.ConversionException;
 import retrofit.converter.GsonConverter;
@@ -24,15 +31,26 @@ public class BGPGsonConverter extends GsonConverter {
     //This is also here because in the base class gson is not protected but private
     protected Gson myGson;
 
+
+
+    //TODO: ***** AYOUB CHECK HERE *****
+    //----: where i have to pick the private key? here is generated via kg
+    private KeyGenerator kg = new KeyGenerator();
+    private PrivateKey privateKey = kg.getPrivateKey();
+    private PublicKey publicKey = kg.getPublicKey();
+
+
+
     public BGPGsonConverter(Gson gson) {
         super(gson, "UTF-8");
         this.myGson = gson;
     }
 
+    /// Converts from body to object
     @Override
     public Object fromBody(final TypedInput body, Type type) throws ConversionException {
 
-        HashMap.SimpleEntry<String,String> cryptedPair = null;
+        HashMap.SimpleEntry<SecretKey,String> cryptedPair = null;
         InputStreamReader inStrReader = null;
         try {
             //gets a new InputStreamReader
@@ -40,14 +58,13 @@ public class BGPGsonConverter extends GsonConverter {
             //converts the string from json to HashMap.SimpleEntry<SessionKey,String>
             cryptedPair =  myGson.fromJson(
                     inStrReader,
-                    new TypeToken<HashMap.SimpleEntry<String,String>>(){}.getType());
-            
-            //
-            //TODO: decrypt str from the crypted pair using bgp library
-            String uncryptedStr = cryptedPair.getValue();
-            //
-            //
+                    new TypeToken<HashMap.SimpleEntry<SecretKey,String>>(){}.getType());
 
+            //decrypts the message
+            Decrypt decrypter = new Decrypt(privateKey, cryptedPair.getKey());
+            String uncryptedStr = decrypter.decrypt(cryptedPair.getValue());
+
+            //calls super to convert to object
             final InputStream is = new ByteArrayInputStream(uncryptedStr.getBytes());
 
             TypedInput myBody = new TypedInput() {
@@ -70,6 +87,8 @@ public class BGPGsonConverter extends GsonConverter {
 
         } catch (IOException e) {
             throw new ConversionException(e);
+        } catch (Exception e) {
+            throw new ConversionException(e);
         } finally {
             if (inStrReader != null) {
                 try {
@@ -82,18 +101,22 @@ public class BGPGsonConverter extends GsonConverter {
 
     }
 
+    /// converts from object to body
     @Override
     public TypedOutput toBody(Object object) {
 
         String message = myGson.toJson(object);
 
-        //
-        //TODO: encrypt message in a cryptedPair using bgp library
-        HashMap.SimpleEntry<String,String> cryptedPair = new HashMap.SimpleEntry<>("key", message);
-        //
-        //
+        try {
+            Encrypt encrypter = new Encrypt(publicKey);
+            String cryptedString = encrypter.encrypt(message);
+            HashMap.SimpleEntry<SecretKey,String> cryptedPair = new HashMap.SimpleEntry<>(encrypter.getEncryptedSessionKey(), message);
+            return super.toBody(cryptedPair);
+        } catch (Exception e) {
+            e.printStackTrace();
 
-        return super.toBody(cryptedPair);
+        }
+        return null;
     }
 
 
