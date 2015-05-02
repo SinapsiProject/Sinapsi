@@ -5,18 +5,20 @@ import com.bgp.encryption.Encrypt;
 import com.bgp.generator.KeyGenerator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.android.Lol;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.HashMap;
-
 import javax.crypto.SecretKey;
-
 import retrofit.converter.ConversionException;
 import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedInput;
@@ -32,18 +34,34 @@ public class BGPGsonConverter extends GsonConverter {
     protected Gson myGson;
 
 
-
-    //TODO: ***** AYOUB CHECK HERE *****
-    //----: where i have to pick the private key? here is generated via kg
-    private KeyGenerator kg = new KeyGenerator();
-    private PrivateKey privateKey = kg.getPrivateKey();
-    private PublicKey publicKey = kg.getPublicKey();
-
-
+    //TODO: ayoub done?
+    private KeyPair keyPair;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
 
     public BGPGsonConverter(Gson gson) {
         super(gson, "UTF-8");
         this.myGson = gson;
+
+        // load private key from file
+        try {
+            //check if exist private key file
+            File privateKeyFile = new File("private.key");
+            File publicKeyFile = new File("public.key");
+
+            if(privateKeyFile.exists() && publicKeyFile.exists()) {
+                keyPair = KeyGenerator.loadKeyPair();
+                privateKey = keyPair.getPrivate();
+                publicKey = keyPair.getPublic();
+
+                Lol.d("Success: key loaded loaded");
+
+            } else {
+                Lol.d("Failed: i dont find keys files");
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /// Converts from body to object
