@@ -50,6 +50,7 @@ public class ActionSetVariable extends Action {
             }
         } catch (Throwable e) {
             e.printStackTrace();
+            return;
         }
     }
 

@@ -22,7 +22,8 @@ import java.util.List;
 public abstract class BroadcastActivator extends BroadcastReceiver {
     private ContextWrapper contextWrapper;
     private IntentFilter intentFilter;
-    private ExecutionInterface deviceInterface;
+    private ExecutionInterface executionInterface;
+    private AndroidActivationManager activationManager;
     private boolean registered = false;
 
     private List<Trigger> triggers = new ArrayList<>();
@@ -35,17 +36,21 @@ public abstract class BroadcastActivator extends BroadcastReceiver {
      * @param di the device interface, passed to triggers
      *           when activated.
      */
-    public BroadcastActivator(IntentFilter iF, ContextWrapper cw, ExecutionInterface di) {
+    public BroadcastActivator(AndroidActivationManager aM, IntentFilter iF, ContextWrapper cw, ExecutionInterface di) {
+        this.activationManager = aM;
         contextWrapper = cw;
         intentFilter = iF;
-        deviceInterface = di;
+        executionInterface = di;
     }
 
     @Override
     public void onReceive(Context context, Intent intent){
+        if(!activationManager.isEnabled()) return;
+        executionInterface.getLog().log("ANDROIDACTMAN", "Received intent action: " + intent.getAction());
         Event e = extractEventInfo(context, intent);
         for(Trigger t: triggers){
-            t.activate(e,deviceInterface);
+            ExecutionInterface ei = executionInterface.cloneInstance();
+            t.activate(e, ei);
         }
     }
 

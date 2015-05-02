@@ -19,14 +19,15 @@ import com.sinapsi.engine.components.TriggerWifi;
  * This handles the trigger activation using android-exclusive
  * mechanisms like BroadcastReceivers.
  */
-public class AndroidActivationManager implements ActivationManager {
+public class AndroidActivationManager extends ActivationManager {
 
     private ContextWrapper contextWrapper;
-    private ExecutionInterface executionInterface;
+
 
     //TODO: move this initialization in a ctor, which checks
     //----: if wifi is available on the executionInterface
     private BroadcastActivator wifiActivator = new BroadcastActivator(
+            this,
             newIntentFilter(new String[]{
                     "android.net.wifi.STATE_CHANGE",
                     "android.net.wifi.WIFI_STATE_CHANGED"
@@ -39,6 +40,7 @@ public class AndroidActivationManager implements ActivationManager {
 
     //TODO: add proper permissions on the android manifest
     private BroadcastActivator smsActivator = new BroadcastActivator(
+            this,
             newIntentFilter(new String[]{
                     "android.provider.Telephony.SMS_RECEIVED"
             }), contextWrapper, executionInterface) {
@@ -68,18 +70,19 @@ public class AndroidActivationManager implements ActivationManager {
 
     /**
      * Creates a new AndroidActivationManager instance with the specified
-     * ContextWrapper and DeviceInterface.
+     * ContextWrapper.
      *
      * @param cw the contextWrapper
-     * @param di the executionInterface
+     *
      */
-    public AndroidActivationManager(ContextWrapper cw, ExecutionInterface di) {
+    public AndroidActivationManager(ContextWrapper cw) {
         this.contextWrapper = cw;
-        this.executionInterface = di;
     }
 
     @Override
     public void addToNotifyList(Trigger t) {
+        super.addToNotifyList(t);
+
         if (t.getName().equals(TriggerWifi.TRIGGER_WIFI)) wifiActivator.addTrigger(t);
         if (t.getName().equals(TriggerSMS.TRIGGER_SMS)) smsActivator.addTrigger(t);
         manageRegistrations();
@@ -87,10 +90,12 @@ public class AndroidActivationManager implements ActivationManager {
 
     @Override
     public void removeFromNotifyList(Trigger t) {
+        super.removeFromNotifyList(t);
         if (t.getName().equals(TriggerWifi.TRIGGER_WIFI)) wifiActivator.removeTrigger(t);
         if (t.getName().equals(TriggerSMS.TRIGGER_SMS)) smsActivator.removeTrigger(t);
         manageRegistrations();
     }
+
 
     /**
      * Used to register the broadcast receivers on the system only

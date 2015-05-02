@@ -1,8 +1,10 @@
 package com.sinapsi.engine.execution;
 
 import com.sinapsi.engine.VariableManager;
+import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.model.MacroInterface;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -18,8 +20,10 @@ public class ExecutionInterface {
 
     private DeviceInterface device;
     private SystemFacade system;
+    private MacroInterface macro = null;
     private VariableManager globalVars;
     private VariableManager localVars;
+    private SinapsiLog log;
     private Deque<ActionListExecution> stack = new ArrayDeque<>();
 
     /**
@@ -27,12 +31,29 @@ public class ExecutionInterface {
      * @param system the system facade of this device (use null for remote devices)
      * @param device this device, the one on which the macro is executed.
      */
-    public ExecutionInterface(SystemFacade system, DeviceInterface device,
-                              VariableManager globalVars){
+    public ExecutionInterface(SystemFacade system,
+                              DeviceInterface device,
+                              VariableManager globalVars,
+                              SinapsiLog log){
         this.system = system;
         this.device = device;
         this.localVars = new VariableManager();
+
         this.globalVars = globalVars;
+        this.log = log;
+    }
+
+    /**
+     * Helper cloning method to get a new instance of execution interface
+     * with same SystemFacade, DeviceInterface, global vars and SinapsiLog,
+     * but new instances of local vars and execution stack.
+     * @return a new instance
+     */
+    public ExecutionInterface cloneInstance(){
+        return new ExecutionInterface(this.getSystemFacade(),
+                this.getDevice(),
+                this.getGlobalVars(),
+                this.getLog());
     }
 
     /**
@@ -52,6 +73,22 @@ public class ExecutionInterface {
     }
 
     /**
+     * Getter of the macro that is executed
+     * @return the macro
+     */
+    public MacroInterface getMacro() {
+        return macro;
+    }
+
+    /**
+     * Setter of the macro that is executed
+     * @param mi the macro
+     */
+    public void setMacro(MacroInterface mi){
+        this.macro = mi;
+    }
+
+    /**
      * Local variable Manager getter
      * @return the variable manager
      */
@@ -67,6 +104,13 @@ public class ExecutionInterface {
         return globalVars;
     }
 
+    /**
+     * Engine's log system getter
+     * @return the log system
+     */
+    public SinapsiLog getLog() {
+        return log;
+    }
 
     /**
      * Scope level getter
@@ -83,6 +127,8 @@ public class ExecutionInterface {
      * @return the count of scopes on the stack
      */
     public int pushScope(ActionListExecution ale){
+        if(macro != null && !stack.isEmpty()) log.log("EXECUTION", "Pushed a new scope during execution of macro "
+                + macro.getId() + ":'" + macro.getName() + "'.");
         stack.push(ale);
         return stack.size();
     }
@@ -91,6 +137,8 @@ public class ExecutionInterface {
      * @return the count of scopes on the stack
      */
     public int popScope(){
+        if(macro != null && !stack.isEmpty()) log.log("EXECUTION", "Popped a scope from the stack during execution of macro "
+                + macro.getId() + ":'" + macro.getName() + "'.");
         if(!stack.isEmpty()) {
             stack.pop();
             return stack.size();
@@ -141,6 +189,8 @@ public class ExecutionInterface {
      * of the macro.
      */
     public void unpause(){
+        if(macro != null && !stack.isEmpty()) log.log("EXECUTION", "Execution of macro " + macro.getId() + ":'" + macro.getName() +
+                "' unpaused after action at scope " + getScopeLevel() + ", index " + getCurrentScopeExecution().getCounter());
         isPaused = false;
         execute();
     }
@@ -150,6 +200,8 @@ public class ExecutionInterface {
      * activated until unpause() is called.
      */
     public void pause(){
+        if(macro != null && !stack.isEmpty()) log.log("EXECUTION", "Execution of macro " + macro.getId() + ":'" + macro.getName() +
+                "' paused after action at scope " + getScopeLevel() + ", index " + getCurrentScopeExecution().getCounter());
         isPaused = true;
     }
 
@@ -158,6 +210,8 @@ public class ExecutionInterface {
      * be activated.
      */
     public void cancel(){
+        if(macro != null && !stack.isEmpty()) log.log("EXECUTION", "Execution of macro " + macro.getId() + ":'" + macro.getName() +
+                "' cancelled after action at scope " + getScopeLevel() + ", index " + getCurrentScopeExecution().getCounter());
         isCancelled = true;
     }
 
@@ -166,6 +220,8 @@ public class ExecutionInterface {
      * execute() must be called in order to actually restart execution.
      */
     public void uncancel(){
+        if(macro != null && !stack.isEmpty()) log.log("EXECUTION", "Execution of macro " + macro.getId() + ":'" + macro.getName() +
+                "' uncancelled after action at scope " + getScopeLevel() + ", index " + getCurrentScopeExecution().getCounter());
         isCancelled = false;
     }
 
@@ -177,6 +233,7 @@ public class ExecutionInterface {
         if(stack.isEmpty()) return null;
         return stack.peek();
     }
+
 
     //TODO: public void continueOnRemoteDevice(DeviceInterface x, RemoteExecutionManager y);
     //----: ^^^^ implement here distributed execution ^^^^

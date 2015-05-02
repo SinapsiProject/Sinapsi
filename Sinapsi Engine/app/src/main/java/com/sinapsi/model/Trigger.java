@@ -72,9 +72,14 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      *           and system main infos and services
      */
     public void activate(Event e, ExecutionInterface di) {
+        di.getLog().log(getName(),"Trigger activated by activation manager.");
         if (checkParameters(e, di)) {
+            di.getLog().log(getName(),"Parameter check success. Starting macro "+ macro.getId() + ":'" + macro.getName()+"'");
+            di.setMacro(macro);
             onActivate(e, di);
             macro.execute(di);
+        }else{
+            di.getLog().log(getName(),"Parameter check failed. Macro "+ macro.getId() + ":'" + macro.getName()+ "' will not start.");
         }
 
     }

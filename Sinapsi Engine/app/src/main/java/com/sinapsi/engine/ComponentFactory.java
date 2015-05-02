@@ -1,5 +1,6 @@
 package com.sinapsi.engine;
 
+import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.Action;
 import com.sinapsi.model.DeviceInterface;
@@ -19,16 +20,19 @@ public class ComponentFactory {
 
     private ComponentLoader loader;
     private DeviceInterface device;
+    private SinapsiLog log;
 
     /**
      * Creates a new component factory.
      * @param device the device
      * @param componentClasses the component classes
      */
-    public ComponentFactory(DeviceInterface device, Class<? extends MacroComponent>... componentClasses) {
+    public ComponentFactory(DeviceInterface device, SinapsiLog log, Class<? extends MacroComponent>... componentClasses) {
         this.loader = new ComponentLoader(componentClasses);
+        this.log = log;
         this.device = device;
         loader.loadClasses();
+        log.log("COMPFACTORY", "Component classes loaded");
     }
 
     /**
