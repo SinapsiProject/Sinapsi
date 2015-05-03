@@ -1,9 +1,12 @@
 package com.sinapsi.android.client;
 
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
+import com.sinapsi.model.ActionInterface;
 import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.model.TriggerInterface;
 import com.sinapsi.model.impl.User;
 
+import java.security.PublicKey;
 import java.util.List;
 
 import retrofit.Callback;
@@ -13,52 +16,89 @@ import retrofit.http.POST;
 import retrofit.http.Query;
 
 /**
- * Retrofit draft interface.
- * This is now an interface containing some example functions
- * with mockup RetroFit annotations.
+ * Retrofit interface
  */
 public interface RetrofitInterface {
 
-    //TODO: eliminare esempi e mettere i veri metodi
-
     /**
-     * Esempio di una GET request. Immaginando che la url del server
-     * sia "http://www.sinapsi.com" (per vedere come questa viene
-     * prefissa vedere WebServiceFacade), e che l'email passata sia
-     * "banane@ananas.org" allora la richiesta HTTP finale sara':
-     * "GET http://www.sinapsi.com/devices_connected?email=banane%40ananas.org"
-     * @param email
-     * @return
+     * Device connected request
+     * @param email user email
+     * @param publicKey public key of the user
+     * @return list of devices connected
      */
     @GET("/devices_connected")
-    public List<DeviceInterface> getAllDevicesByUser(
-            @Query("email") String email);
-
-    @POST("/devices_connected")
-    public List<DeviceInterface> getAllDevicesByUser(
+    public void getAllDevicesByUser(
             @Query("email") String email,
-            @Body String authToken);
-
+            @Query("key") PublicKey publicKey,
+            Callback<List<DeviceInterface>> devices);
 
 
     /**
-     * Qui viene usata l'annotazione @POST, dove il body inviato (magari
-     * per non inviare una password in chiaro) viene indicato con @Body
-     * @param email
-     * @param password
+     * Login request
+     * @param email email of the user
+     * @param password password of the user
      * @return
      */
-    @POST("/users?action=loginUser")
-    public String loginUser(
+    @POST("login")
+    public void login(
             @Query("email") String email,
-            @Body String password);
+            @Body String password,
+            Callback<User> user);
 
+    /**
+     * Registration request
+     * @param email email of the user
+     * @param password password of the user
+     */
+    @POST("register")
+    public void register(
+            @Query("email") String email,
+            @Body String password,
+            Callback<String> result);
 
-    //Ok, altro esempio di login, in modo che combaci con la servlet:
-    @GET("/login")
-    public void login(@Query("email") String email,
-                      @Query("password") String password,
-                      Callback<User> cb);
+    /**
+     * Request the available actions
+     * @param idDevice
+     * @param publicKey
+     */
+    @GET("available_actions")
+    public void getAvailableActions(
+            @Query("device") int idDevice,
+            @Query("key") PublicKey publicKey,
+            Callback<List<ActionInterface>> actions);
+
+    /**
+     * Send the available actions on the current device
+     * @param idDevice id device
+     * @param actions list of actions that are available
+     */
+    @POST("available_actions")
+    public void setAvailableActions(
+            @Query("device") int idDevice,
+            @Body List<ActionInterface> actions,
+            Callback<String> result);
+
+    /**
+     * Request the available triggers
+     * @param idDevice
+     * @param publicKey
+     */
+    @GET("available_triggers")
+    public void getAvailableTriggers(
+            @Query("device") int idDevice,
+            @Query("key") PublicKey publicKey,
+            Callback<List<TriggerInterface>> triggers);
+
+    /**
+     * Send the available triggers on the current device
+     * @param idDevice id device
+     * @param triggers list of actions that are available
+     */
+    @POST("available_triggers")
+    public void setAvailableTriggers(
+            @Query("device") int idDevice,
+            @Body List<TriggerInterface> triggers,
+            Callback<String> result);
 
     /**
      * Call this method to continue the execution of a macro on another device.
@@ -66,8 +106,10 @@ public interface RetrofitInterface {
      * @param red the remote execution descriptor
      */
     @POST("/continue_macro")
-    public void continueMacroOnDevice(@Query("device_id") int id,
-                                      @Body RemoteExecutionDescriptor red);
+    public void continueMacroOnDevice(
+            @Query("device_id") int id,
+            @Body RemoteExecutionDescriptor red,
+            Callback<String> result);
 
 
 }
