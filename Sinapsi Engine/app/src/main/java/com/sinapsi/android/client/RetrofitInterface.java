@@ -6,6 +6,8 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.TriggerInterface;
 import com.sinapsi.model.impl.User;
 
+import org.luaj.vm2.ast.Str;
+
 import java.security.PublicKey;
 import java.util.List;
 
@@ -54,6 +56,24 @@ public interface RetrofitInterface {
     public void register(
             @Query("email") String email,
             @Body String password,
+            Callback<User> user);
+
+
+    /**
+     * Device registration request
+     * @param name name of the device
+     * @param model model of the device
+     * @param type type of the device (mobile/desktop)
+     * @param version version of the device
+     * @param idUser id of the device's user
+     */
+    @POST("register_device")
+    public void registerDevice(
+            @Query("name") String name,
+            @Query("model") String model,
+            @Query("type") String type,
+            @Query("version") String version,
+            @Query("user") int idUser,
             Callback<String> result);
 
     /**
