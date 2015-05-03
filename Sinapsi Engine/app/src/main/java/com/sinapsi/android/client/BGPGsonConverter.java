@@ -33,12 +33,15 @@ public class BGPGsonConverter extends GsonConverter {
     //This is also here because in the base class gson is not protected but private
     protected Gson myGson;
 
-
     //TODO: ayoub done?
     private KeyPair keyPair;
     private PrivateKey privateKey;
     private PublicKey publicKey;
 
+    /**
+     * Default ctor
+     * @param gson
+     */
     public BGPGsonConverter(Gson gson) {
         super(gson, "UTF-8");
         this.myGson = gson;

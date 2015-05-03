@@ -38,14 +38,17 @@ public interface RetrofitInterface {
     /**
      * Login request
      * @param email email of the user
+     * @param publicKey public key of the user, necessary to establish a secure connection
      * @param password password of the user
      * @return
      */
     @POST("login")
     public void login(
             @Query("email") String email,
+            @Query("key") PublicKey publicKey,
             @Body String password,
             Callback<User> user);
+
 
     /**
      * Registration request
@@ -90,11 +93,13 @@ public interface RetrofitInterface {
     /**
      * Send the available actions on the current device
      * @param idDevice id device
+     * @param publicKey public key of the user
      * @param actions list of actions that are available
      */
     @POST("available_actions")
     public void setAvailableActions(
             @Query("device") int idDevice,
+            @Query("key") PublicKey publicKey,
             @Body List<ActionInterface> actions,
             Callback<String> result);
 
@@ -112,11 +117,13 @@ public interface RetrofitInterface {
     /**
      * Send the available triggers on the current device
      * @param idDevice id device
+     * @param publicKey public key of the user
      * @param triggers list of actions that are available
      */
     @POST("available_triggers")
     public void setAvailableTriggers(
             @Query("device") int idDevice,
+            @Query("key") PublicKey publicKey,
             @Body List<TriggerInterface> triggers,
             Callback<String> result);
 
@@ -130,6 +137,5 @@ public interface RetrofitInterface {
             @Query("device_id") int id,
             @Body RemoteExecutionDescriptor red,
             Callback<String> result);
-
 
 }
