@@ -34,7 +34,6 @@ actions that can perform.
 _Marco Grillo_ (https://github.com/MarcoGrillo)   
 _Ayoub Ouarrak_ (https://github.com/AyoubOuarrak)   
 _Giuseppe Petrosino_ (https://github.com/ParsleyJ)   
-Logo designed by Silvia Balzani and Ayoub Ouarrak
    
 ##License
    
