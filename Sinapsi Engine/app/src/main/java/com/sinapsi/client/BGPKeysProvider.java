@@ -11,7 +11,21 @@ import java.security.PublicKey;
  * to crypt/encrypt data.
  */
 public interface BGPKeysProvider {
+    /**
+     * Public key getter
+     * @return the public key
+     */
     public PublicKey getPublicKey();
+
+    /**
+     * Private key getter
+     * @return the private key
+     */
     public PrivateKey getPrivateKey();
+
+    /**
+     * Key pair getter
+     * @return the key pair
+     */
     public KeyPair getKeyPair();
 }

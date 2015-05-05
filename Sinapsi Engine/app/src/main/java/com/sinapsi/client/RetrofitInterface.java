@@ -19,14 +19,26 @@ import retrofit.http.Query;
  */
 public interface RetrofitInterface {
 
+    public static final String LOGIN = "login";
+    public static final String REGISTER = "register";
+    public static final String DEVICES = "devices";
+    public static final String AVAILABLE_ACTIONS = "available_actions";
+    public static final String AVAILABLE_TRIGGERS = "available_triggers";
+    public static final String CONTINUE_MACRO = "continue_macro";
+
+    public static final String ACTION = "?action=";
+
+    public static final String ADD = "add";
+    public static final String GET = "get";
+
+
     /**
      * Login request
      * @param email email of the user
      * @param publicKey public key of the user, necessary to establish a secure connection
      * @param password password of the user
-     * @return
      */
-    @POST("login")
+    @POST(LOGIN)
     public void login(
             @Query("email") String email,
             @Query("key") PublicKey publicKey,
@@ -39,7 +51,7 @@ public interface RetrofitInterface {
      * @param email email of the user
      * @param password password of the user
      */
-    @POST("register")
+    @POST(REGISTER)
     public void register(
             @Query("email") String email,
             @Body String password,
@@ -50,14 +62,12 @@ public interface RetrofitInterface {
      * Device connected request
      * @param email user email
      * @param publicKey public key of the user
-     * @return list of devices connected
      */
-    @GET("/devices_connected")
+    @GET(DEVICES+ACTION+GET)
     public void getAllDevicesByUser(
             @Query("email") String email,
             @Query("key") PublicKey publicKey,
             Callback<List<DeviceInterface>> devices);
-
 
 
     /**
@@ -67,8 +77,9 @@ public interface RetrofitInterface {
      * @param type type of the device (mobile/desktop)
      * @param version version of the device
      * @param idUser id of the device's user
+
      */
-    @POST("register_device")
+    @GET(DEVICES+ACTION+ADD)
     public void registerDevice(
             @Query("name") String name,
             @Query("model") String model,
@@ -78,16 +89,18 @@ public interface RetrofitInterface {
             @Query("key") PublicKey publicKey,
             Callback<DeviceInterface> result);
 
+
     /**
      * Request the available actions
-     * @param idDevice
-     * @param publicKey
+     * @param idDevice the id of the device
+     * @param publicKey public key of the user
      */
-    @GET("available_actions")
+    @GET(AVAILABLE_ACTIONS)
     public void getAvailableActions(
             @Query("device") int idDevice,
             @Query("key") PublicKey publicKey,
             Callback<List<MacroComponent>> actions);
+
 
     /**
      * Send the available actions on the current device
@@ -95,23 +108,25 @@ public interface RetrofitInterface {
      * @param publicKey public key of the user
      * @param actions list of actions that are available
      */
-    @POST("available_actions")
+    @POST(AVAILABLE_ACTIONS)
     public void setAvailableActions(
             @Query("device") int idDevice,
             @Query("key") PublicKey publicKey,
             @Body List<MacroComponent> actions,
             Callback<String> result);
 
+
     /**
      * Request the available triggers
-     * @param idDevice
-     * @param publicKey
+     * @param idDevice the id of the device
+     * @param publicKey public key of the user
      */
-    @GET("available_triggers")
+    @GET(AVAILABLE_TRIGGERS)
     public void getAvailableTriggers(
             @Query("device") int idDevice,
             @Query("key") PublicKey publicKey,
             Callback<List<MacroComponent>> triggers);
+
 
     /**
      * Send the available triggers on the current device
@@ -119,19 +134,20 @@ public interface RetrofitInterface {
      * @param publicKey public key of the user
      * @param triggers list of actions that are available
      */
-    @POST("available_triggers")
+    @POST(AVAILABLE_TRIGGERS)
     public void setAvailableTriggers(
             @Query("device") int idDevice,
             @Query("key") PublicKey publicKey,
             @Body List<MacroComponent> triggers,
             Callback<String> result);
 
+
     /**
      * Call this method to continue the execution of a macro on another device.
      * @param id the device id
      * @param red the remote execution descriptor
      */
-    @POST("/continue_macro")
+    @POST(CONTINUE_MACRO)
     public void continueMacroOnDevice(
             @Query("device_id") int id,
             @Body RemoteExecutionDescriptor red,

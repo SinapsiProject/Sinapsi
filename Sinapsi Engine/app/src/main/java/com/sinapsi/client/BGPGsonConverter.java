@@ -31,15 +31,14 @@ public class BGPGsonConverter extends GsonConverter {
 
     //This is also here because in the base class gson is not protected but private
     protected Gson myGson;
-
-    //TODO: ayoub done?
     private BGPKeysProvider keysProvider;
 
     //TODO: handle exceptions
 
     /**
      * Default ctor
-     * @param gson
+     * @param gson the gson object
+     * @param keysProvider the key provider
      */
     public BGPGsonConverter(Gson gson, BGPKeysProvider keysProvider) {
         super(gson, "UTF-8");

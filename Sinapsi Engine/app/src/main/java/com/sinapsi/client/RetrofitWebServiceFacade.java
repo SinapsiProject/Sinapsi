@@ -71,6 +71,12 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
 
+    /**
+     * Converts a generic WebServiceCallback to a retrofit's Callback
+     * @param wsCallback the WebServiceCallback
+     * @param <T> the type
+     * @return a retrofit's Callback
+     */
     private static <T> Callback<T> convertCallback(final WebServiceCallback<T> wsCallback){
         return new Callback<T>(){
             @Override
@@ -84,6 +90,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         };
     }
 
+    /**
+     * Check to ensure the keys are not null. Throws a runtime exception
+     */
     private void checkKeys(){
         if(publicKey == null || privateKey == null || keyPair == null)
             throw new RuntimeException(
