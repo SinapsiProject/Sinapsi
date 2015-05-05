@@ -286,10 +286,10 @@ public class DatabaseManager {
             r = s.executeQuery();
 
             while (r.next()) {
-                int id = r.getInt("id");
+             
                 int minVersion = r.getInt("minversion");
                 String name = r.getString("name");
-                MacroComponent action = factory.newActionAbstraction(id, minVersion, name);
+                MacroComponent action = factory.newActionAbstraction(minVersion, name);
                 actions.add(action);
             }
 
@@ -321,10 +321,9 @@ public class DatabaseManager {
             r = s.executeQuery();
 
             while (r.next()) {
-                int id = r.getInt("id");
                 int minVersion = r.getInt("minversion");
                 String name = r.getString("name");
-                MacroComponent trigger = factory.newTriggerAbstraction(id, minVersion, name);
+                MacroComponent trigger = factory.newTriggerAbstraction(minVersion, name);
                 triggers.add(trigger);
             }
 
