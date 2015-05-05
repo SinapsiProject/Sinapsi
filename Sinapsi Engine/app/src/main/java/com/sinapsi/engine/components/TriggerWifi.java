@@ -26,8 +26,6 @@ import java.util.HashMap;
  */
 public class TriggerWifi extends Trigger {
 
-    public static final int TRIGGER_WIFI_ID = 1;
-
     public static final String TRIGGER_WIFI = "TRIGGER_WIFI";
 
 
@@ -40,12 +38,6 @@ public class TriggerWifi extends Trigger {
      */
     public TriggerWifi(){
         super();
-    }
-
-
-    @Override
-    public int getId() {
-        return TRIGGER_WIFI_ID;
     }
 
     @Override

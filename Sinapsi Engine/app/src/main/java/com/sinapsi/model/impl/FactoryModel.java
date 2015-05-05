@@ -43,16 +43,16 @@ public class FactoryModel implements FactoryModelInterface {
 	 * @see com.sinapsi.model.FactoryModelInterface#newActionAbstraction(int, int, java.lang.String)
 	 */
 	@Override
-	public MacroComponent newActionAbstraction(int id, int minVersion, String name) {
-		return new ActionAbstraction(id, minVersion, name);
+	public MacroComponent newActionAbstraction(int minVersion, String name) {
+		return new ActionAbstraction(minVersion, name);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.sinapsi.model.FactoryModelInterface#newTriggerAbstraction(int, int, java.lang.String)
 	 */
 	@Override
-	public MacroComponent newTriggerAbstraction(int id, int minVersion, String name) {
-		return new TriggerAbstraction(id, minVersion, name);
+	public MacroComponent newTriggerAbstraction(int minVersion, String name) {
+		return new TriggerAbstraction(minVersion, name);
 	}
 
 }

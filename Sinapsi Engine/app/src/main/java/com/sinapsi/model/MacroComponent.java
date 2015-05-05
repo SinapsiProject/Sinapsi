@@ -11,14 +11,6 @@ import java.util.HashMap;
 public interface MacroComponent {
 
     /**
-     * The integer Id chosen for this type of Component.
-     * This should have the same id in the database
-     *
-     * @return the id
-     */
-    public int getId();
-
-    /**
      * Getter of the metadata name of the class implementing
      * MacroComponent (i.e. TriggerWifi should have a name similar to
      * "TRIGGER_WIFI").

@@ -23,8 +23,6 @@ import java.util.HashMap;
 public class ActionSendSMS extends Action {
 
 
-    public static final int ACTION_SEND_SMS_ID = 1;
-
     public static final String ACTION_SEND_SMS = "ACTION_SEND_SMS";
 
     @Override
@@ -48,11 +46,6 @@ public class ActionSendSMS extends Action {
                 .put("number", FormalParamBuilder.Types.STRING, false)
                 .put("msg", FormalParamBuilder.Types.STRING, false)
                 .create();
-    }
-
-    @Override
-    public int getId() {
-        return ACTION_SEND_SMS_ID;
     }
 
     @Override

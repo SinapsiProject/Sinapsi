@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class ActionContinueConfirmDialog extends Action {
 
     public static final String ACTION_CONTINUE_CONFIRM_DIALOG = "ACTION_CONTINUE_CONFIRM_DIALOG";
-    public static final int ACTION_CONTINUE_CONFIRM_DIALOG_ID = 5;
+
 
     @Override
     public void activate(final ExecutionInterface di) {
@@ -63,11 +63,6 @@ public class ActionContinueConfirmDialog extends Action {
         return new FormalParamBuilder()
                 .put("dialog_message", FormalParamBuilder.Types.STRING, false)
                 .create();
-    }
-
-    @Override
-    public int getId() {
-        return ACTION_CONTINUE_CONFIRM_DIALOG_ID;
     }
 
     @Override

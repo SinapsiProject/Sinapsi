@@ -23,7 +23,6 @@ import java.util.HashMap;
  */
 public class ActionWifiState extends Action{
 
-    public static final int ACTION_WIFI_STATE_ID = 1;
 
     public static final String ACTION_WIFI_STATE = "ACTION_WIFI_STATE";
 
@@ -53,11 +52,6 @@ public class ActionWifiState extends Action{
         if (activate) wa.setStatus(true);
         else wa.setStatus(false);
 
-    }
-
-    @Override
-    public int getId() {
-        return ACTION_WIFI_STATE_ID;
     }
 
     @Override

@@ -40,20 +40,18 @@ public interface FactoryModelInterface {
     
     /**
      * Should create a new action abstract representation
-     * @param id the id of the abstract action
      * @param minVersion min version of the abstract action
      * @param name the name of the abstract action
      * @return
      */
-    public MacroComponent newActionAbstraction(int id, int minVersion, String name);
+    public MacroComponent newActionAbstraction(int minVersion, String name);
     
     /**
      * Should create a new trigger abstract representation
-     * @param id the id of the abstract trigger
      * @param minVersion min version of the abstract trigger
      * @param name the name of the abstract trigger
      * @return
      */
-    public MacroComponent newTriggerAbstraction(int id, int minVersion, String name);
+    public MacroComponent newTriggerAbstraction(int minVersion, String name);
     
 }

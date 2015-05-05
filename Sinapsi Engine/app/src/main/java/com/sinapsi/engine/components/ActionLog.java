@@ -20,7 +20,6 @@ import java.util.HashMap;
 public class ActionLog extends Action {
 
     public static final String ACTION_LOG = "ACTION_LOG";
-    public static final int ACTION_LOG_ID = 6;
 
     @Override
     public void activate(ExecutionInterface di) {
@@ -42,10 +41,7 @@ public class ActionLog extends Action {
                 .create();
     }
 
-    @Override
-    public int getId() {
-        return ACTION_LOG_ID;
-    }
+
 
     @Override
     public String getName() {

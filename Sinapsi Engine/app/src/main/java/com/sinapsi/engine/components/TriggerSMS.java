@@ -20,7 +20,6 @@ import java.util.HashMap;
  */
 public class TriggerSMS extends Trigger{
 
-    public static final int TRIGGER_SMS_ID = 2;
     public static final String TRIGGER_SMS = "TRIGGER_SMS";
 
 
@@ -47,11 +46,6 @@ public class TriggerSMS extends Trigger{
     @Override
     protected JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException {
         return e.getJSONObject();
-    }
-
-    @Override
-    public int getId() {
-        return TRIGGER_SMS_ID;
     }
 
     @Override

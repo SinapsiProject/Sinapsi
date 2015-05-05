@@ -9,23 +9,16 @@ import java.util.HashMap;
  * 
  */
 public class ActionAbstraction extends ComunicationError implements MacroComponent {
-	private int id;
 	private int minVersion;
 	private String name;
 	
 	/**
 	 * Default ctor
 	 */
-	public ActionAbstraction(int ID, int minVer, String n) {
+	public ActionAbstraction(int minVer, String n) {
 		super();
-		id = ID;
 		minVersion = minVer;
 		name = n;
-	}
-	
-	@Override
-	public int getId() {
-		return id;
 	}
 
 	@Override

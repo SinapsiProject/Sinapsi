@@ -15,7 +15,6 @@ import java.util.HashMap;
  */
 public class TriggerEngineStart extends Trigger{
     public static final String TRIGGER_ENGINE_START = "TRIGGER_ENGINE_START";
-    public static final int TRIGGER_ENGINE_START_ID = 3;
 
     @Override
     protected JSONObject getFormalParametersJSON() throws JSONException {
@@ -26,11 +25,6 @@ public class TriggerEngineStart extends Trigger{
     @Override
     protected JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException {
         return null; //This trigger will always activate his macro
-    }
-
-    @Override
-    public int getId() {
-        return TRIGGER_ENGINE_START_ID;
     }
 
     @Override

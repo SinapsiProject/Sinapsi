@@ -22,7 +22,7 @@ import java.util.HashMap;
 public class ActionSetVariable extends Action {
 
     public static final String ACTION_SET_VARIABLE = "ACTION_SET_VARIABLE";
-    public static final int ACTION_SET_VARIABLE_ID = 4;
+
 
     @Override
     public void activate(final ExecutionInterface di) {
@@ -62,11 +62,6 @@ public class ActionSetVariable extends Action {
                 .put("var_type", SinapsiJSONUtils.enumValuesToJSONArray(VariableManager.Types.class), false)
                 .put("var_value", FormalParamBuilder.Types.STRING, false)//TODO: a new type of parameter to indicate that any type is valid
                 .create();
-    }
-
-    @Override
-    public int getId() {
-        return ACTION_SET_VARIABLE_ID;
     }
 
     @Override

@@ -27,7 +27,6 @@ import java.util.HashMap;
 public class ActionLuaScript extends Action{
 
     public static final String ACTION_LUA_SCRIPT = "ACTION_LUA_SCRIPT";
-    public static final int ACTION_LUA_SCRIPT_ID = 3; //TODO: reorganize ids
 
     @Override
     public void activate(final ExecutionInterface di) {
@@ -63,10 +62,6 @@ public class ActionLuaScript extends Action{
                 .create();
     }
 
-    @Override
-    public int getId() {
-        return ACTION_LUA_SCRIPT_ID;
-    }
 
     @Override
     public String getName() {
