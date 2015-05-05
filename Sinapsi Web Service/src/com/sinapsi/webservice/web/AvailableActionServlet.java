@@ -34,6 +34,8 @@ public class AvailableActionServlet extends HttpServlet {
         try {
             List<ActionInterface> actions = db.getAvailableAction(idDevice);
             Gson gson = new Gson();
+            
+           
             out.print(gson.toJson(actions));
             out.flush();
             
