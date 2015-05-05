@@ -7,11 +7,12 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.sinapsi.android.Lol;
-import com.sinapsi.android.client.WebServiceFacade;
+import com.sinapsi.client.RetrofitWebServiceFacade;
 import com.sinapsi.android.system.AndroidActivationManager;
 import com.sinapsi.android.system.AndroidDialogAdapter;
 import com.sinapsi.android.system.AndroidSMSAdapter;
 import com.sinapsi.android.system.AndroidWifiAdapter;
+import com.sinapsi.client.SinapsiWebServiceFacade;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.components.ActionLog;
@@ -45,16 +46,28 @@ public class SinapsiBackgroundService extends Service {
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
 
-    private WebServiceFacade web = new WebServiceFacade();
+    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade();
 
     WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
         @Override
         public void continueExecutionOnDevice(ExecutionInterface ei, DeviceInterface di) {
-            web.getRetrofit().continueMacroOnDevice(
-                    di.getId(),
+            web.continueMacroOnDevice(
+                    di,
                     new RemoteExecutionDescriptor(
                             ei.getLocalVars(),
-                            ei.getExecutionStackIndexes()));
+                            ei.getExecutionStackIndexes()),
+                            new SinapsiWebServiceFacade.WebServiceCallback<String>(){
+
+                                @Override
+                                public void success(String s, Object response) {
+
+                                }
+
+                                @Override
+                                public void failure(Throwable error) {
+
+                                }
+                            });
         }
     };
 

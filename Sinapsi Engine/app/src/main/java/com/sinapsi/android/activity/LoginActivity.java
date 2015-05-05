@@ -4,18 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ContentResolver;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -38,8 +33,9 @@ import java.util.List;
 
 import com.bgp.generator.KeyGenerator;
 import com.sinapsi.android.Lol;
-import com.sinapsi.android.client.WebServiceFacade;
+import com.sinapsi.client.RetrofitWebServiceFacade;
 import com.sinapsi.android.utils.DialogUtils;
+import com.sinapsi.client.SinapsiWebServiceFacade;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.impl.User;
 
@@ -142,21 +138,21 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(true);
 
 
-            WebServiceFacade wsf = new WebServiceFacade();
-            wsf.getRetrofit().login(email, password, new Callback<User>() {
+            RetrofitWebServiceFacade wsf = new RetrofitWebServiceFacade();
+            wsf.login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
                 @Override
-                public void success(User user, Response response) {
-                    if(user.isErrorOccured()){
-                        Lol.d(this, "Error! Message received: "+user.getErrorDescription());
+                public void success(User user, Object response) {
+                    if (user.isErrorOccured()) {
+                        Lol.d(this, "Error! Message received: " + user.getErrorDescription());
                     } else {
-                        Lol.d(this, "Success! user id received: "+user.getId());
+                        Lol.d(this, "Success! user id received: " + user.getId());
 
 
                         File privateKeyFile = new File("private.key");
                         File publicKeyFile = new File("public.key");
 
                         // check if files of keys exist
-                        if(!(privateKeyFile.exists() && publicKeyFile.exists())) {
+                        if (!(privateKeyFile.exists() && publicKeyFile.exists())) {
                             // generate key pair only one time, in the login phase
                             KeyGenerator generator = new KeyGenerator();
 
@@ -169,29 +165,32 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
+                public void failure(Throwable t) {
+                    RetrofitError error = (RetrofitError) t;
                     String errstring = "An error occurred while communicating with the server.\n";
-                    String errtitle = "Error: "+error.getKind().toString();
 
-                    ConnectivityManager cm = (ConnectivityManager)getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+                    String errtitle = "Error: " + error.getKind().toString();
+
+                    ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
                     NetworkInfo ni = cm.getActiveNetworkInfo();
 
-                    switch (error.getKind()){
+                    switch (error.getKind()) {
                         case NETWORK:
-                            errstring+="Network error";
+                            errstring += "Network error";
                             break;
                         case CONVERSION:
-                            errstring+="Conversion error";
+                            errstring += "Conversion error";
                             break;
                         case HTTP:
-                            errstring+="HTTP Error "+error.getResponse().getStatus();
+                            errstring += "HTTP Error " + error.getResponse().getStatus();
                             break;
                         case UNEXPECTED:
-                            errstring+="An unexpected error occurred";
+                            errstring += "An unexpected error occurred";
                             break;
                     }
 
-                    if(ni == null || !ni.isConnected()) errstring+= "\nMissing internet connection.";
+                    if (ni == null || !ni.isConnected())
+                        errstring += "\nMissing internet connection.";
                     DialogUtils.showOkDialog(
                             LoginActivity.this,
                             errtitle,

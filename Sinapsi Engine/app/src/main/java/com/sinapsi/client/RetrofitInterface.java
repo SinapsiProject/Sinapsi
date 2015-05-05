@@ -1,12 +1,11 @@
-package com.sinapsi.android.client;
+package com.sinapsi.client;
 
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.ActionInterface;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.TriggerInterface;
+import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
-
-import org.luaj.vm2.ast.Str;
 
 import java.security.PublicKey;
 import java.util.List;
@@ -21,19 +20,6 @@ import retrofit.http.Query;
  * Retrofit interface
  */
 public interface RetrofitInterface {
-
-    /**
-     * Device connected request
-     * @param email user email
-     * @param publicKey public key of the user
-     * @return list of devices connected
-     */
-    @GET("/devices_connected")
-    public void getAllDevicesByUser(
-            @Query("email") String email,
-            @Query("key") PublicKey publicKey,
-            Callback<List<DeviceInterface>> devices);
-
 
     /**
      * Login request
@@ -63,6 +49,20 @@ public interface RetrofitInterface {
 
 
     /**
+     * Device connected request
+     * @param email user email
+     * @param publicKey public key of the user
+     * @return list of devices connected
+     */
+    @GET("/devices_connected")
+    public void getAllDevicesByUser(
+            @Query("email") String email,
+            @Query("key") PublicKey publicKey,
+            Callback<List<DeviceInterface>> devices);
+
+
+
+    /**
      * Device registration request
      * @param name name of the device
      * @param model model of the device
@@ -75,9 +75,10 @@ public interface RetrofitInterface {
             @Query("name") String name,
             @Query("model") String model,
             @Query("type") String type,
-            @Query("version") String version,
+            @Query("version") int version,
             @Query("user") int idUser,
-            Callback<String> result);
+            @Query("key") PublicKey publicKey,
+            Callback<DeviceInterface> result);
 
     /**
      * Request the available actions

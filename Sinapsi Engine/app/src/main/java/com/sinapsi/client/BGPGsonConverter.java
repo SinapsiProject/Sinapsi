@@ -1,4 +1,4 @@
-package com.sinapsi.android.client;
+package com.sinapsi.client;
 
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -34,37 +33,18 @@ public class BGPGsonConverter extends GsonConverter {
     protected Gson myGson;
 
     //TODO: ayoub done?
-    private KeyPair keyPair;
-    private PrivateKey privateKey;
-    private PublicKey publicKey;
+    private BGPKeysProvider keysProvider;
+
+    //TODO: handle exceptions
 
     /**
      * Default ctor
      * @param gson
      */
-    public BGPGsonConverter(Gson gson) {
+    public BGPGsonConverter(Gson gson, BGPKeysProvider keysProvider) {
         super(gson, "UTF-8");
         this.myGson = gson;
-
-        // load private key from file
-        try {
-            //check if exist private key file
-            File privateKeyFile = new File("private.key");
-            File publicKeyFile = new File("public.key");
-
-            if(privateKeyFile.exists() && publicKeyFile.exists()) {
-                keyPair = KeyGenerator.loadKeyPair();
-                privateKey = keyPair.getPrivate();
-                publicKey = keyPair.getPublic();
-
-                Lol.d("Success: key loaded loaded");
-
-            } else {
-                Lol.d("Failed: i dont find keys files");
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        this.keysProvider = keysProvider;
     }
 
     /// Converts from body to object
@@ -82,7 +62,7 @@ public class BGPGsonConverter extends GsonConverter {
                     new TypeToken<HashMap.SimpleEntry<SecretKey,String>>(){}.getType());
 
             //decrypts the message
-            Decrypt decrypter = new Decrypt(privateKey, cryptedPair.getKey());
+            Decrypt decrypter = new Decrypt(keysProvider.getPrivateKey(), cryptedPair.getKey());
             String uncryptedStr = decrypter.decrypt(cryptedPair.getValue());
 
             //calls super to convert to object
@@ -129,7 +109,7 @@ public class BGPGsonConverter extends GsonConverter {
         String message = myGson.toJson(object);
 
         try {
-            Encrypt encrypter = new Encrypt(publicKey);
+            Encrypt encrypter = new Encrypt(keysProvider.getPublicKey());
             String cryptedString = encrypter.encrypt(message);
             HashMap.SimpleEntry<SecretKey,String> cryptedPair = new HashMap.SimpleEntry<>(encrypter.getEncryptedSessionKey(), message);
             return super.toBody(cryptedPair);
