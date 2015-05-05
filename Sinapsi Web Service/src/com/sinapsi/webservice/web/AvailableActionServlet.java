@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sinapsi.model.ActionInterface;
+import com.sinapsi.model.MacroComponent;
 import com.sinapsi.webservice.db.DatabaseManager;
 
 /**
@@ -32,7 +32,7 @@ public class AvailableActionServlet extends HttpServlet {
         int idDevice = Integer.parseInt(request.getParameter("device"));
 
         try {
-            List<ActionInterface> actions = db.getAvailableAction(idDevice);
+            List<MacroComponent> actions = db.getAvailableAction(idDevice);
             Gson gson = new Gson();
             
            
@@ -64,7 +64,7 @@ public class AvailableActionServlet extends HttpServlet {
         String jsonstring = jb.toString();
         // DEBUG
         System.out.println(jsonstring);
-        ArrayList<ActionInterface> list = gson.fromJson(jsonstring, new TypeToken<ArrayList<ActionInterface>>(){}.getType());
+        ArrayList<MacroComponent> list = gson.fromJson(jsonstring, new TypeToken<ArrayList<MacroComponent>>(){}.getType());
         System.out.println(list.size());
     }
 }

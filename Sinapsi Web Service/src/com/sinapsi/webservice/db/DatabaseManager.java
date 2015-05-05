@@ -272,11 +272,11 @@ public class DatabaseManager {
      * @return list of actions
      * @throws SQLException
      */
-    public List<ActionInterface> getAvailableAction(int idDevice) throws SQLException {
+    public List<MacroComponent> getAvailableAction(int idDevice) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        List<ActionInterface> actions = new ArrayList<ActionInterface>();
+        List<MacroComponent> actions = new ArrayList<MacroComponent>();
 
         try {
             c = connect();
@@ -289,7 +289,7 @@ public class DatabaseManager {
                 int id = r.getInt("id");
                 int minVersion = r.getInt("minversion");
                 String name = r.getString("name");
-                ActionInterface action = factory.newActionAbstraction(id, minVersion, name);
+                MacroComponent action = factory.newActionAbstraction(id, minVersion, name);
                 actions.add(action);
             }
 
@@ -307,11 +307,11 @@ public class DatabaseManager {
      * @return list of trigger
      * @throws SQLException
      */
-    public List<TriggerInterface> getAvailableTrigger(int idDevice) throws SQLException {
+    public List<MacroComponent> getAvailableTrigger(int idDevice) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        List<TriggerInterface> triggers = new ArrayList<TriggerInterface>();
+        List<MacroComponent> triggers = new ArrayList<MacroComponent>();
 
         try {
             c = connect();
@@ -324,7 +324,7 @@ public class DatabaseManager {
                 int id = r.getInt("id");
                 int minVersion = r.getInt("minversion");
                 String name = r.getString("name");
-                TriggerInterface trigger = factory.newTriggerAbstraction(id, minVersion, name);
+                MacroComponent trigger = factory.newTriggerAbstraction(id, minVersion, name);
                 triggers.add(trigger);
             }
 

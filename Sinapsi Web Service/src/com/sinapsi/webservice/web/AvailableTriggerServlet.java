@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
-import com.sinapsi.model.TriggerInterface;
+import com.sinapsi.model.MacroComponent;
 import com.sinapsi.webservice.db.DatabaseManager;
 
 /**
@@ -29,7 +29,7 @@ public class AvailableTriggerServlet extends HttpServlet {
         int idDevice = Integer.parseInt(request.getParameter("device"));
 
         try {
-            List<TriggerInterface> triggers = db.getAvailableTrigger(idDevice);
+            List<MacroComponent> triggers = db.getAvailableTrigger(idDevice);
             Gson gson = new Gson();
             out.print(gson.toJson(triggers));
             out.flush();
