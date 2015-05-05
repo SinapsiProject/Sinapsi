@@ -30,7 +30,7 @@ When a client connects to the web service for the first time, it sends the list 
 actions that can perform.
     
 ##Security
-The connection between server and clients is crypted using BGP library [a link](https://github.com/AyoubOuarrak/Bit-Good-Privacy). 
+The connection between server and clients is crypted using [BGP library](https://github.com/AyoubOuarrak/Bit-Good-Privacy). 
 ###Secure connection
 When one of the clients want to send data to the server, first of all it's create a KeyGenerator object,  
 the constructor of KeyGenerator generate a 1024 bit public, private RSA key by default. To encrypt, all we need is the public key of the server, than we use this key to create the Encrypt object, finally, we call encrypt method that take the plaintext string, the return value is the cipher text.
