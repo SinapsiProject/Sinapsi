@@ -29,6 +29,12 @@ can be used on other devices to make them visible to the connected devices.
 When a client connects to the web service for the first time, it sends the list of triggers that can activate and the list of
 actions that can perform.
     
+##Security
+The connection between server and clients is crypted using BGP library [a link](https://github.com/AyoubOuarrak/Bit-Good-Privacy). 
+###Secure connection
+When one of the clients want to send data to the server, first of all it's create a KeyGenerator object,  
+the constructor of KeyGenerator generate a 1024 bit public, private RSA key by default. To encrypt, all we need is the public key of the server, than we use this key to create the Encrypt object, finally, we call encrypt method that take the plaintext string, the return value is the cipher text.
+Decryption works in the reverse, we need our private key and encrypted session key of the server, then we create Decrypt object, and we call decrypt that take the cipher text and return the plain text.
    
 ##Authors 
 _Marco Grillo_ (https://github.com/MarcoGrillo)   
