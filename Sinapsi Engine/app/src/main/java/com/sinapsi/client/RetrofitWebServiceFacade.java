@@ -1,12 +1,12 @@
 package com.sinapsi.client;
 
+import com.bgp.generator.KeyGenerator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sinapsi.android.AppConsts;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
-import com.sinapsi.model.ActionInterface;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.TriggerInterface;
+import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.User;
 
@@ -14,8 +14,6 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.List;
-
-import com.bgp.generator.KeyGenerator;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -145,7 +143,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void getAvailableActions(DeviceInterface device, WebServiceCallback<List<ActionInterface>> result) {
+    public void getAvailableActions(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
         checkKeys();
         cryptedRetrofit.getAvailableActions(
                 device.getId(),
@@ -154,7 +152,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void setAvailableActions(DeviceInterface device, List<ActionInterface> actions, WebServiceCallback<String> result) {
+    public void setAvailableActions(DeviceInterface device, List<MacroComponent> actions, WebServiceCallback<String> result) {
         checkKeys();
         cryptedRetrofit.setAvailableActions(
                 device.getId(),
@@ -164,7 +162,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void getAvailableTriggers(DeviceInterface device, WebServiceCallback<List<TriggerInterface>> result) {
+    public void getAvailableTriggers(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
         checkKeys();
         cryptedRetrofit.getAvailableTriggers(
                 device.getId(),
@@ -173,7 +171,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void setAvailableTriggers(DeviceInterface device, List<TriggerInterface> triggers, WebServiceCallback<String> result) {
+    public void setAvailableTriggers(DeviceInterface device, List<MacroComponent> triggers, WebServiceCallback<String> result) {
         checkKeys();
         cryptedRetrofit.setAvailableTriggers(
                 device.getId(),

@@ -1,12 +1,14 @@
 package com.sinapsi.model.impl;
 
-import com.sinapsi.model.TriggerInterface;
+import com.sinapsi.model.MacroComponent;
+
+import java.util.HashMap;
 
 /**
  * Abstraction of Trigger, this class is not the real representation of Trigger object, but gives support to database manager
  * 
  */
-public class TriggerAbstraction extends ComunicationError implements TriggerInterface {
+public class TriggerAbstraction extends ComunicationError implements MacroComponent {
 	private int id;
 	private int minVersion;
 	private String name;
@@ -27,7 +29,7 @@ public class TriggerAbstraction extends ComunicationError implements TriggerInte
 	}
 
 	@Override
-	public int minVersion() {
+	public int getMinVersion() {
 		return minVersion;
 	}
 
@@ -35,4 +37,15 @@ public class TriggerAbstraction extends ComunicationError implements TriggerInte
 	public String getName() {
 		return name;
 	}
+
+
+    @Override
+    public ComponentTypes getComponentType() {
+        return ComponentTypes.TRIGGER;
+    }
+
+    @Override
+    public HashMap<String, Integer> getSystemRequirementKeys() {
+        return null;
+    }
 }

@@ -24,7 +24,7 @@ public interface FactoryModelInterface {
      * @param model the model of the device i.e. "Nexus 5"
      * @param type the type of the device i.e. "AndroidSmartphone"
      * @param user the owner of the device
-     * @param version the version of the sinapsi client running on a device
+     * @param clientVersion the version of the sinapsi client running on a device
      * @return a new DeviceInterface instance
      */
     public DeviceInterface newDevice(int id, String name, String model, String type, UserInterface user, int clientVersion);
@@ -45,7 +45,7 @@ public interface FactoryModelInterface {
      * @param name the name of the abstract action
      * @return
      */
-    public ActionInterface newActionAbstraction(int id, int minVersion, String name);
+    public MacroComponent newActionAbstraction(int id, int minVersion, String name);
     
     /**
      * Should create a new trigger abstract representation
@@ -54,6 +54,6 @@ public interface FactoryModelInterface {
      * @param name the name of the abstract trigger
      * @return
      */
-    public TriggerInterface newTriggerAbstraction(int id, int minVersion, String name);
+    public MacroComponent newTriggerAbstraction(int id, int minVersion, String name);
     
 }

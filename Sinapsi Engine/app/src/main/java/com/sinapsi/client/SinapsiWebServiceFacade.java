@@ -1,17 +1,12 @@
 package com.sinapsi.client;
 
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
-import com.sinapsi.model.ActionInterface;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.TriggerInterface;
+import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
-import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 
-import java.security.PublicKey;
 import java.util.List;
-
-import retrofit.Callback;
 
 /**
  * TODO: impl & doku
@@ -49,17 +44,17 @@ public interface SinapsiWebServiceFacade {
                                WebServiceCallback<DeviceInterface> result);
 
     public void getAvailableActions(DeviceInterface device,
-                                    WebServiceCallback<List<ActionInterface>> result);
+                                    WebServiceCallback<List<MacroComponent>> result);
 
     public void setAvailableActions(DeviceInterface device,
-                                    List<ActionInterface> actions,
+                                    List<MacroComponent> actions,
                                     WebServiceCallback<String> result);
 
     public void getAvailableTriggers(DeviceInterface device,
-                                     WebServiceCallback<List<TriggerInterface>> result);
+                                     WebServiceCallback<List<MacroComponent>> result);
 
     public void setAvailableTriggers(DeviceInterface device,
-                                     List<TriggerInterface> triggers,
+                                     List<MacroComponent> triggers,
                                      WebServiceCallback<String> result);
 
     public void continueMacroOnDevice(DeviceInterface device,

@@ -1,10 +1,8 @@
 package com.sinapsi.client;
 
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
-import com.sinapsi.model.ActionInterface;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.TriggerInterface;
-import com.sinapsi.model.impl.Device;
+import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.impl.User;
 
 import java.security.PublicKey;
@@ -89,7 +87,7 @@ public interface RetrofitInterface {
     public void getAvailableActions(
             @Query("device") int idDevice,
             @Query("key") PublicKey publicKey,
-            Callback<List<ActionInterface>> actions);
+            Callback<List<MacroComponent>> actions);
 
     /**
      * Send the available actions on the current device
@@ -101,7 +99,7 @@ public interface RetrofitInterface {
     public void setAvailableActions(
             @Query("device") int idDevice,
             @Query("key") PublicKey publicKey,
-            @Body List<ActionInterface> actions,
+            @Body List<MacroComponent> actions,
             Callback<String> result);
 
     /**
@@ -113,7 +111,7 @@ public interface RetrofitInterface {
     public void getAvailableTriggers(
             @Query("device") int idDevice,
             @Query("key") PublicKey publicKey,
-            Callback<List<TriggerInterface>> triggers);
+            Callback<List<MacroComponent>> triggers);
 
     /**
      * Send the available triggers on the current device
@@ -125,7 +123,7 @@ public interface RetrofitInterface {
     public void setAvailableTriggers(
             @Query("device") int idDevice,
             @Query("key") PublicKey publicKey,
-            @Body List<TriggerInterface> triggers,
+            @Body List<MacroComponent> triggers,
             Callback<String> result);
 
     /**
