@@ -7,6 +7,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.sinapsi.android.Lol;
+import com.sinapsi.android.system.AndroidNotificationAdapter;
 import com.sinapsi.client.RetrofitWebServiceFacade;
 import com.sinapsi.android.system.AndroidActivationManager;
 import com.sinapsi.android.system.AndroidDialogAdapter;
@@ -110,16 +111,18 @@ public class SinapsiBackgroundService extends Service {
         sf.addSystemService(SystemFacade.SERVICE_DIALOGS, new AndroidDialogAdapter(this));
         sf.addSystemService(SystemFacade.SERVICE_SMS, new AndroidSMSAdapter(this));
         sf.addSystemService(SystemFacade.SERVICE_WIFI, new AndroidWifiAdapter(this));
+        sf.addSystemService(SystemFacade.SERVICE_NOTIFICATION, new AndroidNotificationAdapter(this));
 
         PackageManager pm = getPackageManager();
 
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_LUA, true);
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_DIALOGS, true);
-
+        sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
         if(pm.hasSystemFeature(PackageManager.FEATURE_WIFI))
             sf.setRequirementSpec(SystemFacade.REQUIREMENT_WIFI, true);
         if(pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
             sf.setRequirementSpec(SystemFacade.REQUIREMENT_SMS_READ, true);
+
 
         return sf;
     }
