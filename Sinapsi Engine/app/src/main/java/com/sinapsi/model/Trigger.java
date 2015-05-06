@@ -2,10 +2,12 @@ package com.sinapsi.model;
 
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
+import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.model.parameters.StringMatchingModeChoices;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -121,12 +123,12 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      *
      * @param e  Event object containing infos about the system event
      *           that activated this trigger
-     * @param di Device object to give a way to access device
+     * @param ei Device object to give a way to access device
      *           and system main infos and services
      * @return true if each one of the actual parameters equals the
      * extracted parameter from system/event's state.
      */
-    protected boolean checkParameters(Event e, ExecutionInterface di) {
+    protected boolean checkParameters(Event e, ExecutionInterface ei) {
         if (getActualParameters() == null) return true;
 
         JSONObject actualParameterObj;
@@ -148,19 +150,19 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
             activate the macro every time (i.e. either when wifi sets on and off)
             */
             e1.printStackTrace();
-            macro.execute(di);
+            macro.execute(ei);
             return true;
         }
 
         JSONObject valuesObj = null;
         try {
-            valuesObj = extractParameterValues(e, di);
+            valuesObj = extractParameterValues(e, ei);
         } catch (JSONException e1) {
             e1.printStackTrace();
             //This means that the extending class is bad implemented
         }
         if (valuesObj == null) return true;
-
+        createTriggerVars(valuesObj,ei);
         Iterator<String> pars = pjo.keys();
 
         while (pars.hasNext()) {
@@ -227,6 +229,51 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
             e.printStackTrace();
         }
         return result != null ? result.toString() : null;
+    }
+
+    private void createTriggerVars(JSONObject parvals, ExecutionInterface ei) {
+        VariableManager lvm = ei.getLocalVars();
+        JSONObject formparams;
+        try {
+            formparams = getFormalParametersJSON();
+            if (formparams == null) return;
+            JSONArray params = formparams.getJSONArray("formal_parameters");
+            if (params == null) return;
+            for (int i = 0; i < params.length(); i++) {
+                JSONObject o = (JSONObject) params.get(i);
+                String name = o.getString("name");
+                try{
+                    switch (FormalParamBuilder.Types.valueOf(o.getString("type"))) {
+                        case CHOICE:
+                        case STRING:
+                        case STRING_ADVANCED:
+                            lvm.putVar(name, VariableManager.Types.STRING, parvals.getString(name));
+                            break;
+                        case INT:
+                            lvm.putVar(name, VariableManager.Types.INT, JSONObject.numberToString(parvals.getInt(name)));
+                            break;
+                        case BOOLEAN:
+                            lvm.putVar(name, VariableManager.Types.BOOLEAN, Boolean.toString(parvals.getBoolean(name)));
+                            break;
+                    }
+                }catch (IllegalArgumentException e){
+                    //invalid formal param type
+                    e.printStackTrace();
+                    return;
+                }catch (JSONException e) {
+                    //ignore
+                }
+
+            }
+        }catch (IllegalArgumentException e){
+            //invalid formal param type
+            e.printStackTrace();
+            return;
+        }catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
     }
 
     /**
