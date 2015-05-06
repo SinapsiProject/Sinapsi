@@ -2,11 +2,9 @@ package com.sinapsi.engine;
 
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.Action;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.Trigger;
 
 import java.util.ArrayList;
 import java.util.List;

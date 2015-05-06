@@ -3,7 +3,7 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.NotificationAdapter;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.Action;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
@@ -26,17 +26,14 @@ public class ActionSimpleNotification extends Action {
     public static final String ACTION_SIMPLE_NOTIFICATION = "ACTION_SIMPLE_NOTIFICATION";
 
     @Override
-    public void activate(ExecutionInterface di) {
+    public void onActivate(ExecutionInterface di) throws JSONException{
         JSONObject pjo = getParamsObj(params);
         String title = null;
         String message = null;
-        try{
-            title = pjo.getString("notification_title");
-            message = pjo.getString("notification_message");
-        }catch(JSONException e){
-            e.printStackTrace();
-            return;
-        }
+
+        title = pjo.getString("notification_title");
+        message = pjo.getString("notification_message");
+
         ((NotificationAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_NOTIFICATION)).showSimpleNotification(title,message);
     }
 

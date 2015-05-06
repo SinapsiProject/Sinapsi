@@ -2,7 +2,7 @@ package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.Action;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
@@ -29,15 +29,12 @@ public class ActionLuaScript extends Action{
     public static final String ACTION_LUA_SCRIPT = "ACTION_LUA_SCRIPT";
 
     @Override
-    public void activate(final ExecutionInterface di) {
+    public void onActivate(final ExecutionInterface di) throws JSONException{
         String scriptText;
         JSONObject pjo = getParamsObj(params);
-        try{
-            scriptText = pjo.getString("lua_script");
-        }catch(JSONException e){
-            e.printStackTrace();
-            return;
-        }
+
+        scriptText = pjo.getString("lua_script");
+
         try {
             Globals globals =JsePlatform.standardGlobals();
             LuaValue chunk = globals.load(scriptText);

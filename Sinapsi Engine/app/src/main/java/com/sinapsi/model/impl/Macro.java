@@ -2,9 +2,9 @@ package com.sinapsi.model.impl;
 
 import com.sinapsi.engine.execution.ActionListExecution;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.model.Action;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.Trigger;
+import com.sinapsi.engine.Trigger;
 
 import java.util.ArrayList;
 import java.util.List;

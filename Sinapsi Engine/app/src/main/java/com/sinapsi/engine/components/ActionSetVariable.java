@@ -2,7 +2,7 @@ package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.VariableManager;
-import com.sinapsi.model.Action;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.SinapsiJSONUtils;
 
@@ -25,33 +25,30 @@ public class ActionSetVariable extends Action {
 
 
     @Override
-    public void activate(final ExecutionInterface di) {
+    public void onActivate(final ExecutionInterface di) throws JSONException{
         JSONObject pjo = getParamsObj(params);
         String strname = null;
         String strscope = null;
         String strtype = null;
         String strvalue = null;
-        try{
-            strname = pjo.getString("var_name");
-            strscope = pjo.getString("var_scope");
-            strtype = pjo.getString("var_type");
-            strvalue = pjo.getString("var_value");
 
-            VariableManager.Scopes scope = VariableManager.Scopes.valueOf(strscope);
-            VariableManager.Types type = VariableManager.Types.valueOf(strtype);
+        strname = pjo.getString("var_name");
+        strscope = pjo.getString("var_scope");
+        strtype = pjo.getString("var_type");
+        strvalue = pjo.getString("var_value");
 
-            switch (scope){
-                case LOCAL:
-                    di.getLocalVars().putVar(strname, type, strvalue);
-                    break;
-                case GLOBAL:
-                    di.getGlobalVars().putVar(strname, type, strvalue);
-                    break;
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return;
+        VariableManager.Scopes scope = VariableManager.Scopes.valueOf(strscope);
+        VariableManager.Types type = VariableManager.Types.valueOf(strtype);
+
+        switch (scope){
+            case LOCAL:
+                di.getLocalVars().putVar(strname, type, strvalue);
+                break;
+            case GLOBAL:
+                di.getGlobalVars().putVar(strname, type, strvalue);
+                break;
         }
+
     }
 
     @Override

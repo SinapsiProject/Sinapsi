@@ -1,6 +1,9 @@
-package com.sinapsi.model;
+package com.sinapsi.engine;
 
 import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.model.DistributedComponent;
+import com.sinapsi.model.Parameterized;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,11 +49,24 @@ public abstract class Action implements Parameterized, DistributedComponent {
      * the engine when an action instance should do his work
      * inside a macro.
      *
-     * @param di passed by the MacroEngine, used to give access
+     * @param ei passed by the MacroEngine, used to give access
      *           to eventual system-dependant calls needed by
      *           the action
      */
-    public abstract void activate(final ExecutionInterface di);
+    protected abstract void onActivate(final ExecutionInterface ei) throws JSONException;
+
+
+    /**
+     * Call this method to activate the action.
+     * @param ei the execution interface instance
+     */
+    public void activate(final ExecutionInterface ei){
+        try{
+            onActivate(ei);
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public String getActualParameters() {

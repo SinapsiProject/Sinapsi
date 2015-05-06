@@ -2,7 +2,7 @@ package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.model.Trigger;
+import com.sinapsi.engine.Trigger;
 
 import org.json.JSONException;
 import org.json.JSONObject;

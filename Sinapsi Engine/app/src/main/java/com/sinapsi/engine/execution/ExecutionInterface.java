@@ -3,7 +3,7 @@ package com.sinapsi.engine.execution;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.Action;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 

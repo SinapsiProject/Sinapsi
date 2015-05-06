@@ -3,7 +3,7 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
-import com.sinapsi.model.Action;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
@@ -38,17 +38,14 @@ public class ActionWifiState extends Action{
     }
 
     @Override
-    public void activate(final ExecutionInterface s) {
+    public void onActivate(final ExecutionInterface s) throws JSONException{
 
         WifiAdapter wa = (WifiAdapter) s.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
         JSONObject pjo = getParamsObj(params);
         boolean activate;
-        try {
-            activate = pjo.getBoolean("wifi_switch");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
-        }
+
+        activate = pjo.getBoolean("wifi_switch");
+
         if (activate) wa.setStatus(true);
         else wa.setStatus(false);
 

@@ -1,7 +1,7 @@
 package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.model.Action;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 
 import org.json.JSONException;
@@ -22,15 +22,12 @@ public class ActionLog extends Action {
     public static final String ACTION_LOG = "ACTION_LOG";
 
     @Override
-    public void activate(ExecutionInterface di) {
+    public void onActivate(ExecutionInterface di) throws JSONException{
         JSONObject pjo = getParamsObj(params);
         String message = null;
-        try{
-            message = pjo.getString("log_message");
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return;
-        }
+
+        message = pjo.getString("log_message");
+
         di.getLog().log("LOG_ACTION", message);
     }
 

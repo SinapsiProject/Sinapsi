@@ -3,7 +3,7 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.Trigger;
+import com.sinapsi.engine.Trigger;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 

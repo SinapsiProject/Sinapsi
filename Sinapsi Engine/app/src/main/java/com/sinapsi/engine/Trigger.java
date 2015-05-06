@@ -1,9 +1,13 @@
-package com.sinapsi.model;
+package com.sinapsi.engine;
 
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.model.DistributedComponent;
+import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.Parameterized;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.model.parameters.StringMatchingModeChoices;
 

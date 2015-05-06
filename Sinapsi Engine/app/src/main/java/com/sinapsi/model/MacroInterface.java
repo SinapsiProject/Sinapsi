@@ -1,5 +1,7 @@
 package com.sinapsi.model;
 
+import com.sinapsi.engine.Action;
+import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.execution.ExecutionInterface;
 
 import java.util.List;

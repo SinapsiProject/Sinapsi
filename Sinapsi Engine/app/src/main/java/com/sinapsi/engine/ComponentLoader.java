@@ -1,8 +1,6 @@
 package com.sinapsi.engine;
 
-import com.sinapsi.model.Action;
 import com.sinapsi.model.MacroComponent;
-import com.sinapsi.model.Trigger;
 
 import java.util.ArrayList;
 import java.util.HashMap;

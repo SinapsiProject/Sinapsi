@@ -3,7 +3,7 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SMSAdapter;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.Action;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
@@ -26,17 +26,14 @@ public class ActionSendSMS extends Action {
     public static final String ACTION_SEND_SMS = "ACTION_SEND_SMS";
 
     @Override
-    public void activate(final ExecutionInterface di) {
+    public void onActivate(final ExecutionInterface di) throws JSONException{
         SMSAdapter sa = (SMSAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_SMS);
         JSONObject pjo = getParamsObj(params);
         SMSAdapter.Sms sms = new SMSAdapter.Sms();
-        try{
-            sms.setAddress(pjo.getString("number"));
-            sms.setMsg(pjo.getString("msg"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
-        }
+
+        sms.setAddress(pjo.getString("number"));
+        sms.setMsg(pjo.getString("msg"));
+
         sa.sendSMSMessage(sms);//TODO: check returned boolean
     }
 

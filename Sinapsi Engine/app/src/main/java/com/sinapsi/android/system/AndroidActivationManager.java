@@ -9,8 +9,7 @@ import android.telephony.SmsMessage;
 import com.sinapsi.android.utils.IntentUtils;
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
-import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.model.Trigger;
+import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerWifi;
 

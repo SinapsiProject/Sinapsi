@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.model.Trigger;
+import com.sinapsi.engine.Trigger;
 
 import java.util.ArrayList;
 import java.util.List;

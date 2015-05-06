@@ -4,7 +4,7 @@ import com.sinapsi.engine.Event;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
-import com.sinapsi.model.Trigger;
+import com.sinapsi.engine.Trigger;
 import com.sinapsi.model.parameters.ConnectionStatusChoices;
 import com.sinapsi.model.parameters.FormalParamBuilder;
 import com.sinapsi.model.parameters.SwitchStatusChoices;
