@@ -1,0 +1,171 @@
+package com.sinapsi.webservice.db;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.model.UserInterface;
+
+/**
+ * Class that perform devices query 
+ *
+ */
+public class DeviceManager extends UserManager {
+	private DatabaseController db;
+	
+	/**
+	 * Default ctor
+	 */
+	public DeviceManager() {
+		db = new DatabaseController();
+	}
+	
+    /**
+     * Check if the device with name, model associate to idUser exist
+     * @param name name of the device
+     * @param model model of the device
+     * @param idUser id of the user
+     * @return boolean
+     * @throws SQLException 
+     */
+    public boolean checkDevice(String name, String model, int idUser) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        boolean deviceExist = false;
+        
+        try {
+            c = db.connect();
+            String query = "SELECT * FROM device WHERE lower(name) = lower(?) AND lower(model) = lower(?) and iduser = ?";
+            s = c.prepareStatement(query);
+            s.setString(1, name);
+            s.setString(2, model);
+            s.setInt(3, idUser);
+            r = s.executeQuery();
+            if (r.next()) {
+                deviceExist = true;
+            }
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return deviceExist;
+    }
+    
+    /**
+     * Insert new device in the db
+     * @param name name of the device
+     * @param model model of the device
+     * @param type type of the device (mobile/desktop)
+     * @param idUser id of the user
+     * @param clientVersion version of the client
+     * @return device interface
+     * @throws Exception
+     */
+    public DeviceInterface newDevice(String name, String model, String type, int idUser, int clientVersion) throws Exception {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        UserInterface user = getUserById(idUser);
+        DeviceInterface device = null;
+        
+        try {
+            c = db.connect();
+            String query = "INSERT INTO device(name, model, type, iduser, version) VALUES (?, ?, ?, ?, ?)";
+            s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            s.setString(1, name);
+            s.setString(2, model);
+            s.setString(3, type);
+            s.setInt(4, idUser);
+            s.setInt(5, clientVersion);
+            s.execute();
+            r = s.getGeneratedKeys();
+            r.next();
+
+            int id = r.getInt(1);
+            device = db.factory.newDevice(id, name, model, type, user, clientVersion);
+
+        } catch (SQLException e) {
+            db.disconnect(c, s, r);
+            throw e;
+        }
+        db.disconnect(c, s);
+        return device;
+    }
+    
+    /**
+     * Return the device with name, model of the id user
+     * @param name name of the device
+     * @param model model of the device
+     * @param idUser id of the user
+     * @return device interface
+     * @throws SQLException
+     */
+    public DeviceInterface getDevice(String name, String model, int idUser) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        DeviceInterface device = null;
+
+        try {
+            c = db.connect();
+            String query = "SELECT * FROM device WHERE lower(name) = lower(?) AND lower(model) = lower(?) and iduser = ?";
+            s = c.prepareStatement(query);
+            s.setString(1, name);
+            s.setString(2, model);
+            s.setInt(3, idUser);
+            r = s.executeQuery();
+            if (r.next())
+                device = db.factory.newDevice(r.getInt("id"), name, model, r.getString("type"), getUserById(idUser), r.getInt("version"));
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return device;
+    }
+    
+    /**
+     * Return all device linked to user email
+     * @param email email of user
+     * @return list of devices
+     * @throws SQLException
+     */
+    public List<DeviceInterface> getUserDevices(String email) throws SQLException {
+        UserInterface user = getUserByEmail(email);
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<DeviceInterface> devices = new ArrayList<DeviceInterface>();
+
+        try {
+            c = db.connect();
+            String query = "SELECT * FROM device, users WHERE device.iduser = users.id and email = ?";
+            s = c.prepareStatement(query);
+            s.setString(1, email);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                int id = r.getInt("id");
+                String name = r.getString("name");
+                String model = r.getString("model");
+                String type = r.getString("type");
+                int version = r.getInt("version");
+                DeviceInterface device = db.factory.newDevice(id, name, model, type, user, version);
+                devices.add(device);
+            }
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return devices;
+    }
+}

@@ -2,21 +2,19 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.Gson;
 import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.webservice.db.DatabaseManager;
+import com.sinapsi.webservice.db.UserManager;
 
 /**
- * Servlet implementation class LoginServlet
+ * Servlet that Sign in the user
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -27,17 +25,17 @@ public class LoginServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        DatabaseManager db = new DatabaseManager();
+        UserManager userManager = new UserManager();
         response.setContentType("application/json");
         try {
             String email = request.getParameter("email");
             String pwd = request.getParameter("password");
-            User user = (User) db.getUserByEmail(email);
+            User user = (User) userManager.getUserByEmail(email);
             Gson gson = new Gson();
 
             if (user != null) {
                 // the user is ok
-                if (db.checkUser(email, pwd)) {
+                if (userManager.checkUser(email, pwd)) {
                     out.print(gson.toJson(user));
                     out.flush();
                     // login error, (email incorrect or password incorrect)

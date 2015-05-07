@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.MacroComponent;
-import com.sinapsi.webservice.db.DatabaseManager;
+import com.sinapsi.webservice.db.EngineManager;
 
 /**
  * Servlet implementation class AvailableActionServlet
@@ -27,12 +27,12 @@ public class AvailableActionServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        DatabaseManager db = new DatabaseManager();
+        EngineManager engineManager = new EngineManager();
         response.setContentType("application/json");
         int idDevice = Integer.parseInt(request.getParameter("device"));
 
         try {
-            List<MacroComponent> actions = db.getAvailableAction(idDevice);
+            List<MacroComponent> actions = engineManager.getAvailableAction(idDevice);
             Gson gson = new Gson();
             
            
@@ -65,6 +65,6 @@ public class AvailableActionServlet extends HttpServlet {
         // DEBUG
         System.out.println(jsonstring);
         ArrayList<MacroComponent> list = gson.fromJson(jsonstring, new TypeToken<ArrayList<MacroComponent>>(){}.getType());
-        System.out.println(list.size());
+        //TODO: insert list fo action in the db
     }
 }

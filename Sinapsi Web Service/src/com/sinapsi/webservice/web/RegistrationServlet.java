@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.sinapsi.model.impl.User;
-import com.sinapsi.webservice.db.DatabaseManager;
+import com.sinapsi.webservice.db.UserManager;
 
 /**
  * Servlet implementation class RegistrationServlet
@@ -23,22 +23,22 @@ public class RegistrationServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        DatabaseManager db = new DatabaseManager();
+        UserManager userManager = new UserManager();
         response.setContentType("application/json");
         String email = request.getParameter("email");
         String pwd = request.getParameter("password");
 
         try {
             // user already exist
-            if (db.checkUser(email, pwd)) {
-                User user = (User) db.getUserByEmail(email);
+            if (userManager.checkUser(email, pwd)) {
+                User user = (User) userManager.getUserByEmail(email);
                 user.errorOccured(true);
                 user.setErrorDescription("User already exist");
                 Gson gson = new Gson();
                 out.print(gson.toJson(user));
                 out.flush();
             } else {
-                User user = (User) db.newUser(email, pwd);
+                User user = (User) userManager.newUser(email, pwd);
                 Gson gson = new Gson();
 
                 out.print(gson.toJson(user));
