@@ -29,18 +29,15 @@ import java.util.HashMap;
 public class ActionContinueConfirmDialog extends Action {
 
     public static final String ACTION_CONTINUE_CONFIRM_DIALOG = "ACTION_CONTINUE_CONFIRM_DIALOG";
-
-
+    
     @Override
     public void onActivate(final ExecutionInterface di) throws JSONException{
         DialogAdapter da = (DialogAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_DIALOGS);
         JSONObject pjo = getParamsObj(params);
-        String message = "";
+        String message = pjo.getString("dialog_message");
+        String title = pjo.getString("dialog_title");
 
-        message = pjo.getString("dialog_message");
-
-
-        da.showSimpleConfirmDialog(message, new DialogAdapter.OnDialogChoiceListener() {
+        da.showSimpleConfirmDialog(message, title, new DialogAdapter.OnDialogChoiceListener() {
             @Override
             public void onDialogChoice() {
                 di.unpause();
@@ -59,6 +56,7 @@ public class ActionContinueConfirmDialog extends Action {
     protected JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("dialog_message", FormalParamBuilder.Types.STRING, false)
+                .put("dialog_title", FormalParamBuilder.Types.STRING, false)
                 .create();
     }
 

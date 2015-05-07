@@ -19,9 +19,9 @@ public class AndroidDialogAdapter implements DialogAdapter {
     }
 
     @Override
-    public void showSimpleConfirmDialog(String message, final OnDialogChoiceListener onYes, final OnDialogChoiceListener onNo) {
+    public void showSimpleConfirmDialog(String title, String message, final OnDialogChoiceListener onYes, final OnDialogChoiceListener onNo) {
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle("Sinapsi"); //TODO: make title also parameterizable
+        alertDialog.setTitle(title);
         alertDialog.setMessage(message);
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override

@@ -24,7 +24,8 @@ public interface DialogAdapter {
      * @param onNo listener for what to do when the user
      *              chooses no
      */
-    public void showSimpleConfirmDialog(String message,
+    public void showSimpleConfirmDialog(String title,
+                                        String message,
                                         final OnDialogChoiceListener onYes,
                                         final OnDialogChoiceListener onNo);
 
