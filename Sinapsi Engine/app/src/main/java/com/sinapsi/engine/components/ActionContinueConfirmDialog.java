@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class ActionContinueConfirmDialog extends Action {
 
     public static final String ACTION_CONTINUE_CONFIRM_DIALOG = "ACTION_CONTINUE_CONFIRM_DIALOG";
-    
+
     @Override
     public void onActivate(final ExecutionInterface di) throws JSONException{
         DialogAdapter da = (DialogAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_DIALOGS);

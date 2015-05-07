@@ -26,9 +26,7 @@ public class BGPGsonConverter extends GsonConverter {
     //This is also here because in the base class gson is not protected but private
     protected Gson myGson;
     private BGPKeysProvider keysProvider;
-
-    //TODO: handle exceptions
-
+    
     /**
      * Default ctor
      * @param gson the gson object
@@ -79,8 +77,6 @@ public class BGPGsonConverter extends GsonConverter {
             };
             return super.fromBody(myBody, type);
 
-        } catch (IOException e) {
-            throw new ConversionException(e);
         } catch (Exception e) {
             throw new ConversionException(e);
         } finally {

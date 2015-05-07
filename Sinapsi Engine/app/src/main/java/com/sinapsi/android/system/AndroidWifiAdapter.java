@@ -60,7 +60,7 @@ public class AndroidWifiAdapter implements WifiAdapter{
 
     @Override
     public void connectToSSID(String id) {
-        //TODO: probably this is not available in Android. check
+        //TODO: this is possible: http://stackoverflow.com/questions/8818290/how-to-connect-to-a-specific-wifi-network-in-android-programmatically
     }
 
     @Override
