@@ -32,9 +32,9 @@ actions that can perform.
 ##Security
 The connection between server and clients is crypted using [BGP library](https://github.com/AyoubOuarrak/Bit-Good-Privacy). 
 ###Secure connection
-When one of the clients want to send data to the server, first of all it's create a KeyGenerator object,  
-the constructor of KeyGenerator generate a 1024 bit public, private RSA key by default. To encrypt, all we need is the public key of the server, than we use this key to create the Encrypt object, finally, we call encrypt method that take the plaintext string, the return value is the cipher text.
-Decryption works in the reverse, we need our private key and encrypted session key of the server, then we create Decrypt object, and we call decrypt that take the cipher text and return the plain text.
+When a client wants to join Sinapsi, first, it generates the public and private key, and sends it to the server, e-mail , the newly generated public key and the encrypted session key. The server receives the request and generates, public key and private key, and sends to the client its public key and the encrypted session key. The client can now login, encrypting credentials with the server's public key and sending the generated string to the server. The server receive the encrypted string and decrypt it using its private key and the encrypted session key of the client. Now the server can response to the client crypting all data using the client's public key, and the client decrypt data recived from server, using its private key and encrypted session key of the server.
+####Key managment 
+The server convert private keys in string, then it save a salted hash of the string in the db.  
    
 ##Authors 
 _Marco Grillo_ (https://github.com/MarcoGrillo)   
