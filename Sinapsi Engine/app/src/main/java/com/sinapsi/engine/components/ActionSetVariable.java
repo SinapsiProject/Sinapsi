@@ -1,5 +1,6 @@
 package com.sinapsi.engine.components;
 
+import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.Action;
@@ -68,7 +69,7 @@ public class ActionSetVariable extends Action {
 
     @Override
     public int getMinVersion() {
-        return 1;
+        return SinapsiVersions.ARCHIMEDES.ordinal();
     }
 
     @Override

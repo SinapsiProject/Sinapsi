@@ -1,5 +1,6 @@
 package com.sinapsi.engine.components;
 
+import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
@@ -58,7 +59,7 @@ public class ActionWifiState extends Action{
 
     @Override
     public int getMinVersion() {
-        return 1;
+        return SinapsiVersions.ARCHIMEDES.ordinal();
     }
 
 

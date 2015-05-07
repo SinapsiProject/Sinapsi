@@ -1,6 +1,7 @@
 package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.Event;
+import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
@@ -40,7 +41,7 @@ public class TriggerScreenPower extends Trigger {
 
     @Override
     public int getMinVersion() {
-        return 1;
+        return SinapsiVersions.ARCHIMEDES.ordinal();
     }
 
     @Override
