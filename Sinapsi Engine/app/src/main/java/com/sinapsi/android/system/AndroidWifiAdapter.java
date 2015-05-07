@@ -14,8 +14,6 @@ import com.sinapsi.model.parameters.SwitchStatusChoices;
  */
 public class AndroidWifiAdapter implements WifiAdapter{
 
-    //TODO: add proper permissions to manifest
-
     private WifiManager wm;
     private ConnectivityManager cm;
 

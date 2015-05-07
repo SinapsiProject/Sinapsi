@@ -12,6 +12,7 @@ import com.sinapsi.engine.Event;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerWifi;
+import com.sinapsi.engine.system.SystemFacade;
 
 /**
  * ActivationManager - implementation for the Android platform.
@@ -22,45 +23,9 @@ public class AndroidActivationManager extends ActivationManager {
 
     private ContextWrapper contextWrapper;
 
+    private BroadcastActivator wifiActivator = null;
 
-    //TODO: move this initialization in a ctor, which checks
-    //----: if wifi is available on the executionInterface
-    private BroadcastActivator wifiActivator = new BroadcastActivator(
-            this,
-            newIntentFilter(new String[]{
-                    "android.net.wifi.STATE_CHANGE",
-                    "android.net.wifi.WIFI_STATE_CHANGED"
-            }), contextWrapper, executionInterface) {
-        @Override
-        public Event extractEventInfo(Context c, Intent i) {
-            return null;
-        }
-    };
-
-    //TODO: add proper permissions on the android manifest
-    private BroadcastActivator smsActivator = new BroadcastActivator(
-            this,
-            newIntentFilter(new String[]{
-                    "android.provider.Telephony.SMS_RECEIVED"
-            }), contextWrapper, executionInterface) {
-        @Override
-        public Event extractEventInfo(Context c, Intent intent) {
-            try {
-                SmsMessage[] messages = IntentUtils.getMessagesFromIntent(intent);
-                //TODO: google why an sms intent may contain more messages
-                //----: and check if just the first has to be read
-                String phoneNumber = messages[0].getDisplayOriginatingAddress();
-                String message = messages[0].getDisplayMessageBody();
-                return new Event()
-                        .put("sender_number", phoneNumber)
-                        .put("message_content", message);
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                return null;
-            }
-
-        }
-    };
+    private BroadcastActivator smsActivator = null;
 
     private BroadcastActivator[] activators = new BroadcastActivator[]{
             wifiActivator,
@@ -74,24 +39,65 @@ public class AndroidActivationManager extends ActivationManager {
      * @param cw the contextWrapper
      *
      */
-    public AndroidActivationManager(ContextWrapper cw) {
+    public AndroidActivationManager(ContextWrapper cw, SystemFacade sf) {
         this.contextWrapper = cw;
+
+
+        if(sf.checkRequirement(SystemFacade.REQUIREMENT_WIFI, 1)) wifiActivator = new BroadcastActivator(
+                this,
+                newIntentFilter(new String[]{
+                        "android.net.wifi.STATE_CHANGE",
+                        "android.net.wifi.WIFI_STATE_CHANGED"
+                }), contextWrapper, executionInterface) {
+            @Override
+            public Event extractEventInfo(Context c, Intent i) {
+                return null;
+            }
+        };
+
+
+        if(sf.checkRequirement(SystemFacade.REQUIREMENT_SMS_READ, 1)) smsActivator = new BroadcastActivator(
+                this,
+                newIntentFilter(new String[]{
+                        "android.provider.Telephony.SMS_RECEIVED"
+                }), contextWrapper, executionInterface) {
+            @Override
+            public Event extractEventInfo(Context c, Intent intent) {
+                try {
+                    SmsMessage[] messages = IntentUtils.getMessagesFromIntent(intent);
+                    //TODO: google why an sms intent may contain more messages
+                    //----: and check if just the first has to be read
+                    String phoneNumber = messages[0].getDisplayOriginatingAddress();
+                    String message = messages[0].getDisplayMessageBody();
+                    return new Event()
+                            .put("sender_number", phoneNumber)
+                            .put("message_content", message);
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
+            }
+        };
     }
 
     @Override
     public void addToNotifyList(Trigger t) {
         super.addToNotifyList(t);
 
-        if (t.getName().equals(TriggerWifi.TRIGGER_WIFI)) wifiActivator.addTrigger(t);
-        if (t.getName().equals(TriggerSMS.TRIGGER_SMS)) smsActivator.addTrigger(t);
+        if (t.getName().equals(TriggerWifi.TRIGGER_WIFI) && wifiActivator!= null) wifiActivator.addTrigger(t);
+        if (t.getName().equals(TriggerSMS.TRIGGER_SMS) && smsActivator!= null) smsActivator.addTrigger(t);
+
         manageRegistrations();
     }
 
     @Override
     public void removeFromNotifyList(Trigger t) {
         super.removeFromNotifyList(t);
-        if (t.getName().equals(TriggerWifi.TRIGGER_WIFI)) wifiActivator.removeTrigger(t);
-        if (t.getName().equals(TriggerSMS.TRIGGER_SMS)) smsActivator.removeTrigger(t);
+
+        if (t.getName().equals(TriggerWifi.TRIGGER_WIFI) && wifiActivator!= null) wifiActivator.removeTrigger(t);
+        if (t.getName().equals(TriggerSMS.TRIGGER_SMS) && smsActivator!= null) smsActivator.removeTrigger(t);
+
         manageRegistrations();
     }
 

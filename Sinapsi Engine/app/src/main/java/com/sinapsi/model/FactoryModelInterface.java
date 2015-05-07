@@ -9,7 +9,7 @@ public interface FactoryModelInterface {
     /**
      * Should create a new instance of UserInterface
      *
-     * @param id the user id in the db TODO: do we need this?
+     * @param id the user id in the db
      * @param email the user's email
      * @param password the user's password
      * @return a new UserInterface instance

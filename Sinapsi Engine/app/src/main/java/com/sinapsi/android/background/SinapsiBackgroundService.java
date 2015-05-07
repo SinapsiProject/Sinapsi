@@ -99,7 +99,7 @@ public class SinapsiBackgroundService extends Service {
 
         SystemFacade sf = createAndroidSystemFacade();
 
-        engine = new MacroEngine(device, new AndroidActivationManager(this), defaultWebExecutionInterface, sf, sinapsiLog);
+        engine = new MacroEngine(device, new AndroidActivationManager(this, sf), defaultWebExecutionInterface, sf, sinapsiLog);
         engine.addMacros(loadSavedMacros());
         engine.startEngine();
 
