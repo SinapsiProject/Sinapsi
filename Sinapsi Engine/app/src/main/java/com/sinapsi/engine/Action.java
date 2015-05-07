@@ -13,7 +13,6 @@ import org.json.JSONObject;
  * by every class implementing every different type of action.
  * For example, classes like ActionNotification and ActionSMS should
  * implement this interface.
- *
  */
 public abstract class Action implements Parameterized, DistributedComponent {
 
@@ -29,17 +28,18 @@ public abstract class Action implements Parameterized, DistributedComponent {
      * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
      * INSTEAD.
      */
-    public Action(){
+    public Action() {
         executionDevice = null;
         params = null;
     }
 
     /**
      * Initializes the new Action instance.
+     *
      * @param executionDevice the device on which this action is going to be executed
-     * @param params the JSON string containing the actual parameters
+     * @param params          the JSON string containing the actual parameters
      */
-    public void init(DeviceInterface executionDevice, String params){
+    public void init(DeviceInterface executionDevice, String params) {
         this.executionDevice = executionDevice;
         this.params = params;
     }
@@ -58,12 +58,13 @@ public abstract class Action implements Parameterized, DistributedComponent {
 
     /**
      * Call this method to activate the action.
+     *
      * @param ei the execution interface instance
      */
-    public void activate(final ExecutionInterface ei){
-        try{
+    public void activate(final ExecutionInterface ei) {
+        try {
             onActivate(ei);
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -92,26 +93,13 @@ public abstract class Action implements Parameterized, DistributedComponent {
     /**
      * Helper method to parse a JSONObject inside a string and returning
      * the 'parameters' entry contained in it.
+     *
      * @param actualParameters the string to be parsed
      * @return a JSONObject where names and values are actualParameters
      */
-    public static JSONObject getParamsObj(String actualParameters){
-        JSONObject o = null;
-        try {
-            o = new JSONObject(actualParameters);
-        } catch (JSONException e1) {
-            //actual parameters string is not well-formed
-            e1.printStackTrace();
-            return null;
-        }
-        JSONObject pjo;
-        try {
-            pjo = o.getJSONObject("parameters");
-        } catch (JSONException e1) {
-            e1.printStackTrace();
-            return null;
-        }
-        return pjo;
+    public static JSONObject getParamsObj(String actualParameters) throws JSONException {
+        JSONObject o = new JSONObject(actualParameters);
+        return o.getJSONObject("parameters");
     }
 
     @Override
@@ -122,13 +110,14 @@ public abstract class Action implements Parameterized, DistributedComponent {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return result!=null ? result.toString() : null;
+        return result != null ? result.toString() : null;
     }
 
     /**
      * Method the extending class has to implement in order to get
      * a JSON object containing all the necessary infos about the
      * required parameters of the action.
+     *
      * @return the JSONObject containing the formal parameters
      */
     protected abstract JSONObject getFormalParametersJSON() throws JSONException;
