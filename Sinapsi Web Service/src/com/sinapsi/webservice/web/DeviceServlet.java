@@ -32,6 +32,7 @@ public class DeviceServlet extends HttpServlet {
 	    	case "add": {
 	    		PrintWriter out = response.getWriter();
 	            DeviceManager deviceManager = new DeviceManager();
+	            //TODO: decrypt data from the user
 	            response.setContentType("application/json");
 	            String name = request.getParameter("name");
 	            String model = request.getParameter("model");
@@ -66,6 +67,7 @@ public class DeviceServlet extends HttpServlet {
 	    		 PrintWriter out = response.getWriter();
 	    		 DeviceManager deviceManager = new DeviceManager();
 	    	        response.setContentType("application/json");
+	    	        //TODO:decrypt data from the user
 	    	        String email = request.getParameter("email");
 	    	     
 	    	        try {

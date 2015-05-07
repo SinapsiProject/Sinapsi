@@ -26,6 +26,8 @@ public class RequestLoginSevlet extends HttpServlet {
         try {
         	 String email = request.getParameter("email");
              KeyGenerator generator = new KeyGenerator();
+             //TODO: save key in the db, every user has his own key
+             //TODO: send public key to the user
              
         } catch(Exception e) {
         	e.printStackTrace();

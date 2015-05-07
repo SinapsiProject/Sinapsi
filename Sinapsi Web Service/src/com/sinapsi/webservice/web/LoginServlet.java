@@ -28,6 +28,7 @@ public class LoginServlet extends HttpServlet {
         UserManager userManager = new UserManager();
         response.setContentType("application/json");
         try {
+        	//TODO: decrypt (using private key of the user saved in the db)data from client, (email, password must be crypted)
             String email = request.getParameter("email");
             String pwd = request.getParameter("password");
             User user = (User) userManager.getUserByEmail(email);
@@ -36,6 +37,7 @@ public class LoginServlet extends HttpServlet {
             if (user != null) {
                 // the user is ok
                 if (userManager.checkUser(email, pwd)) {
+                	//TODO: send crypted user object
                     out.print(gson.toJson(user));
                     out.flush();
                     // login error, (email incorrect or password incorrect)

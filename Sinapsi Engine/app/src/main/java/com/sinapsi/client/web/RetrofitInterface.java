@@ -20,6 +20,7 @@ import retrofit.http.Query;
 public interface RetrofitInterface {
 
     public static final String LOGIN = "login";
+    public static final String REQUEST_LOGIN = "request_login";
     public static final String REGISTER = "register";
     public static final String DEVICES = "devices";
     public static final String AVAILABLE_ACTIONS = "available_actions";
@@ -32,16 +33,19 @@ public interface RetrofitInterface {
     public static final String GET = "get";
 
 
+    @POST(REQUEST_LOGIN)
+    public void requestLogin(
+            @Query("email") String email,
+            Callback<PublicKey> publicKey);
+
     /**
      * Login request
      * @param email email of the user
-     * @param publicKey public key of the user, necessary to establish a secure connection
      * @param password password of the user
      */
     @POST(LOGIN)
     public void login(
             @Query("email") String email,
-            @Query("key") PublicKey publicKey,
             @Body String password,
             Callback<User> user);
 

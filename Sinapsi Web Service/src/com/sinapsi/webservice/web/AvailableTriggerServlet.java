@@ -31,6 +31,7 @@ public class AvailableTriggerServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         EngineManager engineManager = new EngineManager();
         response.setContentType("application/json");
+        //TODO:decrypt data from the user
         int idDevice = Integer.parseInt(request.getParameter("device"));
 
         try {
