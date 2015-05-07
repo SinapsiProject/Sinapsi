@@ -118,6 +118,7 @@ public class SystemFacade {
     public static final String REQUIREMENT_LUA = "REQUIREMENT_LUA";
     public static final String REQUIREMENT_SIMPLE_DIALOGS = "REQUIREMENT_SIMPLE_DIALOGS";
     public static final String REQUIREMENT_SIMPLE_NOTIFICATIONS = "REQUIREMENT_SIMPLE_NOTIFICATIONS";
+    public static final String REQUIREMENT_INTERCEPT_SCREEN_POWER = "REQUIREMENT_INTERCEPT_SCREEN_POWER";
 
 
     public static final String SERVICE_WIFI = "SERVICE_WIFI";
