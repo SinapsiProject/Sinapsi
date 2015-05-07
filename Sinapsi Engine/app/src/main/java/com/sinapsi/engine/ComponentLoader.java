@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO: doku
+ * Component loader class. Used by ComponentFactory to load classes from a list and
+ * to instantiate at runtime specified components.
  */
 public class  ComponentLoader {
 
@@ -31,8 +32,8 @@ public class  ComponentLoader {
         for(Class<? extends MacroComponent> c: classes){
             MacroComponent mc = null;
             try {
-                mc = c.newInstance();  //TODO: default ctor in components
-            } catch (InstantiationException | IllegalAccessException e) {
+                mc = c.newInstance();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             if (mc == null){
@@ -54,35 +55,66 @@ public class  ComponentLoader {
         return allOk;
     }
 
+    /**
+     * Returns a list of classes which loading was unsuccessful.
+     *
+     * @return the error class list
+     */
     public List<Class<? extends MacroComponent>> getErrorClasses() {
         return errorClasses;
     }
 
+    /**
+     * Returns a map of valid Trigger classes
+     *
+     * @return the trigger class map
+     */
     public Map<String, Class<? extends Trigger>> getTriggerClasses() {
         return triggerClasses;
     }
 
+    /**
+     * Returns a map of valid Action classes
+     *
+     * @return the action class map
+     */
     public Map<String, Class<? extends Action>> getActionClasses() {
         return actionClasses;
     }
 
+    /**
+     * Returns a list of valid trigger names
+     *
+     * @return the list of names
+     */
     public List<String> getTriggerKeys(){
         return new ArrayList<>(triggerClasses.keySet());
     }
 
+    /**
+     * Returns a list of valid action names
+     *
+     * @return the list of names
+     */
     public List<String> getActionKeys(){
         return new ArrayList<>(actionClasses.keySet());
     }
 
+    /**
+     * Creates a new component instance of the specified type, with the specified name (key)
+     * @param type the component type
+     * @param key the component key/name
+     * @return a new Component instance
+     */
     public MacroComponent newComponentInstance(MacroComponent.ComponentTypes type, String key){
         try {
             switch (type) {
                 case TRIGGER:
-                    return (MacroComponent) triggerClasses.get(key).newInstance();
+                    return triggerClasses.get(key).newInstance();
                 case ACTION:
-                    return (MacroComponent) actionClasses.get(key).newInstance();
+                    return actionClasses.get(key).newInstance();
             }
-        }catch(InstantiationException | IllegalAccessException e){
+        }catch(Exception e){
             e.printStackTrace();
         }
         return null;

@@ -32,7 +32,6 @@ public class MacroEngine {
     private SinapsiLog log;
 
     private HashMap<String,MacroInterface> macros = new HashMap<>();
-    //private HashMap<String,Variable> engineVariables = new HashMap<>(); //TODO: for macro variables
 
     /**
      * Creates a new MacroEngine instance with a default component
@@ -141,6 +140,11 @@ public class MacroEngine {
         activator.activateForOnEngineStart();
     }
 
-    //TODO: pause and unpause engine?
+    public void pauseEngine(){
+        activator.setEnabled(false);
+    }
 
+    public void resumeEngine(){
+        activator.setEnabled(true);
+    }
 }
