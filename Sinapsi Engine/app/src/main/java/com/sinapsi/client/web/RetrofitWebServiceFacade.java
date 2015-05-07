@@ -1,4 +1,4 @@
-package com.sinapsi.client;
+package com.sinapsi.client.web;
 
 import com.bgp.generator.KeyGenerator;
 import com.google.gson.Gson;

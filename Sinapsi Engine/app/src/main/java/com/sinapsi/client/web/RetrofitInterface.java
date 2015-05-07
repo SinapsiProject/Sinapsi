@@ -1,4 +1,4 @@
-package com.sinapsi.client;
+package com.sinapsi.client.web;
 
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;

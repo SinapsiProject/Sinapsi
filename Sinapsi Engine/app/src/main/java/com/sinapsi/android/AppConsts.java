@@ -6,4 +6,5 @@ package com.sinapsi.android;
 public class AppConsts {
     public static final boolean DEBUG = true;
     public static final String SINAPSI_URL = "http://massolit.ns0.it:8181/sinapsi";
+    public static final String PREFS_NAME = "SinapsiPrefs";
 }

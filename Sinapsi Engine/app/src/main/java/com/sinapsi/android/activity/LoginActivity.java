@@ -33,15 +33,13 @@ import java.util.List;
 
 import com.bgp.generator.KeyGenerator;
 import com.sinapsi.android.Lol;
-import com.sinapsi.client.RetrofitWebServiceFacade;
+import com.sinapsi.client.web.RetrofitWebServiceFacade;
 import com.sinapsi.android.utils.DialogUtils;
-import com.sinapsi.client.SinapsiWebServiceFacade;
+import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.impl.User;
 
-import retrofit.Callback;
 import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * A login screen that offers login via email/password.

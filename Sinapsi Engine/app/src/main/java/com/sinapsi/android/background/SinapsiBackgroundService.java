@@ -6,14 +6,17 @@ import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.sinapsi.android.AppConsts;
 import com.sinapsi.android.Lol;
+import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
 import com.sinapsi.android.system.AndroidNotificationAdapter;
-import com.sinapsi.client.RetrofitWebServiceFacade;
+import com.sinapsi.client.persistence.UserSettingsFacade;
+import com.sinapsi.client.web.RetrofitWebServiceFacade;
 import com.sinapsi.android.system.AndroidActivationManager;
 import com.sinapsi.android.system.AndroidDialogAdapter;
 import com.sinapsi.android.system.AndroidSMSAdapter;
 import com.sinapsi.android.system.AndroidWifiAdapter;
-import com.sinapsi.client.SinapsiWebServiceFacade;
+import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.components.ActionLog;
@@ -49,6 +52,8 @@ public class SinapsiBackgroundService extends Service {
 
     private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade();
 
+    private UserSettingsFacade settings;
+
     WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
         @Override
         public void continueExecutionOnDevice(ExecutionInterface ei, DeviceInterface di) {
@@ -57,30 +62,22 @@ public class SinapsiBackgroundService extends Service {
                     new RemoteExecutionDescriptor(
                             ei.getLocalVars(),
                             ei.getExecutionStackIndexes()),
-                            new SinapsiWebServiceFacade.WebServiceCallback<String>(){
+                    new SinapsiWebServiceFacade.WebServiceCallback<String>() {
 
-                                @Override
-                                public void success(String s, Object response) {
+                        @Override
+                        public void success(String s, Object response) {
 
-                                }
+                        }
 
-                                @Override
-                                public void failure(Throwable error) {
+                        @Override
+                        public void failure(Throwable error) {
 
-                                }
-                            });
+                        }
+                    });
         }
     };
 
-    private DeviceInterface device = fm.newDevice(
-            0,
-            "my_phone",
-            "phone_model",
-            "android_smartphone",
-            fm.newUser(0,
-                    "my@email.com",
-                    "secretpassw"),
-            1); //TODO: initialize this elsewhere (perhaps load from settings or db) with user and device info
+    private DeviceInterface device;
 
     /**
      * Default ctor. This initializes and starts the engine and the logging system.
@@ -90,22 +87,33 @@ public class SinapsiBackgroundService extends Service {
         sinapsiLog.addLogInterface(new SystemLogInterface() {
             @Override
             public void printMessage(LogMessage lm) {
-                Lol.d(lm.getTag(),lm.getMessage());
+                Lol.d(lm.getTag(), lm.getMessage());
             }
         });
+
+        settings = new AndroidUserSettingsFacade(AppConsts.PREFS_NAME, this);
+
+        loadSettings(settings);
 
         SystemFacade sf = createAndroidSystemFacade();
 
         engine = new MacroEngine(device, new AndroidActivationManager(this), defaultWebExecutionInterface, sf, sinapsiLog);
         engine.addMacros(loadSavedMacros());
         engine.startEngine();
+
+
+    }
+
+    private void loadSettings(UserSettingsFacade settings) {
+        device = settings.getSavedDevice();
     }
 
     /**
      * Initializes a SystemFacade instance for the Android platform
+     *
      * @return a new SystemFacade instance
      */
-    private SystemFacade createAndroidSystemFacade(){
+    private SystemFacade createAndroidSystemFacade() {
         SystemFacade sf = new SystemFacade();
 
         sf.addSystemService(SystemFacade.SERVICE_DIALOGS, new AndroidDialogAdapter(this));
@@ -118,9 +126,9 @@ public class SinapsiBackgroundService extends Service {
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_LUA, true);
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_DIALOGS, true);
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
-        if(pm.hasSystemFeature(PackageManager.FEATURE_WIFI))
+        if (pm.hasSystemFeature(PackageManager.FEATURE_WIFI))
             sf.setRequirementSpec(SystemFacade.REQUIREMENT_WIFI, true);
-        if(pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
+        if (pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
             sf.setRequirementSpec(SystemFacade.REQUIREMENT_SMS_READ, true);
 
 
@@ -129,13 +137,13 @@ public class SinapsiBackgroundService extends Service {
 
     /**
      * Loads all saved macros from a local db and/or from the web service
+     *
      * @return the saved macros
      */
-    public List<MacroInterface> loadSavedMacros(){
+    public List<MacroInterface> loadSavedMacros() {
         //TODO: implement
         return new ArrayList<>();
     }
-
 
 
     @Override
@@ -147,7 +155,7 @@ public class SinapsiBackgroundService extends Service {
      * Binder class received by activities in order to access
      * this service's methods.
      */
-    public class SinapsiServiceBinder extends Binder{
+    public class SinapsiServiceBinder extends Binder {
         public SinapsiBackgroundService getService() {
             return SinapsiBackgroundService.this;
         }
@@ -155,6 +163,7 @@ public class SinapsiBackgroundService extends Service {
 
     /**
      * engine getter
+     *
      * @return the engine
      */
     public MacroEngine getEngine() {
@@ -163,6 +172,7 @@ public class SinapsiBackgroundService extends Service {
 
     /**
      * sinapsi log getter
+     *
      * @return the sinapsi log
      */
     public SinapsiLog getSinapsiLog() {
@@ -171,26 +181,62 @@ public class SinapsiBackgroundService extends Service {
 
     /**
      * component factory getter
+     *
      * @return the component factory
      */
-    public ComponentFactory getComponentFactory(){
+    public ComponentFactory getComponentFactory() {
         return engine.getComponentFactory();
     }
 
+    /**
+     * model factory getter
+     *
+     * @return the component factory
+     */
+    public FactoryModel getFactoryModel() {
+        return fm;
+    }
+
+    /**
+     * web service facade getter
+     *
+     * @return the web service facade
+     */
+    public SinapsiWebServiceFacade getWebServiceFacade() {
+        return web;
+    }
+
+    /**
+     * User settings facade getter
+     *
+     * @return the user settings facade
+     */
+    public UserSettingsFacade getSettings() {
+        return settings;
+    }
+
+    /**
+     * getter of the device on which this client is running onto.
+     *
+     * @return the device
+     */
+    public DeviceInterface getDevice() {
+        return device;
+    }
 
     /**
      * QUESTO E' UN PRIMO ESEMPIO DI UNA MACRO LOCALE.
      * Viene creata una macro che si attiva ogni volta che il wifi
      * viene attivato, e che quindi stampa un messaggio nel log e
      * successivamente invia un sms a un numero inventato.
-     *
+     * <p/>
      * Il lavoro che fa questo metodo e' in sostanza quello
      * che dovra' essere fatto dal macro editor. Le uniche differenze
      * sono che il macro editor comunichera' con una GUI, e che controllera'
      * anche quali component sono disponibili prima di aggiungerli o mostrarli
      * all'utente.
      */
-    public void createLocalMacroExample(){
+    public void createLocalMacroExample() {
         MacroInterface myMacro = fm.newMacro("ExampleLocal", 1);
         myMacro.setTrigger(getComponentFactory().newTrigger(
                 TriggerWifi.TRIGGER_WIFI,
@@ -216,6 +262,7 @@ public class SinapsiBackgroundService extends Service {
 
         engine.addMacro(myMacro);
     }
+
 
     //TODO: foreground notification mode
 

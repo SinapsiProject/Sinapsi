@@ -1,4 +1,4 @@
-package com.sinapsi.client;
+package com.sinapsi.client.web;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;

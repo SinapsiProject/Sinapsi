@@ -1,21 +1,15 @@
-package com.sinapsi.client;
+package com.sinapsi.client.web;
 
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
-import com.bgp.generator.KeyGenerator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sinapsi.android.Lol;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.HashMap;
 import javax.crypto.SecretKey;
 import retrofit.converter.ConversionException;
