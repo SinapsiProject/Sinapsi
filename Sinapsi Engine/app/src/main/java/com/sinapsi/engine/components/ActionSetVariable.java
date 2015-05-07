@@ -3,8 +3,8 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.Action;
-import com.sinapsi.model.parameters.FormalParamBuilder;
-import com.sinapsi.utils.SinapsiJSONUtils;
+import com.sinapsi.engine.parameters.FormalParamBuilder;
+import com.sinapsi.utils.JSONUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,8 +55,8 @@ public class ActionSetVariable extends Action {
     protected JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("var_name", FormalParamBuilder.Types.STRING, false)
-                .put("var_scope", SinapsiJSONUtils.enumValuesToJSONArray(VariableManager.Scopes.class), false)
-                .put("var_type", SinapsiJSONUtils.enumValuesToJSONArray(VariableManager.Types.class), false)
+                .put("var_scope", JSONUtils.enumValuesToJSONArray(VariableManager.Scopes.class), false)
+                .put("var_type", JSONUtils.enumValuesToJSONArray(VariableManager.Types.class), false)
                 .put("var_value", FormalParamBuilder.Types.STRING, false)//TODO: a new type of parameter to indicate that any type is valid
                 .create();
     }

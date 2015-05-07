@@ -1,6 +1,6 @@
-package com.sinapsi.model.parameters;
+package com.sinapsi.engine.parameters;
 
-import com.sinapsi.utils.SinapsiJSONUtils;
+import com.sinapsi.utils.JSONUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -118,7 +118,7 @@ public class FormalParamBuilder {
         arr.put(new JSONObject()
                 .put("name", name)
                 .put("type", Types.STRING_ADVANCED.toString())
-                .put("choiceEntries", SinapsiJSONUtils.enumValuesToJSONArray(StringMatchingModeChoices.class))
+                .put("choiceEntries", JSONUtils.enumValuesToJSONArray(StringMatchingModeChoices.class))
                 .put("optional", optional));
         return this;
     }

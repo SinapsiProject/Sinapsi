@@ -6,8 +6,8 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 
 import com.sinapsi.engine.system.WifiAdapter;
-import com.sinapsi.model.parameters.ConnectionStatusChoices;
-import com.sinapsi.model.parameters.SwitchStatusChoices;
+import com.sinapsi.engine.parameters.ConnectionStatusChoices;
+import com.sinapsi.engine.parameters.SwitchStatusChoices;
 
 /**
  * WifiAdapter implementation for Android.

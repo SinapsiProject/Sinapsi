@@ -117,7 +117,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         final PrivateKey prk = kg.getPrivateKey();
         final PublicKey puk = kg.getPublicKey();
         final KeyPair kp = kg.getKeyPair();
-        uncryptedRetrofit.login(email, puk, password, new Callback<User>() {
+        uncryptedRetrofit.login(email, password, new Callback<User>() {
             @Override
             public void success(User user, Response response) {
                 RetrofitWebServiceFacade.this.publicKey = puk;
@@ -141,7 +141,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void getAllDevicesByUser(UserInterface user, WebServiceCallback<List<DeviceInterface>> result) {
         checkKeys();
-        cryptedRetrofit.getAllDevicesByUser(user.getEmail(), publicKey, convertCallback(result));
+        cryptedRetrofit.getAllDevicesByUser(user.getEmail(), convertCallback(result));
     }
 
     @Override
@@ -158,7 +158,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 deviceType,
                 deviceClientVersion,
                 user.getId(),
-                publicKey,
                 convertCallback(result));
     }
 
@@ -167,7 +166,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         checkKeys();
         cryptedRetrofit.getAvailableActions(
                 device.getId(),
-                publicKey,
                 convertCallback(result));
     }
 
@@ -176,7 +174,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         checkKeys();
         cryptedRetrofit.setAvailableActions(
                 device.getId(),
-                publicKey,
                 actions,
                 convertCallback(result));
     }
@@ -186,7 +183,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         checkKeys();
         cryptedRetrofit.getAvailableTriggers(
                 device.getId(),
-                publicKey,
                 convertCallback(result));
     }
 

@@ -3,7 +3,7 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.Action;
-import com.sinapsi.model.parameters.FormalParamBuilder;
+import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
 import org.json.JSONException;

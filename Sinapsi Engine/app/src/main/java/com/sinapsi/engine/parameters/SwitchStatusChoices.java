@@ -1,4 +1,4 @@
-package com.sinapsi.model.parameters;
+package com.sinapsi.engine.parameters;
 
 /**
 * Enum of possible values that a parameter of type "choice"

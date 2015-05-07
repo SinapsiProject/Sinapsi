@@ -5,11 +5,11 @@ import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.engine.Trigger;
-import com.sinapsi.model.parameters.ConnectionStatusChoices;
-import com.sinapsi.model.parameters.FormalParamBuilder;
-import com.sinapsi.model.parameters.SwitchStatusChoices;
+import com.sinapsi.engine.parameters.ConnectionStatusChoices;
+import com.sinapsi.engine.parameters.FormalParamBuilder;
+import com.sinapsi.engine.parameters.SwitchStatusChoices;
 import com.sinapsi.utils.HashMapBuilder;
-import com.sinapsi.utils.SinapsiJSONUtils;
+import com.sinapsi.utils.JSONUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,17 +28,6 @@ public class TriggerWifi extends Trigger {
 
     public static final String TRIGGER_WIFI = "TRIGGER_WIFI";
 
-
-    /**
-     * Default ctor, needed by ComponentLoader to create an instance
-     * with java reflection.
-     * DO NOT DIRECTLY CALL THIS: THIS SHOULD BE CALLED ONLY BY
-     * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
-     * INSTEAD.
-     */
-    public TriggerWifi(){
-        super();
-    }
 
     @Override
     public String getName() {
@@ -70,8 +59,8 @@ public class TriggerWifi extends Trigger {
     @Override
     protected JSONObject getFormalParametersJSON() throws JSONException{
         return new FormalParamBuilder()
-                .put("wifi_status", SinapsiJSONUtils.enumValuesToJSONArray(SwitchStatusChoices.class), true)
-                .put("wifi_connection_status", SinapsiJSONUtils.enumValuesToJSONArray(ConnectionStatusChoices.class), true)
+                .put("wifi_status", JSONUtils.enumValuesToJSONArray(SwitchStatusChoices.class), true)
+                .put("wifi_connection_status", JSONUtils.enumValuesToJSONArray(ConnectionStatusChoices.class), true)
                 .put("wifi_ssid", FormalParamBuilder.Types.STRING, true)
                 .create();
 

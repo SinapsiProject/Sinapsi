@@ -1,4 +1,4 @@
-package com.sinapsi.model.parameters;
+package com.sinapsi.engine.parameters;
 
 import org.json.JSONException;
 import org.json.JSONObject;

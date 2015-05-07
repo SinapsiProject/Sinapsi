@@ -8,7 +8,7 @@ import java.util.Arrays;
  * Collection of static methods to convert Sinapsi-related
  * json strings to/from Sinapsi objects
  */
-public class SinapsiJSONUtils {
+public class JSONUtils {
 
     /**
      * Converts all enum values to a JSON array of strings

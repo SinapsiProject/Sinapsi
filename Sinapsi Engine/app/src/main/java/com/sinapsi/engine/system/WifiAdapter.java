@@ -1,7 +1,7 @@
 package com.sinapsi.engine.system;
 
-import com.sinapsi.model.parameters.ConnectionStatusChoices;
-import com.sinapsi.model.parameters.SwitchStatusChoices;
+import com.sinapsi.engine.parameters.ConnectionStatusChoices;
+import com.sinapsi.engine.parameters.SwitchStatusChoices;
 
 /**
  * Interface used to adapt various system calls

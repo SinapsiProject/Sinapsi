@@ -4,7 +4,7 @@ import com.sinapsi.engine.Event;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.Trigger;
-import com.sinapsi.model.parameters.FormalParamBuilder;
+import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
 
 import org.json.JSONException;
@@ -21,18 +21,6 @@ import java.util.HashMap;
 public class TriggerSMS extends Trigger{
 
     public static final String TRIGGER_SMS = "TRIGGER_SMS";
-
-
-    /**
-     * Default ctor, needed by ComponentLoader to create an instance
-     * with java reflection.
-     * DO NOT DIRECTLY CALL THIS: THIS SHOULD BE CALLED ONLY BY
-     * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
-     * INSTEAD.
-     */
-    public TriggerSMS(){
-        super();
-    }
 
 
     @Override

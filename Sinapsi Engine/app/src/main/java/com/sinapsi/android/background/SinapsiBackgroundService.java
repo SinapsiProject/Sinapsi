@@ -32,8 +32,8 @@ import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.model.parameters.ActualParamBuilder;
-import com.sinapsi.model.parameters.SwitchStatusChoices;
+import com.sinapsi.engine.parameters.ActualParamBuilder;
+import com.sinapsi.engine.parameters.SwitchStatusChoices;
 
 import java.util.ArrayList;
 import java.util.List;
