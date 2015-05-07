@@ -65,12 +65,10 @@ public interface RetrofitInterface {
     /**
      * Device connected request
      * @param email user email
-     * @param publicKey public key of the user
      */
     @GET(DEVICES+ACTION+GET)
     public void getAllDevicesByUser(
             @Query("email") String email,
-            @Query("key") PublicKey publicKey,
             Callback<List<DeviceInterface>> devices);
 
 
@@ -90,32 +88,27 @@ public interface RetrofitInterface {
             @Query("type") String type,
             @Query("version") int version,
             @Query("user") int idUser,
-            @Query("key") PublicKey publicKey,
             Callback<DeviceInterface> result);
 
 
     /**
      * Request the available actions
      * @param idDevice the id of the device
-     * @param publicKey public key of the user
      */
     @GET(AVAILABLE_ACTIONS)
     public void getAvailableActions(
             @Query("device") int idDevice,
-            @Query("key") PublicKey publicKey,
             Callback<List<MacroComponent>> actions);
 
 
     /**
      * Send the available actions on the current device
      * @param idDevice id device
-     * @param publicKey public key of the user
      * @param actions list of actions that are available
      */
     @POST(AVAILABLE_ACTIONS)
     public void setAvailableActions(
             @Query("device") int idDevice,
-            @Query("key") PublicKey publicKey,
             @Body List<MacroComponent> actions,
             Callback<String> result);
 
@@ -123,12 +116,10 @@ public interface RetrofitInterface {
     /**
      * Request the available triggers
      * @param idDevice the id of the device
-     * @param publicKey public key of the user
      */
     @GET(AVAILABLE_TRIGGERS)
     public void getAvailableTriggers(
             @Query("device") int idDevice,
-            @Query("key") PublicKey publicKey,
             Callback<List<MacroComponent>> triggers);
 
 
