@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.sinapsi.android.AppConsts;
+import com.sinapsi.client.AppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
 import com.sinapsi.android.system.AndroidNotificationAdapter;
@@ -38,6 +38,8 @@ import com.sinapsi.model.parameters.SwitchStatusChoices;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.android.AndroidLog;
+
 /**
  * Sinapsi background service on android platform.
  * This should be started in foreground notification mode
@@ -50,7 +52,7 @@ public class SinapsiBackgroundService extends Service {
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
 
-    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade();
+    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
 
     private UserSettingsFacade settings;
 
@@ -91,7 +93,7 @@ public class SinapsiBackgroundService extends Service {
             }
         });
 
-        settings = new AndroidUserSettingsFacade(AppConsts.PREFS_NAME, this);
+        settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
 
         loadSettings(settings);
 

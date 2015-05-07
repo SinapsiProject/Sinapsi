@@ -40,6 +40,7 @@ import com.sinapsi.engine.R;
 import com.sinapsi.model.impl.User;
 
 import retrofit.RetrofitError;
+import retrofit.android.AndroidLog;
 
 /**
  * A login screen that offers login via email/password.
@@ -136,7 +137,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(true);
 
 
-            RetrofitWebServiceFacade wsf = new RetrofitWebServiceFacade();
+            RetrofitWebServiceFacade wsf = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
             wsf.login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
                 @Override
                 public void success(User user, Object response) {

@@ -3,7 +3,7 @@ package com.sinapsi.client.web;
 import com.bgp.generator.KeyGenerator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sinapsi.android.AppConsts;
+import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
@@ -18,7 +18,6 @@ import java.util.List;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
-import retrofit.android.AndroidLog;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 
@@ -37,20 +36,20 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     private RetrofitInterface cryptedRetrofit;
     private RetrofitInterface uncryptedRetrofit;
 
-    public RetrofitWebServiceFacade() {
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog) {
 
         Gson gson = new GsonBuilder().create();
 
         RestAdapter cryptedRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
                 .setConverter(new BGPGsonConverter(gson, this))
-                .setLog(new AndroidLog("RETROFIT"))
+                .setLog(retrofitLog)
                 .build();
 
         RestAdapter uncryptedRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
                 .setConverter(new GsonConverter(gson))
-                .setLog(new AndroidLog("RETROFIT"))
+                .setLog(retrofitLog)
                 .build();
 
         if(AppConsts.DEBUG) {

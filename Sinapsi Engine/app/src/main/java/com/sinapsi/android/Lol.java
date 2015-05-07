@@ -2,6 +2,8 @@ package com.sinapsi.android;
 
 import android.util.Log;
 
+import com.sinapsi.client.AppConsts;
+
 /**
  * Created by Giuseppe on 04/03/15.
  * Debug-state driven Log proxy
