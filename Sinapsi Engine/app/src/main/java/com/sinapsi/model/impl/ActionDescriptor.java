@@ -8,14 +8,14 @@ import java.util.HashMap;
  * Abstraction of Action, this class is not the real representation of Action object, but gives support to database manager
  * 
  */
-public class ActionAbstraction extends ComunicationError implements MacroComponent {
+public class ActionDescriptor extends ComunicationError implements MacroComponent {
 	private int minVersion;
 	private String name;
 	
 	/**
 	 * Default ctor
 	 */
-	public ActionAbstraction(int minVer, String n) {
+	public ActionDescriptor(int minVer, String n) {
 		super();
 		minVersion = minVer;
 		name = n;

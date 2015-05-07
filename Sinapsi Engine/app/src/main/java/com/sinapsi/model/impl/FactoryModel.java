@@ -44,7 +44,7 @@ public class FactoryModel implements FactoryModelInterface {
 	 */
 	@Override
 	public MacroComponent newActionAbstraction(int minVersion, String name) {
-		return new ActionAbstraction(minVersion, name);
+		return new ActionDescriptor(minVersion, name);
 	}
 
 	/* (non-Javadoc)
@@ -52,7 +52,7 @@ public class FactoryModel implements FactoryModelInterface {
 	 */
 	@Override
 	public MacroComponent newTriggerAbstraction(int minVersion, String name) {
-		return new TriggerAbstraction(minVersion, name);
+		return new TriggerDescriptor(minVersion, name);
 	}
 
 }
