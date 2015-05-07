@@ -22,8 +22,6 @@ import com.sinapsi.engine.system.SystemFacade;
  */
 public class AndroidActivationManager extends ActivationManager {
 
-    private ContextWrapper contextWrapper;
-
     private BroadcastActivator wifiActivator = null;
     private BroadcastActivator smsActivator = null;
     private BroadcastActivator screenPowerActivator = null;
@@ -35,14 +33,12 @@ public class AndroidActivationManager extends ActivationManager {
 
     /**
      * Creates a new AndroidActivationManager instance with the specified
-     * ContextWrapper.
+     * ContextWrapper and SystemFacade.
      *
-     * @param cw the contextWrapper
-     *
+     * @param contextWrapper the contextWrapper
+     * @param sf the SystemFacade, used for requirement checks
      */
-    public AndroidActivationManager(ContextWrapper cw, SystemFacade sf) {
-        this.contextWrapper = cw;
-
+    public AndroidActivationManager(ContextWrapper contextWrapper, SystemFacade sf) {
 
         if(sf.checkRequirement(SystemFacade.REQUIREMENT_WIFI, 1)) wifiActivator = new BroadcastActivator(
                 this, newIntentFilter(

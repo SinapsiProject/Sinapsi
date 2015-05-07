@@ -19,8 +19,6 @@ public abstract class ActivationManager {
     private List<Trigger> engineStartTriggers = new ArrayList<>();
     private boolean enabled = false;
 
-    //TODO: manage distribution
-
     /**
      * Registers a trigger for activation.
      * Override this to handle system dependent trigger registration
