@@ -18,6 +18,7 @@ import java.util.List;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import retrofit.android.AndroidLog;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 
@@ -43,14 +44,25 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         RestAdapter cryptedRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
                 .setConverter(new BGPGsonConverter(gson, this))
+                .setLog(new AndroidLog("RETROFIT"))
                 .build();
-
-        cryptedRetrofit = cryptedRestAdapter.create(RetrofitInterface.class);
 
         RestAdapter uncryptedRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
                 .setConverter(new GsonConverter(gson))
+                .setLog(new AndroidLog("RETROFIT"))
                 .build();
+
+        if(AppConsts.DEBUG) {
+            cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
+            uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
+        }
+        else {
+            cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
+            uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
+        }
+
+        cryptedRetrofit = cryptedRestAdapter.create(RetrofitInterface.class);
 
         uncryptedRetrofit = uncryptedRestAdapter.create(RetrofitInterface.class);
     }

@@ -266,7 +266,5 @@ public class SinapsiBackgroundService extends Service {
 
     //TODO: foreground notification mode
 
-    //TODO: connection against web service
-
 
 }
