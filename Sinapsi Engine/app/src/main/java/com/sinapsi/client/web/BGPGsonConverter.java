@@ -26,7 +26,7 @@ public class BGPGsonConverter extends GsonConverter {
     //This is also here because in the base class gson is not protected but private
     protected Gson myGson;
     private BGPKeysProvider keysProvider;
-    
+
     /**
      * Default ctor
      * @param gson the gson object
