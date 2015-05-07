@@ -45,11 +45,10 @@ public class AndroidActivationManager extends ActivationManager {
 
 
         if(sf.checkRequirement(SystemFacade.REQUIREMENT_WIFI, 1)) wifiActivator = new BroadcastActivator(
-                this,
-                newIntentFilter(new String[]{
+                this, newIntentFilter(
                         "android.net.wifi.STATE_CHANGE",
-                        "android.net.wifi.WIFI_STATE_CHANGED"
-                }), contextWrapper, executionInterface) {
+                        "android.net.wifi.WIFI_STATE_CHANGED"),
+                contextWrapper, executionInterface) {
             @Override
             public Event extractEventInfo(Context c, Intent i) {
                 return null;
@@ -58,10 +57,9 @@ public class AndroidActivationManager extends ActivationManager {
 
 
         if(sf.checkRequirement(SystemFacade.REQUIREMENT_SMS_READ, 1)) smsActivator = new BroadcastActivator(
-                this,
-                newIntentFilter(new String[]{
-                        "android.provider.Telephony.SMS_RECEIVED"
-                }), contextWrapper, executionInterface) {
+                this, newIntentFilter(
+                        "android.provider.Telephony.SMS_RECEIVED"),
+                contextWrapper, executionInterface) {
             @Override
             public Event extractEventInfo(Context c, Intent intent) {
                 try {
@@ -82,11 +80,10 @@ public class AndroidActivationManager extends ActivationManager {
         };
 
         if(sf.checkRequirement(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, 1)) screenPowerActivator = new BroadcastActivator(
-                this,
-                newIntentFilter(new String[]{
+                this, newIntentFilter(
                         Intent.ACTION_SCREEN_OFF,
-                        Intent.ACTION_SCREEN_ON
-                }), contextWrapper, executionInterface) {
+                        Intent.ACTION_SCREEN_ON),
+                contextWrapper, executionInterface) {
             @Override
             public Event extractEventInfo(Context c, Intent intent) {
                 Event result = new Event();
@@ -141,7 +138,7 @@ public class AndroidActivationManager extends ActivationManager {
      *                this intent filter
      * @return a new IntentFilter instance.
      */
-    public static IntentFilter newIntentFilter(String[] actions) {
+    public static IntentFilter newIntentFilter(String... actions) {
         IntentFilter iF = new IntentFilter();
         for (String s : actions) {
             iF.addAction(s);
