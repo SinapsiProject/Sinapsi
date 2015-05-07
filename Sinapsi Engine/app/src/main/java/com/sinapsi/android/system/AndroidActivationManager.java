@@ -11,6 +11,7 @@ import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.components.TriggerSMS;
+import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.engine.system.SystemFacade;
 
@@ -24,8 +25,8 @@ public class AndroidActivationManager extends ActivationManager {
     private ContextWrapper contextWrapper;
 
     private BroadcastActivator wifiActivator = null;
-
     private BroadcastActivator smsActivator = null;
+    private BroadcastActivator screenPowerActivator = null;
 
     private BroadcastActivator[] activators = new BroadcastActivator[]{
             wifiActivator,
@@ -79,6 +80,21 @@ public class AndroidActivationManager extends ActivationManager {
 
             }
         };
+
+        if(sf.checkRequirement(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, 1)) screenPowerActivator = new BroadcastActivator(
+                this,
+                newIntentFilter(new String[]{
+                        Intent.ACTION_SCREEN_OFF,
+                        Intent.ACTION_SCREEN_ON
+                }), contextWrapper, executionInterface) {
+            @Override
+            public Event extractEventInfo(Context c, Intent intent) {
+                Event result = new Event();
+                if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) result.put("screen_power", false);
+                else if(intent.getAction().equals(Intent.ACTION_SCREEN_ON)) result.put("screen_power", true);
+                return result;
+            }
+        };
     }
 
     @Override
@@ -87,6 +103,7 @@ public class AndroidActivationManager extends ActivationManager {
 
         if (t.getName().equals(TriggerWifi.TRIGGER_WIFI) && wifiActivator!= null) wifiActivator.addTrigger(t);
         if (t.getName().equals(TriggerSMS.TRIGGER_SMS) && smsActivator!= null) smsActivator.addTrigger(t);
+        if (t.getName().equals(TriggerScreenPower.TRIGGER_SCREEN_POWER) && screenPowerActivator!= null) screenPowerActivator.addTrigger(t);
 
         manageRegistrations();
     }
@@ -97,6 +114,7 @@ public class AndroidActivationManager extends ActivationManager {
 
         if (t.getName().equals(TriggerWifi.TRIGGER_WIFI) && wifiActivator!= null) wifiActivator.removeTrigger(t);
         if (t.getName().equals(TriggerSMS.TRIGGER_SMS) && smsActivator!= null) smsActivator.removeTrigger(t);
+        if (t.getName().equals(TriggerScreenPower.TRIGGER_SCREEN_POWER) && screenPowerActivator!= null) screenPowerActivator.removeTrigger(t);
 
         manageRegistrations();
     }
