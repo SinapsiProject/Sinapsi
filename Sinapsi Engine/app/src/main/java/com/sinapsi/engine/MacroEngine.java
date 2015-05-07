@@ -4,6 +4,8 @@ import com.sinapsi.engine.components.ActionContinueConfirmDialog;
 import com.sinapsi.engine.components.ActionLuaScript;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSetVariable;
+import com.sinapsi.engine.components.TriggerEngineStart;
+import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.execution.WebExecutionInterface;
 import com.sinapsi.engine.log.SinapsiLog;
@@ -60,6 +62,8 @@ public class MacroEngine {
         factory = new ComponentFactory(device, log,
                 TriggerSMS.class,
                 TriggerWifi.class,
+                TriggerEngineStart.class,
+                TriggerScreenPower.class,
 
                 ActionWifiState.class,
                 ActionSendSMS.class,
