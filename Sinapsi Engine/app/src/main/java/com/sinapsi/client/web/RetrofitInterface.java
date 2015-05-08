@@ -74,7 +74,7 @@ public interface RetrofitInterface {
     @GET(DEVICES+ACTION+GET)
     public void getAllDevicesByUser(
             @Query("email") String email,
-            Callback<List<DeviceInterface>> devices);
+            Callback<List<String>> encryptedResponse);
 
 
     /**
@@ -86,14 +86,15 @@ public interface RetrofitInterface {
      * @param idUser id of the device's user
 
      */
-    @GET(DEVICES+ACTION+ADD)
+    @POST(DEVICES+ACTION+ADD)
     public void registerDevice(
+            @Query("email") String email,
             @Query("name") String name,
             @Query("model") String model,
             @Query("type") String type,
             @Query("version") int version,
-            @Query("user") int idUser,
-            Callback<DeviceInterface> result);
+            @Body String idUser,
+            Callback<String> encryptedResponse);
 
 
     /**
