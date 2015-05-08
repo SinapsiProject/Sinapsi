@@ -72,7 +72,7 @@ public class KeysManager {
 	     try {
 	    	 c = db.connect();
 	    	 //TODO: find a way to save private key in a crypted way
-	    	 String query = "UPDATE users SET publickey = ?, privatekey = ?, sessionkey = ? WHERE email = ?";
+	    	 String query = "UPDATE users SET localpublickey = ?, privatekey = ?, localsessionkey = ? WHERE email = ?";
 	         s = c.prepareStatement(query);
 	         s.setString(1, publicKey);
 	         s.setString(2, privateKey);
