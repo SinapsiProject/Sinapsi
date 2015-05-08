@@ -2,24 +2,18 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.PublicKey;
 import java.util.HashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.tribes.group.interceptors.TwoPhaseCommitInterceptor.MapEntry;
-
 import com.bgp.encryption.Encrypt;
 import com.bgp.generator.KeyGenerator;
 import com.bgp.keymanager.PrivateKeyManager;
 import com.bgp.keymanager.PublicKeyManager;
 import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
-import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.webservice.db.KeysManager;
 
 /**
@@ -33,6 +27,13 @@ public class RequestLoginSevlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
         response.setContentType("application/json");
         Gson gson = new Gson();
@@ -62,13 +63,6 @@ public class RequestLoginSevlet extends HttpServlet {
         } catch(Exception e) {
         	e.printStackTrace();
         }
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
 
 }
