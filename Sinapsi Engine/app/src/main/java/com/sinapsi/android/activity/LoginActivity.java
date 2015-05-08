@@ -138,9 +138,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
             RetrofitWebServiceFacade wsf = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
-            //TODO: 1) send request login (posting email)
-            //TODO: 2) recive public key and save it
+
+            //TODO: 1) Giuseppe, how we can send request login (posting email)
+            //TODO: 2) Giuseppe, how we save recived keys from server
             //TODO: 3) login, crypt password using the public key recived from the server
+
             wsf.login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
                 @Override
                 public void success(User user, Object response) {
@@ -200,6 +202,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 }
             });
+
         }
     }
 

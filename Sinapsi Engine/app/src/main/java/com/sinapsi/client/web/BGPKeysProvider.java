@@ -4,6 +4,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import javax.crypto.SecretKey;
 
 
 /**
@@ -23,6 +24,11 @@ public interface BGPKeysProvider {
      */
     public PrivateKey getPrivateKey();
 
+    /**
+     * Secret Key getter
+     * @return the session key
+     */
+    public SecretKey getSessionKey();
     /**
      * Key pair getter
      * @return the key pair

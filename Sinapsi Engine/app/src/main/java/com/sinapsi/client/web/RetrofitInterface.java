@@ -6,6 +6,7 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.impl.User;
 
 import java.security.PublicKey;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit.Callback;
@@ -33,10 +34,14 @@ public interface RetrofitInterface {
     public static final String GET = "get";
 
 
+    /**
+     * Pre login request
+     * @param email email of the user
+     */
     @POST(REQUEST_LOGIN)
     public void requestLogin(
             @Query("email") String email,
-            Callback<PublicKey> publicKey);
+            Callback<HashMap<String, String>> keys);
 
     /**
      * Login request

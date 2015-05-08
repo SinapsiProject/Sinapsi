@@ -41,20 +41,20 @@ public class BGPGsonConverter extends GsonConverter {
     /// Converts from body to object
     @Override
     public Object fromBody(final TypedInput body, Type type) throws ConversionException {
-
-        HashMap.SimpleEntry<SecretKey,String> cryptedPair = null;
         InputStreamReader inStrReader = null;
+        String cryptedString = null;
         try {
             //gets a new InputStreamReader
             inStrReader = new InputStreamReader(body.in(), "UTF-8");
             //converts the string from json to HashMap.SimpleEntry<SessionKey,String>
-            cryptedPair =  myGson.fromJson(
+            cryptedString =  myGson.fromJson(
                     inStrReader,
-                    new TypeToken<HashMap.SimpleEntry<SecretKey,String>>(){}.getType());
+                    new TypeToken<String>(){}.getType());
 
             //decrypts the message
-            Decrypt decrypter = new Decrypt(keysProvider.getPrivateKey(), cryptedPair.getKey());
-            String uncryptedStr = decrypter.decrypt(cryptedPair.getValue());
+            //TODO: edit the decrypter to user the server session key
+            Decrypt decrypter = new Decrypt(keysProvider.getPrivateKey(), keysProvider.getSessionKey());
+            String uncryptedStr = decrypter.decrypt(cryptedString);
 
             //calls super to convert to object
             final InputStream is = new ByteArrayInputStream(uncryptedStr.getBytes());
@@ -98,10 +98,10 @@ public class BGPGsonConverter extends GsonConverter {
         String message = myGson.toJson(object);
 
         try {
+            //TODO: edit encrypter to use the server public key
             Encrypt encrypter = new Encrypt(keysProvider.getPublicKey());
             String cryptedString = encrypter.encrypt(message);
-            HashMap.SimpleEntry<SecretKey,String> cryptedPair = new HashMap.SimpleEntry<>(encrypter.getEncryptedSessionKey(), message);
-            return super.toBody(cryptedPair);
+            return super.toBody(cryptedString);
         } catch (Exception e) {
             e.printStackTrace();
 

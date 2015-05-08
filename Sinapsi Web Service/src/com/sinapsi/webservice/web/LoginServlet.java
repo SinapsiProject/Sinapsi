@@ -24,12 +24,19 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
+        
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	PrintWriter out = response.getWriter();
         UserManager userManager = new UserManager();
         response.setContentType("application/json");
         try {
-        	//TODO: decrypt (using private key of the user saved in the db)data from client, (email, password must be crypted)
             String email = request.getParameter("email");
+            //TODO: fix this shit
             String pwd = request.getParameter("password");
             User user = (User) userManager.getUserByEmail(email);
             Gson gson = new Gson();
@@ -59,13 +66,6 @@ public class LoginServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
     }
 
 }
