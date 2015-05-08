@@ -29,7 +29,7 @@ public class ActionSendSMS extends Action {
     @Override
     public void onActivate(final ExecutionInterface di) throws JSONException{
         SMSAdapter sa = (SMSAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_SMS);
-        JSONObject pjo = getParamsObj(params);
+        JSONObject pjo = getParsedParams(di.getLocalVars(),di.getGlobalVars());
         SMSAdapter.Sms sms = new SMSAdapter.Sms();
 
         sms.setAddress(pjo.getString("number"));

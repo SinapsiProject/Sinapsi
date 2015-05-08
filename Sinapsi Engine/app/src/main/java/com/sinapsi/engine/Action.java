@@ -175,11 +175,42 @@ public abstract class Action implements Parameterized, DistributedComponent {
                 }
                     break;
                 case INT:{
-                    result.put(formObjName, actParentObj.getInt(formObjName));//TODO: impl integer variable parsing
+                    if(actParentObj.get(formObjName) instanceof Integer){
+                        result.put(formObjName, actParentObj.getInt(formObjName));
+                    }else{
+                        String tmp = actParentObj.getString(formObjName);
+                        int varval = 0; //DEFAULT VALUE FOR UNDEFINED INTEGER VARIABLE IS 0
+
+                        for(VariableManager v: variableManagers)
+                        {
+                            if(v.containsVariable(tmp)) {
+                                varval =(Integer) v.getVarValue(tmp);
+                                break;
+                            }
+                        }
+                        result.put(formObjName, varval);
+
+                    }
+
                 }
                     break;
                 case BOOLEAN:{
-                    result.put(formObjName, actParentObj.getBoolean(formObjName));//TODO: impl boolean variable parsing
+                    if(actParentObj.get(formObjName) instanceof Boolean) {
+                        result.put(formObjName, actParentObj.getBoolean(formObjName));
+                    }else{
+                        String tmp = actParentObj.getString(formObjName);
+                        boolean varval = false; //DEFAULT VALUE FOR UNDEFINED BOOLEAN VARIABLE IS FALSE
+
+                        for(VariableManager v: variableManagers)
+                        {
+                            if(v.containsVariable(tmp)){
+                                varval = (Boolean) v.getVarValue(tmp);
+                                break;
+                            }
+                        }
+                        result.put(formObjName, varval);
+                    }
+
                 }
                     break;
                 case STRING_ADVANCED:

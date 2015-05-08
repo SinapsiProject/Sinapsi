@@ -27,7 +27,7 @@ public class ActionSetVariable extends Action {
 
     @Override
     public void onActivate(final ExecutionInterface di) throws JSONException{
-        JSONObject pjo = getParamsObj(params);
+        JSONObject pjo = getParsedParams(di.getLocalVars(),di.getGlobalVars());
         String strname = null;
         String strscope = null;
         String strtype = null;

@@ -32,7 +32,7 @@ public class ActionLuaScript extends Action{
     @Override
     public void onActivate(final ExecutionInterface di) throws JSONException{
         String scriptText;
-        JSONObject pjo = getParamsObj(params);
+        JSONObject pjo = getParamsObj(params); //NO VARIABLES ALLOWED HERE
 
         scriptText = pjo.getString("lua_script");
 

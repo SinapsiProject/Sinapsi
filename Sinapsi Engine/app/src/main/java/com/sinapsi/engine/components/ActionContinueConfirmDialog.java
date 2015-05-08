@@ -34,7 +34,7 @@ public class ActionContinueConfirmDialog extends Action {
     @Override
     public void onActivate(final ExecutionInterface di) throws JSONException{
         DialogAdapter da = (DialogAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_DIALOGS);
-        JSONObject pjo = getParamsObj(params);
+        JSONObject pjo = getParsedParams(di.getLocalVars(),di.getGlobalVars());
         String message = pjo.getString("dialog_message");
         String title = pjo.getString("dialog_title");
 

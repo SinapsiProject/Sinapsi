@@ -42,7 +42,7 @@ public class ActionWifiState extends Action{
     public void onActivate(final ExecutionInterface s) throws JSONException{
 
         WifiAdapter wa = (WifiAdapter) s.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
-        JSONObject pjo = getParamsObj(params);
+        JSONObject pjo = getParsedParams(s.getLocalVars(),s.getGlobalVars());
         boolean activate;
 
         activate = pjo.getBoolean("wifi_switch");
