@@ -92,7 +92,24 @@ public class EngineManager {
         return triggers;
     }
 
-	public void addAvailabeTriggers(int idDevice, List<MacroComponent> triggers) throws SQLException {
+    /**
+     * Add list of available triggers in the db
+     * @param idDevice device id
+     * @param triggers list of triggers
+     * @throws SQLException
+     */
+	public void addAvailableTriggers(int idDevice, List<MacroComponent> triggers) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Add list of available actions in the db
+	 * @param idDevice device id
+	 * @param actions list of actions
+	 * @throws SQLException
+	 */
+	public void addAvailableActions(int idDevice, List<MacroComponent> actions) throws SQLException{
 		// TODO Auto-generated method stub
 		
 	}

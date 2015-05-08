@@ -70,7 +70,7 @@ public class AvailableTriggerServlet extends HttpServlet {
 	        String jsonBody = decrypter.decrypt(encryptedJsonBody);
 	        
 	        List<MacroComponent> triggers = gson.fromJson(jsonBody, new TypeToken<List<MacroComponent>>(){}.getType());
-	        engineManager.addAvailabeTriggers(idDevice, triggers);
+	        engineManager.addAvailableTriggers(idDevice, triggers);
 	        success = true;
 	        
 		} catch(Exception e) {

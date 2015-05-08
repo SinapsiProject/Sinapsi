@@ -1,19 +1,21 @@
 package com.sinapsi.webservice.web;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.bgp.decryption.Decrypt;
+import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.webservice.db.EngineManager;
+import com.sinapsi.webservice.db.KeysManager;
+import com.sinapsi.webservice.utility.BodyReader;
 
 /**
  * Servlet implementation class AvailableActionServlet
@@ -26,22 +28,23 @@ public class AvailableActionServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
-        EngineManager engineManager = new EngineManager();
-        response.setContentType("application/json");
-        int idDevice = Integer.parseInt(request.getParameter("device"));
+    	PrintWriter out = response.getWriter();
+		EngineManager engineManager = new EngineManager();
+		KeysManager keysManager = new KeysManager();
+		Gson gson = new Gson();
+		response.setContentType("application/json");
 
-        try {
-            List<MacroComponent> actions = engineManager.getAvailableAction(idDevice);
-            Gson gson = new Gson();
-            
-           
-            out.print(gson.toJson(actions));
-            out.flush();
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+		String email = request.getParameter("email");
+		int idDevice = Integer.parseInt(request.getParameter("device"));
+
+		try {
+			Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+			List<MacroComponent> actions = engineManager.getAvailableAction(idDevice);
+			out.print(encrypter.encrypt(gson.toJson(actions)));
+			out.flush();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**
@@ -49,22 +52,42 @@ public class AvailableActionServlet extends HttpServlet {
      *      response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        StringBuffer jb = new StringBuffer();
-        String line = null;
-        Gson gson = new Gson();
-        try {
-            BufferedReader reader = request.getReader();
-            while ((line = reader.readLine()) != null)
-                jb.append(line);
+    	PrintWriter out = response.getWriter();
+		EngineManager engineManager = new EngineManager();
+		KeysManager keysManager = new KeysManager();
+		Gson gson = new Gson();
+		response.setContentType("application/json");
+		
+		String email = request.getParameter("email");
+		int idDevice = Integer.parseInt(request.getParameter("device"));
+		boolean success = false;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String jsonstring = jb.toString();
-        // DEBUG
-        System.out.println(jsonstring);
-        ArrayList<MacroComponent> list = gson.fromJson(jsonstring, new TypeToken<ArrayList<MacroComponent>>(){}.getType());
-        //TODO: insert list fo action in the db
+		String encryptedJsonBody = BodyReader.read(request);
+		
+		try {
+			Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
+	        String jsonBody = decrypter.decrypt(encryptedJsonBody);
+	        
+	        List<MacroComponent> actions = gson.fromJson(jsonBody, new TypeToken<List<MacroComponent>>(){}.getType());
+	        engineManager.addAvailableActions(idDevice, actions);
+	        success = true;
+	        
+		} catch(Exception e) {
+			success = true;
+			e.printStackTrace();
+		}
+		
+		try {
+			Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+			if(success) 	
+				out.print(encrypter.encrypt(gson.toJson("success!")));
+			else 
+				out.print(encrypter.encrypt(gson.toJson("Fail!")));
+			
+			out.flush();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 }
