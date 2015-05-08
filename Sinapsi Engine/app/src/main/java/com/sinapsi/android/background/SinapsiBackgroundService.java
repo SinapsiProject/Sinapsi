@@ -128,6 +128,7 @@ public class SinapsiBackgroundService extends Service {
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_LUA, true);
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_DIALOGS, true);
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
+        sf.setRequirementSpec(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, true);
         if (pm.hasSystemFeature(PackageManager.FEATURE_WIFI))
             sf.setRequirementSpec(SystemFacade.REQUIREMENT_WIFI, true);
         if (pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
