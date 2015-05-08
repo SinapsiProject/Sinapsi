@@ -25,6 +25,8 @@ public class RegistrationServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         UserManager userManager = new UserManager();
         response.setContentType("application/json");
+        
+        Gson gson = new Gson();
         String email = request.getParameter("email");
         String pwd = request.getParameter("password");
 
@@ -32,14 +34,14 @@ public class RegistrationServlet extends HttpServlet {
             // user already exist
             if (userManager.checkUser(email, pwd)) {
                 User user = (User) userManager.getUserByEmail(email);
+                // set a error description
                 user.errorOccured(true);
                 user.setErrorDescription("User already exist");
-                Gson gson = new Gson();
+                
                 out.print(gson.toJson(user));
                 out.flush();
             } else {
                 User user = (User) userManager.newUser(email, pwd);
-                Gson gson = new Gson();
 
                 out.print(gson.toJson(user));
                 out.flush();

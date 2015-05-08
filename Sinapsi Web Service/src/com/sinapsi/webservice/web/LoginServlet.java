@@ -28,70 +28,71 @@ public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     *      response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+        // empty body
     }
 
     /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+     *      response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	PrintWriter out = response.getWriter();
-        UserManager userManager = new UserManager();
-        Gson gson = new Gson();
-        KeysManager keysManager = new KeysManager();
         response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        Gson gson = new Gson();
         
+        // objects that manipulate data in the db
+        UserManager userManager = new UserManager();
+        KeysManager keysManager = new KeysManager();
 
         try {
             String email = request.getParameter("email");
-            
             String encryptedJsonBody = BodyReader.read(request);
+
+            // Create the encrypter 
+            Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
             
-            // decrypt jsoned body
-            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
+            // create the decrypter using local private key, and the client encrypted session key, then  decrypt the jsoned body
+            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email),keysManager.getClientSessionKey(email));
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             
-            String pwd = gson.fromJson(jsonBody, new TypeToken<String>(){}.getType());
-            
-            
-            
+            // return the string from the decrypted json string
+            String pwd = gson.fromJson(jsonBody, new TypeToken<String>() {}.getType());
+
             User user = (User) userManager.getUserByEmail(email);
-            
+
             if (user != null) {
                 // the user is ok
-                if (userManager.checkUser(email, pwd)) {
-                	// send encrypted data
-                	Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+                if (userManager.checkUser(email, pwd)) {               
+                    // and send the encrypted data
                     out.print(encrypter.encrypt(gson.toJson(user)));
                     out.flush();
-                    // login error, (email incorrect or password incorrect)
+                
+                // login error, (email incorrect or password incorrect)
                 } else {
+                    // set error description
                     user.errorOccured(true);
                     user.setErrorDescription("Login error");
-                    // send encrypted data
-                	Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+                    // send encrypted data            
                     out.print(encrypter.encrypt(gson.toJson(user)));
-
                     out.flush();
                 }
-                // the user doesn't exist in the db
+            
+            // the user doesn't exist in the db
             } else {
                 FactoryModelInterface factory = new FactoryModel();
                 user = (User) factory.newUser(0, email, pwd);
                 user.errorOccured(true);
                 user.setErrorDescription("User doesnt exist");
                 // send encrypted data
-            	Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
                 out.print(encrypter.encrypt(gson.toJson(user)));
-
                 out.flush();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }
