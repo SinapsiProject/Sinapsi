@@ -15,7 +15,7 @@ public class BodyReader {
 	 * @param request http servlet request
 	 * @return jsoned string
 	 */
-	static String read(HttpServletRequest request) {
+	public static String read(HttpServletRequest request) {
 		StringBuffer jb = new StringBuffer();
 		String line = null;
 		try {

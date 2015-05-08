@@ -88,12 +88,12 @@ public class KeysManager {
 	}
 	
 	/**
-	 * Return the public key from db
-	 * @param email email of the user associated to the publick key in the db
+	 * Return the client public key from db
+	 * @param email email of the user associated to the publik key in the db
 	 * @return public key object
 	 * @throws Exception
 	 */
-	public PublicKey getPublicKey(String email) throws Exception {
+	public PublicKey getClientPublicKey(String email) throws Exception {
 		 Connection c = null;
 	     PreparedStatement s = null;
 	     ResultSet r = null;
@@ -105,6 +105,33 @@ public class KeysManager {
 	         r = s.executeQuery();
 	         if (r.next()) {
 	            publicKey = r.getString("publickey");
+	         }
+	     } catch (SQLException ex) {
+	         db.disconnect(c, s, r);
+	         throw ex;
+	     }
+	     db.disconnect(c, s, r);
+	     return PublicKeyManager.convertToKey(publicKey);
+	}
+	
+	/**
+	 * Return the local public key from db
+	 * @param email email of the user associated to the publick key in the db
+	 * @return public key object
+	 * @throws Exception
+	 */
+	public PublicKey getLocalPublicKey(String email) throws Exception {
+		 Connection c = null;
+	     PreparedStatement s = null;
+	     ResultSet r = null;
+	     String publicKey = null;
+	     try {
+	    	 c = db.connect();
+	         s = c.prepareStatement("SELECT localpublickey FROM users WHERE email = ?");
+	         s.setString(1, email);
+	         r = s.executeQuery();
+	         if (r.next()) {
+	            publicKey = r.getString("localpublickey");
 	         }
 	     } catch (SQLException ex) {
 	         db.disconnect(c, s, r);
@@ -142,12 +169,12 @@ public class KeysManager {
 	}
 	
 	/**
-	 * Return the session key from db
+	 * Return the client  session key from db
 	 * @param email email of the user associated to the session key in the db
 	 * @return public key object
 	 * @throws Exception
 	 */
-	public SecretKey getSessionKey(String email) throws Exception {
+	public SecretKey getClientSessionKey(String email) throws Exception {
 		 Connection c = null;
 	     PreparedStatement s = null;
 	     ResultSet r = null;
@@ -159,6 +186,33 @@ public class KeysManager {
 	         r = s.executeQuery();
 	         if (r.next()) {
 	            sessionKey = r.getString("sessionkey");
+	         }
+	     } catch (SQLException ex) {
+	         db.disconnect(c, s, r);
+	         throw ex;
+	     }
+	     db.disconnect(c, s, r);
+	     return SessionKeyManager.convertToKey(sessionKey);
+	}
+	
+	/**
+	 * Return the local session key from db
+	 * @param email email of the user associated to the session key in the db
+	 * @return public key object
+	 * @throws Exception
+	 */
+	public SecretKey getLocalSessionKey(String email) throws Exception {
+		 Connection c = null;
+	     PreparedStatement s = null;
+	     ResultSet r = null;
+	     String sessionKey = null;
+	     try {
+	    	 c = db.connect();
+	         s = c.prepareStatement("SELECT localsessionkey FROM users WHERE email = ?");
+	         s.setString(1, email);
+	         r = s.executeQuery();
+	         if (r.next()) {
+	            sessionKey = r.getString("localsessionkey");
 	         }
 	     } catch (SQLException ex) {
 	         db.disconnect(c, s, r);
