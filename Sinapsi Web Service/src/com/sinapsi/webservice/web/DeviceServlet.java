@@ -86,14 +86,15 @@ public class DeviceServlet extends HttpServlet {
 			String model = request.getParameter("model");
 			String type = request.getParameter("type");
 			int version = Integer.parseInt(request.getParameter("version"));
-			String body = BodyReader.read(request);
-			String encryptedId = gson.fromJson(body, new TypeToken<String>(){}.getType());
-			
-			
+			String encryptedJsonbody = BodyReader.read(request);
+					
 			try {
 				Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
 				Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
-				int idUser = Integer.parseInt(decrypter.decrypt(encryptedId));
+				String jsonBody = decrypter.decrypt(encryptedJsonbody);
+				
+				String id = gson.fromJson(jsonBody, new TypeToken<String>(){}.getType());
+				int idUser = Integer.parseInt(id);
 				
 				// if the device is new then added to the db
 				if (!deviceManager.checkDevice(name, model, idUser)) {

@@ -3,6 +3,7 @@ package com.sinapsi.client.web;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 
 import java.security.PublicKey;
@@ -74,7 +75,7 @@ public interface RetrofitInterface {
     @GET(DEVICES+ACTION+GET)
     public void getAllDevicesByUser(
             @Query("email") String email,
-            Callback<List<String>> encryptedResponse);
+            Callback<List<DeviceInterface>> devices);
 
 
     /**
@@ -94,7 +95,7 @@ public interface RetrofitInterface {
             @Query("type") String type,
             @Query("version") int version,
             @Body String idUser,
-            Callback<String> encryptedResponse);
+            Callback<Device> device);
 
 
     /**
@@ -125,6 +126,7 @@ public interface RetrofitInterface {
      */
     @GET(AVAILABLE_TRIGGERS)
     public void getAvailableTriggers(
+            @Query("email") String email,
             @Query("device") int idDevice,
             Callback<List<MacroComponent>> triggers);
 
@@ -132,13 +134,12 @@ public interface RetrofitInterface {
     /**
      * Send the available triggers on the current device
      * @param idDevice id device
-     * @param publicKey public key of the user
      * @param triggers list of actions that are available
      */
     @POST(AVAILABLE_TRIGGERS)
     public void setAvailableTriggers(
+            @Query("email") String email,
             @Query("device") int idDevice,
-            @Query("key") PublicKey publicKey,
             @Body List<MacroComponent> triggers,
             Callback<String> result);
 

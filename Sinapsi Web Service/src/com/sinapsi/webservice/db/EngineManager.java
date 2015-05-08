@@ -91,4 +91,9 @@ public class EngineManager {
         db.disconnect(c, s, r);
         return triggers;
     }
+
+	public void addAvailabeTriggers(int idDevice, List<MacroComponent> triggers) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
 }

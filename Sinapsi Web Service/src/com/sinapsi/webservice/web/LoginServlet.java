@@ -47,11 +47,16 @@ public class LoginServlet extends HttpServlet {
 
         try {
             String email = request.getParameter("email");
-            String jsonBody = BodyReader.read(request);
-            String encryptedData = gson.fromJson(jsonBody, new TypeToken<String>(){}.getType());
             
+            String encryptedJsonBody = BodyReader.read(request);
+            
+            // decrypt jsoned body
             Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
-            String pwd = decrypter.decrypt(encryptedData);
+            String jsonBody = decrypter.decrypt(encryptedJsonBody);
+            
+            String pwd = gson.fromJson(jsonBody, new TypeToken<String>(){}.getType());
+            
+            
             
             User user = (User) userManager.getUserByEmail(email);
             
