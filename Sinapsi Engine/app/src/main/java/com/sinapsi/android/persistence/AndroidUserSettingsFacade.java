@@ -20,19 +20,19 @@ public class AndroidUserSettingsFacade implements UserSettingsFacade {
 
     public AndroidUserSettingsFacade(String prefs_name, Context context) {
         this.PREFS_NAME = prefs_name;
-        preferences = context.getSharedPreferences(prefs_name, 0);
+        preferences = new ObscuredSharedPreferences(context, context.getSharedPreferences(prefs_name, 0));
     }
 
     @Override
     public UserInterface getSavedUser() {
         int id = preferences.getInt("user_id", -1);
         String email = preferences.getString("user_email", null);
-        String passw = preferences.getString("user_password", null);
-        if(id == -1 || email == null || passw == null) return null;
+        //String passw = preferences.getString("user_password", null);
+        if(id == -1 || email == null /*|| passw == null*/) return null;
         return fM.newUser(
                 id,
                 email,
-                passw //TODO: do we need to decrypt this?
+                ""
         );
     }
 
@@ -40,7 +40,7 @@ public class AndroidUserSettingsFacade implements UserSettingsFacade {
     public void saveUser(UserInterface u) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("user_email", u.getEmail());
-        editor.putString("user_password", u.getPassword()); //TODO: do we need to encrypt this?
+        //editor.putString("user_password", u.getPassword());
         editor.putInt("user_id", u.getId());
         editor.apply();
     }

@@ -1,12 +1,19 @@
 package com.sinapsi.engine;
 
 import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.DistributedComponent;
 import com.sinapsi.model.Parameterized;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Action interface. This interface must be implemented
@@ -19,6 +26,7 @@ public abstract class Action implements Parameterized, DistributedComponent {
 
     protected DeviceInterface executionDevice;
     protected String params;
+    protected String inStringVariablePattern = "@\\{([_a-zA-Z][_a-zA-Z0-9]*)\\}"; // @{var_identifier}
 
 
     /**
@@ -100,6 +108,86 @@ public abstract class Action implements Parameterized, DistributedComponent {
     public static JSONObject getParamsObj(String actualParameters) throws JSONException {
         JSONObject o = new JSONObject(actualParameters);
         return o.getJSONObject("parameters");
+    }
+
+
+    /**
+     * Parses the actual parameters JSONObject in search for variable occurrences,
+     * and replaces them with their respective values.
+     *
+     * @param variableManagers the list of variable managers used for variable queries.
+     *                         the order must be from the most local scope to the most
+     *                         global one.
+     *
+     * @return a JSONObject with only values, no variables.
+     * @throws JSONException
+     */
+    public JSONObject getParsedParams(VariableManager... variableManagers) throws JSONException{
+        JSONObject actParentObj = getParamsObj(params);
+        JSONObject formParentObj = getFormalParametersJSON();
+        JSONArray formArr = formParentObj.getJSONArray("formal_parameters");
+
+        JSONObject result = new JSONObject();
+
+        for(int i = 0; i < formArr.length(); ++i){
+            JSONObject formObj = formArr.getJSONObject(i);
+            String formObjName = formObj.getString("name");
+            String formObjType = formObj.getString("type");
+            Boolean formObjOptional = formObj.getBoolean("optional");
+
+            if(formObjOptional && !actParentObj.has(formObjName)) continue;
+
+            FormalParamBuilder.Types formObjType_e = FormalParamBuilder.Types.valueOf(formObjType);
+
+            switch (formObjType_e) {
+                case CHOICE:
+                    result.put(formObjName, actParentObj.getString(formObjName)); //for now, there are no vars of type choice
+                    break;
+                case STRING:{
+                    //searches for @{variable_names} inside the string
+                    String original = actParentObj.getString(formObjName);
+                    Pattern pattern = Pattern.compile(inStringVariablePattern);
+                    Matcher matcher = pattern.matcher(original);
+                    String[] splits = original.split(inStringVariablePattern, -1);
+
+                    ArrayList<String> identifiers = new ArrayList<>();
+
+                    while(matcher.find()) {
+                        identifiers.add(matcher.group(1));
+                    }
+
+
+                    String stresult = splits[0];
+                    for(int j = 1; j < splits.length; ++j){
+                        String varval = "NULL";
+                        for(VariableManager v: variableManagers)
+                        {
+                            if(v.containsVariable(identifiers.get(j-1))) {
+                                varval = v.getStringRepresentationOfValue(identifiers.get(j - 1));
+                                break;
+                            }
+                        }
+                        stresult += varval + splits[j];
+                    }
+
+                    result.put(formObjName, stresult);
+
+                }
+                    break;
+                case INT:{
+                    result.put(formObjName, actParentObj.getInt(formObjName));//TODO: impl integer variable parsing
+                }
+                    break;
+                case BOOLEAN:{
+                    result.put(formObjName, actParentObj.getBoolean(formObjName));//TODO: impl boolean variable parsing
+                }
+                    break;
+                case STRING_ADVANCED:
+                    result.put(formObjName, actParentObj.getJSONObject(formObjName));//TODO: impl string_advanced variable parsing
+                    break;
+            }
+        }
+        return result;
     }
 
     @Override

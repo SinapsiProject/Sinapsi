@@ -42,9 +42,10 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
 
     /**
      * Initializes the new trigger instance.
+     *
      * @param executionDevice the device on which this action is going to be executed
-     * @param parameters the JSON string containing the actual parameters
-     * @param macro the macro that will be executed when this trigger activates
+     * @param parameters      the JSON string containing the actual parameters
+     * @param macro           the macro that will be executed when this trigger activates
      */
     public void init(DeviceInterface executionDevice, String parameters, MacroInterface macro) {
         this.executionDevice = executionDevice;
@@ -75,14 +76,14 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      *           and system main infos and services
      */
     public void activate(Event e, ExecutionInterface di) {
-        di.getLog().log(getName(),"Trigger activated by activation manager.");
+        di.getLog().log(getName(), "Trigger activated by activation manager.");
         if (checkParameters(e, di)) {
-            di.getLog().log(getName(),"Parameter check success. Starting macro "+ macro.getId() + ":'" + macro.getName()+"'");
+            di.getLog().log(getName(), "Parameter check success. Starting macro " + macro.getId() + ":'" + macro.getName() + "'");
             di.setMacro(macro);
             onActivate(e, di);
             macro.execute(di);
-        }else{
-            di.getLog().log(getName(),"Parameter check failed. Macro "+ macro.getId() + ":'" + macro.getName()+ "' will not start.");
+        } else {
+            di.getLog().log(getName(), "Parameter check failed. Macro " + macro.getId() + ":'" + macro.getName() + "' will not start.");
         }
 
     }
@@ -163,7 +164,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
             //This means that the extending class is bad implemented
         }
         if (valuesObj == null) return true;
-        createTriggerVars(valuesObj,ei);
+        createTriggerVars(valuesObj, ei);
         Iterator<String> pars = pjo.keys();
 
         while (pars.hasNext()) {
@@ -182,24 +183,24 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
                     if (!((Integer) parvalue).equals(valuesObj.getInt(key)))
                         return false;
                 } else if (parvalue instanceof JSONObject) {
-                    String advType = ((JSONObject)parvalue).getString("advancedType");
-                    if(advType == null) {
+                    String advType = ((JSONObject) parvalue).getString("advancedType");
+                    if (advType == null) {
                         return false;
-                    } else if(advType.equals(FormalParamBuilder.Types.STRING_ADVANCED.toString())){
-                        String val = ((JSONObject)parvalue).getString("value");
-                        String mode = ((JSONObject)parvalue).getString("matchingMode");
+                    } else if (advType.equals(FormalParamBuilder.Types.STRING_ADVANCED.toString())) {
+                        String val = ((JSONObject) parvalue).getString("value");
+                        String mode = ((JSONObject) parvalue).getString("matchingMode");
                         StringMatchingModeChoices matchingMode = StringMatchingModeChoices.valueOf(mode);
-                        switch (matchingMode){
+                        switch (matchingMode) {
                             case WHOLE_STRING:
-                                if(!val.equals(valuesObj.getString(key)))
+                                if (!val.equals(valuesObj.getString(key)))
                                     return false;
                                 break;
                             case CONTAINS:
-                                if(!valuesObj.getString(key).contains(val))
+                                if (!valuesObj.getString(key).contains(val))
                                     return false;
                                 break;
                             case REGEX:
-                                if(!valuesObj.getString(key).matches(val))
+                                if (!valuesObj.getString(key).matches(val))
                                     return false;
                                 break;
                         }
@@ -243,7 +244,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
             for (int i = 0; i < params.length(); i++) {
                 JSONObject o = (JSONObject) params.get(i);
                 String name = o.getString("name");
-                try{
+                try {
                     switch (FormalParamBuilder.Types.valueOf(o.getString("type"))) {
                         case CHOICE:
                         case STRING:
@@ -257,20 +258,20 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
                             lvm.putVar(name, VariableManager.Types.BOOLEAN, Boolean.toString(parvals.getBoolean(name)));
                             break;
                     }
-                }catch (IllegalArgumentException e){
+                } catch (IllegalArgumentException e) {
                     //invalid formal param type
                     e.printStackTrace();
                     return;
-                }catch (JSONException e) {
+                } catch (JSONException e) {
                     //ignore
                 }
 
             }
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             //invalid formal param type
             e.printStackTrace();
             return;
-        }catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             return;
         }

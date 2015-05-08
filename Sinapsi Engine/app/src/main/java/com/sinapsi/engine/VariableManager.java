@@ -38,20 +38,43 @@ public class VariableManager {
     /**
      * Gets the type of the variable with the specified name.
      * @param strName the name
-     * @return the type
+     * @return the type if the name is valid, null otherwise
      */
     public Types getVarType(String strName){
-        return map.get(strName).getKey();
+        if(map.containsKey(strName))
+            return map.get(strName).getKey();
+        else return null;
     }
 
 
     /**
      * Gets the value of the variable with the specified name.
      * @param strName the name
-     * @return the value
+     * @return the value if the name is valid, null otherwise
      */
     public Object getVarValue(String strName){
-        return map.get(strName).getValue();
+        if(map.containsKey(strName))
+            return map.get(strName).getValue();
+        else return null;
+    }
+
+    public String getStringRepresentationOfValue(String strName){
+        if(!map.containsKey(strName)) return null;
+
+        switch (getVarType(strName)){
+            case STRING:
+                return (String) getVarValue(strName);
+            case INT:
+                return ((Integer) getVarValue(strName)).toString();
+            case BOOLEAN:
+                return ((Boolean) getVarValue(strName)).toString();
+        }
+
+        return null;
+    }
+
+    public boolean containsVariable(String name){
+        return map.containsKey(name);
     }
 
     public enum Types {
