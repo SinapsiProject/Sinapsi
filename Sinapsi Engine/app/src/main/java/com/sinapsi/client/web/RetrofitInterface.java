@@ -7,6 +7,7 @@ import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 
 import java.security.PublicKey;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import retrofit.http.Query;
 public interface RetrofitInterface {
 
     public static final String LOGIN = "login";
+    public static final String LOGOUT = "logout";
     public static final String REQUEST_LOGIN = "request_login";
     public static final String REGISTER = "register";
     public static final String DEVICES = "devices";
@@ -42,7 +44,7 @@ public interface RetrofitInterface {
     @POST(REQUEST_LOGIN)
     public void requestLogin(
             @Query("email") String email,
-            Callback<HashMap<String, String>> keys);
+            Callback<HashMap.SimpleEntry<String, String>> keys);
 
     /**
      * Login request
@@ -95,7 +97,7 @@ public interface RetrofitInterface {
             @Query("type") String type,
             @Query("version") int version,
             @Body String idUser,
-            Callback<Device> device);
+            Callback<DeviceInterface> device);
 
 
     /**

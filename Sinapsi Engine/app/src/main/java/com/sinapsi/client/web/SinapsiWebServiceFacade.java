@@ -6,6 +6,8 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.User;
 
+import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,6 +25,15 @@ public interface SinapsiWebServiceFacade {
 
         void failure(Throwable error);
     }
+
+    /**
+     * Request login
+     *
+     * @param email email of the user
+     * @param keys public key and session key recived from the server
+     */
+    public void requestLogin(String email,
+                             WebServiceCallback<HashMap.SimpleEntry<String, String>> keys);
 
     /**
      * Logs in the user
@@ -69,6 +80,7 @@ public interface SinapsiWebServiceFacade {
      * @param result              the DeviceInterface instance returned by the web service
      */
     public void registerDevice(UserInterface user,
+                               String emailUser,
                                String deviceName,
                                String deviceModel,
                                String deviceType,
@@ -81,7 +93,8 @@ public interface SinapsiWebServiceFacade {
      * @param device the device
      * @param result a List of action instances
      */
-    public void getAvailableActions(DeviceInterface device,
+    public void getAvailableActions(String email,
+                                    DeviceInterface device,
                                     WebServiceCallback<List<MacroComponent>> result);
 
     /**
@@ -91,7 +104,8 @@ public interface SinapsiWebServiceFacade {
      * @param actions a List of action instances
      * @param result  a string containing infos on the operation result
      */
-    public void setAvailableActions(DeviceInterface device,
+    public void setAvailableActions(String email,
+                                    DeviceInterface device,
                                     List<MacroComponent> actions,
                                     WebServiceCallback<String> result);
 
@@ -101,7 +115,8 @@ public interface SinapsiWebServiceFacade {
      * @param device the device
      * @param result a List of trigger instances
      */
-    public void getAvailableTriggers(DeviceInterface device,
+    public void getAvailableTriggers(String email,
+                                     DeviceInterface device,
                                      WebServiceCallback<List<MacroComponent>> result);
 
 
@@ -112,7 +127,8 @@ public interface SinapsiWebServiceFacade {
      * @param triggers a List of trigger instances
      * @param result   a string containing infos on the operation result
      */
-    public void setAvailableTriggers(DeviceInterface device,
+    public void setAvailableTriggers(String email,
+                                     DeviceInterface device,
                                      List<MacroComponent> triggers,
                                      WebServiceCallback<String> result);
 

@@ -53,7 +53,7 @@ public class BGPGsonConverter extends GsonConverter {
 
             //decrypts the message
             //TODO: edit the decrypter to user the server session key
-            Decrypt decrypter = new Decrypt(keysProvider.getPrivateKey(), keysProvider.getSessionKey());
+            Decrypt decrypter = new Decrypt(keysProvider.getPrivateKey(), keysProvider.getServerSessionKey());
             String uncryptedStr = decrypter.decrypt(cryptedString);
 
             //calls super to convert to object
@@ -98,8 +98,7 @@ public class BGPGsonConverter extends GsonConverter {
         String message = myGson.toJson(object);
 
         try {
-            //TODO: edit encrypter to use the server public key
-            Encrypt encrypter = new Encrypt(keysProvider.getPublicKey());
+            Encrypt encrypter = new Encrypt(keysProvider.getServerPublicKey());
             String cryptedString = encrypter.encrypt(message);
             return super.toBody(cryptedString);
         } catch (Exception e) {

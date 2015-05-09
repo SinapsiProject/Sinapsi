@@ -28,7 +28,9 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.security.PublicKey;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.bgp.generator.KeyGenerator;
@@ -136,13 +138,22 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // perform the user login attempt.
             showProgress(true);
 
-
             RetrofitWebServiceFacade wsf = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
 
-            //TODO: 1) Giuseppe, how we can send request login (posting email)
-            //TODO: 2) Giuseppe, how we save recived keys from server
-            //TODO: 3) login, crypt password using the public key recived from the server
+            // first, request login
+            wsf.requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<HashMap.SimpleEntry<String, String>>() {
+                @Override
+                public void success(HashMap.SimpleEntry<String, String> stringStringSimpleEntry, Object response) {
+                    //TODO: call login
+                }
 
+                @Override
+                public void failure(Throwable error) {
+
+                }
+            });
+
+            /*
             wsf.login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
                 @Override
                 public void success(User user, Object response) {
@@ -151,19 +162,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     } else {
                         Lol.d(this, "Success! user id received: " + user.getId());
 
-
-                        File privateKeyFile = new File("private.key");
-                        File publicKeyFile = new File("public.key");
-
-                        // check if files of keys exist
-                        if (!(privateKeyFile.exists() && publicKeyFile.exists())) {
-                            // generate key pair only one time, in the login phase
-                            KeyGenerator generator = new KeyGenerator();
-
-                            // save keys in files: (public.key, private.key), WARNING: private key must be protected
-                            generator.saveKeyPair();
-                            PublicKey publicKey = generator.getPublicKey();
-                            //TODO: send public key to the web service
                         }
                     }
                 }
@@ -201,7 +199,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                             errstring);
 
                 }
-            });
+            });*/
 
         }
     }

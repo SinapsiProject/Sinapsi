@@ -19,6 +19,12 @@ public interface BGPKeysProvider {
     public PublicKey getPublicKey();
 
     /**
+     * Server public key getter
+     * @return
+     */
+    public PublicKey getServerPublicKey();
+
+    /**
      * Private key getter
      * @return the private key
      */
@@ -28,7 +34,8 @@ public interface BGPKeysProvider {
      * Secret Key getter
      * @return the session key
      */
-    public SecretKey getSessionKey();
+    public SecretKey getServerSessionKey();
+
     /**
      * Key pair getter
      * @return the key pair
