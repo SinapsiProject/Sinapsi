@@ -8,7 +8,7 @@ import java.util.HashMap;
  * Abstraction of Trigger, this class is not the real representation of Trigger object, but gives support to database manager
  * 
  */
-public class TriggerDescriptor extends ComunicationError implements MacroComponent {
+public class TriggerDescriptor extends ComunicationInfo implements MacroComponent {
 	private int minVersion;
 	private String name;
 	

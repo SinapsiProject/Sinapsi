@@ -1,20 +1,21 @@
 package com.sinapsi.model.impl;
 
-import com.sinapsi.model.ComunicationErrorInterface;
+import com.sinapsi.model.ComunicationInfoInterface;
 
 /**
  * Implementation of the comunication interface
  *
  */
-public class ComunicationError implements ComunicationErrorInterface {
+public class ComunicationInfo implements ComunicationInfoInterface {
 
+    private String additionalInfo;
     private String description;
     private boolean errorOccured;
 
     /**
      * Default ctor
      */
-    public ComunicationError() {
+    public ComunicationInfo() {
         errorOccured = false;
         description = "";
     }
@@ -25,7 +26,7 @@ public class ComunicationError implements ComunicationErrorInterface {
      * @param desc error description
      * @param err true if error occured, false otherwise
      */
-    public ComunicationError(String desc, boolean err) {
+    public ComunicationInfo(String desc, boolean err) {
         description = desc;
         errorOccured = err;
     }
@@ -51,6 +52,15 @@ public class ComunicationError implements ComunicationErrorInterface {
     }
 
     /**
+     * Get the additional info
+     * @return
+     */
+    @Override
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    /**
      * Set a new description for the current comunication error
      *
      * @param desc error description
@@ -58,6 +68,15 @@ public class ComunicationError implements ComunicationErrorInterface {
     @Override
     public void setErrorDescription(String desc) {
         description = desc;
+    }
+
+    /**
+     * Set a new additional info
+     * @param info additional info
+     */
+    @Override
+    public void setAdditionalInfo(String info) {
+        additionalInfo = info;
     }
 
     /**
