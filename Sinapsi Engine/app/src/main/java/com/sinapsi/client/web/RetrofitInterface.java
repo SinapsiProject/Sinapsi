@@ -29,7 +29,7 @@ public interface RetrofitInterface {
     public static final String DEVICES = "devices";
     public static final String AVAILABLE_ACTIONS = "available_actions";
     public static final String AVAILABLE_TRIGGERS = "available_triggers";
-    public static final String CONTINUE_MACRO = "continue_macro";
+    public static final String REMOTE_MACRO = "remote_macro";
 
     public static final String ACTION = "?action=";
 
@@ -153,7 +153,7 @@ public interface RetrofitInterface {
      * @param id the device id
      * @param red the remote execution descriptor
      */
-    @POST(CONTINUE_MACRO)
+    @POST(REMOTE_MACRO)
     public void continueMacroOnDevice(
             @Query("device_id") int id,
             @Body RemoteExecutionDescriptor red,
