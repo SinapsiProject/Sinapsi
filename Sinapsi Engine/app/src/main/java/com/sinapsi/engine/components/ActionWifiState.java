@@ -27,17 +27,6 @@ public class ActionWifiState extends Action{
 
     public static final String ACTION_WIFI_STATE = "ACTION_WIFI_STATE";
 
-    /**
-     * Default ctor, needed by ComponentLoader to create an instance
-     * with java reflection.
-     * DO NOT DIRECTLY CALL THIS: THIS SHOULD BE CALLED ONLY BY
-     * ComponentLoader. USE ComponentFactory TO CREATE A NEW INSTANCE
-     * INSTEAD.
-     */
-    public ActionWifiState(){
-        super();
-    }
-
     @Override
     public void onActivate(final ExecutionInterface s) throws JSONException{
 
