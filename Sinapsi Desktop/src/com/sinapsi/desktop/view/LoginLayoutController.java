@@ -10,23 +10,6 @@ import javafx.scene.image.Image;
 
 public class LoginLayoutController {
 	
-	// Some stuff for the login layout :)	
-	@FXML
-	private Image mainLogo;
-	
-	@FXML 
-	private Label emailLabel;
-	@FXML
-	private Label passwordLabel;
-	@FXML 
-	private Label registerLabel;
-	@FXML 
-	private Label copyrightsLabel;
-	
-	@FXML
-	private TextField emailTextField;
-	@FXML
-	private PasswordField passwordTextField;
 	
 	// Reference to the launcher
 	private Launcher launcher;
