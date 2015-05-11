@@ -214,38 +214,34 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void getAvailableActions(String email, DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
+    public void getAvailableActions(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
         checkKeys();
         cryptedRetrofit.getAvailableActions(
-                email,
                 device.getId(),
                 convertCallback(result));
     }
 
     @Override
-    public void setAvailableActions(String email, DeviceInterface device, List<MacroComponent> actions, WebServiceCallback<String> result) {
+    public void setAvailableActions(DeviceInterface device, List<MacroComponent> actions, WebServiceCallback<String> result) {
         checkKeys();
         cryptedRetrofit.setAvailableActions(
-                email,
                 device.getId(),
                 actions,
                 convertCallback(result));
     }
 
     @Override
-    public void getAvailableTriggers(String email, DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
+    public void getAvailableTriggers(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
         checkKeys();
         cryptedRetrofit.getAvailableTriggers(
-                email,
                 device.getId(),
                 convertCallback(result));
     }
 
     @Override
-    public void setAvailableTriggers(String email, DeviceInterface device, List<MacroComponent> triggers, WebServiceCallback<String> result) {
+    public void setAvailableTriggers(DeviceInterface device, List<MacroComponent> triggers, WebServiceCallback<String> result) {
         checkKeys();
         cryptedRetrofit.setAvailableTriggers(
-                email,
                 device.getId(),
                 triggers,
                 convertCallback(result));

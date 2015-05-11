@@ -106,7 +106,6 @@ public interface RetrofitInterface {
      */
     @GET(AVAILABLE_ACTIONS)
     public void getAvailableActions(
-            @Query("email") String email,
             @Query("device") int idDevice,
             Callback<List<MacroComponent>> actions);
 
@@ -118,7 +117,6 @@ public interface RetrofitInterface {
      */
     @POST(AVAILABLE_ACTIONS)
     public void setAvailableActions(
-            @Query("email") String email,
             @Query("device") int idDevice,
             @Body List<MacroComponent> actions,
             Callback<String> result);
@@ -130,7 +128,6 @@ public interface RetrofitInterface {
      */
     @GET(AVAILABLE_TRIGGERS)
     public void getAvailableTriggers(
-            @Query("email") String email,
             @Query("device") int idDevice,
             Callback<List<MacroComponent>> triggers);
 
@@ -142,7 +139,6 @@ public interface RetrofitInterface {
      */
     @POST(AVAILABLE_TRIGGERS)
     public void setAvailableTriggers(
-            @Query("email") String email,
             @Query("device") int idDevice,
             @Body List<MacroComponent> triggers,
             Callback<String> result);

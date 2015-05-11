@@ -93,8 +93,7 @@ public interface SinapsiWebServiceFacade {
      * @param device the device
      * @param result a List of action instances
      */
-    public void getAvailableActions(String email,
-                                    DeviceInterface device,
+    public void getAvailableActions(DeviceInterface device,
                                     WebServiceCallback<List<MacroComponent>> result);
 
     /**
@@ -104,8 +103,7 @@ public interface SinapsiWebServiceFacade {
      * @param actions a List of action instances
      * @param result  a string containing infos on the operation result
      */
-    public void setAvailableActions(String email,
-                                    DeviceInterface device,
+    public void setAvailableActions(DeviceInterface device,
                                     List<MacroComponent> actions,
                                     WebServiceCallback<String> result);
 
@@ -115,8 +113,7 @@ public interface SinapsiWebServiceFacade {
      * @param device the device
      * @param result a List of trigger instances
      */
-    public void getAvailableTriggers(String email,
-                                     DeviceInterface device,
+    public void getAvailableTriggers(DeviceInterface device,
                                      WebServiceCallback<List<MacroComponent>> result);
 
 
@@ -127,8 +124,7 @@ public interface SinapsiWebServiceFacade {
      * @param triggers a List of trigger instances
      * @param result   a string containing infos on the operation result
      */
-    public void setAvailableTriggers(String email,
-                                     DeviceInterface device,
+    public void setAvailableTriggers(DeviceInterface device,
                                      List<MacroComponent> triggers,
                                      WebServiceCallback<String> result);
 
