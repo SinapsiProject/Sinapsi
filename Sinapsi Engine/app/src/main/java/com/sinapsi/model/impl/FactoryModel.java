@@ -9,6 +9,8 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 
+import java.util.List;
+
 /**
  * Implementation of the default factory model interface
  *
@@ -21,6 +23,14 @@ public class FactoryModel implements FactoryModelInterface {
 	@Override
 	public UserInterface newUser(int id, String email, String password) {
 		return new User(id, email, password);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.sinapsi.model.FactoryModelInterface#newUser(int, java.lang.String, java.lang.String, java.lang.List)
+	 */
+	@Override
+	public UserInterface newUser(int id, String email, String password, List<DeviceInterface> devices) {
+		return new User(id, email, password, devices);
 	}
 
 	/* (non-Javadoc)

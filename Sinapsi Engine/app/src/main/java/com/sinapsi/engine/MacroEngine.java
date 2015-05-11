@@ -7,6 +7,7 @@ import com.sinapsi.engine.components.ActionSetVariable;
 import com.sinapsi.engine.components.TriggerEngineStart;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.engine.execution.WebExecutionInterface;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.system.SystemFacade;
@@ -142,6 +143,10 @@ public class MacroEngine {
         log.log("MACROENGINE", "Engine started.");
         activator.setEnabled(true);
         activator.activateForOnEngineStart();
+    }
+
+    public void continueMacro(RemoteExecutionDescriptor red){
+        //TODO: impl
     }
 
     public void pauseEngine(){
