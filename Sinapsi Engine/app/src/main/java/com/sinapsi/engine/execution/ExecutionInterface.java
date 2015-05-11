@@ -166,7 +166,10 @@ public class ExecutionInterface {
         while(!isPaused && !stack.isEmpty() && !isCancelled){
             ActionListExecution ale = stack.peek();
             Action a = ale.getNextAction();
-            if(a.getExecutionDevice().getId() == device.getId())
+            DeviceInterface ad = a.getExecutionDevice();
+            int adid = ad.getId();
+            int did = device.getId();
+            if(adid == did)
                 ale.executeNext(this);
             else{
                 webExecutionInterface.continueExecutionOnDevice(this, a.getExecutionDevice());

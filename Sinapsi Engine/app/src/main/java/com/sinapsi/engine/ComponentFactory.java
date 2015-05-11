@@ -25,12 +25,14 @@ public class ComponentFactory {
      * @param device the device
      * @param componentClasses the component classes
      */
+    @SafeVarargs
     public ComponentFactory(DeviceInterface device, SinapsiLog log, Class<? extends MacroComponent>... componentClasses) {
         this.loader = new ComponentLoader(componentClasses);
         this.log = log;
         this.device = device;
         loader.loadClasses();
         log.log("COMPFACTORY", "Component classes loaded");
+        if (this.device == null)throw new RuntimeException("device is null");
     }
 
     /**

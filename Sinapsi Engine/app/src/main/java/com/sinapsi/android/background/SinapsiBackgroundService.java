@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.sinapsi.android.system.AndroidDeviceInfo;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
@@ -19,6 +20,7 @@ import com.sinapsi.android.system.AndroidWifiAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
+import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.ActionLog;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSimpleNotification;
@@ -52,6 +54,7 @@ public class SinapsiBackgroundService extends Service {
     private MacroEngine engine;
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
+    private DeviceInterface device;
 
     private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
 
@@ -80,12 +83,21 @@ public class SinapsiBackgroundService extends Service {
         }
     };
 
-    private DeviceInterface device;
+
 
     /**
      * Default ctor. This initializes and starts the engine and the logging system.
      */
     public SinapsiBackgroundService() {
+
+
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+
         sinapsiLog = new SinapsiLog();
         sinapsiLog.addLogInterface(new SystemLogInterface() {
             @Override
@@ -96,13 +108,21 @@ public class SinapsiBackgroundService extends Service {
 
         settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
 
-        loadSettings(settings);
+        //loadSettings(settings);
 
         SystemFacade sf = createAndroidSystemFacade();
+        VariableManager globalVarables = new VariableManager();
 
-        engine = new MacroEngine(device, new AndroidActivationManager(this, sf), defaultWebExecutionInterface, sf, sinapsiLog);
+        AndroidDeviceInfo adi = new AndroidDeviceInfo();
+        if(device == null) device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
+        engine = new MacroEngine(device,
+                new AndroidActivationManager(
+                        new ExecutionInterface(sf, device, defaultWebExecutionInterface, globalVarables,sinapsiLog),
+                            this, sf), sinapsiLog);
         engine.addMacros(loadSavedMacros());
         engine.startEngine();
+
+        createLocalMacroExample();
 
     }
 

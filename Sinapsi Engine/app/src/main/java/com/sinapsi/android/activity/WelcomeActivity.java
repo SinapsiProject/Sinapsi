@@ -42,5 +42,7 @@ public class WelcomeActivity extends Activity {
             }
         });
 
+        startService(new Intent(getApplicationContext(), com.sinapsi.android.background.SinapsiBackgroundService.class));
+
     }
 }

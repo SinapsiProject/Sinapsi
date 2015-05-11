@@ -41,6 +41,7 @@ public abstract class BroadcastActivator extends BroadcastReceiver {
         contextWrapper = cw;
         intentFilter = iF;
         executionInterface = di;
+        di.getLog().log("ANDROIDACTMAN", "New BroadcastActivator");
     }
 
     @Override
