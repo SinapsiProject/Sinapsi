@@ -1,4 +1,4 @@
-package com.sinapsi.desktop.controller;
+package com.sinapsi.desktop.view;
 
 public class RegistrationController {
 
