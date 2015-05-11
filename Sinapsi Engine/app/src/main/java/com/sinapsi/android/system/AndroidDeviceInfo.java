@@ -1,33 +1,20 @@
 package com.sinapsi.android.system;
 
 import android.os.Build;
+
 import com.sinapsi.engine.system.DeviceInfoAdapter;
 
 /**
- * Android dipendent class, give model and name of the current device
+ * Android dependent class, give model and name of the current device
  */
 public class AndroidDeviceInfo implements DeviceInfoAdapter {
-    private String model;
-    private String product;
-    private String version;
-    private String type;
-
-    /**
-     * Default ctor
-     */
-    public AndroidDeviceInfo() {
-        model = Build.MODEL;
-        product = Build.PRODUCT;
-        version = System.getProperty("os.version");
-        type = "Android";
-    }
-
     /**
      * Return os version
+     *
      * @return
      */
     public int getVersion() {
-        return Integer.parseInt(version);
+        return Build.VERSION.SDK_INT;
     }
 
     /**
@@ -37,7 +24,7 @@ public class AndroidDeviceInfo implements DeviceInfoAdapter {
      */
     @Override
     public String getDeviceName() {
-        return product;
+        return Build.PRODUCT;
     }
 
     /**
@@ -47,7 +34,7 @@ public class AndroidDeviceInfo implements DeviceInfoAdapter {
      */
     @Override
     public String getDeviceModel() {
-        return model;
+        return Build.MODEL;
     }
 
     /**
@@ -57,6 +44,6 @@ public class AndroidDeviceInfo implements DeviceInfoAdapter {
      */
     @Override
     public String getDeviceType() {
-        return type;
+        return "Android";
     }
 }
