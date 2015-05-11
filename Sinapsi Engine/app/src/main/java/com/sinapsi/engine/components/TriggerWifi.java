@@ -44,7 +44,7 @@ public class TriggerWifi extends Trigger {
     @Override
     protected JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException {
         WifiAdapter wa = (WifiAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
-        return new JSONObject()
+        return new JSONObject() //TODO: change, check from Event date (intent extras on android)
                 .put("wifi_status", wa.getStatus().toString())
                 .put("wifi_connection_status", wa.getConnectionStatus().toString())
                 .put("wifi_ssid", wa.getSSID());
