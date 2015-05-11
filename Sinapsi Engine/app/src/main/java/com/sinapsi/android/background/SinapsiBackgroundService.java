@@ -21,6 +21,7 @@ import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.components.ActionLog;
 import com.sinapsi.engine.components.ActionSendSMS;
+import com.sinapsi.engine.components.ActionSimpleNotification;
 import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
@@ -102,7 +103,6 @@ public class SinapsiBackgroundService extends Service {
         engine = new MacroEngine(device, new AndroidActivationManager(this, sf), defaultWebExecutionInterface, sf, sinapsiLog);
         engine.addMacros(loadSavedMacros());
         engine.startEngine();
-
 
     }
 
@@ -256,10 +256,10 @@ public class SinapsiBackgroundService extends Service {
         ));
 
         myMacro.addAction(getComponentFactory().newAction(
-                ActionSendSMS.ACTION_SEND_SMS,
+                ActionSimpleNotification.ACTION_SIMPLE_NOTIFICATION,
                 new ActualParamBuilder()
-                        .put("number", "1234567890")
-                        .put("msg", "Wifi enabled on the phone")
+                        .put("notification_title", "Wifi enabled")
+                        .put("notification_message", "Yeah.")
                         .create().toString()
         ));
 
