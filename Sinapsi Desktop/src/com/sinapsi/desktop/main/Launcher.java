@@ -65,6 +65,19 @@ public class Launcher extends Application {
 		}
 	}
 	
+	// About layout loader
+	public void initAboutLayout() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Launcher.class.getResource("../view/AboutLayout.fxml"));
+			AnchorPane aboutLayout = (AnchorPane) loader.load();
+					
+			// Sets the about layout into the center of the root layout
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// Registration layout loader
 	public void initRegistrationLayout() {
 		try {
