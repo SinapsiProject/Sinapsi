@@ -134,6 +134,41 @@ public class DeviceManager extends UserManager {
     }
     
     /**
+     * Return the device with id
+     * @param idUser id of the user
+     * @return device interface
+     * @throws SQLException
+     */
+    public DeviceInterface getDevice(int idDevice) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        DeviceInterface device = null;
+
+        try {
+            c = db.connect();
+            String query = "SELECT * FROM device WHERE idu = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idDevice);
+            r = s.executeQuery();
+            if (r.next()) {
+                device = db.factory.newDevice(idDevice, 
+                                              r.getString("name"), 
+                                              r.getString("model"), 
+                                              r.getString("type"), 
+                                              getUserById(r.getInt("iduser")), 
+                                              r.getInt("version"));
+            }
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return device;
+    }
+    
+    /**
      * Return the name and the model of the device with id
      * @param idDevice id of the device
      * @return

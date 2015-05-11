@@ -2,13 +2,16 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.google.gson.Gson;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.webservice.db.DeviceManager;
 import com.sinapsi.webservice.db.UserManager;
 
 /**
@@ -42,7 +45,11 @@ public class RegistrationServlet extends HttpServlet {
                 out.flush();
             } else {
                 User user = (User) userManager.newUser(email, pwd);
-
+                
+                // register the web service as a new device
+                DeviceManager deviceManager = new DeviceManager();
+                deviceManager.newDevice("Cloud", "Sinapsi", "Web", user.getId(), 1);
+                
                 out.print(gson.toJson(user));
                 out.flush();
             }

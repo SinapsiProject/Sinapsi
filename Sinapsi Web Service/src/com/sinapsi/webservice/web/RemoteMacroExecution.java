@@ -1,8 +1,6 @@
 package com.sinapsi.webservice.web;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.bgp.decryption.Decrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.webservice.db.DeviceManager;
 import com.sinapsi.webservice.db.KeysDBManager;
-import com.sinapsi.webservice.db.UserManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -57,8 +55,8 @@ public class RemoteMacroExecution extends HttpServlet {
             
             if(deviceManager.getInfoDevice(idDevice).getKey().equals("Cloud") &&
                deviceManager.getInfoDevice(idDevice).getValue().equals("Sinapsi")) {
-                   
-                   //TODO: execute macro in the web service
+               
+                //TODO: execute macro in the web service
             
             } else {
                 //TODO: Connect to the web socket, and send the RED object, the websocket will have 
