@@ -3,18 +3,21 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.webservice.db.EngineManager;
-import com.sinapsi.webservice.db.KeysManager;
+import com.sinapsi.webservice.db.KeysDBManager;
+import com.sinapsi.webservice.db.UserManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -32,13 +35,15 @@ public class AvailableTriggerServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         EngineManager engineManager = new EngineManager();
-        KeysManager keysManager = new KeysManager();
+        KeysDBManager keysManager = new KeysDBManager();
+        UserManager userManager = new UserManager();
+        
         Gson gson = new Gson();   
 
-        String email = request.getParameter("email");
         int idDevice = Integer.parseInt(request.getParameter("device"));
 
         try {
+            String email = userManager.getUserEmail(idDevice);
             // create the encrypter
             Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
             // get the available triggers from the db
@@ -60,10 +65,10 @@ public class AvailableTriggerServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         EngineManager engineManager = new EngineManager();
-        KeysManager keysManager = new KeysManager();
+        KeysDBManager keysManager = new KeysDBManager();
+        UserManager userManager = new UserManager();
         Gson gson = new Gson();
         
-        String email = request.getParameter("email");
         int idDevice = Integer.parseInt(request.getParameter("device"));
         
         // if the db fails to add the available triggers, then set success to false, and vice-versa
@@ -73,6 +78,7 @@ public class AvailableTriggerServlet extends HttpServlet {
         String encryptedJsonBody = BodyReader.read(request);
 
         try {
+            String email = userManager.getUserEmail(idDevice);
             // create the decrypter
             Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
             // decrypt the jsoned body
@@ -90,6 +96,7 @@ public class AvailableTriggerServlet extends HttpServlet {
         }
 
         try {
+            String email = userManager.getUserEmail(idDevice);
             // return a crypted response to the client
             Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
             if (success)

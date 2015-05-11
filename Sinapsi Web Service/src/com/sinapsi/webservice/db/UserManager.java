@@ -138,4 +138,32 @@ public class UserManager {
         db.disconnect(c, s, r);
         return user;
     }
+    
+    /**
+     * Given a device id return the email of user 
+     * @param idDevice id of the device
+     * @return email of the user
+     * @throws SQLException
+     */
+    public String getUserEmail(int idDevice) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        String email = null;
+
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT email FROM users, device WHERE users.id = device.iduser AND device.id = ?");
+            s.setInt(1, idDevice);
+            r = s.executeQuery();
+            if (r.next())
+                email = r.getString("email");
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return email;
+    }
 }

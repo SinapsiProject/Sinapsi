@@ -2,6 +2,7 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,10 +14,12 @@ import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.webservice.db.KeysManager;
+import com.sinapsi.webservice.db.DeviceManager;
+import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
@@ -27,6 +30,7 @@ import com.sinapsi.webservice.utility.BodyReader;
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
@@ -46,7 +50,7 @@ public class LoginServlet extends HttpServlet {
         
         // objects that manipulate data in the db
         UserManager userManager = new UserManager();
-        KeysManager keysManager = new KeysManager();
+        KeysDBManager keysManager = new KeysDBManager();
 
         try {
             String email = request.getParameter("email");
@@ -66,7 +70,14 @@ public class LoginServlet extends HttpServlet {
 
             if (user != null) {
                 // the user is ok
-                if (userManager.checkUser(email, pwd)) {               
+                if (userManager.checkUser(email, pwd)) {          
+                    // register the web service as a new device
+                    DeviceManager deviceManager = new DeviceManager();
+                    deviceManager.newDevice("Cloud", "Sinapsi", "Web", user.getId(), 1);
+                    
+                    //TODO: check, if the user sign in with a new device, then add additional 
+                    //      info in userOBJ to give the choice to add the device
+                    
                     // and send the encrypted data
                     out.print(encrypter.encrypt(gson.toJson(user)));
                     out.flush();

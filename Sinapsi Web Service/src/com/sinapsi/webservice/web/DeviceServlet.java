@@ -19,7 +19,7 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.webservice.db.DeviceManager;
-import com.sinapsi.webservice.db.KeysManager;
+import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -46,7 +46,7 @@ public class DeviceServlet extends HttpServlet {
 
             try {
                 // create the keys manger and the encrypter
-                KeysManager keysManager = new KeysManager();
+                KeysDBManager keysManager = new KeysDBManager();
                 Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
                 
                 User user = (User) deviceManager.getUserByEmail(email);
@@ -79,7 +79,7 @@ public class DeviceServlet extends HttpServlet {
         String action = request.getParameter("action");
         PrintWriter out = response.getWriter();
         DeviceManager deviceManager = new DeviceManager();
-        KeysManager keysManager = new KeysManager();
+        KeysDBManager keysManager = new KeysDBManager();
         Gson gson = new Gson();
 
         // add device request

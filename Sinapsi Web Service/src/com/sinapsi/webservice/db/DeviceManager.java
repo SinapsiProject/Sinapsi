@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 
@@ -129,6 +131,37 @@ public class DeviceManager extends UserManager {
         }
         db.disconnect(c, s, r);
         return device;
+    }
+    
+    /**
+     * Return the name and the model of the device with id
+     * @param idDevice id of the device
+     * @return
+     * @throws SQLException
+     */
+    public HashMap.SimpleEntry<String, String> getInfoDevice(int idDevice) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        HashMap.SimpleEntry<String, String> nameModel = null;
+
+        try {
+            c = db.connect();
+            String query = "SELECT name, model FROM device WHERE id = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idDevice);
+
+            r = s.executeQuery();
+            if (r.next())
+                nameModel = new HashMap.SimpleEntry<String, String>(r.getString("name"), r.getString("model"));
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return nameModel;
+        
     }
     
     /**

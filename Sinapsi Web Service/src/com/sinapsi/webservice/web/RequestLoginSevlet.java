@@ -14,7 +14,7 @@ import com.bgp.keymanager.PrivateKeyManager;
 import com.bgp.keymanager.PublicKeyManager;
 import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
-import com.sinapsi.webservice.db.KeysManager;
+import com.sinapsi.webservice.db.KeysDBManager;
 
 /**
  * Servlet called when a user want to login
@@ -39,7 +39,7 @@ public class RequestLoginSevlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");
         Gson gson = new Gson();
-        KeysManager keysManager = new KeysManager();
+        KeysDBManager keysManager = new KeysDBManager();
         // generate local public/private keys
         KeyGenerator generator = new KeyGenerator();
 
