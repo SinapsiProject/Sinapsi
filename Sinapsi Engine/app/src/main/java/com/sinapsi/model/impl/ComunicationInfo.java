@@ -18,6 +18,7 @@ public class ComunicationInfo implements ComunicationInfoInterface {
     public ComunicationInfo() {
         errorOccured = false;
         description = "";
+        additionalInfo = "";
     }
 
     /**
