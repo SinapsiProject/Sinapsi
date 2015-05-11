@@ -1,39 +1,41 @@
 package com.sinapsi.server.websocket;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
+import java.io.IOException;
+
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.RemoteEndpoint;
+import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import javax.websocket.MessageHandler;
 
-@ServerEndpoint("/remote_macro")
-public class WebSocketServer {
+public class WebSocketServer extends Endpoint {
 
-    /**
-     * Intercept new connection
-     * @param session allow to send data to client
-     */
-    @OnOpen
-    public void onOpen(Session session) {
-        
+    @Override
+    public void onOpen(Session session, EndpointConfig endPointConfig) {
+        RemoteEndpoint.Basic remoteEPbasic = session.getBasicRemote();
+        session.addMessageHandler(new CommandHandler(remoteEPbasic));
     }
     
-    /**
-     * Handle message from client
-     * @param message message recived
-     * @param session allow to send data to client
-     */
-    @OnMessage
-    public void onMessage(String message, Session session) {
+    private static class CommandHandler implements MessageHandler.Whole<String> {
+
+        private final RemoteEndpoint.Basic remoteEndPointBasic;
+        
+        public CommandHandler(RemoteEndpoint.Basic remoteEPbasic) {
+           this.remoteEndPointBasic = remoteEPbasic;
+        }
+
+        @Override
+        public void onMessage(String message) {
+            try {
+                if(remoteEndPointBasic != null) {
+                    remoteEndPointBasic.sendText(message);
+                }
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
         
     }
-    
-    /**
-     * Intercept close connection
-     * @param session allow to send data to client
-     */
-    @OnClose
-    public void onClose(Session session) {
-        
-    }
+
 }

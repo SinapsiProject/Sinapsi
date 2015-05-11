@@ -1,5 +1,6 @@
 package com.sinapsi.model.impl;
 
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  *
  */
 public class User extends ComunicationInfo implements UserInterface {
-    private List<Device> devices;
+    private List<DeviceInterface> devices;
     private int id;
     private String email;
     private String password;
@@ -19,6 +20,11 @@ public class User extends ComunicationInfo implements UserInterface {
     	id = Id;
     	password = pwd;
     	email = mail;
+    }
+
+    User(int Id, String mail, String pwd, List<DeviceInterface> devices){
+        this(Id, mail, pwd);
+        this.devices = devices;
     }
     
     /**
@@ -65,5 +71,15 @@ public class User extends ComunicationInfo implements UserInterface {
     @Override
     public void setPassword(String pwd) {
         password = pwd;
+    }
+
+    @Override
+    public List<DeviceInterface> getDevices() {
+        return devices;
+    }
+
+    @Override
+    public void setDevices(List<DeviceInterface> devices) {
+        this.devices = devices;
     }
 }
