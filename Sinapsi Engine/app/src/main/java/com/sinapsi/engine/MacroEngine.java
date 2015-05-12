@@ -1,9 +1,11 @@
 package com.sinapsi.engine;
 
 import com.sinapsi.engine.components.ActionContinueConfirmDialog;
+import com.sinapsi.engine.components.ActionLog;
 import com.sinapsi.engine.components.ActionLuaScript;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSetVariable;
+import com.sinapsi.engine.components.ActionSimpleNotification;
 import com.sinapsi.engine.components.TriggerEngineStart;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.execution.ExecutionInterface;
@@ -41,25 +43,17 @@ public class MacroEngine {
      * class set.
      * @param currentDevice the device on which this engine is running
      * @param activationManager the activation manager for trigger activation
-     * @param sysFacade the system facade
      * @param sinapsiLog the sinapsi log
      */
     public MacroEngine(DeviceInterface currentDevice,
                        ActivationManager activationManager,
-                       WebExecutionInterface wei,
-                       SystemFacade sysFacade,
                        SinapsiLog sinapsiLog
                        ){
         device = currentDevice;
         activator = activationManager;
         log = sinapsiLog;
-        activator.setDefaultExecutionInterface(
-                new ExecutionInterface(
-                        sysFacade,
-                        device,
-                        wei,
-                        new VariableManager(),
-                        sinapsiLog));
+
+
         factory = new ComponentFactory(device, log,
                 TriggerSMS.class,
                 TriggerWifi.class,
@@ -70,7 +64,10 @@ public class MacroEngine {
                 ActionSendSMS.class,
                 ActionLuaScript.class,
                 ActionSetVariable.class,
-                ActionContinueConfirmDialog.class
+                ActionContinueConfirmDialog.class,
+                ActionLog.class,
+                ActionSimpleNotification.class
+
         );
 
         sinapsiLog.log("MACROENGINE", "Engine initialized.");
@@ -81,26 +78,17 @@ public class MacroEngine {
      * class set.
      * @param currentDevice the devices on which this engine is running
      * @param activationManager the activation manager for trigger activation
-     * @param sysFacade the system facade
      * @param sinapsiLog the sinapsi log
      * @param componentClasses the set of component classes
      */
     public MacroEngine(DeviceInterface currentDevice,
                        ActivationManager activationManager,
-                       WebExecutionInterface wei,
-                       SystemFacade sysFacade,
                        SinapsiLog sinapsiLog,
                        Class<? extends MacroComponent>[] componentClasses){
         device = currentDevice;
         activator = activationManager;
         log = sinapsiLog;
-        activator.setDefaultExecutionInterface(
-                new ExecutionInterface(
-                        sysFacade,
-                        device,
-                        wei,
-                        new VariableManager(),
-                        sinapsiLog));
+
         factory = new ComponentFactory(device, log, componentClasses);
 
         sinapsiLog.log("MACROENGINE", "Engine initialized.");

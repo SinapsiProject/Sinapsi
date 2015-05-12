@@ -10,10 +10,13 @@ import com.sinapsi.android.utils.IntentUtils;
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.Trigger;
+import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.components.TriggerWifi;
+import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
+import com.sinapsi.model.DeviceInterface;
 
 /**
  * ActivationManager - implementation for the Android platform.
@@ -26,10 +29,7 @@ public class AndroidActivationManager extends ActivationManager {
     private BroadcastActivator smsActivator = null;
     private BroadcastActivator screenPowerActivator = null;
 
-    private BroadcastActivator[] activators = new BroadcastActivator[]{
-            wifiActivator,
-            smsActivator
-    };
+    private BroadcastActivator[] activators = null;
 
     /**
      * Creates a new AndroidActivationManager instance with the specified
@@ -38,12 +38,14 @@ public class AndroidActivationManager extends ActivationManager {
      * @param contextWrapper the contextWrapper
      * @param sf the SystemFacade, used for requirement checks
      */
-    public AndroidActivationManager(ContextWrapper contextWrapper, SystemFacade sf) {
-
+    public AndroidActivationManager(ExecutionInterface defaultExecutionInterface,
+                                    ContextWrapper contextWrapper,
+                                    SystemFacade sf) {
+        super(defaultExecutionInterface);
         if(sf.checkRequirement(SystemFacade.REQUIREMENT_WIFI, 1)) wifiActivator = new BroadcastActivator(
                 this, newIntentFilter(
-                        "android.net.wifi.STATE_CHANGE",
-                        "android.net.wifi.WIFI_STATE_CHANGED"),
+                "android.net.wifi.STATE_CHANGE",
+                "android.net.wifi.WIFI_STATE_CHANGED"),
                 contextWrapper, executionInterface) {
             @Override
             public Event extractEventInfo(Context c, Intent i) {
@@ -54,7 +56,7 @@ public class AndroidActivationManager extends ActivationManager {
 
         if(sf.checkRequirement(SystemFacade.REQUIREMENT_SMS_READ, 1)) smsActivator = new BroadcastActivator(
                 this, newIntentFilter(
-                        "android.provider.Telephony.SMS_RECEIVED"),
+                "android.provider.Telephony.SMS_RECEIVED"),
                 contextWrapper, executionInterface) {
             @Override
             public Event extractEventInfo(Context c, Intent intent) {
@@ -77,8 +79,8 @@ public class AndroidActivationManager extends ActivationManager {
 
         if(sf.checkRequirement(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, 1)) screenPowerActivator = new BroadcastActivator(
                 this, newIntentFilter(
-                        Intent.ACTION_SCREEN_OFF,
-                        Intent.ACTION_SCREEN_ON),
+                Intent.ACTION_SCREEN_OFF,
+                Intent.ACTION_SCREEN_ON),
                 contextWrapper, executionInterface) {
             @Override
             public Event extractEventInfo(Context c, Intent intent) {
@@ -88,6 +90,13 @@ public class AndroidActivationManager extends ActivationManager {
                 return result;
             }
         };
+
+        activators = new BroadcastActivator[]{
+                wifiActivator,
+                smsActivator,
+                screenPowerActivator
+        };
+
     }
 
     @Override

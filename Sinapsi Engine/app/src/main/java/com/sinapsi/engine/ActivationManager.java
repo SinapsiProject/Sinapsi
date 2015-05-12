@@ -2,6 +2,8 @@ package com.sinapsi.engine;
 
 import com.sinapsi.engine.components.TriggerEngineStart;
 import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.engine.system.SystemFacade;
+import com.sinapsi.model.DeviceInterface;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,6 +20,15 @@ public abstract class ActivationManager {
 
     private List<Trigger> engineStartTriggers = new ArrayList<>();
     private boolean enabled = false;
+
+    /**
+     * Ctor. Sets the default execution interface for this activation manager.
+     * However, at execution phase this is cloned into a new instance.
+     * @param defaultExecutionInterface the default execution interface
+     */
+    public ActivationManager(ExecutionInterface defaultExecutionInterface) {
+        this.executionInterface = defaultExecutionInterface;
+    }
 
     /**
      * Registers a trigger for activation.
@@ -39,17 +50,7 @@ public abstract class ActivationManager {
         if(t.getName().equals(TriggerEngineStart.TRIGGER_ENGINE_START)) engineStartTriggers.remove(t);
     }
 
-    /**
-     * Sets the default execution interface for this activation manager.
-     * However, at execution phase this is cloned into a new instance.
-     * This method should be called just after this ActivationManager
-     * instantiation and just before the activation of any trigger, otherwise
-     * NullPointerException occurs.
-     * @param executionInterface the execution interface
-     */
-    public void setDefaultExecutionInterface(ExecutionInterface executionInterface) {
-        this.executionInterface = executionInterface;
-    }
+
 
     /**
      * Internal event, called by MacroEngine class, useful to activate the

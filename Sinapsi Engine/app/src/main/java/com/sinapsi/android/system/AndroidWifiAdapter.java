@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 
+import com.sinapsi.android.Lol;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.engine.parameters.ConnectionStatusChoices;
 import com.sinapsi.engine.parameters.SwitchStatusChoices;
@@ -44,7 +45,7 @@ public class AndroidWifiAdapter implements WifiAdapter{
     public ConnectionStatusChoices getConnectionStatus() {
         NetworkInfo ni = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if(ni == null) return ConnectionStatusChoices.DISCONNECTED;
-        if(ni.isConnected()&&!ni.isConnectedOrConnecting()){
+        if(ni.isConnected()){
             return ConnectionStatusChoices.CONNECTED;
         }else if(ni.isConnectedOrConnecting()){
             return ConnectionStatusChoices.CONNECTING;

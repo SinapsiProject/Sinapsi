@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.sinapsi.android.system.AndroidDeviceInfo;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
@@ -19,6 +20,7 @@ import com.sinapsi.android.system.AndroidWifiAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
+import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.ActionLog;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSimpleNotification;
@@ -29,6 +31,7 @@ import com.sinapsi.engine.execution.WebExecutionInterface;
 import com.sinapsi.engine.log.LogMessage;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.log.SystemLogInterface;
+import com.sinapsi.engine.parameters.ConnectionStatusChoices;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
@@ -52,6 +55,7 @@ public class SinapsiBackgroundService extends Service {
     private MacroEngine engine;
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
+    private DeviceInterface device;
 
     private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
 
@@ -80,12 +84,21 @@ public class SinapsiBackgroundService extends Service {
         }
     };
 
-    private DeviceInterface device;
+
 
     /**
      * Default ctor. This initializes and starts the engine and the logging system.
      */
     public SinapsiBackgroundService() {
+
+
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+
         sinapsiLog = new SinapsiLog();
         sinapsiLog.addLogInterface(new SystemLogInterface() {
             @Override
@@ -96,13 +109,21 @@ public class SinapsiBackgroundService extends Service {
 
         settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
 
-        loadSettings(settings);
+        //loadSettings(settings);
 
         SystemFacade sf = createAndroidSystemFacade();
+        VariableManager globalVarables = new VariableManager();
 
-        engine = new MacroEngine(device, new AndroidActivationManager(this, sf), defaultWebExecutionInterface, sf, sinapsiLog);
+        AndroidDeviceInfo adi = new AndroidDeviceInfo();
+        if(device == null) device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
+        engine = new MacroEngine(device,
+                new AndroidActivationManager(
+                        new ExecutionInterface(sf, device, defaultWebExecutionInterface, globalVarables,sinapsiLog),
+                            this, sf), sinapsiLog);
         engine.addMacros(loadSavedMacros());
         engine.startEngine();
+
+        createLocalMacroExample();
 
     }
 
@@ -230,9 +251,9 @@ public class SinapsiBackgroundService extends Service {
     /**
      * QUESTO E' UN PRIMO ESEMPIO DI UNA MACRO LOCALE.
      * Viene creata una macro che si attiva ogni volta che il wifi
-     * viene attivato, e che quindi stampa un messaggio nel log e
-     * successivamente invia un sms a un numero inventato.
-     * <p/>
+     * si connette ad una rete, e che quindi stampa un messaggio
+     * nel log e successivamente mostra una notifica.
+     *
      * Il lavoro che fa questo metodo e' in sostanza quello
      * che dovra' essere fatto dal macro editor. Le uniche differenze
      * sono che il macro editor comunichera' con una GUI, e che controllera'
@@ -244,7 +265,7 @@ public class SinapsiBackgroundService extends Service {
         myMacro.setTrigger(getComponentFactory().newTrigger(
                 TriggerWifi.TRIGGER_WIFI,
                 new ActualParamBuilder()
-                        .put("wifi_status", SwitchStatusChoices.ENABLED.toString())
+                        .put("wifi_connection_status", ConnectionStatusChoices.CONNECTED.toString())
                         .create().toString(),
                 myMacro));
 
@@ -258,8 +279,8 @@ public class SinapsiBackgroundService extends Service {
         myMacro.addAction(getComponentFactory().newAction(
                 ActionSimpleNotification.ACTION_SIMPLE_NOTIFICATION,
                 new ActualParamBuilder()
-                        .put("notification_title", "Wifi enabled")
-                        .put("notification_message", "Yeah.")
+                        .put("notification_title", "Yeah!")
+                        .put("notification_message", "Connected to @{wifi_ssid}.")
                         .create().toString()
         ));
 

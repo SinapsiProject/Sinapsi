@@ -71,6 +71,7 @@ public abstract class Action implements Parameterized, DistributedComponent {
      */
     public void activate(final ExecutionInterface ei) {
         try {
+            ei.getLog().log(getName(), "Executing action");
             onActivate(ei);
         } catch (JSONException e) {
             e.printStackTrace();
