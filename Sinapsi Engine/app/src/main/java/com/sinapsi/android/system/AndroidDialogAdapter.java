@@ -68,7 +68,8 @@ public class AndroidDialogAdapter implements DialogAdapter {
                 dialog.cancel();
             }
         });
-
-        builder.show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        alertDialog.show();
     }
 }

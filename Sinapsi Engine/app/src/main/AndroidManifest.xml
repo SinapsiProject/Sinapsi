@@ -36,7 +36,7 @@
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
-        
+
         <activity
             android:name="com.sinapsi.android.activity.MacroManagerActivity"
             android:label="@string/title_activity_macro_manager" >
