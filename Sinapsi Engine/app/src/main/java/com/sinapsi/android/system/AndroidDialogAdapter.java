@@ -3,6 +3,8 @@ package com.sinapsi.android.system;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.InputType;
+import android.widget.EditText;
 
 import com.sinapsi.engine.R;
 import com.sinapsi.engine.system.DialogAdapter;
@@ -37,5 +39,34 @@ public class AndroidDialogAdapter implements DialogAdapter {
             }
         });
         alertDialog.show();
+    }
+
+    @Override
+    public void showStringInputDialog(String title, String message, final OnInputDialogChoiceListener onDo, final OnInputDialogChoiceListener onCancel) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title).setMessage(message);
+
+        // Set up the input
+        final EditText input = new EditText(context);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               onDo.onDialogChoice(input.getText().toString());
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                onCancel.onDialogChoice(input.getText().toString());
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }

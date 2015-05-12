@@ -5,7 +5,7 @@ package com.sinapsi.engine;
  */
 public enum SinapsiVersions {
     NONE,
-    ARCHIMEDES,
-    BOOLE,
-    CURIE
+    ANTARES,
+    BETELGEUSE,
+    CASTOR
 }

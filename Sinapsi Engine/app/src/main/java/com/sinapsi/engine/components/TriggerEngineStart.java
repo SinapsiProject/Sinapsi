@@ -35,7 +35,7 @@ public class TriggerEngineStart extends Trigger{
 
     @Override
     public int getMinVersion() {
-        return SinapsiVersions.ARCHIMEDES.ordinal();
+        return SinapsiVersions.ANTARES.ordinal();
     }
 
     @Override

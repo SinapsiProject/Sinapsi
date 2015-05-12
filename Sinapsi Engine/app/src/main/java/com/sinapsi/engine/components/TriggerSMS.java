@@ -44,7 +44,7 @@ public class TriggerSMS extends Trigger{
 
     @Override
     public int getMinVersion() {
-        return SinapsiVersions.ARCHIMEDES.ordinal();
+        return SinapsiVersions.ANTARES.ordinal();
     }
 
     @Override
