@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.sinapsi.engine.R;
@@ -38,6 +39,7 @@ public class AndroidDialogAdapter implements DialogAdapter {
                 dialog.dismiss();
             }
         });
+        alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.show();
     }
 

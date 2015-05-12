@@ -1,5 +1,6 @@
 package com.sinapsi.engine;
 
+import com.sinapsi.android.Lol;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.DistributedComponent;
@@ -80,6 +81,13 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
         if (checkParameters(e, di)) {
             di.getLog().log(getName(), "Parameter check success. Starting macro " + macro.getId() + ":'" + macro.getName() + "'");
             di.setMacro(macro);
+            try {
+                JSONObject valuesObj = extractParameterValues(e, di);
+                createTriggerVars(valuesObj, di);
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+                //This means that the extending class is bad implemented
+            }
             onActivate(e, di);
             macro.execute(di);
         } else {
@@ -131,6 +139,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      * extracted parameter from system/event's state.
      */
     protected boolean checkParameters(Event e, ExecutionInterface ei) {
+
         if (getActualParameters() == null) return true;
 
         JSONObject actualParameterObj;
@@ -164,7 +173,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
             //This means that the extending class is bad implemented
         }
         if (valuesObj == null) return true;
-        createTriggerVars(valuesObj, ei);
+
         Iterator<String> pars = pjo.keys();
 
         while (pars.hasNext()) {

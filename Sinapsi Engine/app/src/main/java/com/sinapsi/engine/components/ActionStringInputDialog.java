@@ -16,9 +16,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 /**
- * ActionContinueConfirmDialog class. This Action will show a
+ * ActionStringInputDialog class. This Action will show a
  * dialog to allow the user to input a string on a text field,
- * which will be saved in a variable with the chosen name
+ * which will be saved in a variable with the chosen name.
  */
 public class ActionStringInputDialog extends Action{
 

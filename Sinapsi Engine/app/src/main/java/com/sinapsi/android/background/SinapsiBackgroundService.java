@@ -21,9 +21,15 @@ import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.VariableManager;
+import com.sinapsi.engine.components.ActionContinueConfirmDialog;
 import com.sinapsi.engine.components.ActionLog;
 import com.sinapsi.engine.components.ActionSendSMS;
+import com.sinapsi.engine.components.ActionSetVariable;
 import com.sinapsi.engine.components.ActionSimpleNotification;
+import com.sinapsi.engine.components.ActionWifiState;
+import com.sinapsi.engine.components.TriggerACPower;
+import com.sinapsi.engine.components.TriggerEngineStart;
+import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
@@ -142,7 +148,8 @@ public class SinapsiBackgroundService extends Service {
         sf.addSystemService(SystemFacade.SERVICE_DIALOGS, new AndroidDialogAdapter(this));
         sf.addSystemService(SystemFacade.SERVICE_SMS, new AndroidSMSAdapter(this));
         sf.addSystemService(SystemFacade.SERVICE_WIFI, new AndroidWifiAdapter(this));
-        sf.addSystemService(SystemFacade.SERVICE_NOTIFICATION, new AndroidNotificationAdapter(this));
+        sf.addSystemService(SystemFacade.SERVICE_NOTIFICATION, new AndroidNotificationAdapter(getApplicationContext()));
+
 
         PackageManager pm = getPackageManager();
 
@@ -150,6 +157,8 @@ public class SinapsiBackgroundService extends Service {
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_DIALOGS, true);
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
         sf.setRequirementSpec(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, true);
+        sf.setRequirementSpec(SystemFacade.REQUIREMENT_AC_CHARGER, true);
+        sf.setRequirementSpec(SystemFacade.REQUIREMENT_INPUT_DIALOGS, true);
         if (pm.hasSystemFeature(PackageManager.FEATURE_WIFI))
             sf.setRequirementSpec(SystemFacade.REQUIREMENT_WIFI, true);
         if (pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
@@ -261,7 +270,7 @@ public class SinapsiBackgroundService extends Service {
      * all'utente.
      */
     public void createLocalMacroExample() {
-        MacroInterface myMacro = fm.newMacro("ExampleLocal", 1);
+        MacroInterface myMacro = fm.newMacro("Ex. WIFI->LOG->NOTIF", 1);
         myMacro.setTrigger(getComponentFactory().newTrigger(
                 TriggerWifi.TRIGGER_WIFI,
                 new ActualParamBuilder()
@@ -285,6 +294,89 @@ public class SinapsiBackgroundService extends Service {
         ));
 
         engine.addMacro(myMacro);
+
+
+        //MACRO 2
+        MacroInterface myMacro2 = fm.newMacro("Ex. SCREEN->VARIABLE-LOG", 2);
+        myMacro2.setTrigger(getComponentFactory().newTrigger(
+                TriggerScreenPower.TRIGGER_SCREEN_POWER,
+                null,
+                myMacro2
+        ));
+
+        myMacro2.addAction(getComponentFactory().newAction(
+                ActionLog.ACTION_LOG,
+                new ActualParamBuilder()
+                        .put("log_message", "Lo schermo e' @{screen_power}")
+                        .create().toString()
+        ));
+
+        myMacro2.addAction(getComponentFactory().newAction(
+                ActionSetVariable.ACTION_SET_VARIABLE,
+                new ActualParamBuilder()
+                        .put("var_name", "screen_power")
+                        .put("var_scope", VariableManager.Scopes.LOCAL.toString())
+                        .put("var_type", VariableManager.Types.STRING.toString())
+                        .put("var_value", "@{screen_power} @{screen_power}")
+                        .create().toString()
+        ));
+
+        myMacro2.addAction(getComponentFactory().newAction(
+                ActionLog.ACTION_LOG,
+                new ActualParamBuilder()
+                        .put("log_message", "Lo schermo e' @{screen_power}")
+                        .create().toString()
+        ));
+
+        engine.addMacro(myMacro2);
+
+        //MACRO3
+        MacroInterface myMacro3 = fm.newMacro("Ex. POWER->CONFIRM->WIFIOFF->LOG", 3);
+        /*myMacro3.setTrigger(getComponentFactory().newTrigger(
+                TriggerACPower.TRIGGER_AC_POWER,
+                new ActualParamBuilder()
+                        .put("ac_power", false)
+                        .create().toString(),
+                myMacro3
+        ));*/
+
+        /*myMacro3.setTrigger(getComponentFactory().newTrigger(
+                TriggerEngineStart.TRIGGER_ENGINE_START,
+                null,
+                myMacro3
+        ));*/
+
+        myMacro3.setTrigger(getComponentFactory().newTrigger(
+                TriggerWifi.TRIGGER_WIFI,
+                new ActualParamBuilder()
+                        .put("wifi_connection_status", ConnectionStatusChoices.CONNECTED.toString())
+                        .create().toString(),
+                myMacro3));
+
+        myMacro3.addAction(getComponentFactory().newAction(
+                ActionContinueConfirmDialog.ACTION_CONTINUE_CONFIRM_DIALOG,
+                new ActualParamBuilder()
+                        .put("dialog_title", "Continuare?")
+                        .put("dialog_message", "Sicuro di voler disattivare il wifi?")
+                        .create().toString()
+        ));
+
+        myMacro3.addAction(getComponentFactory().newAction(
+                ActionWifiState.ACTION_WIFI_STATE,
+                new ActualParamBuilder()
+                        .put("wifi_switch", false)
+                        .create().toString()
+        ));
+
+        myMacro3.addAction(getComponentFactory().newAction(
+                ActionLog.ACTION_LOG,
+                new ActualParamBuilder()
+                        .put("log_message", "Il wifi e' disattivato")
+                        .create().toString()
+        ));
+
+
+        //engine.addMacro(myMacro3);
     }
 
 
