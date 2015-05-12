@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sinapsi.desktop.view.LoginLayoutController">
    <children>
       <GridPane layoutX="300.0" layoutY="258.0" prefHeight="304.0" prefWidth="213.0">
         <columnConstraints>
@@ -32,10 +34,5 @@
          </children>
       </GridPane>
       <Label layoutX="694.0" layoutY="562.0" text="About" />
-      <ImageView fitHeight="105.0" fitWidth="419.0" layoutX="190.0" layoutY="127.0">
-         <image>
-            <Image url="@../../../../../res/logo.png" />
-         </image>
-      </ImageView>
    </children>
 </AnchorPane>

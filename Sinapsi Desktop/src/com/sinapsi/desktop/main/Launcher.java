@@ -7,6 +7,8 @@ package com.sinapsi.desktop.main;
 
 import java.io.IOException;
 
+import com.sinapsi.desktop.view.LoginLayoutController;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -65,13 +67,20 @@ public class Launcher extends Application {
 			HBox horizontalBox = new HBox();
 			horizontalBox.setPrefWidth(600);
 			horizontalBox.setPrefHeight(300);
-			
-			Image img = new Image(Launcher.class.getResourceAsStream("../view/logo.png"), 700, 400, true, true);
-			ImageView imgView = new ImageView(img);			
+						
+			Image image = new Image(Launcher.class.getResourceAsStream("../view/mainlogo.png"), 700, 500, true, true);
+			ImageView imgView = new ImageView(image);			
 	        horizontalBox.getChildren().add(imgView);
+	        
 		
 			// Sets the login layout into the center of the root layout
 			rootLayout.setCenter(loginLayout);
+			
+			// Gives the controller access to the main application
+			//LoginLayoutController loginController = loader.getController();
+			//loginController.setLauncher(this);
+			
+			
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
