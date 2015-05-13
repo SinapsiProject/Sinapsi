@@ -44,6 +44,7 @@ import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.engine.parameters.SwitchStatusChoices;
+import com.sinapsi.model.impl.Macro;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +74,7 @@ public class SinapsiBackgroundService extends Service {
             web.continueMacroOnDevice(
                     di,
                     new RemoteExecutionDescriptor(
+                            ei.getMacro().getId(),
                             ei.getLocalVars(),
                             ei.getExecutionStackIndexes()),
                     new SinapsiWebServiceFacade.WebServiceCallback<String>() {
