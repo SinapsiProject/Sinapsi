@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.websocket.EncodeException;
@@ -11,6 +12,7 @@ import javax.websocket.OnClose;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.OnMessage;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value="/websocket", encoders={MessageEncoder.class}, decoders={MessageDecoder.class})
@@ -94,7 +96,7 @@ public class WebSocketServer {
      * @param session
      */
     @OnOpen
-    public void onOpen(Session session, String idDevice) {
+    public void onOpen(Session session, @PathParam("id_device") String idDevice) {
         // Add session to the connected sessions set
         session.getUserProperties().put("id_device", idDevice);
         clients.add(session);
