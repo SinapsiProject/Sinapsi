@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
+import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.websocket.EncodeException;
@@ -15,7 +15,8 @@ import javax.websocket.OnMessage;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value="/websocket", encoders={MessageEncoder.class}, decoders={MessageDecoder.class})
+@ApplicationScoped
+@ServerEndpoint(value="/websocket")
 public class WebSocketServer {
     private static Set<Session> clients = Collections.synchronizedSet(new HashSet<Session>());
     
@@ -49,8 +50,11 @@ public class WebSocketServer {
                     e.printStackTrace();
                 }
             }
+            
         }
+        System.out.println(idDevice);
     }
+    
     /**
      * Intercept message sent from connected clients
      * @param message Message object
@@ -127,5 +131,22 @@ public class WebSocketServer {
     public void onClose (Session session) {
       // Remove session from the connected sessions set
       clients.remove(session);
+      
+    //Broadcast send: notify to all client connected that has closed a connection from a device
+      for (Session s : clients) {
+          try {
+              
+              Message message = new Message(Json.createObjectBuilder()
+                      .add("type", Message.TEXT_TYPE)
+                      .add("data", "Connection with " + session.getId() + " has closed")
+                      .add("id", session.getId())
+                      .build());
+              
+              s.getBasicRemote().sendObject(message);
+              
+          } catch(IOException | EncodeException e) {
+              e.printStackTrace();
+          }
+      }
     }
 }
