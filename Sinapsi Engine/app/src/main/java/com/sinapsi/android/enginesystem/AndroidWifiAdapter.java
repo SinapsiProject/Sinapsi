@@ -1,11 +1,10 @@
-package com.sinapsi.android.system;
+package com.sinapsi.android.enginesystem;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 
-import com.sinapsi.android.Lol;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.engine.parameters.ConnectionStatusChoices;
 import com.sinapsi.engine.parameters.SwitchStatusChoices;

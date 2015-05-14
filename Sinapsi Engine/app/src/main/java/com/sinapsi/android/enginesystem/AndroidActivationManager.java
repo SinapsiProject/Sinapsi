@@ -1,4 +1,4 @@
-package com.sinapsi.android.system;
+package com.sinapsi.android.enginesystem;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -10,13 +10,11 @@ import com.sinapsi.android.utils.IntentUtils;
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.Trigger;
-import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.DeviceInterface;
 
 /**
  * ActivationManager - implementation for the Android platform.
