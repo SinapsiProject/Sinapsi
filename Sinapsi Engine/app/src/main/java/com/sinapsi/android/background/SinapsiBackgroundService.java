@@ -81,12 +81,12 @@ public class SinapsiBackgroundService extends Service {
 
                         @Override
                         public void success(String s, Object response) {
-
+                            sinapsiLog.log("EXECUTION_CONTINUE",s);
                         }
 
                         @Override
                         public void failure(Throwable error) {
-
+                            sinapsiLog.log("EXECUTION_CONTINUE","FAIL");
                         }
                     });
         }

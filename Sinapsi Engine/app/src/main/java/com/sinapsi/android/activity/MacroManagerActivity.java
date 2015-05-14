@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.sinapsi.android.background.ServiceBindedActionBarActivity;
 import com.sinapsi.engine.R;
 
-public class MacroManagerActivity extends ActionBarActivity {
+public class MacroManagerActivity extends ServiceBindedActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,4 +38,6 @@ public class MacroManagerActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

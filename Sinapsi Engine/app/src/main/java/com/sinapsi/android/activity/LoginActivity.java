@@ -5,8 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.ComponentName;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,7 +17,9 @@ import android.net.Uri;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.ContactsContract;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,15 +31,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.File;
-import java.security.PublicKey;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.bgp.generator.KeyGenerator;
 import com.sinapsi.android.Lol;
+import com.sinapsi.android.background.ServiceBindedActionBarActivity;
+import com.sinapsi.android.background.ServiceConnectionBridge;
+import com.sinapsi.android.background.ServiceConnectionListener;
+import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.client.web.RetrofitWebServiceFacade;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
@@ -47,13 +52,16 @@ import retrofit.android.AndroidLog;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends ServiceBindedActionBarActivity implements LoaderCallbacks<Cursor>{
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +77,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    requestLogin();
                     return true;
                 }
                 return false;
@@ -80,12 +88,16 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                requestLogin();
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
+
+
     }
 
     private void populateAutoComplete() {
@@ -98,7 +110,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public void attemptLogin() {
+    public void requestLogin() {
+        if(!isServiceConnected()) return;
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -138,70 +151,79 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // perform the user login attempt.
             showProgress(true);
 
-            RetrofitWebServiceFacade wsf = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
 
             // first, request login
-            wsf.requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<HashMap.SimpleEntry<String, String>>() {
+            service.getWebServiceFacade().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<HashMap.SimpleEntry<String, String>>() {
                 @Override
                 public void success(HashMap.SimpleEntry<String, String> stringStringSimpleEntry, Object response) {
-                    //TODO: call login
-                }
-
-                @Override
-                public void failure(Throwable error) {
-
-                }
-            });
-
-            /*
-            wsf.login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
-                @Override
-                public void success(User user, Object response) {
-                    if (user.isErrorOccured()) {
-                        Lol.d(this, "Error! Message received: " + user.getErrorDescription());
-                    } else {
-                        Lol.d(this, "Success! user id received: " + user.getId());
-
-                        }
-                    }
+                    attemptLogin();
                 }
 
                 @Override
                 public void failure(Throwable t) {
-                    RetrofitError error = (RetrofitError) t;
-                    String errstring = "An error occurred while communicating with the server.\n";
-
-                    String errtitle = "Error: " + error.getKind().toString();
-
-                    ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
-                    NetworkInfo ni = cm.getActiveNetworkInfo();
-
-                    switch (error.getKind()) {
-                        case NETWORK:
-                            errstring += "Network error";
-                            break;
-                        case CONVERSION:
-                            errstring += "Conversion error";
-                            break;
-                        case HTTP:
-                            errstring += "HTTP Error " + error.getResponse().getStatus();
-                            break;
-                        case UNEXPECTED:
-                            errstring += "An unexpected error occurred";
-                            break;
-                    }
-
-                    if (ni == null || !ni.isConnected())
-                        errstring += "\nMissing internet connection.";
-                    DialogUtils.showOkDialog(
-                            LoginActivity.this,
-                            errtitle,
-                            errstring);
-
+                    handleRetrofitError(t);
                 }
-            });*/
+            });
 
         }
+    }
+
+    public void attemptLogin() {
+        if(!isServiceConnected()) return;
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+        service.getWebServiceFacade().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
+            @Override
+            public void success(User user, Object response) {
+                if (user.isErrorOccured()) {
+                    Lol.d(this, "Error! Message received: " + user.getErrorDescription());
+                } else {
+                    Lol.d(this, "Success! user id received: " + user.getId());
+                    Intent i = new Intent(LoginActivity.this, MacroManagerActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+
+                }
+            }
+
+            @Override
+            public void failure(Throwable error) {
+                handleRetrofitError(error);
+            }
+        });
+
+    }
+
+    private void handleRetrofitError(Throwable t) {
+        RetrofitError error = (RetrofitError) t;
+        String errstring = "An error occurred while communicating with the server.\n";
+
+        String errtitle = "Error: " + error.getKind().toString();
+
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+
+        switch (error.getKind()) {
+            case NETWORK:
+                errstring += "Network error";
+                break;
+            case CONVERSION:
+                errstring += "Conversion error";
+                break;
+            case HTTP:
+                errstring += "HTTP Error " + error.getResponse().getStatus();
+                break;
+            case UNEXPECTED:
+                errstring += "An unexpected error occurred";
+                break;
+        }
+
+        if (ni == null || !ni.isConnected())
+            errstring += "\nMissing internet connection.";
+        DialogUtils.showOkDialog(
+                LoginActivity.this,
+                errtitle,
+                errstring);
     }
 
     private boolean isEmailValid(String email) {
@@ -281,6 +303,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
+
 
     private interface ProfileQuery {
         String[] PROJECTION = {

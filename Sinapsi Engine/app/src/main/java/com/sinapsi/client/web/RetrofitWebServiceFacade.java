@@ -17,7 +17,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,6 +51,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     /**
      * Default ctor
+     *
      * @param retrofitLog
      */
     public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog) {
@@ -70,11 +70,10 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 .setLog(retrofitLog)
                 .build();
 
-        if(AppConsts.DEBUG) {
+        if (AppConsts.DEBUG) {
             cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
             uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
-        }
-        else {
+        } else {
             cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
             uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
         }
@@ -93,6 +92,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public PublicKey getServerPublicKey() {
         return serverPublicKey;
     }
+
     @Override
     public PrivateKey getPrivateKey() {
         return privateKey;
@@ -111,16 +111,18 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     /**
      * Converts a generic WebServiceCallback to a retrofit's Callback
+     *
      * @param wsCallback the WebServiceCallback
-     * @param <T> the type
+     * @param <T>        the type
      * @return a retrofit's Callback
      */
-    private static <T> Callback<T> convertCallback(final WebServiceCallback<T> wsCallback){
-        return new Callback<T>(){
+    private static <T> Callback<T> convertCallback(final WebServiceCallback<T> wsCallback) {
+        return new Callback<T>() {
             @Override
             public void success(T t, Response response) {
-                wsCallback.success(t,response);
+                wsCallback.success(t, response);
             }
+
             @Override
             public void failure(RetrofitError error) {
                 wsCallback.failure(error);
@@ -131,8 +133,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     /**
      * Check to ensure the keys are not null. Throws a runtime exception
      */
-    private void checkKeys(){
-        if(publicKey == null || privateKey == null || keyPair == null)
+    private void checkKeys() {
+        if (publicKey == null || privateKey == null || keyPair == null)
             throw new RuntimeException(
                     "Missing public key. Did you log in?");
     }
@@ -173,7 +175,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 RetrofitWebServiceFacade.this.publicKey = puk;
                 RetrofitWebServiceFacade.this.privateKey = prk;
                 RetrofitWebServiceFacade.this.keyPair = kp;
-                result.success(user,response);
+                result.success(user, response);
             }
 
             @Override
