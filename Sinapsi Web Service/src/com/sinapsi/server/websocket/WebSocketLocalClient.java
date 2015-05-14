@@ -3,6 +3,8 @@ package com.sinapsi.server.websocket;
 
 import java.io.IOException;
 import java.net.URI;
+
+import javax.json.Json;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
@@ -14,9 +16,8 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 @ClientEndpoint(encoders={MessageEncoder.class}, decoders={MessageDecoder.class})
-public class WebSocketClient {
-    private String name;
-    private Session userSession = null;
+public class WebSocketLocalClient {
+    private Session userSession;
     
     /**
      * Default ctor
@@ -24,9 +25,7 @@ public class WebSocketClient {
      * @param name name of the client
      * @param endpointURI server endpoint uri
      */
-    public WebSocketClient(String name, final URI endpointURI) {
-        this.name = name;
-        
+    public WebSocketLocalClient(final URI endpointURI) {
         try {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, endpointURI);
@@ -40,15 +39,18 @@ public class WebSocketClient {
      * @param session
      */
     @OnOpen
-    public void onOpen(final Session session) throws Exception {
+    public void onOpen(Session session) throws Exception {
         this.userSession = session;
         
         try {
-            userSession.getUserProperties().put("name", name);
+            Message message = new Message(Json.createObjectBuilder()
+                    .add("type", Message.TEXT_TYPE)
+                    .add("data", "joined to Sinapsi").build());
+                    
+            session.getBasicRemote().sendObject(message);
             
-            session.getBasicRemote().sendText(name + " connected");
             //DEBUG
-            System.out.println(name + " connected");
+            System.out.println("connected");
             
         } catch(IOException e) {
             e.printStackTrace();
@@ -62,7 +64,9 @@ public class WebSocketClient {
      */
     public static void send(Session session, Message message) {
         try {
-            session.getBasicRemote().sendObject(message);
+            if(session.isOpen())
+                session.getBasicRemote().sendObject(message);
+            
         } catch (IOException | EncodeException e) {
             e.printStackTrace();
         }
@@ -74,16 +78,19 @@ public class WebSocketClient {
      */
     @OnMessage
     public void onMessage(final Message message, Session session) {
-        session.getUserProperties().put("data", message.getJson().get("data"));
-        session.getUserProperties().put("data_type", message.getType());
-        
-        try {
-            session.getBasicRemote().sendText("Message recived");
-        } catch (IOException e) {
-            e.printStackTrace();
+        // if client recive a macro execution interface 
+        if(message.getType().equals(Message.REMOTE_MACRO_TYPE)) {
+            //DEBUG
+            System.out.println("remote macro recived");
         }
+        
+        if(message.getType().equals(Message.TEXT_TYPE)) {
+            //DEBUG
+            System.out.println(message.getJson().getString("data"));
+        }
+        
         //DEBUG
-        System.out.println("Message recived");
+        System.out.println("**Message recived**");
     }
     
     /**
@@ -93,7 +100,6 @@ public class WebSocketClient {
     @OnClose
     public void onClose (final CloseReason reason) {
         this.userSession = null;
-        this.name = null;
     } 
     
     /**

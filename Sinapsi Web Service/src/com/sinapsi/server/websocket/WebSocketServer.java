@@ -2,13 +2,15 @@ package com.sinapsi.server.websocket;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
-import javax.json.JsonObject;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.OnMessage;
@@ -16,137 +18,140 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 @ApplicationScoped
-@ServerEndpoint(value="/websocket")
+@ServerEndpoint(value = "/websocket/{idDevice}", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
 public class WebSocketServer {
-    private static Set<Session> clients = Collections.synchronizedSet(new HashSet<Session>());
+    private static final Set<Session> clientsSet = Collections.synchronizedSet(new HashSet<Session>());
+    private static final Map<String, Session> clients = Collections.synchronizedMap(new HashMap<String, Session>());
     
     /**
      * Send broadcast message to all connected clients
      * @param message message to send
      */
-    public static void send(Message message) {
-        for(Session client : clients) {
-            if(client.isOpen()) {
-                try {
-                    client.getBasicRemote().sendObject(message);
-                } catch (IOException| EncodeException e) {
-                    e.printStackTrace();
+    public void broadcastMessage(Message message) {
+        for (Session client : clientsSet) {
+            synchronized (client) {
+                if (client.isOpen()) {
+                    try {
+                        client.getBasicRemote().sendObject(message);
+                    } catch (IOException | EncodeException e) {
+                        e.printStackTrace();
+                    } 
                 }
             }
         }
     }
-    
+
     /**
-     * Send message to a specific device
+     * Send message to a specific device, target device added in the json message
      * @param message message to send
-     * @param idDevice id of device target
+     * @param idDevice id of the device target
      */
-    public static void send(Message message, int idDevice) {
-        for(Session client : clients) {
-            if(client.getUserProperties().get("id_device").equals(idDevice)) {
-                try {
-                    client.getBasicRemote().sendObject(message);
-                } catch (IOException | EncodeException e) {
-                    e.printStackTrace();
-                }
+    public void send(Message message, String idDevice) {
+        if(clients.get(idDevice).isOpen()) {
+            try {
+                clients.get(idDevice).getBasicRemote().sendObject(message);
+            } catch (IOException | EncodeException e) {
+                e.printStackTrace();
             }
-            
         }
-        System.out.println(idDevice);
     }
-    
+
     /**
      * Intercept message sent from connected clients
      * @param message Message object
      * @param session Session object
      */
     @OnMessage
-    public void onMessage(Message message, Session session) {
+    public void onMessage(Session session, Message message) {
         // parse recived message
-        JsonObject jsonMsg = message.getJson();
-        String idDeviceTarget = jsonMsg.getString("to");
-        boolean messageSent = false;
+        String idDeviceTarget = null;
         
-        // send the remote execution descritpion 
-            // Iterate over the connected sessions
-            for(Session client : clients) {
-                // the message contain a remote macro execution 
-                if(client.isOpen() && message.getType().equals(Message.REMOTE_MACRO_TYPE)) {
-                    
-                    if(client.getId().equals(idDeviceTarget)) {
-                        try {
-                            // send the remote macro execution object to the target device
-                            client.getBasicRemote().sendObject(message);
-                            messageSent = true;
-                        } catch(IOException | EncodeException e) {
-                            e.printStackTrace();
-                            System.out.println("Failed to sent message");
-                        }
-                    }
-                }
-            }  
+        if(message.getJson().containsKey("to"))
+            idDeviceTarget = message.getJson().getString("to");
+        
+        if(idDeviceTarget != null  && clients.get(idDeviceTarget).isOpen()) {
+            send(message, idDeviceTarget);
+            
+        } else {
             //DEBUG
-            System.out.println("Remote execution from: " + jsonMsg.getString("from") + " to: " + jsonMsg.getString("to")); 
+            System.out.println("Message not sent to device target, probabily is not connected");
+        }
         
-        //DEBUG
-        if(messageSent == false) {
-            System.out.println("Message not sent to device target");
+        //broadcast message that contain macro
+        if(message.getJson().containsKey("data")) {
+            if(message.getJson().getString("type").equals(Message.MACRO_TYPE))
+                broadcastMessage(message);
+            
+        }
+
+               
+        // DEBUG
+        if(idDeviceTarget != null) {
+            System.out.println("Remote execution from:"+ idDeviceTarget);
+            System.out.println("to: " + message.getJson().getString("from"));
+        }
+        System.out.println("data: " + message.getJson().getString("data"));
+    }
+
+    /**
+     * Allows us to intercept the creation of a new session. Session class
+     * allows us to send data to users
+     * 
+     * @param session
+     */
+    @OnOpen
+    public void onOpen(Session session, @PathParam("idDevice") String idDevice) {
+ 
+        Message message = new Message(Json.createObjectBuilder()
+                .add("type", Message.TEXT_TYPE)
+                .add("data", idDevice + " joined Sinapsi")
+                .add("id", idDevice).build());
+
+        // Broadcast send: notify to all client connected that has joined a new device
+        broadcastMessage(message);
+
+        // save in a map the current user 
+        session.getUserProperties().put("device", idDevice);
+        clientsSet.add(session);
+        clients.put(idDevice, session);
+        
+        // internal debug
+        System.out.println(idDevice + " has joined");
+
+    }
+
+    @OnClose
+    public void onClose(Session session) {
+        // Remove session from the connected sessions set
+        clientsSet.remove(session);
+        clients.remove(session.getUserProperties().get("device"));
+        
+        // Broadcast send: notify to all client connected that has closed a
+        // connection from a device
+        for (Session s : clientsSet) {
+            try {
+                Message message = new Message(Json
+                        .createObjectBuilder()
+                        .add("type", Message.TEXT_TYPE)
+                        .add("data", "Connection with " + session.getUserProperties().get("device") + " has been closed")
+                        .add("id", (String) session.getUserProperties().get("device")).build());
+
+                s.getBasicRemote().sendObject(message);
+
+            } catch (IOException | EncodeException e) {
+                e.printStackTrace();
+            }
         }
     }
     
     /**
-     * Allows us to intercept the creation of a new session.
-     * Session class allows us to send data to users
+     * Error handler
      * @param session
+     * @param t
      */
-    @OnOpen
-    public void onOpen(Session session, @PathParam("id_device") String idDevice) {
-        // Add session to the connected sessions set
-        session.getUserProperties().put("id_device", idDevice);
-        clients.add(session);
-        
-        
-        Message message = new Message(Json.createObjectBuilder()
-                                .add("type", Message.TEXT_TYPE)
-                                .add("data", session.getId() + " has joined Sinapsi")
-                                .add("id", session.getId())
-                                .build());
-      
-        //Broadcast send: notify to all client connected that has joined a new device
-        for (Session s : clients) {
-            try {
-                s.getBasicRemote().sendObject(message);
-                
-            } catch(IOException | EncodeException e) {
-                e.printStackTrace();
-            }
-        }
-        
-        //internal debug
-        System.out.println(session.getId() + " has joined");
-      
-    }
-
-    @OnClose
-    public void onClose (Session session) {
-      // Remove session from the connected sessions set
-      clients.remove(session);
-      
-    //Broadcast send: notify to all client connected that has closed a connection from a device
-      for (Session s : clients) {
-          try {
-              
-              Message message = new Message(Json.createObjectBuilder()
-                      .add("type", Message.TEXT_TYPE)
-                      .add("data", "Connection with " + session.getId() + " has closed")
-                      .add("id", session.getId())
-                      .build());
-              
-              s.getBasicRemote().sendObject(message);
-              
-          } catch(IOException | EncodeException e) {
-              e.printStackTrace();
-          }
-      }
+    @OnError
+    public void error(Session session, Throwable t) {
+       System.out.println("Shit happened");
+       t.printStackTrace();
     }
 }
