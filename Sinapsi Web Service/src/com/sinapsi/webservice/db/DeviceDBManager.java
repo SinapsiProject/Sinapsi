@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServlet;
+
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 
@@ -16,14 +18,30 @@ import com.sinapsi.model.UserInterface;
  * Class that perform devices query 
  *
  */
-public class DeviceManager extends UserManager {
+public class DeviceDBManager extends UserDBManager {
 	private DatabaseController db;
 	
 	/**
 	 * Default ctor
 	 */
-	public DeviceManager() {
+	public DeviceDBManager() {
 		db = new DatabaseController();
+	}
+	
+	/**
+     * Secondaty ctor
+     * @param db database controller
+     */
+	public DeviceDBManager(DatabaseController db) {
+	    this.db = db;
+	}
+	
+	 /**
+     * Secondary ctor, use the context listener to access to the db controller
+     * @param http http servlet
+     */
+	public DeviceDBManager(HttpServlet http) {
+	    db = (DatabaseController) http.getServletContext().getAttribute("db");
 	}
 	
     /**

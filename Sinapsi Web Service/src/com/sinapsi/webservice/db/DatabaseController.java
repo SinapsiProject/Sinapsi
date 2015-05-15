@@ -21,7 +21,7 @@ public class DatabaseController {
     /**
      * Class constructor
      */
-    DatabaseController() {
+    public DatabaseController() {
         factory = new FactoryModel();
         ResourceBundle bundle = ResourceBundle.getBundle("configuration");
         url = bundle.getString("database.url");

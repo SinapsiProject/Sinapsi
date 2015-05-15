@@ -8,11 +8,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.Gson;
 import com.sinapsi.model.impl.User;
-import com.sinapsi.webservice.db.DeviceManager;
-import com.sinapsi.webservice.db.UserManager;
+import com.sinapsi.webservice.db.DeviceDBManager;
+import com.sinapsi.webservice.db.UserDBManager;
 
 /**
  * Servlet implementation class RegistrationServlet
@@ -26,7 +25,7 @@ public class RegistrationServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        UserManager userManager = new UserManager();
+        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
         response.setContentType("application/json");
         
         Gson gson = new Gson();
@@ -47,7 +46,7 @@ public class RegistrationServlet extends HttpServlet {
                 User user = (User) userManager.newUser(email, pwd);
                 
                 // register the web service as a new device
-                DeviceManager deviceManager = new DeviceManager();
+                DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
                 deviceManager.newDevice("Cloud", "Sinapsi", "Web", user.getId(), 1);
                 
                 out.print(gson.toJson(user));

@@ -39,7 +39,7 @@ public class RequestLoginSevlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");
         Gson gson = new Gson();
-        KeysDBManager keysManager = new KeysDBManager();
+        KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         // generate local public/private keys
         KeyGenerator generator = new KeyGenerator();
 

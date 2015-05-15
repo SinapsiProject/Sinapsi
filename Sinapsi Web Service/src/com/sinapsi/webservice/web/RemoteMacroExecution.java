@@ -15,7 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.server.websocket.Message;
 import com.sinapsi.server.websocket.WebSocketLocalClient;
-import com.sinapsi.webservice.db.DeviceManager;
+import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
@@ -41,11 +41,11 @@ public class RemoteMacroExecution extends HttpServlet {
 	    
 	    int deviceTarget = Integer.parseInt(request.getParameter("to_device"));
 	    int fromDevice = Integer.parseInt(request.getParameter("from_device"));
-	    
+
 	    // read the encrypted jsoned body
         String encryptedJsonBody = BodyReader.read(request);
-        KeysDBManager keysManager = new KeysDBManager();
-        DeviceManager deviceManager = new DeviceManager();
+        KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
        
         Gson gson = new Gson();
         

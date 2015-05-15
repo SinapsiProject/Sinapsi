@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.http.HttpServlet;
 import com.sinapsi.model.UserInterface;
 
 /**
@@ -12,14 +15,30 @@ import com.sinapsi.model.UserInterface;
  * @author Ayoub
  *
  */
-public class UserManager {
+public class UserDBManager {
 	DatabaseController db;
 	
 	/**
 	 * Default ctor
 	 */
-	public UserManager() {
+	public UserDBManager() {
 		db = new DatabaseController();
+	}
+	
+	/**
+	 * Secondaty ctor
+	 * @param db database controller
+	 */
+	public UserDBManager(DatabaseController db) {
+	    this.db = db;
+	}
+	
+	/**
+	 * Secondary ctor, for accessing to the servlet context
+	 * @param http http servlet, needed to access to the servlet context
+	 */
+	public UserDBManager(HttpServlet http) {
+	    db = (DatabaseController) http.getServletContext().getAttribute("db");   
 	}
 	
 	 /**
@@ -51,6 +70,39 @@ public class UserManager {
         }
         db.disconnect(c, s);
         return user;
+    }
+    
+    /**
+     * Return all users
+     * @return list of users
+     * @throws SQLException
+     */
+    public List<UserInterface> getUsers() throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<UserInterface> users = new ArrayList<UserInterface>();
+        DeviceDBManager devicedb = new DeviceDBManager();
+        try {
+            c = db.connect();
+            String query = "SELECT id, email, password FROM users";
+            s = c.prepareStatement(query);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                int id = r.getInt("id");
+                String email = r.getString("email");
+                String pwd = r.getString("password");
+                UserInterface user = db.factory.newUser(id, email, pwd, devicedb.getUserDevices(email));
+                users.add(user);
+            }
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return users;
     }
     
     /**

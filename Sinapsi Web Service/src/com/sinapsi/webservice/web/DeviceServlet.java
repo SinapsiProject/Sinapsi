@@ -18,7 +18,7 @@ import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
-import com.sinapsi.webservice.db.DeviceManager;
+import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
@@ -36,7 +36,7 @@ public class DeviceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        DeviceManager deviceManager = new DeviceManager();
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
         String action = request.getParameter("action");
         Gson gson = new Gson();
 
@@ -46,7 +46,7 @@ public class DeviceServlet extends HttpServlet {
 
             try {
                 // create the keys manger and the encrypter
-                KeysDBManager keysManager = new KeysDBManager();
+                KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
                 Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
                 
                 User user = (User) deviceManager.getUserByEmail(email);
@@ -78,8 +78,8 @@ public class DeviceServlet extends HttpServlet {
         response.setContentType("application/json");
         String action = request.getParameter("action");
         PrintWriter out = response.getWriter();
-        DeviceManager deviceManager = new DeviceManager();
-        KeysDBManager keysManager = new KeysDBManager();
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
+        KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         Gson gson = new Gson();
 
         // add device request

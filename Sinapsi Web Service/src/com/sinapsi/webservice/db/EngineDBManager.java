@@ -8,8 +8,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServlet;
+
+import com.sinapsi.engine.ComponentFactory;
+import com.sinapsi.engine.Trigger;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.webservice.engine.WebServiceEngine;
 
 /**
  * Class that perform engine(triggers, actions, macros) query
@@ -17,12 +22,30 @@ import com.sinapsi.model.MacroInterface;
  */
 public class EngineDBManager {
     private DatabaseController db;
-
+    private HttpServlet http;
+       
     /**
      * Default ctor
      */
     public EngineDBManager() {
         db = new DatabaseController();
+    }
+    
+    /**
+     * Secondaty ctor
+     * @param db database controller
+     */
+    public EngineDBManager(DatabaseController db) {
+        this.db = db;
+    }
+    
+    /**
+     * Secondary ctor, use the context listener to access to the db controller
+     * @param http http servlet
+     */
+    public EngineDBManager(HttpServlet http) {
+        this.http = http;
+        db = (DatabaseController) http.getServletContext().getAttribute("db");
     }
 
     /**
@@ -178,6 +201,37 @@ public class EngineDBManager {
     }
 
     /**
+     * Return the name of the trigger from the id
+     * @param id id of the trigger
+     * @return
+     * @throws SQLException 
+     */
+    public String getTrigger(int id) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        String name = null;
+
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT name FROM trigger WHERE id = ?");
+            s.setInt(1, id);
+            r = s.executeQuery();
+
+            if (r.next())
+                name = r.getString("name");
+            
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return name;
+        
+    }
+    
+    /**
      * Add list of available triggers in the db
      * 
      * @param idDevice device id
@@ -256,6 +310,7 @@ public class EngineDBManager {
         PreparedStatement s = null;
         ResultSet r = null;
         List<MacroInterface> macros = new ArrayList<MacroInterface>();
+        DeviceDBManager deviceDb = new DeviceDBManager();
 
         try {
             c = db.connect();
@@ -264,11 +319,20 @@ public class EngineDBManager {
             r = s.executeQuery();
 
             while (r.next()) {
-                int minVersion = r.getInt("minversion");
-                String name = r.getString("name");
-                MacroInterface macro = db.factory.newMacro(name, r.getInt("id"));
+                // create a new macro from the information saved in the db
+                MacroInterface macro = db.factory.newMacro(r.getString("name"), r.getInt("id"));
                 
-                
+                // get the engine from the contex listener
+                WebServiceEngine engine = (WebServiceEngine) http.getServletContext().getAttribute("engine");
+                // get the component factory of the user
+                ComponentFactory componentFactory = engine.getComponentFactoryForUser(id);
+                // create a trigger form the information saved in the db
+                Trigger trigger = componentFactory.newTrigger(getTrigger(r.getInt("idtrigger")), 
+                                                              r.getString("triggerjson"), 
+                                                              macro, 
+                                                              deviceDb.getDevice(r.getInt("iddevice")));
+                // set the trigger
+                macro.setTrigger(trigger);
                 macros.add(macro);
             }
 
