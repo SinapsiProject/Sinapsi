@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -25,6 +26,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 public class Launcher extends Application {
@@ -41,9 +44,9 @@ public class Launcher extends Application {
 	// Labels
 	private Label emailLabel;
 	private Label passwordLabel;
-	private Label registerLabel;
 	private Label copyrightLabel;
 	private Label aboutLabel;
+	private TextFlow registerLabel;
 	
 	// TextFields
 	private TextField emailField;
@@ -74,15 +77,14 @@ public class Launcher extends Application {
 		
 		// Setting email label and textfield
 		emailLabel = new Label("Email");
-		emailField = new TextField("");
+		emailField = new TextField();
 		
 		// Setting password label and password field
 		passwordLabel = new Label("Password");
 		passwordField = new PasswordField();
 		
 		// Setting registration label (clickable) and color
-		registerLabel = new Label("New to Sinapsi? Register!");
-		registerLabel.setTextFill(Color.web("#256581"));
+		registerLabel = new TextFlow(new Text("New to Sinapsi?"), new Hyperlink("Register!"));
 		
 		// Setting button text 
 		signIn = new Button("Sign in");
