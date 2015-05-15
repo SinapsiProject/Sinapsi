@@ -258,9 +258,18 @@ public class ExecutionInterface {
      * @param localVars the updated localVariables
      * @param indexes the updated execution stack indexes
      */
-    public void continueExecutionFromRemote(VariableManager localVars, Deque<Integer> indexes){
+    public void continueExecutionFromRemote(MacroInterface macro, VariableManager localVars, Deque<Integer> indexes){
         this.localVars = localVars;
-        //TODO: unfold the execution stack from the indexes
+
+
+        Iterator<Integer> indexIter = indexes.descendingIterator();
+        while(indexIter.hasNext()){
+            int index = indexIter.next();
+            pushScope(new ActionListExecution(macro.getActions()));
+            //TODO: get the action list from the par json
+            getCurrentScopeExecution().moveCounterTo(index);
+        }
+
     }
 
 
