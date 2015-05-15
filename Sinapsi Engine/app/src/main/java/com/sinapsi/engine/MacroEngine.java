@@ -1,31 +1,14 @@
 package com.sinapsi.engine;
 
-import com.sinapsi.engine.components.ActionContinueConfirmDialog;
-import com.sinapsi.engine.components.ActionLog;
-import com.sinapsi.engine.components.ActionLuaScript;
-import com.sinapsi.engine.components.ActionSendSMS;
-import com.sinapsi.engine.components.ActionSetVariable;
-import com.sinapsi.engine.components.ActionSimpleNotification;
-import com.sinapsi.engine.components.ActionStringInputDialog;
-import com.sinapsi.engine.components.TriggerACPower;
-import com.sinapsi.engine.components.TriggerEngineStart;
-import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
-import com.sinapsi.engine.execution.WebExecutionInterface;
 import com.sinapsi.engine.log.SinapsiLog;
-import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
-import com.sinapsi.engine.components.ActionWifiState;
-import com.sinapsi.engine.components.TriggerSMS;
-import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.impl.Macro;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Macro engine class. Used to initialize the whole macro execution system
@@ -61,7 +44,6 @@ public class MacroEngine {
 
         sinapsiLog.log("MACROENGINE", "Engine initialized.");
     }
-
 
 
     /**

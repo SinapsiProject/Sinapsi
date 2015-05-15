@@ -3,6 +3,7 @@ package com.sinapsi.webservice.engine;
 import com.google.gson.Gson;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.ActivationManager;
+import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.SinapsiVersions;
@@ -44,19 +45,29 @@ import javax.json.JsonObject;
 
 /**
  * Web Service engine
- * 
+ *
  */
 public class WebServiceEngine {
     private FactoryModelInterface factoryModel = new FactoryModel();
+    private SinapsiLog sinapsiLog;
     private Map<Integer, MacroEngine> engines = new HashMap<>();
     private EngineDBManager engineDb = new EngineDBManager();
-    
+
     public static final int DEFAULT_WEB_SERVICE_DEVICE_ID = 0; //TODO: change
     public static final String DEFAULT_WEB_SERVICE_DEVICE_NAME = "Cloud";
-    public static final String DEFAULT_WEB_SERVICE_DEVICE_MODEL = "Sinapsi"; 
-    public static final String DEFAULT_WEB_SERVICE_DEVICE_TYPE = "Web"; 
+    public static final String DEFAULT_WEB_SERVICE_DEVICE_MODEL = "Sinapsi";
+    public static final String DEFAULT_WEB_SERVICE_DEVICE_TYPE = "Web";
 
-    
+    public WebServiceEngine(){
+        sinapsiLog = new SinapsiLog();
+        sinapsiLog.addLogInterface(new SystemLogInterface() {
+            @Override
+            public void printMessage(LogMessage lm) {
+                System.out.println(lm.getTag() + " : " + lm.getMessage());
+            }
+        });
+    }
+
     /**
      * Init engines map
      * @param users list ud users saved in the db
@@ -72,7 +83,7 @@ public class WebServiceEngine {
     }
 
     /**
-     * Load the macro engine for the user 
+     * Load the macro engine for the user
      * @param user user saved in the db
      * @return macro engine
      */
@@ -99,26 +110,18 @@ public class WebServiceEngine {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                
+
                 JsonObject message = Json.createObjectBuilder()
                                           .add("data", gson.toJson(red))
                                           .add("to", Integer.toString(dev.getId()))
                                           .add("type", Message.REMOTE_MACRO_TYPE).build();
-                            
+
                 WebSocketLocalClient.send(clientEndpoint.getSession(), new Message(message));
             }
         };
 
-        //TODO: 
-        VariableManager globalVar = new VariableManager(); 
-
-        SinapsiLog sinapsiLog = new SinapsiLog();
-        sinapsiLog.addLogInterface(new SystemLogInterface() {
-            @Override
-            public void printMessage(LogMessage lm) {
-                System.out.println(lm.getTag() + " : " + lm.getMessage()); 
-            }
-        });
+        //TODO:
+        VariableManager globalVar = new VariableManager();
 
         WebServiceActivationManager activationManager = new WebServiceActivationManager(
                 new ExecutionInterface(
@@ -138,8 +141,13 @@ public class WebServiceEngine {
                 TriggerAsino.class,
                 ActionSpam.class
         );
-        
+
         return result;
+    }
+
+    public ComponentFactory getComponentFactoryForUser(UserInterface user){
+        return getEngineForUser(user).getComponentFactory();
+
     }
 
     public List<MacroInterface> loadSavedMacrosForUser(UserInterface u) {
@@ -150,7 +158,7 @@ public class WebServiceEngine {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         return macrosOfuser;
     }
 
