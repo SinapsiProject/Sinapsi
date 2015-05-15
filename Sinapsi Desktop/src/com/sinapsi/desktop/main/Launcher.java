@@ -8,6 +8,8 @@ package com.sinapsi.desktop.main;
 import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,6 +21,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -28,9 +32,7 @@ public class Launcher extends Application {
 	// private Stage secondaryStage;
 	
 	// Panes
-	private BorderPane root;
-	private AnchorPane loginLayout;
-	private GridPane gridPane;
+	private GridPane root;
 	
 	// Buttons
 	private Button signIn;
@@ -60,34 +62,35 @@ public class Launcher extends Application {
 	}
 	
 	public void initRootLayout() {
-		this.root = new BorderPane();
-		this.loginLayout = new AnchorPane();
-		Scene firstScene = new Scene(root, 800, 600,Color.GRAY);
-		
+		this.root = new GridPane();
+	
 //		Image logo = new Image(getClass().getResourceAsStream("../res/rsz_31logo.png"));
 //		ImageView logoView = new ImageView();
 //		logoView.setImage(logo);
 //      root.setTop(logoView);
 		
 		emailLabel = new Label("Email");
-		emailField = new TextField("Insert email...");
+		emailField = new TextField("");
+		
 		
 		passwordLabel = new Label("Password");
 		passwordField = new PasswordField();
 		
-		gridPane = new GridPane();
-		gridPane.add(emailLabel, 0, 0);
-		gridPane.add(emailField, 0, 1);
-		gridPane.add(passwordLabel, 0, 2);
-		gridPane.add(passwordField, 0, 3);
+		registerLabel = new Label("New to Sinapsi? Register!");
+		registerLabel.setTextFill(Color.web("#256581"));
 		
-		root.getChildren().add(gridPane);
-		root.setCenter(gridPane);
+	
+		root.setAlignment(Pos.CENTER);
+		root.setVgap(15);
+		root.setPadding(new Insets(50, 50, 50, 50));
 		
+		root.add(emailLabel, 0, 1);
+		root.add(emailField, 0, 2);
+		root.add(passwordLabel, 0, 3);
+		root.add(passwordField, 0, 4);
+		root.add(registerLabel, 0, 5);
 		
-		
-		
-		
+		Scene firstScene = new Scene(root, 800, 600,Color.GRAY);
 		
 		primaryStage.setScene(firstScene);
 		primaryStage.show();
