@@ -1,6 +1,5 @@
 package com.sinapsi.engine;
 
-import com.sinapsi.android.Lol;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.DistributedComponent;

@@ -23,9 +23,15 @@ import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.ActionContinueConfirmDialog;
 import com.sinapsi.engine.components.ActionLog;
+import com.sinapsi.engine.components.ActionLuaScript;
+import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSetVariable;
 import com.sinapsi.engine.components.ActionSimpleNotification;
+import com.sinapsi.engine.components.ActionStringInputDialog;
 import com.sinapsi.engine.components.ActionWifiState;
+import com.sinapsi.engine.components.TriggerACPower;
+import com.sinapsi.engine.components.TriggerEngineStart;
+import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.engine.execution.ExecutionInterface;
@@ -89,18 +95,17 @@ public class SinapsiBackgroundService extends Service {
 
 
 
-    /**
-     * Default ctor. This initializes and starts the engine and the logging system.
-     */
-    public SinapsiBackgroundService() {
-
-
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
 
+        settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
+        //loadSettings(settings);
+
+        if(device == null) {
+            AndroidDeviceInfo adi = new AndroidDeviceInfo();
+            device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
+        }
 
         sinapsiLog = new SinapsiLog();
         sinapsiLog.addLogInterface(new SystemLogInterface() {
@@ -110,23 +115,51 @@ public class SinapsiBackgroundService extends Service {
             }
         });
 
-        settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
 
-        //loadSettings(settings);
-
+        // here starts engine initialization    ---------------------
         SystemFacade sf = createAndroidSystemFacade();
         VariableManager globalVarables = new VariableManager();
 
-        AndroidDeviceInfo adi = new AndroidDeviceInfo();
-        if(device == null) device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
-        engine = new MacroEngine(device,
+
+        engine = new MacroEngine(
+                device,
                 new AndroidActivationManager(
-                        new ExecutionInterface(sf, device, defaultWebExecutionInterface, globalVarables,sinapsiLog),
-                            this, sf), sinapsiLog);
+                        new ExecutionInterface(
+                                sf,
+                                device,
+                                defaultWebExecutionInterface,
+                                globalVarables,
+                                sinapsiLog),
+                        this,
+                        sf),
+                sinapsiLog,
+                TriggerSMS.class,
+                TriggerWifi.class,
+                TriggerEngineStart.class,
+                TriggerScreenPower.class,
+                TriggerACPower.class,
+
+                ActionWifiState.class,
+                ActionSendSMS.class,
+                ActionLuaScript.class,
+                ActionSetVariable.class,
+                ActionContinueConfirmDialog.class,
+                ActionLog.class,
+                ActionSimpleNotification.class,
+                ActionStringInputDialog.class);
+        // here ends engine initialization      ---------------------
+
+        // loads macros from local db/web service
         engine.addMacros(loadSavedMacros());
+
+        createLocalMacroExamples(); //TODO: this is here for debug, delete
+
+        // starts the engine (and the TriggerOnEngineStart activates
         engine.startEngine();
 
-        createLocalMacroExample();
+
+
+
 
     }
 
@@ -266,7 +299,7 @@ public class SinapsiBackgroundService extends Service {
      * anche quali component sono disponibili prima di aggiungerli o mostrarli
      * all'utente.
      */
-    public void createLocalMacroExample() {
+    public void createLocalMacroExamples() {
         MacroInterface myMacro = fm.newMacro("Ex. WIFI->LOG->NOTIF", 1);
         myMacro.setTrigger(getComponentFactory().newTrigger(
                 TriggerWifi.TRIGGER_WIFI,
