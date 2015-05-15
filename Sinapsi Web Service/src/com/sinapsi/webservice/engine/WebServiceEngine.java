@@ -28,10 +28,8 @@ import com.sinapsi.server.websocket.Message;
 import com.sinapsi.server.websocket.WebSocketLocalClient;
 import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.webservice.db.EngineDBManager;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -39,7 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.json.Json;
 import javax.json.JsonObject;
 
@@ -58,6 +55,9 @@ public class WebServiceEngine {
     public static final String DEFAULT_WEB_SERVICE_DEVICE_MODEL = "Sinapsi";
     public static final String DEFAULT_WEB_SERVICE_DEVICE_TYPE = "Web";
 
+    /**
+     * Default ctor
+     */
     public WebServiceEngine(){
         sinapsiLog = new SinapsiLog();
         sinapsiLog.addLogInterface(new SystemLogInterface() {
@@ -92,7 +92,7 @@ public class WebServiceEngine {
         DeviceInterface webServiceDevice = getWebServiceDevice(user);
 
         //Interfaces called when the user want to continue macro in other device
-        WebExecutionInterface webExecutionInterfaceExample = new WebExecutionInterface() {
+        WebExecutionInterface webExecutionInterface = new WebExecutionInterface() {
             @Override
             public void continueExecutionOnDevice(ExecutionInterface ei, DeviceInterface dev) {
                 RemoteExecutionDescriptor red = new RemoteExecutionDescriptor(
@@ -122,25 +122,24 @@ public class WebServiceEngine {
 
         //TODO:
         VariableManager globalVar = new VariableManager();
-
-        WebServiceActivationManager activationManager = new WebServiceActivationManager(
-                new ExecutionInterface(
-                        systemFacade,
-                        webServiceDevice,
-                        webExecutionInterfaceExample,
-                        globalVar,
-                        sinapsiLog));
+        
+        ExecutionInterface executionInterface = new ExecutionInterface(
+                    systemFacade, 
+                    webServiceDevice, 
+                    webExecutionInterface, 
+                    globalVar, 
+                    sinapsiLog);
+        
+        WebServiceActivationManager activationManager = new WebServiceActivationManager(executionInterface);
 
         MacroEngine result = new MacroEngine(
                 webServiceDevice,
                 activationManager,
                 sinapsiLog,
-                ActionLog.class,
+               // ActionLog.class,
                 ActionSetVariable.class,
-                // questi sono due component di esempio definiti in basso
                 TriggerAsino.class,
-                ActionSpam.class
-        );
+                ActionSpam.class);
 
         return result;
     }
@@ -195,94 +194,4 @@ public class WebServiceEngine {
     public MacroEngine getEngineForUser(UserInterface u) {
         return engines.get(u.getId());
     }
-
-
-    //////////// ESEMPIO TRIGGER /////////////////////////////////////////////
-    //TODO: questo e' un esempio di trigger, che si attiva quando qualcuno da' dell'asino all'utente
-    public class TriggerAsino extends Trigger{
-
-        public static final String TRIGGER_ASINO = "TRIGGER_ASINO";
-
-        @Override
-        protected JSONObject getFormalParametersJSON() throws JSONException {
-            return new FormalParamBuilder()
-                    .put("nome_finto_parametro", FormalParamBuilder.Types.STRING, true)
-                    .create();
-        }
-
-        @Override
-        protected JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException {
-            String stringa_inutile = "asino"; //ovviamente qui si dovrebbe ottenere dati da systemfacade, event ecc...
-            return new JSONObject()
-                    .put("nome_finto_parametro", stringa_inutile); //la classe base trigger usa questi dati
-                                                                    // per capire se i parametri attuali
-                                                                    // dati in fase di editing della macro
-                                                                    // corrispondono ai valori necessari
-                                                                    // ad esempio questo trigger si attiva solo
-                                                                    // se l'utente ha scelto "asino" per il
-                                                                    // parametro "nome_finto_parametro"
-        }
-
-        @Override
-        public String getName() {
-            return TRIGGER_ASINO;
-        }
-
-        @Override
-        public int getMinVersion() {
-            return SinapsiVersions.ANTARES.ordinal();
-        }
-
-        @Override
-        public HashMap<String, Integer> getSystemRequirementKeys() {
-            return new HashMapBuilder<String, Integer>()
-                    .put("MICROFONI_IN_GIRO_PER_IL_MONDO", 1000000000)
-                    .create();
-                    //Se non ci sono almeno 1000000000 microfoni in giro per il mondo
-                    // e collegati alla rete di sinapsi, probabilmente non potremo
-                    // ascoltare l'utente mentre viene insultato.
-                    // PS: tenere aggiornato quanti microfoni ci sono in giro per il mondo
-                    // chiamando
-                    // systemFacade.setRequirementSpec("MICROFONI_IN_GIRO_PER_IL_MONDO", xxx);
-        }
-    }
-
-    //////////// ESEMPIO ACTION /////////////////////////////////////////////
-    //TODO: esempio di action, che manda illimitate pubblicita' di viagra alla mail dell'utente
-    public class ActionSpam extends Action{
-
-        public static final String ACTION_SPAM = "ACTION_SPAM";
-
-        @Override
-        protected void onActivate(ExecutionInterface ei) throws JSONException {
-            // ... utilizza un oggetto della system facade per iniziare a mandare le mail ...
-        }
-
-        @Override
-        protected JSONObject getFormalParametersJSON() throws JSONException {
-            return new FormalParamBuilder()
-                    .put("marca_viagra", FormalParamBuilder.Types.STRING, false)
-                    .create();
-        }
-
-        @Override
-        public String getName() {
-            return ACTION_SPAM;
-        }
-
-        @Override
-        public int getMinVersion() {
-            return SinapsiVersions.ANTARES.ordinal();
-        }
-
-        @Override
-        public HashMap<String, Integer> getSystemRequirementKeys() {
-            return new HashMapBuilder<>()
-                    .put("EMAIL_IMPOSTATA", 1)
-                    .create();
-        }
-    }
-
-
-
 }

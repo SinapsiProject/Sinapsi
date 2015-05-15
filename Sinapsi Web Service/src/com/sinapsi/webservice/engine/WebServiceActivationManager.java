@@ -8,7 +8,6 @@ public class WebServiceActivationManager extends ActivationManager {
 
     public WebServiceActivationManager(ExecutionInterface defaultExecutionInterface) {
         super(defaultExecutionInterface);
-        // TODO Auto-generated constructor stub
     }
     
     @Override
