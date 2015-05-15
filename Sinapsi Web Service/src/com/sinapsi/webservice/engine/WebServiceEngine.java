@@ -147,11 +147,11 @@ public class WebServiceEngine {
 
     /**
      * Return the component factory for a specific user
-     * @param user 
+     * @param userid the id of the user
      * @return
      */
-    public ComponentFactory getComponentFactoryForUser(UserInterface user){
-        return getEngineForUser(user).getComponentFactory();
+    public ComponentFactory getComponentFactoryForUser(int userid){
+        return engines.get(userid).getComponentFactory();
 
     }
 
