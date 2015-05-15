@@ -381,28 +381,32 @@ public class SinapsiBackgroundService extends Service {
                 new ActualParamBuilder()
                         .put("wifi_connection_status", ConnectionStatusChoices.CONNECTED.toString())
                         .create().toString(),
-                myMacro3));
+                myMacro3,
+                device));
 
         myMacro3.addAction(getComponentFactory().newAction(
                 ActionContinueConfirmDialog.ACTION_CONTINUE_CONFIRM_DIALOG,
                 new ActualParamBuilder()
                         .put("dialog_title", "Continuare?")
                         .put("dialog_message", "Sicuro di voler disattivare il wifi?")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro3.addAction(getComponentFactory().newAction(
                 ActionWifiState.ACTION_WIFI_STATE,
                 new ActualParamBuilder()
                         .put("wifi_switch", false)
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro3.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Il wifi e' disattivato")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
 
