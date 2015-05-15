@@ -1,10 +1,12 @@
 package com.sinapsi.android.background;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
 import com.sinapsi.client.AppConsts;
@@ -20,6 +22,7 @@ import com.sinapsi.android.enginesystem.AndroidWifiAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
+import com.sinapsi.engine.R;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.ActionContinueConfirmDialog;
 import com.sinapsi.engine.components.ActionLog;
@@ -68,6 +71,8 @@ public class SinapsiBackgroundService extends Service {
     private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
 
     private UserSettingsFacade settings;
+
+    private boolean started = false;
 
     WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
         @Override
@@ -208,6 +213,22 @@ public class SinapsiBackgroundService extends Service {
         return new ArrayList<>();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        foregroundMode();
+        started = true;
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public RetrofitWebServiceFacade getWeb() {
+        return web;
+    }
+
+    
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -421,7 +442,14 @@ public class SinapsiBackgroundService extends Service {
     }
 
 
-    //TODO: foreground notification mode
+    private void foregroundMode(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        builder.setContentTitle(getString(R.string.app_name))
+                .setContentText("Sinapsi Engine service is running")
+                .setSmallIcon(R.drawable.ic_launcher);
+        Notification forenotif = builder.build();
+        startForeground(1, forenotif);
+    }
 
 
 }
