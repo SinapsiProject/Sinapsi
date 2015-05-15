@@ -7,24 +7,17 @@ package com.sinapsi.desktop.main;
 
 import java.io.IOException;
 
-import com.sinapsi.desktop.view.LoginLayoutController;
-
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Launcher extends Application {
 	
 	private Stage primaryStage;
-	private Stage secondaryStage;
-	private BorderPane rootLayout;
+	// private Stage secondaryStage;
+	private BorderPane root;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -32,11 +25,18 @@ public class Launcher extends Application {
 		this.primaryStage.setTitle("Sinapsi Login");
 		this.primaryStage.setResizable(false);
 			
-		
+		initRootLayout();
 	}
-
+	
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	public void initRootLayout() {
+		this.root = new BorderPane();
+		Scene firstScene = new Scene(root, 800, 600);
+		primaryStage.setScene(firstScene);
+		primaryStage.show();
 	}
 }	
 	
