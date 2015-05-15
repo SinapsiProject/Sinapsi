@@ -78,7 +78,8 @@ public class MacroEngine {
      * @param m the macro
      */
     public void addMacro(MacroInterface m){
-        m.getTrigger().register(activator);
+        if(m.getTrigger().getExecutionDevice().getId() == device.getId())
+            m.getTrigger().register(activator);
         macros.put(m.getName(), m);
         log.log("MACROENGINE", "Added macro " + m.getId() + ":'" + m.getName()+"' to the engine");
     }
