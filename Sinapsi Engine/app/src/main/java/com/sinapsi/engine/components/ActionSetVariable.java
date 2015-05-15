@@ -58,7 +58,7 @@ public class ActionSetVariable extends Action {
                 .put("var_name", FormalParamBuilder.Types.STRING, false)
                 .put("var_scope", JSONUtils.enumValuesToJSONArray(VariableManager.Scopes.class), false)
                 .put("var_type", JSONUtils.enumValuesToJSONArray(VariableManager.Types.class), false)
-                .put("var_value", FormalParamBuilder.Types.STRING, false)//TODO: a new type of parameter to indicate that any type is valid
+                .put("var_value", FormalParamBuilder.Types.STRING, false)//TODO: the editor needs to know that this string should be parsed to check type
                 .create();
     }
 

@@ -94,7 +94,7 @@ public class MacroEngine {
         return null;
     }
 
-    public void continueMacro(RemoteExecutionDescriptor red){
+    public void continueMacro(RemoteExecutionDescriptor red) throws MissingMacroException{
 
         ExecutionInterface ei = activator.executionInterface.cloneInstance();
         MacroInterface m = getMacroById(red.getIdMacro());
@@ -103,7 +103,7 @@ public class MacroEngine {
 
         ei.continueExecutionFromRemote(m, red.getLocalVariables(), red.getStack());
         ei.execute();
-        log.log("MACROENGINE", "Continuing execution of macro with name '" + m.getName() +"'");
+        log.log("MACROENGINE", "Continuing execution of macro with name '" + m.getName() + "'");
     }
 
     public void pauseEngine(){
@@ -114,6 +114,6 @@ public class MacroEngine {
         activator.setEnabled(true);
     }
 
-    private class MissingMacroException extends RuntimeException { //TODO: change to extends Exception to coerce exception handling
+    private class MissingMacroException extends Exception {
     }
 }

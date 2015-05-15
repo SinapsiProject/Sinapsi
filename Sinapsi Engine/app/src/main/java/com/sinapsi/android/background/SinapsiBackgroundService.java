@@ -146,7 +146,6 @@ public class SinapsiBackgroundService extends Service {
 
                 ActionWifiState.class,
                 ActionSendSMS.class,
-                ActionLuaScript.class,
                 ActionSetVariable.class,
                 ActionContinueConfirmDialog.class,
                 ActionLog.class,

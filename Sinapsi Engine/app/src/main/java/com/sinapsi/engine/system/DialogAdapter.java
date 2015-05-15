@@ -50,5 +50,4 @@ public interface DialogAdapter {
                                       final OnInputDialogChoiceListener onDo,
                                       final OnInputDialogChoiceListener onCancel);
 
-    //TODO: add more types of dialogs ( be creative!!! ;) )
 }

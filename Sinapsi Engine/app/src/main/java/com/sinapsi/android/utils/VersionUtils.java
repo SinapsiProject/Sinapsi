@@ -19,7 +19,7 @@ public class VersionUtils {
      * @param tasks
      */
     public static void versionedDo(int currentVersion, VersionedTask... tasks) {
-        versionedDo(currentVersion, null, tasks);
+        versionedDo(null, currentVersion, tasks);
     }
 
     /**
@@ -31,7 +31,7 @@ public class VersionUtils {
      * @param failedTask
      * @param tasks
      */
-    public static void versionedDo(int currentVersion, VersionedTask failedTask, VersionedTask... tasks) {
+    public static void versionedDo(VersionedTask failedTask, int currentVersion, VersionedTask... tasks) {
         VersionedTaskManager vtm = new VersionedTaskManager(currentVersion);
         vtm.putAllFailedTask(failedTask);
         for (VersionedTask vt : tasks) {
