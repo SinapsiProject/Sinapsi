@@ -306,13 +306,15 @@ public class SinapsiBackgroundService extends Service {
                 new ActualParamBuilder()
                         .put("wifi_connection_status", ConnectionStatusChoices.CONNECTED.toString())
                         .create().toString(),
-                myMacro));
+                myMacro,
+                device));
 
         myMacro.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Wifi enabled")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro.addAction(getComponentFactory().newAction(
@@ -320,7 +322,8 @@ public class SinapsiBackgroundService extends Service {
                 new ActualParamBuilder()
                         .put("notification_title", "Yeah!")
                         .put("notification_message", "Connected to @{wifi_ssid}.")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         engine.addMacro(myMacro);
@@ -331,14 +334,16 @@ public class SinapsiBackgroundService extends Service {
         myMacro2.setTrigger(getComponentFactory().newTrigger(
                 TriggerScreenPower.TRIGGER_SCREEN_POWER,
                 null,
-                myMacro2
+                myMacro2,
+                device
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Lo schermo e' @{screen_power}")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
@@ -348,14 +353,16 @@ public class SinapsiBackgroundService extends Service {
                         .put("var_scope", VariableManager.Scopes.LOCAL.toString())
                         .put("var_type", VariableManager.Types.STRING.toString())
                         .put("var_value", "@{screen_power} @{screen_power}")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Lo schermo e' @{screen_power}")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         engine.addMacro(myMacro2);
