@@ -12,5 +12,7 @@
 
     <string name="text_no_macros">There are no macros yet.\nTouch + to create a new one.</string>
     <string name="text_connection_problems">Connection error</string>
+    <string name="text_new_to_sinapsi">New to Sinapsi? Sign Up</string>
+    <string name="text_sign_in">Sign In</string>
 
 </resources>
