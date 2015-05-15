@@ -21,6 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -48,6 +49,9 @@ public class Launcher extends Application {
 	private TextField emailField;
 	private PasswordField passwordField;
 	
+	// Hbox
+	private HBox hboxSignIn;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -62,33 +66,52 @@ public class Launcher extends Application {
 	}
 	
 	public void initRootLayout() {
-		this.root = new GridPane();
-	
+		this.root = new GridPane();		
+		
 //		Image logo = new Image(getClass().getResourceAsStream("../res/rsz_31logo.png"));
 //		ImageView logoView = new ImageView();
 //		logoView.setImage(logo);
-//      root.setTop(logoView);
 		
+		// Setting email label and textfield
 		emailLabel = new Label("Email");
 		emailField = new TextField("");
 		
-		
+		// Setting password label and password field
 		passwordLabel = new Label("Password");
 		passwordField = new PasswordField();
 		
+		// Setting registration label (clickable) and color
 		registerLabel = new Label("New to Sinapsi? Register!");
 		registerLabel.setTextFill(Color.web("#256581"));
 		
+		// Setting button text 
+		signIn = new Button("Sign in");
+		// and hbox 
+		hboxSignIn = new HBox(10);
+		hboxSignIn.setAlignment(Pos.BOTTOM_RIGHT);
+		hboxSignIn.getChildren().add(signIn);
+		
+		// Setting about label
+		aboutLabel = new Label("About");
+		aboutLabel.setTextFill(Color.web("#256581"));
+					
 	
 		root.setAlignment(Pos.CENTER);
+		root.setHgap(5);
 		root.setVgap(15);
 		root.setPadding(new Insets(50, 50, 50, 50));
 		
-		root.add(emailLabel, 0, 1);
-		root.add(emailField, 0, 2);
-		root.add(passwordLabel, 0, 3);
-		root.add(passwordField, 0, 4);
-		root.add(registerLabel, 0, 5);
+		root.add(emailLabel, 0, 2);
+		root.add(emailField, 0, 3);
+		root.add(passwordLabel, 0, 4);
+		root.add(passwordField, 0, 5);
+		root.add(registerLabel, 0, 6);
+		// root.add(aboutLabel, 0, 7, 10, 1);
+		root.add(hboxSignIn, 0, 9);
+		
+		
+		
+		
 		
 		Scene firstScene = new Scene(root, 800, 600,Color.GRAY);
 		
