@@ -145,23 +145,37 @@ public class WebServiceEngine {
         return result;
     }
 
+    /**
+     * Return the component factory for a specific user
+     * @param user 
+     * @return
+     */
     public ComponentFactory getComponentFactoryForUser(UserInterface user){
         return getEngineForUser(user).getComponentFactory();
 
     }
 
+    /**
+     * Load saved macro from the db
+     * @param u user
+     * @return
+     */
     public List<MacroInterface> loadSavedMacrosForUser(UserInterface u) {
         List<MacroInterface> macrosOfuser = null;
         try {
             macrosOfuser =  engineDb.getUserMacro(u.getId());
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         return macrosOfuser;
     }
 
+    /**
+     * Return the device Web Service for a specific user
+     * @param user
+     * @return
+     */
     public DeviceInterface getWebServiceDevice(UserInterface user) {
         return factoryModel.newDevice(
                 DEFAULT_WEB_SERVICE_DEVICE_ID,
@@ -173,6 +187,11 @@ public class WebServiceEngine {
         );
     }
 
+    /**
+     * Return the Engine for a specific user
+     * @param u user
+     * @return
+     */
     public MacroEngine getEngineForUser(UserInterface u) {
         return engines.get(u.getId());
     }
