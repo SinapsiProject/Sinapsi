@@ -21,8 +21,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -36,16 +38,19 @@ public class Launcher extends Application {
 	// private Stage secondaryStage;
 	
 	// Panes
-	private GridPane root;
+	private BorderPane root;
+	private GridPane grid;
+	private GridPane logoPane;
+	private StackPane tutorialLayout;
 	
 	// Buttons
 	private Button signIn;
+	private Button tutorialButton;
 	
 	// Labels
 	private Label emailLabel;
 	private Label passwordLabel;
 	private Label copyrightLabel;
-	private Label aboutLabel;
 	private TextFlow registerLabel;
 	
 	// TextFields
@@ -53,8 +58,10 @@ public class Launcher extends Application {
 	private PasswordField passwordField;
 	
 	// Hbox
-	private HBox hboxSignIn;
-	
+	private HBox hboxSignIn;	
+
+	// Vbox
+	private VBox vboxLogo;
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -69,11 +76,17 @@ public class Launcher extends Application {
 	}
 	
 	public void initRootLayout() {
-		this.root = new GridPane();		
+		this.grid = new GridPane();		
+		this.root = new BorderPane();
+		this.logoPane = new GridPane();
 		
-//		Image logo = new Image(getClass().getResourceAsStream("../res/rsz_31logo.png"));
-//		ImageView logoView = new ImageView();
-//		logoView.setImage(logo);
+		// Setting logo 
+		Image logo = new Image("file:res/rsz_31logo.png",600,400,true,true);
+		ImageView logoView = new ImageView();
+		logoView.setImage(logo);
+		// and vbox
+		vboxLogo = new VBox(50);
+		vboxLogo.getChildren().add(logoView);
 		
 		// Setting email label and textfield
 		emailLabel = new Label("Email");
@@ -83,6 +96,7 @@ public class Launcher extends Application {
 		passwordLabel = new Label("Password");
 		passwordField = new PasswordField();
 		
+		
 		// Setting registration label (clickable) and color
 		registerLabel = new TextFlow(new Text("New to Sinapsi?"), new Hyperlink("Register!"));
 		
@@ -90,32 +104,38 @@ public class Launcher extends Application {
 		signIn = new Button("Sign in");
 		// and hbox 
 		hboxSignIn = new HBox(10);
-		hboxSignIn.setAlignment(Pos.BOTTOM_RIGHT);
+		hboxSignIn.setAlignment(Pos.CENTER);
 		hboxSignIn.getChildren().add(signIn);
 		
-		// Setting about label
-		aboutLabel = new Label("About");
-		aboutLabel.setTextFill(Color.web("#256581"));
-					
-	
-		root.setAlignment(Pos.CENTER);
-		root.setHgap(5);
-		root.setVgap(15);
-		root.setPadding(new Insets(50, 50, 50, 50));
+		// Setting tutorial button
+		tutorialButton = new Button();
+		tutorialButton.setStyle("-fx-background-radius: 5em; " +
+				                "-fx-min-width: 3px; " +
+				                "-fx-min-height: 3px; " +
+				                "-fx-max-width: 3px; " +
+				                "-fx-max-height: 3px;");
 		
-		root.add(emailLabel, 0, 2);
-		root.add(emailField, 0, 3);
-		root.add(passwordLabel, 0, 4);
-		root.add(passwordField, 0, 5);
-		root.add(registerLabel, 0, 6);
-		// root.add(aboutLabel, 0, 7, 10, 1);
-		root.add(hboxSignIn, 0, 9);
+		// LogoPane		
+		logoPane.setAlignment(Pos.TOP_CENTER);
+		logoPane.setVgap(10);
+		logoPane.add(logoView, 0, 6);
 		
+		// LoginPane
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(15);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(25, 25, 25, 25));
+			
+		grid.add(emailLabel, 0, 2);
+		grid.add(emailField, 0, 3);
+		grid.add(passwordLabel, 0, 4);
+		grid.add(passwordField, 0, 5);
+		grid.add(registerLabel, 0, 6);
+		grid.add(hboxSignIn, 0, 9);
 		
-		
-		
-		
-		Scene firstScene = new Scene(root, 800, 600,Color.GRAY);
+		root.setTop(logoPane);
+		root.setCenter(grid);
+		Scene firstScene = new Scene(root, 800, 600);
 		
 		primaryStage.setScene(firstScene);
 		primaryStage.show();
