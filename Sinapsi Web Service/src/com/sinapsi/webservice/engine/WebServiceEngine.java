@@ -1,13 +1,9 @@
 package com.sinapsi.webservice.engine;
 
 import com.google.gson.Gson;
-import com.sinapsi.engine.Action;
-import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.ComponentFactory;
-import com.sinapsi.engine.Event;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.SinapsiVersions;
-import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.ActionLog;
 import com.sinapsi.engine.components.ActionSetVariable;
@@ -17,7 +13,6 @@ import com.sinapsi.engine.execution.WebExecutionInterface;
 import com.sinapsi.engine.log.LogMessage;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.log.SystemLogInterface;
-import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.FactoryModelInterface;
@@ -26,14 +21,10 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.server.websocket.Message;
 import com.sinapsi.server.websocket.WebSocketLocalClient;
-import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.webservice.db.EngineDBManager;
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,10 +127,8 @@ public class WebServiceEngine {
                 webServiceDevice,
                 activationManager,
                 sinapsiLog,
-               // ActionLog.class,
-                ActionSetVariable.class,
-                TriggerAsino.class,
-                ActionSpam.class);
+                ActionLog.class,
+                ActionSetVariable.class);
 
         return result;
     }
