@@ -4,9 +4,6 @@
 
 package com.sinapsi.desktop.main;
 
-
-import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,18 +11,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -41,17 +36,26 @@ public class Launcher extends Application {
 	private BorderPane root;
 	private GridPane grid;
 	private GridPane logoPane;
-	private StackPane tutorialLayout;
+	private GridPane tutorialPane;
 	
 	// Buttons
 	private Button signIn;
 	private Button tutorialButton;
 	
+	// Menu
+	private MenuBar menuBar;
+	private Menu menuAbout;
+	private MenuItem itemGithub;
+	
 	// Labels
 	private Label emailLabel;
 	private Label passwordLabel;
-	private Label copyrightLabel;
+	
+	// TextFlow
 	private TextFlow registerLabel;
+	
+	// Hyperlinks
+	private Hyperlink registerLink;
 	
 	// TextFields
 	private TextField emailField;
@@ -79,6 +83,7 @@ public class Launcher extends Application {
 		this.grid = new GridPane();		
 		this.root = new BorderPane();
 		this.logoPane = new GridPane();
+		this.tutorialPane = new GridPane();
 		
 		// Setting logo 
 		Image logo = new Image("file:res/rsz_31logo.png",600,400,true,true);
@@ -98,7 +103,9 @@ public class Launcher extends Application {
 		
 		
 		// Setting registration label (clickable) and color
-		registerLabel = new TextFlow(new Text("New to Sinapsi?"), new Hyperlink("Register!"));
+		registerLink = new Hyperlink("Register!");
+		registerLink.setTextFill(Color.web("#256581"));
+		registerLabel = new TextFlow(new Text("New to Sinapsi?"), registerLink);
 		
 		// Setting button text 
 		signIn = new Button("Sign in");
@@ -108,19 +115,38 @@ public class Launcher extends Application {
 		hboxSignIn.getChildren().add(signIn);
 		
 		// Setting tutorial button
+		Image tutorialLogo = new Image("file:res/tutorial.png");
+		ImageView tutorialButtonView = new ImageView();
+		tutorialButtonView.setImage(tutorialLogo);
 		tutorialButton = new Button();
-		tutorialButton.setStyle("-fx-background-radius: 5em; " +
-				                "-fx-min-width: 3px; " +
-				                "-fx-min-height: 3px; " +
-				                "-fx-max-width: 3px; " +
-				                "-fx-max-height: 3px;");
+		tutorialButton.setGraphic(tutorialButtonView);
+		tutorialButton.setStyle(
+				"-fx-background-radius: 5em; " +
+                "-fx-min-width: 30px; " +
+                "-fx-min-height: 30px; " +
+                "-fx-max-width: 30px; " +
+                "-fx-max-height: 30px;"+
+                "-fx-effect: dropshadow(three-pass-box, gray, 4, 0.5, 0, 0)"
+		);
 		
-		// LogoPane		
+		// Setting menubar
+		menuBar = new MenuBar();
+		menuBar.useSystemMenuBarProperty();
+		
+		menuAbout = new Menu("About");
+		itemGithub = new MenuItem("Github");
+		
+		menuAbout.getItems().add(itemGithub);
+		menuBar.getMenus().add(menuAbout);
+		
+		
+		// BorderPane Top	
 		logoPane.setAlignment(Pos.TOP_CENTER);
 		logoPane.setVgap(10);
 		logoPane.add(logoView, 0, 6);
 		
-		// LoginPane
+		
+		// BorderPane Center
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(15);
 		grid.setVgap(10);
@@ -133,6 +159,15 @@ public class Launcher extends Application {
 		grid.add(registerLabel, 0, 6);
 		grid.add(hboxSignIn, 0, 9);
 		
+		// BorderPane Bottom
+		tutorialPane.setAlignment(Pos.BOTTOM_RIGHT);
+		tutorialPane.setPadding(new Insets(25, 25, 25, 25));
+		tutorialPane.setHgap(10);
+		tutorialPane.add(tutorialButton, 0, 1);
+		
+		
+		root.setBottom(tutorialPane);
+		// root.setTop(menuBar);
 		root.setTop(logoPane);
 		root.setCenter(grid);
 		Scene firstScene = new Scene(root, 800, 600);
