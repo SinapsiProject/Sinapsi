@@ -1,19 +1,20 @@
 package com.sinapsi.webservice.web;
 
 import java.io.IOException;
-
+import java.net.URI;
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.bgp.decryption.Decrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
-import com.sinapsi.model.MacroComponent;
+import com.sinapsi.server.websocket.Message;
+import com.sinapsi.server.websocket.WebSocketLocalClient;
 import com.sinapsi.webservice.db.DeviceManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
@@ -29,7 +30,7 @@ public class RemoteMacroExecution extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// empty body
+		doPost(request, response);
 	}
 
 	/**
@@ -37,32 +38,45 @@ public class RemoteMacroExecution extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    response.setContentType("application/json");
-	    int idDevice = Integer.parseInt(request.getParameter("device"));
+	    
+	    int deviceTarget = Integer.parseInt(request.getParameter("to_device"));
+	    int fromDevice = Integer.parseInt(request.getParameter("from_device"));
+	    
 	    // read the encrypted jsoned body
         String encryptedJsonBody = BodyReader.read(request);
         KeysDBManager keysManager = new KeysDBManager();
         DeviceManager deviceManager = new DeviceManager();
-        
+       
         Gson gson = new Gson();
         
         try {
             // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(deviceManager.getUserEmail(idDevice)), 
-                                            keysManager.getClientSessionKey((deviceManager.getUserEmail(idDevice))));
-            // decrypt the jsoned body
+            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(deviceManager.getUserEmail(fromDevice)), 
+                                            keysManager.getClientSessionKey((deviceManager.getUserEmail(fromDevice))));
+            //decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             RemoteExecutionDescriptor RED = gson.fromJson(jsonBody,new TypeToken<RemoteExecutionDescriptor>() {}.getType());
             
-            if(deviceManager.getInfoDevice(idDevice).getKey().equals("Cloud") &&
-               deviceManager.getInfoDevice(idDevice).getValue().equals("Sinapsi")) {
+            if(deviceManager.getInfoDevice(deviceTarget).getKey().equals("Cloud") &&
+               deviceManager.getInfoDevice(deviceTarget).getValue().equals("Sinapsi")) {
                
                 //TODO: execute macro in the web service
             
-            } else {
-                //TODO: Connect to the web socket, and send the RED object, the websocket will have 
-                //      the task to inform the target device of the macro
+            } else { 
+                // create new client endpoint, passing the name and the uri of the server endpoint
+                String url = "ws://localhost:8080" + request.getContextPath() + "/websocket/" + Integer.toString(fromDevice);
+                WebSocketLocalClient clientEndpoint = new WebSocketLocalClient(new URI(url));
+                
+                //message to send to the remote device containing also the remote execution descriptor 
+                JsonObject message = Json.createObjectBuilder()
+                                          .add("data", gson.toJson(RED))
+                                          .add("to", Integer.toString(deviceTarget))
+                                          .add("type", Message.REMOTE_MACRO_TYPE).build();
+                            
+                // send the json of the message containing the RED object to server endpoint
+                WebSocketLocalClient.send(clientEndpoint.getSession(), new Message(message));
+               
             }
-
             
         } catch(Exception e) {
             e.printStackTrace();

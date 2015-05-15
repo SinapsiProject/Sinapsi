@@ -6,6 +6,8 @@ import com.sinapsi.engine.components.ActionLuaScript;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSetVariable;
 import com.sinapsi.engine.components.ActionSimpleNotification;
+import com.sinapsi.engine.components.ActionStringInputDialog;
+import com.sinapsi.engine.components.TriggerACPower;
 import com.sinapsi.engine.components.TriggerEngineStart;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.execution.ExecutionInterface;
@@ -59,6 +61,7 @@ public class MacroEngine {
                 TriggerWifi.class,
                 TriggerEngineStart.class,
                 TriggerScreenPower.class,
+                TriggerACPower.class,
 
                 ActionWifiState.class,
                 ActionSendSMS.class,
@@ -66,7 +69,8 @@ public class MacroEngine {
                 ActionSetVariable.class,
                 ActionContinueConfirmDialog.class,
                 ActionLog.class,
-                ActionSimpleNotification.class
+                ActionSimpleNotification.class,
+                ActionStringInputDialog.class
 
         );
 

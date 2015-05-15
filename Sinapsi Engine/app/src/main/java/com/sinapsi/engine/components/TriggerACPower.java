@@ -13,19 +13,19 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-/**
- * TriggerScreenPower class. This trigger will activate a macro when
- * the device's main screen turns on or off. This
- * trigger can be parametrized by the status of the screen power.
- */
-public class TriggerScreenPower extends Trigger {
 
-    public static final String TRIGGER_SCREEN_POWER = "TRIGGER_SCREEN_POWER";
+/**
+ * TriggerACPower class. This trigger will activate a macro when
+ * the AC charger is connected or disconnected.
+ */
+public class TriggerACPower extends Trigger {
+
+    public static final String TRIGGER_AC_POWER = "TRIGGER_AC_POWER";
 
     @Override
     protected JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
-                .put("screen_power", FormalParamBuilder.BoolStyles.ON_OFF, true)
+                .put("ac_power", FormalParamBuilder.BoolStyles.ON_OFF, true)
                 .create();
     }
 
@@ -36,7 +36,7 @@ public class TriggerScreenPower extends Trigger {
 
     @Override
     public String getName() {
-        return TRIGGER_SCREEN_POWER;
+        return TRIGGER_AC_POWER;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TriggerScreenPower extends Trigger {
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>()
-                .put(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, 1)
+                .put(SystemFacade.REQUIREMENT_AC_CHARGER, 1)
                 .create();
     }
 }

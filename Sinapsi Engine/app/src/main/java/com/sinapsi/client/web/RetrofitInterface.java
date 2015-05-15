@@ -5,7 +5,6 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
-
 import java.security.PublicKey;
 import java.util.AbstractMap;
 import java.util.HashMap;

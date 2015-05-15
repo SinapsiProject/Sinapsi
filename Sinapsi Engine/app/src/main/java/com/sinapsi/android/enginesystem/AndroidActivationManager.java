@@ -1,4 +1,4 @@
-package com.sinapsi.android.system;
+package com.sinapsi.android.enginesystem;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -10,13 +10,11 @@ import com.sinapsi.android.utils.IntentUtils;
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.Trigger;
-import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.SystemFacade;
-import com.sinapsi.model.DeviceInterface;
 
 /**
  * ActivationManager - implementation for the Android platform.
@@ -28,6 +26,7 @@ public class AndroidActivationManager extends ActivationManager {
     private BroadcastActivator wifiActivator = null;
     private BroadcastActivator smsActivator = null;
     private BroadcastActivator screenPowerActivator = null;
+    private BroadcastActivator acPowerActivator = null;
 
     private BroadcastActivator[] activators = null;
 
@@ -91,10 +90,25 @@ public class AndroidActivationManager extends ActivationManager {
             }
         };
 
+        if(sf.checkRequirement(SystemFacade.REQUIREMENT_AC_CHARGER, 1)) acPowerActivator = new BroadcastActivator(
+                this, newIntentFilter(
+                Intent.ACTION_POWER_CONNECTED,
+                Intent.ACTION_POWER_DISCONNECTED),
+                contextWrapper, executionInterface) {
+            @Override
+            public Event extractEventInfo(Context c, Intent intent) {
+                Event result = new Event();
+                if(intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED)) result.put("ac_power", false);
+                else if(intent.getAction().equals(Intent.ACTION_POWER_CONNECTED)) result.put("ac_power", true);
+                return result;
+            }
+        };
+
         activators = new BroadcastActivator[]{
                 wifiActivator,
                 smsActivator,
-                screenPowerActivator
+                screenPowerActivator,
+                acPowerActivator
         };
 
     }

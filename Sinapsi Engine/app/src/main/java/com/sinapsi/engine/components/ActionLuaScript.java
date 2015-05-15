@@ -68,7 +68,7 @@ public class ActionLuaScript extends Action{
 
     @Override
     public int getMinVersion() {
-        return SinapsiVersions.ARCHIMEDES.ordinal();
+        return SinapsiVersions.ANTARES.ordinal();
     }
 
     @Override
