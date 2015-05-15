@@ -31,7 +31,7 @@ public class ComponentFactory {
         this.log = log;
         this.device = device;
         loader.loadClasses();
-        log.log("COMPFACTORY", "Component classes loaded");
+        this.log.log("COMPFACTORY", "Component classes loaded");
         if (this.device == null)throw new RuntimeException("device is null");
     }
 
@@ -45,7 +45,8 @@ public class ComponentFactory {
     public Trigger newTrigger(String triggerName, String parameters, MacroInterface macro){
         Trigger t = (Trigger) loader.newComponentInstance(MacroComponent.ComponentTypes.TRIGGER, triggerName);
         if (t == null) throw new ComponentNotFoundException(triggerName, MacroComponent.ComponentTypes.TRIGGER);
-        t.init(device,parameters,macro);
+        t.init(device, parameters, macro);
+
         return t;
     }
 
@@ -103,6 +104,10 @@ public class ComponentFactory {
                 result.add(x);
         }
         return result;
+    }
+
+    public Trigger getTriggerInstanceMockup(String componentName, String parameters, MacroInterface macro){
+        return null; //TODO: impl
     }
 
 
