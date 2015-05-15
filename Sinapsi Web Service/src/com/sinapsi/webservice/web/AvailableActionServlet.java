@@ -15,7 +15,7 @@ import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.MacroComponent;
-import com.sinapsi.webservice.db.EngineManager;
+import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserManager;
 import com.sinapsi.webservice.utility.BodyReader;
@@ -34,7 +34,7 @@ public class AvailableActionServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        EngineManager engineManager = new EngineManager();
+        EngineDBManager engineManager = new EngineDBManager();
         KeysDBManager keysManager = new KeysDBManager();
         UserManager userManager = new UserManager();
         Gson gson = new Gson();
@@ -62,7 +62,7 @@ public class AvailableActionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        EngineManager engineManager = new EngineManager();
+        EngineDBManager engineManager = new EngineDBManager();
         KeysDBManager keysManager = new KeysDBManager();
         UserManager userManager = new UserManager();
         Gson gson = new Gson();

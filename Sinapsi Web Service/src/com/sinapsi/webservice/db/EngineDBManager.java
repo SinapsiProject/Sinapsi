@@ -7,19 +7,21 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.MacroInterface;
 
 /**
  * Class that perform engine(triggers, actions, macros) query
  *
  */
-public class EngineManager {
+public class EngineDBManager {
     private DatabaseController db;
 
     /**
      * Default ctor
      */
-    public EngineManager() {
+    public EngineDBManager() {
         db = new DatabaseController();
     }
 
@@ -241,5 +243,40 @@ public class EngineManager {
             throw e;
         }
         db.disconnect(c, s);
+    }
+
+    /**
+     * Return all macro of the user id
+     * @param id id of the user
+     * @return
+     * @throws SQLException 
+     */
+    public List<MacroInterface> getUserMacro(int id) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<MacroInterface> macros = new ArrayList<MacroInterface>();
+
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT * FROM macro WHERE macro.iduser = ?");
+            s.setInt(1, id);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                int minVersion = r.getInt("minversion");
+                String name = r.getString("name");
+                MacroInterface macro = db.factory.newMacro(name, r.getInt("id"));
+                
+                
+                macros.add(macro);
+            }
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return macros;
     }
 }

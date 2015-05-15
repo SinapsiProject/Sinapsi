@@ -64,7 +64,7 @@ public class RemoteMacroExecution extends HttpServlet {
             
             } else { 
                 // create new client endpoint, passing the name and the uri of the server endpoint
-                String url = "ws://localhost:8181" + request.getContextPath() + "/websocket/" + Integer.toString(fromDevice);
+                String url = "ws://localhost:8181/sinapsi/websocket/" + Integer.toString(fromDevice);
                 WebSocketLocalClient clientEndpoint = new WebSocketLocalClient(new URI(url));
                 
                 //message to send to the remote device containing also the remote execution descriptor 
