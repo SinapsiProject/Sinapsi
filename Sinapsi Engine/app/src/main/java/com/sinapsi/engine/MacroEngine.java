@@ -41,43 +41,6 @@ public class MacroEngine {
     private HashMap<String,MacroInterface> macros = new HashMap<>();
 
     /**
-     * Creates a new MacroEngine instance with a default component
-     * class set.
-     * @param currentDevice the device on which this engine is running
-     * @param activationManager the activation manager for trigger activation
-     * @param sinapsiLog the sinapsi log
-     */
-    public MacroEngine(DeviceInterface currentDevice,
-                       ActivationManager activationManager,
-                       SinapsiLog sinapsiLog
-                       ){
-        device = currentDevice;
-        activator = activationManager;
-        log = sinapsiLog;
-
-
-        factory = new ComponentFactory(device, log,
-                TriggerSMS.class,
-                TriggerWifi.class,
-                TriggerEngineStart.class,
-                TriggerScreenPower.class,
-                TriggerACPower.class,
-
-                ActionWifiState.class,
-                ActionSendSMS.class,
-                ActionLuaScript.class,
-                ActionSetVariable.class,
-                ActionContinueConfirmDialog.class,
-                ActionLog.class,
-                ActionSimpleNotification.class,
-                ActionStringInputDialog.class
-
-        );
-
-        sinapsiLog.log("MACROENGINE", "Engine initialized.");
-    }
-
-    /**
      * Creates a new MacroEngine instance with a custom component
      * class set.
      * @param currentDevice the devices on which this engine is running
@@ -85,10 +48,11 @@ public class MacroEngine {
      * @param sinapsiLog the sinapsi log
      * @param componentClasses the set of component classes
      */
+    @SafeVarargs
     public MacroEngine(DeviceInterface currentDevice,
                        ActivationManager activationManager,
                        SinapsiLog sinapsiLog,
-                       Class<? extends MacroComponent>[] componentClasses){
+                       Class<? extends MacroComponent>... componentClasses){
         device = currentDevice;
         activator = activationManager;
         log = sinapsiLog;
@@ -137,8 +101,23 @@ public class MacroEngine {
         activator.activateForOnEngineStart();
     }
 
+    private MacroInterface getMacroById(int idMacro){
+        for(MacroInterface m: macros.values()){
+            if(m.getId() == idMacro)
+                return m;
+        }
+        return null;
+    }
+
     public void continueMacro(RemoteExecutionDescriptor red){
-        //TODO: impl
+
+        ExecutionInterface ei = activator.executionInterface.cloneInstance();
+        MacroInterface m = getMacroById(red.getIdMacro());
+
+        if(m == null) throw new MissingMacroException();
+
+        ei.continueExecutionFromRemote(red.getLocalVariables(), red.getStack());
+        m.execute(ei);
     }
 
     public void pauseEngine(){
@@ -147,5 +126,8 @@ public class MacroEngine {
 
     public void resumeEngine(){
         activator.setEnabled(true);
+    }
+
+    private class MissingMacroException extends RuntimeException { //TODO: change to extends Exception to coerce exception handling
     }
 }

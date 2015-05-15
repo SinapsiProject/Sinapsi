@@ -261,7 +261,6 @@ public class ExecutionInterface {
     public void continueExecutionFromRemote(VariableManager localVars, Deque<Integer> indexes){
         this.localVars = localVars;
         //TODO: unfold the execution stack from the indexes
-        execute();
     }
 
 
