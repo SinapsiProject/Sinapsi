@@ -14,5 +14,6 @@
     <string name="text_connection_problems">Connection error</string>
     <string name="text_new_to_sinapsi">New to Sinapsi? Sign Up</string>
     <string name="text_sign_in">Sign In</string>
+    <string name="description_more">More options</string>
 
 </resources>
