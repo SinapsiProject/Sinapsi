@@ -1,15 +1,12 @@
-package com.sinapsi.android.activity;
+package com.sinapsi.android.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ComponentName;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -17,9 +14,7 @@ import android.net.Uri;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -37,17 +32,12 @@ import java.util.List;
 
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.ServiceBindedActionBarActivity;
-import com.sinapsi.android.background.ServiceConnectionBridge;
-import com.sinapsi.android.background.ServiceConnectionListener;
-import com.sinapsi.android.background.SinapsiBackgroundService;
-import com.sinapsi.client.web.RetrofitWebServiceFacade;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.impl.User;
 
 import retrofit.RetrofitError;
-import retrofit.android.AndroidLog;
 
 /**
  * A login screen that offers login via email/password.

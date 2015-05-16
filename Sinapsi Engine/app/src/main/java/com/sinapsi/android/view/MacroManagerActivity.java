@@ -1,24 +1,29 @@
-package com.sinapsi.android.activity;
+package com.sinapsi.android.view;
 
-import android.content.Intent;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.sinapsi.android.background.ServiceBindedActionBarActivity;
+import com.sinapsi.android.utils.ArrayListAdapter;
 import com.sinapsi.android.utils.ViewTransitionManager;
 import com.sinapsi.engine.R;
+import com.sinapsi.model.MacroInterface;
 import com.sinapsi.utils.HashMapBuilder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MacroManagerActivity extends ServiceBindedActionBarActivity {
 
     private ViewTransitionManager transitionManager;
+    private ArrayListAdapter<MacroInterface> macroList;
 
     private enum States {
         NO_ELEMENTS,
@@ -32,18 +37,30 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_macro_manager);
 
-        //todo: bind to service
-
         FloatingActionButton fab =(FloatingActionButton) findViewById(R.id.new_macro_button);
+        RecyclerView macroListRecycler = (RecyclerView) findViewById(R.id.macro_list_recycler);
+        macroList = new ArrayListAdapter<MacroInterface>() {
+            @Override
+            public View onCreateView(ViewGroup parent, int viewType) {
+                return null; //TODO: impl
+            }
+
+            @Override
+            public void onBindViewHolder(ItemViewHolder viewHolder, MacroInterface elem) {
+                //TODO: impl
+            }
+        };
+
+        macroListRecycler.setAdapter(macroList);
 
         transitionManager = new ViewTransitionManager(new HashMapBuilder<String, List<View>>()
                 .put(States.NO_ELEMENTS.name(), Arrays.asList(
                         findViewById(R.id.no_macros_text), fab))
-                .put(States.NO_CONNECTION.name(), Arrays.asList(
+                .put(States.NO_CONNECTION.name(), Collections.singletonList(
                         findViewById(R.id.no_connection_layout)))
                 .put(States.LIST, Arrays.asList(
-                        findViewById(R.id.macro_list_recycler), fab))
-                .put(States.PROGRESS, Arrays.asList(
+                        macroListRecycler, fab))
+                .put(States.PROGRESS, Collections.singletonList(
                         findViewById(R.id.macro_list_progress)))
                 .create());
 
@@ -55,10 +72,24 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity {
         });
 
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
+
+
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name) {
+        super.onServiceConnected(name);
+        updateMacroList(service.getMacros());
+
     }
 
     private void startEditor() {
         //TODO: implement
+    }
+
+    private void updateMacroList(List<MacroInterface> ml) {
+        macroList.clear();
+        macroList.addAll(ml);
     }
 
 
@@ -66,6 +97,8 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_macro_manager, menu);
+
+
         return true;
     }
 

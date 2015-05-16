@@ -49,6 +49,7 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
+import com.sinapsi.model.impl.Macro;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -232,6 +233,10 @@ public class SinapsiBackgroundService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return new SinapsiServiceBinder();
+    }
+
+    public List<MacroInterface> getMacros() {
+        return null; //TODO: impl
     }
 
     /**

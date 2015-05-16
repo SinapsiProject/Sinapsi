@@ -1,4 +1,4 @@
-package com.sinapsi.android.activity;
+package com.sinapsi.android.view;
 
 import android.app.Activity;
 import android.content.Intent;
