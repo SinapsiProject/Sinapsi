@@ -451,13 +451,14 @@ public class EngineDBManager {
         
         try {
             c = db.connect();
-            s = c.prepareStatement("DELETE FROM macro WHERE id = ?");
+                      
+            s = c.prepareStatement("DELETE FROM actionmacrolist WHERE idmacro = ?");       
             s.setInt(1, idMacro);
             s.execute();
-
+            
             s = null;
             
-            s = c.prepareStatement("DELETE FROM actionmacrolist WHERE idmacro = ?");       
+            s = c.prepareStatement("DELETE FROM macro WHERE id = ?");
             s.setInt(1, idMacro);
             s.execute();
 
