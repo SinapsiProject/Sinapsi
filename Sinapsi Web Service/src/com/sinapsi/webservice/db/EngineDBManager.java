@@ -10,8 +10,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 
+import com.sinapsi.engine.Action;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.Trigger;
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.webservice.engine.WebServiceEngine;
@@ -116,6 +118,46 @@ public class EngineDBManager {
         }
         db.disconnect(c, s, r);
         return triggers;
+    }
+    
+    /**
+     * Return the list of actions related to a specific macro
+     * @param idMacro id of the macro
+     * @return list of actions
+     * @throws SQLException
+     */
+    public List<Action> getActions(int idMacro) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<Action> actions = new ArrayList<Action>();
+        // get the engine from the contex listener
+        WebServiceEngine engine = (WebServiceEngine) http.getServletContext().getAttribute("engine");
+        DeviceDBManager deviceDBManager = (DeviceDBManager) http.getServletContext().getAttribute("devices_db");
+        
+        
+        try {
+            c = db.connect();
+            String query = "SELECT iduser, iddevice, name, actionjson " +
+                           "FROM actionmacrolist, macro " +
+                           "WHERE actionmacrolist.idmacro = macro.id and actionmacrolist.idmacro =  ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idMacro);
+            r = s.executeQuery();
+            
+            while(r.next()) {
+                ComponentFactory componentFactory = engine.getComponentFactoryForUser(r.getInt("iduser"));
+                DeviceInterface device = deviceDBManager.getDevice(r.getInt("iddevice"));
+                Action action = componentFactory.newAction(r.getString("name"), r.getString("actionjson"), device);
+                actions.add(action);
+            }
+            
+        } catch(SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return actions;
     }
 
     /**
@@ -326,13 +368,18 @@ public class EngineDBManager {
                 WebServiceEngine engine = (WebServiceEngine) http.getServletContext().getAttribute("engine");
                 // get the component factory of the user
                 ComponentFactory componentFactory = engine.getComponentFactoryForUser(id);
-                // create a trigger form the information saved in the db
+                // create a trigger from the information saved in the db
                 Trigger trigger = componentFactory.newTrigger(getTrigger(r.getInt("idtrigger")), 
                                                               r.getString("triggerjson"), 
                                                               macro, 
                                                               deviceDb.getDevice(r.getInt("iddevice")));
                 // set the trigger
                 macro.setTrigger(trigger);
+                
+                // create a action/actions (of macro:id) from the information saved in the db
+                for(Action actionI :  getActions(r.getInt("id"))) 
+                    macro.addAction(actionI);                  
+                
                 macros.add(macro);
             }
 

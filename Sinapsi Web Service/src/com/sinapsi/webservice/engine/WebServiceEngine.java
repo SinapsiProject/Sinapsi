@@ -21,6 +21,7 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.server.websocket.Message;
 import com.sinapsi.server.websocket.WebSocketLocalClient;
+import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,8 +41,8 @@ public class WebServiceEngine {
     private SinapsiLog sinapsiLog;
     private Map<Integer, MacroEngine> engines = new HashMap<>();
     private EngineDBManager engineDb = new EngineDBManager();
-
-    public static final int DEFAULT_WEB_SERVICE_DEVICE_ID = 0; //TODO: change
+    private DeviceDBManager deviceDB = new DeviceDBManager();
+    
     public static final String DEFAULT_WEB_SERVICE_DEVICE_NAME = "Cloud";
     public static final String DEFAULT_WEB_SERVICE_DEVICE_MODEL = "Sinapsi";
     public static final String DEFAULT_WEB_SERVICE_DEVICE_TYPE = "Web";
@@ -165,14 +166,24 @@ public class WebServiceEngine {
      * @return
      */
     public DeviceInterface getWebServiceDevice(UserInterface user) {
-        return factoryModel.newDevice(
-                DEFAULT_WEB_SERVICE_DEVICE_ID,
-                DEFAULT_WEB_SERVICE_DEVICE_NAME,
-                DEFAULT_WEB_SERVICE_DEVICE_MODEL,
-                DEFAULT_WEB_SERVICE_DEVICE_TYPE,
-                user,
-                SinapsiVersions.ANTARES.ordinal()
-        );
+
+        try {
+            int webServiceDeviceId = deviceDB.getIdWebDevice(user.getId());
+            
+            return factoryModel.newDevice(
+                    webServiceDeviceId,
+                    DEFAULT_WEB_SERVICE_DEVICE_NAME,
+                    DEFAULT_WEB_SERVICE_DEVICE_MODEL,
+                    DEFAULT_WEB_SERVICE_DEVICE_TYPE,
+                    user,
+                    SinapsiVersions.ANTARES.ordinal()
+            );
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+       return null;
     }
 
     /**

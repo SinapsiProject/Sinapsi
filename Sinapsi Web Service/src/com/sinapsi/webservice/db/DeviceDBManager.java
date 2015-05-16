@@ -254,4 +254,41 @@ public class DeviceDBManager extends UserDBManager {
         db.disconnect(c, s, r);
         return devices;
     }
+
+    /**
+     * Return the id of web device of the user identify by the id, if the user hasn't any
+     * web device connected, create a new one
+     * 
+     * @param idUser id user
+     * @throws Exception 
+     */
+    public int getIdWebDevice(int idUser) throws Exception {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        int idDevice = -1;
+        
+        try {
+            c = db.connect();
+            String query = "SELECT id FROM device WHERE iduser = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idUser);
+            r = s.executeQuery();
+            
+            if(r.next()) {
+                idDevice = r.getInt("id");
+            
+            // create a new Web Device
+            } else {
+                DeviceInterface newDevice = newDevice("Cloud", "Sinapsi", "Web", idUser, 1);
+                idDevice = newDevice.getId();
+            }
+        } catch(SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        
+        db.disconnect(c, s, r);
+        return idDevice;
+    }
 }
