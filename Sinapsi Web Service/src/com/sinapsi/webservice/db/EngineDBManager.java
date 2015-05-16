@@ -161,6 +161,49 @@ public class EngineDBManager {
     }
 
     /**
+     * Return the list of actions related to a specific macro
+     * @param email email of the user
+     * @return list of actions
+     * @throws SQLException
+     */
+    public List<Action> getActions(String email) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<Action> actions = new ArrayList<Action>();
+        // get the engine from the contex listener
+        WebServiceEngine engine = (WebServiceEngine) http.getServletContext().getAttribute("engine");
+        DeviceDBManager deviceDBManager = (DeviceDBManager) http.getServletContext().getAttribute("devices_db");
+        
+        
+        try {
+            c = db.connect();
+            String query = "SELECT iduser, actionmacrolist.iddevice, macro.name, actionjson " +
+                           "FROM  actionmacrolist, macro, users " +
+                           "WHERE users.id = macro.iduser AND " +
+                                 "actionmacrolist.idmacro = macro.id AND " +
+                                 "users.email =  ?";
+            
+            s = c.prepareStatement(query);
+            s.setString(1, email);
+            r = s.executeQuery();
+            
+            while(r.next()) {
+                ComponentFactory componentFactory = engine.getComponentFactoryForUser(r.getInt("iduser"));
+                DeviceInterface device = deviceDBManager.getDevice(r.getInt("iddevice"));
+                Action action = componentFactory.newAction(r.getString("name"), r.getString("actionjson"), device);
+                actions.add(action);
+            }
+            
+        } catch(SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return actions;
+    }
+    
+    /**
      * Get action, if doesn't exist, create it
      * 
      * @param name name of the action
@@ -168,7 +211,7 @@ public class EngineDBManager {
      * @return id of the action
      * @throws SQLException
      */
-    private int getAction(String name, int versionAction) throws SQLException {
+    public int getIdAction(String name, int versionAction) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
@@ -289,6 +332,8 @@ public class EngineDBManager {
             c = db.connect();
 
             for (int i = 0; i < triggers.size(); ++i) {
+                s = null;
+                r = null;
                 MacroComponent trigger = triggers.get(i);
                 String nameDevice = trigger.getName();
                 int versionTrigger = trigger.getMinVersion();
@@ -298,6 +343,7 @@ public class EngineDBManager {
                 s = c.prepareStatement(query);
                 s.setInt(1, idTrigger);
                 s.setInt(2, idDevice);
+                r = s.executeQuery();
             }
 
         } catch (SQLException e) {
@@ -323,15 +369,18 @@ public class EngineDBManager {
             c = db.connect();
 
             for (int i = 0; i < actions.size(); ++i) {
+                s = null;
+                r = null;
                 MacroComponent action = actions.get(i);
                 String nameDevice = action.getName();
                 int versionTrigger = action.getMinVersion();
-                int idAction = getAction(nameDevice, versionTrigger);
+                int idAction = getIdAction(nameDevice, versionTrigger);
 
                 String query = "INSERT INTO availableaction(idaction, iddevice) VALUES(?, ?)";
                 s = c.prepareStatement(query);
                 s.setInt(1, idAction);
                 s.setInt(2, idDevice);
+                r = s.executeQuery();
             }
 
         } catch (SQLException e) {
@@ -389,5 +438,106 @@ public class EngineDBManager {
         }
         db.disconnect(c, s, r);
         return macros;
+    }
+    
+    /**
+     * Delete from the db a macro
+     * @param idMacro id of the macro
+     * @throws SQLException
+     */
+    public void deleteUserMacro(int idMacro) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        
+        try {
+            c = db.connect();
+            s = c.prepareStatement("DELETE FROM macro WHERE id = ?");
+            s.setInt(1, idMacro);
+            s.execute();
+
+            s = null;
+            
+            s = c.prepareStatement("DELETE FROM actionmacrolist WHERE idmacro = ?");       
+            s.setInt(1, idMacro);
+            s.execute();
+
+        } catch (SQLException e) {
+            db.disconnect(c, s);
+            throw e;
+        }
+        db.disconnect(c, s);
+    }
+    
+    /**
+     * Add to the db a list of macro
+     * @param idUser di of the user
+     * @param macros list of macro
+     * @throws SQLException
+     */
+    public void addUserMacro(int idUser, List<MacroInterface> macros) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        int index = 0;
+        
+        ArrayList<Integer> idMacros = new ArrayList<Integer>();
+        ArrayList<Integer> idDevices = new ArrayList<Integer>();
+        ArrayList<Integer> minVersionActions = new ArrayList<Integer>();
+        ArrayList<String> nameActions = new ArrayList<String>();
+        ArrayList<String> parameterActions = new ArrayList<String>();
+        
+        try {
+            c = db.connect();
+            
+            for (MacroInterface macro : macros) {
+                
+                String nameMacro = macro.getName();
+                List<Action> actions = macro.getActions();
+                String paramenterTrigger = macro.getTrigger().getActualParameters();
+                int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion());              
+         
+                
+                for(Action action : actions) {
+                    s = null;
+                    r = null;
+                    String query = "INSERT INTO macro(name, iduser, triggerjson, iddevice, idtrigger)" +
+                                    "VALUES(?, ?, ?, ?, ?)";
+                
+                    s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                    s.setString(1, nameMacro);
+                    s.setInt(2, idUser);
+                    s.setString(3, paramenterTrigger);
+                    s.setInt(4, action.getExecutionDevice().getId());
+                    s.setInt(5, idTrigger);
+                    s.execute();
+                    r = s.getGeneratedKeys();
+                    r.next();
+                    
+                    idMacros.add(r.getInt(1));
+                    nameActions.add(action.getName());
+                    minVersionActions.add(action.getMinVersion());
+                    idDevices.add(action.getExecutionDevice().getId());
+                    parameterActions.add(action.getActualParameters());
+                }
+                
+                s = null;
+                r = null;
+                String query = "INSERT INTO actionmacrolist(idmacro, idaction, actionjson, iddevice)" +
+                                "VALUES(?, ?, ?, ?)";
+                
+                s = c.prepareStatement(query);
+                s.setInt(1, idMacros.get(index));
+                s.setInt(2, getIdAction(nameActions.get(index), minVersionActions.get(index)));
+                s.setString(3, parameterActions.get(index));
+                s.setInt(4, idDevices.get(index));
+                ++index;
+                s.execute();   
+            }
+
+        } catch (SQLException e) {
+            db.disconnect(c, s, r);
+            throw e;
+        }
+        db.disconnect(c, s);   
     }
 }
