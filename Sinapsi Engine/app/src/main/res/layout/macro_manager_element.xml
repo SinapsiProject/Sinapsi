@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:id="@+id/event_element_swipe_layout"
+    android:id="@+id/macro_element_swipe_layout"
     android:layout_marginBottom="5dp">
     <!-- Bottom View Start-->
     <LinearLayout
@@ -58,24 +58,6 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
             </LinearLayout>
 
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/start_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-
-                <TextView
-                    android:id="@+id/end_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -86,19 +68,9 @@
                     android:orientation="horizontal"
                     >
                     <TextView
-                        android:id="@+id/event_id"
+                        android:id="@+id/macro_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:text=" - "
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/event_status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
                 <ImageButton
@@ -109,7 +81,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:background="@color/full_transparent"
-                    android:id="@+id/show_more_event_actions_button"/>
+                    android:id="@+id/show_more_macro_actions_button"/>
 
 
             </RelativeLayout>

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * An utility class to manage animated visibility transitions between groups of views.
  */
 public class ViewTransitionManager {
 
@@ -17,6 +17,7 @@ public class ViewTransitionManager {
     private Map<String, List<View>> map;
     private String currentState = "";
     private VisibilityChangeAnimation animationMethod;
+
 
     public ViewTransitionManager(Map<String, List<View>> viewsmap){
         map = viewsmap;

@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
+import com.sinapsi.android.view.MacroManagerActivity;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
@@ -52,7 +53,9 @@ import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.model.impl.Macro;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit.android.AndroidLog;
 
@@ -72,6 +75,8 @@ public class SinapsiBackgroundService extends Service {
     private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
 
     private UserSettingsFacade settings;
+
+    private Map<String, WebServiceConnectionListener> connectionListeners = new HashMap<>();
 
     private boolean started = false;
 
@@ -238,6 +243,16 @@ public class SinapsiBackgroundService extends Service {
     public List<MacroInterface> getMacros() {
         return null; //TODO: impl
     }
+
+    public void addWebServiceConnectionListener(WebServiceConnectionListener wscl) {
+        connectionListeners.put(wscl.getClass().getName(), wscl);
+    }
+
+    public void removeWebServiceConnectionListener(WebServiceConnectionListener wscl) {
+        connectionListeners.remove(wscl.getClass().getName());
+    }
+
+    //TODO: when a change in connection is detected, notify listeners
 
     /**
      * Binder class received by activities in order to access
