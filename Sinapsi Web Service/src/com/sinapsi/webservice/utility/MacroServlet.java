@@ -75,12 +75,12 @@ public class MacroServlet extends HttpServlet {
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             // extract the list of actions from the jsoned triggers
-            List<MacroInterface> macros = gson.fromJson(jsonBody, new TypeToken<List<MacroInterface>>() {}.getType());
+            MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
             
         
             switch (action) {
                 case "add": {
-                    engineManager.addUserMacro(userManager.getUserByEmail(email).getId(), macros);
+                    engineManager.addUserMacro(userManager.getUserByEmail(email).getId(), macro);
                 } break;
                 
                 
@@ -90,8 +90,7 @@ public class MacroServlet extends HttpServlet {
                 
                 
                 case "delete": {
-                    for(MacroInterface macro : macros)
-                        engineManager.deleteUserMacro(macro.getId());
+                    engineManager.deleteUserMacro(macro.getId());
                     
                 } break;
         

@@ -475,11 +475,23 @@ public class EngineDBManager {
      * @param macros list of macro
      * @throws SQLException
      */
-    public void addUserMacro(int idUser, List<MacroInterface> macros) throws SQLException {
+    public void addUserMacros(int idUser, List<MacroInterface> macros) throws SQLException {
+        
+        for (MacroInterface macro : macros) {
+            addUserMacro(idUser, macro);
+        }
+    }
+    
+    /**
+     * Add to the db a macro, if already exist, updated
+     * @param idUser id of the user
+     * @param macro macro interface
+     * @throws SQLException
+     */
+    public void addUserMacro(int idUser, MacroInterface macro) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        int index = 0;
         
         ArrayList<Integer> idMacros = new ArrayList<Integer>();
         ArrayList<Integer> idDevices = new ArrayList<Integer>();
@@ -490,55 +502,55 @@ public class EngineDBManager {
         try {
             c = db.connect();
             
-            for (MacroInterface macro : macros) {
-                
-                String nameMacro = macro.getName();
-                List<Action> actions = macro.getActions();
-                String paramenterTrigger = macro.getTrigger().getActualParameters();
-                int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion());              
-         
-                
-                for(Action action : actions) {
-                    s = null;
-                    r = null;
-                    String query = "INSERT INTO macro(name, iduser, triggerjson, iddevice, idtrigger)" +
-                                    "VALUES(?, ?, ?, ?, ?)";
-                
-                    s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                    s.setString(1, nameMacro);
-                    s.setInt(2, idUser);
-                    s.setString(3, paramenterTrigger);
-                    s.setInt(4, action.getExecutionDevice().getId());
-                    s.setInt(5, idTrigger);
-                    s.execute();
-                    r = s.getGeneratedKeys();
-                    r.next();
-                    
-                    idMacros.add(r.getInt(1));
-                    nameActions.add(action.getName());
-                    minVersionActions.add(action.getMinVersion());
-                    idDevices.add(action.getExecutionDevice().getId());
-                    parameterActions.add(action.getActualParameters());
-                }
-                
+            String nameMacro = macro.getName();
+            List<Action> actions = macro.getActions();
+            String paramenterTrigger = macro.getTrigger().getActualParameters();
+            int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion());   
+            
+            for(Action action : actions) {
                 s = null;
                 r = null;
-                String query = "INSERT INTO actionmacrolist(idmacro, idaction, actionjson, iddevice)" +
-                                "VALUES(?, ?, ?, ?)";
+                String query = "INSERT INTO macro(name, iduser, triggerjson, iddevice, idtrigger)" +
+                                "VALUES(?, ?, ?, ?, ?)";
+            
+                s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                s.setString(1, nameMacro);
+                s.setInt(2, idUser);
+                s.setString(3, paramenterTrigger);
+                s.setInt(4, action.getExecutionDevice().getId());
+                s.setInt(5, idTrigger);
+                s.execute();
+                r = s.getGeneratedKeys();
+                r.next();
                 
+                idMacros.add(r.getInt(1));
+                nameActions.add(action.getName());
+                minVersionActions.add(action.getMinVersion());
+                idDevices.add(action.getExecutionDevice().getId());
+                parameterActions.add(action.getActualParameters());
+            }
+            
+            s = null;
+            r = null;
+            String query = "INSERT INTO actionmacrolist(idmacro, idaction, actionjson, iddevice)" +
+                            "VALUES(?, ?, ?, ?)";
+            
+            for(int index = 0; index < idMacros.size(); ++index) {
+                s = null;
+                r = null;
                 s = c.prepareStatement(query);
                 s.setInt(1, idMacros.get(index));
                 s.setInt(2, getIdAction(nameActions.get(index), minVersionActions.get(index)));
                 s.setString(3, parameterActions.get(index));
                 s.setInt(4, idDevices.get(index));
-                ++index;
                 s.execute();   
-            }
-
-        } catch (SQLException e) {
+            } 
+                       
+        } catch(SQLException ex) {
             db.disconnect(c, s, r);
-            throw e;
         }
-        db.disconnect(c, s);   
+        
+        db.disconnect(c, s, r);
     }
+    
 }

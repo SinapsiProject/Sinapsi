@@ -37,6 +37,7 @@ public interface RetrofitInterface {
 
     public static final String ADD = "add";
     public static final String GET = "get";
+    public static final String DEL = "del";
 
 
     /**
@@ -162,8 +163,20 @@ public interface RetrofitInterface {
      * @param email the user's email
      * @param macro the macro
      */
-    @POST(MACROS)
+    @POST(MACROS + ACTION + ADD)
     public void updateOrAddMacro(
+            @Query("email") String email,
+            @Body MacroInterface macro,
+            Callback<String> result);
+
+    /**
+     * Delte a macro
+     * 
+     * @param email email of the user
+     * @param macro the macro
+     */
+    @POST(MACROS + ACTION + DEL)
+    public void deleteMacro(
             @Query("email") String email,
             @Body MacroInterface macro,
             Callback<String> result);
@@ -173,7 +186,7 @@ public interface RetrofitInterface {
      *
      * @param email the user's email
      */
-    @GET(MACROS)
+    @GET(MACROS + ACTION + GET)
     public void getAllMacros(
             @Query("email") String email,
             Callback<List<MacroInterface>> result);
