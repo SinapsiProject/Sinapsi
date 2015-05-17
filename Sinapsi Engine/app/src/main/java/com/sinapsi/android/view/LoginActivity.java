@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.sinapsi.android.Lol;
-import com.sinapsi.android.background.ServiceBindedActionBarActivity;
+import com.sinapsi.android.background.ServiceBoundActionBarActivity;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.R;
@@ -42,7 +42,7 @@ import retrofit.RetrofitError;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends ServiceBindedActionBarActivity implements LoaderCallbacks<Cursor>{
+public class LoginActivity extends ServiceBoundActionBarActivity implements LoaderCallbacks<Cursor>{
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -169,7 +169,7 @@ public class LoginActivity extends ServiceBindedActionBarActivity implements Loa
                     Lol.d(this, "Error! Message received: " + user.getErrorDescription());
                 } else {
                     Lol.d(this, "Success! user id received: " + user.getId());
-                    Intent i = new Intent(LoginActivity.this, MacroManagerActivity.class);
+                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
 

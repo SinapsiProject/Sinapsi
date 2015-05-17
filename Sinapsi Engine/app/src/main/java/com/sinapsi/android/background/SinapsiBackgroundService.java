@@ -9,7 +9,6 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
-import com.sinapsi.android.view.MacroManagerActivity;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
@@ -27,7 +26,6 @@ import com.sinapsi.engine.R;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.ActionContinueConfirmDialog;
 import com.sinapsi.engine.components.ActionLog;
-import com.sinapsi.engine.components.ActionLuaScript;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSetVariable;
 import com.sinapsi.engine.components.ActionSimpleNotification;
@@ -50,7 +48,6 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
-import com.sinapsi.model.impl.Macro;
 
 import java.util.ArrayList;
 import java.util.HashMap;

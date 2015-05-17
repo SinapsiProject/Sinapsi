@@ -1,12 +1,11 @@
 package com.sinapsi.android.view;
 
-import android.content.ComponentName;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -17,7 +16,8 @@ import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.sinapsi.android.background.ServiceBindedActionBarActivity;
+import com.sinapsi.android.background.ServiceBoundFragment;
+import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.WebServiceConnectionListener;
 import com.sinapsi.android.utils.ArrayListAdapter;
 import com.sinapsi.android.utils.ViewTransitionManager;
@@ -31,12 +31,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class MacroManagerActivity extends ServiceBindedActionBarActivity implements WebServiceConnectionListener {
+/**
+ * The main macro manager fragment.
+ */
+public class MacroManagerFragment extends ServiceBoundFragment implements WebServiceConnectionListener {
 
     private ViewTransitionManager transitionManager;
     private ArrayListAdapter<MacroInterface> macroList;
     private SwipeRefreshLayout swipeRefreshLayout;
-
 
     private enum States {
         NO_ELEMENTS,
@@ -45,39 +47,41 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity impleme
         PROGRESS
     }
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_macro_manager);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_macro_manager, container, false);
 
-        FloatingActionButton fab =(FloatingActionButton) findViewById(R.id.new_macro_button);
-        RecyclerView macroListRecycler = (RecyclerView) findViewById(R.id.macro_list_recycler);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        FloatingActionButton fab =(FloatingActionButton) rootView.findViewById(R.id.new_macro_button);
+        RecyclerView macroListRecycler = (RecyclerView) rootView.findViewById(R.id.macro_list_recycler);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
 
         transitionManager = new ViewTransitionManager(new HashMapBuilder<String, List<View>>()
                 .put(States.NO_ELEMENTS.name(), Arrays.asList(
-                        findViewById(R.id.no_macros_text), fab))
+                        rootView.findViewById(R.id.no_macros_text), fab))
                 .put(States.NO_CONNECTION.name(), Collections.singletonList(
-                        findViewById(R.id.no_connection_layout)))
+                        rootView.findViewById(R.id.no_connection_layout)))
                 .put(States.LIST, Arrays.asList(
                         macroListRecycler, fab))
                 .put(States.PROGRESS, Collections.singletonList(
-                        findViewById(R.id.macro_list_progress)))
+                        rootView.findViewById(R.id.macro_list_progress)))
                 .create());
 
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         macroListRecycler.setLayoutManager(layoutManager);
         macroListRecycler.setHasFixedSize(true);
 
         macroList = new ArrayListAdapter<MacroInterface>() {
             @Override
             public View onCreateView(ViewGroup parent, int viewType) {
-                View v = getLayoutInflater().inflate(R.layout.macro_manager_element, parent, false);
+                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.macro_manager_element, parent, false);
                 final SwipeLayout sl = (SwipeLayout) v.findViewById(R.id.macro_element_swipe_layout);
                 final ImageButton button = (ImageButton) v.findViewById(R.id.show_more_macro_actions_button);
-                final Animation rotation = AnimationUtils.loadAnimation(MacroManagerActivity.this, R.anim.button_rotate);
+                final Animation rotation = AnimationUtils.loadAnimation(getActivity(), R.anim.button_rotate);
                 rotation.setRepeatCount(Animation.INFINITE);
                 View.OnClickListener openCloseListener = new View.OnClickListener() {
                     @Override
@@ -141,10 +145,10 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity impleme
                 //TODO: set description and other data
 
                 LinearLayout ll = (LinearLayout) v.findViewById(R.id.bottom_wrapper);
-                SwipeActionLayoutManager salm = new SwipeActionLayoutManager(MacroManagerActivity.this, ll);
+                SwipeActionLayoutManager salm = new SwipeActionLayoutManager(getActivity(), ll);
 
-                //TODO: put real actions here
-                salm.addAction(new SwipeActionMacroExampleButton(elem,MacroManagerActivity.this));
+                //TODO: put real context actions here
+                salm.addAction(new SwipeActionMacroExampleButton(elem, getActivity()));
 
                 //TODO: set the icon here
             }
@@ -181,7 +185,7 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity impleme
             }
         });
 
-        FloatingActionButton retryButton = (FloatingActionButton) findViewById(R.id.retry_button);
+        FloatingActionButton retryButton = (FloatingActionButton) rootView.findViewById(R.id.retry_button);
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,49 +203,8 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity impleme
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //TODO: impl
-        getMenuInflater().inflate(R.menu.menu_macro_manager, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //TODO impl
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onStart() {
-        service.addWebServiceConnectionListener(this);
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        service.removeWebServiceConnectionListener(this);
-        super.onStop();
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName name) {
-        super.onServiceConnected(name);
-        updateContent();
-    }
-
 
     private void updateContent() {
         if(!isServiceConnected()) return;
@@ -254,7 +217,6 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity impleme
         swipeRefreshLayout.setRefreshing(false);
         transitionManager.makeTransitionIfDifferent(States.LIST.name());
     }
-
 
     private void startEditor() {
         //TODO: impl
@@ -275,8 +237,12 @@ public class MacroManagerActivity extends ServiceBindedActionBarActivity impleme
         macroList.addAll(ml);
     }
 
-
-
+    @Override
+    public void onServiceConnected(SinapsiBackgroundService service) {
+        super.onServiceConnected(service);
+        service.addWebServiceConnectionListener(this);
+        updateContent();
+    }
 
 
 }

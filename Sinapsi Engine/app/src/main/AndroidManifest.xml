@@ -39,7 +39,7 @@
         </activity>
 
         <activity
-            android:name="com.sinapsi.android.view.MacroManagerActivity"
+            android:name="com.sinapsi.android.view.MainActivity"
             android:label="@string/title_activity_macro_manager" >
         </activity>
 
