@@ -51,13 +51,17 @@ public class LoginServlet extends HttpServlet {
 
         try {
             String email = request.getParameter("email");
+            String sessionKey = request.getParameter("key");
             String encryptedJsonBody = BodyReader.read(request);
 
+            // update session key of the client 
+            keysManager.updateRemoteSessionKey(email, sessionKey);
+            
             // Create the encrypter 
             Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
             
             // create the decrypter using local private key, and the client encrypted session key, then  decrypt the jsoned body
-            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email),keysManager.getClientSessionKey(email));
+            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             
             // return the string from the decrypted json string

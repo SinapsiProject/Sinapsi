@@ -182,7 +182,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
             Encrypt encrypt = new Encrypt(getServerPublicKey());
             SecretKey sk = encrypt.getEncryptedSessionKey();
 
-            cryptedRetrofit.login(email, new HashMap.SimpleEntry<String, SecretKey>(password,sk), new Callback<User>() {
+            cryptedRetrofit.login(email, SessionKeyManager.convertToString(sk), password, new Callback<User>() {
                 @Override
                 public void success(User user, Response response) {
                     result.success(user, response);
