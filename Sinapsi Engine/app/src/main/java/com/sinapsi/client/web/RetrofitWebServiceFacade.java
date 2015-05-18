@@ -5,6 +5,7 @@ import com.bgp.keymanager.PublicKeyManager;
 import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sinapsi.android.Lol;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
@@ -139,7 +140,11 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                     "Missing public key. Did you log in?");
     }
 
-
+    /**
+     * Request login
+     * @param email email of the user
+     * @param keys public key and session key recived from the server
+     */
     @Override
     public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<String, String>> keys) {
         uncryptedRetrofit.requestLogin(email, new Callback<HashMap.SimpleEntry<String, String>>() {
