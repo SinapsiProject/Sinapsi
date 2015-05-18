@@ -23,6 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -40,17 +41,15 @@ public class Launcher extends Application {
 			private BorderPane root;
 			private GridPane grid;
 			private GridPane logoPane;
-			private GridPane tutorialPane;
-			private StackPane tutorialRoot;
+			private GridPane tutorialButtonPane;
+			private BorderPane tutorialPane;
+			private FlowPane switchPagePane;
 			
 			// Buttons
 			private Button signIn;
 			private Button tutorialButton;
-			
-			// Menu
-			private MenuBar menuBar;
-			private Menu menuAbout;
-			private MenuItem itemGithub;
+			private Button switchPageNext;
+			private Button switchPagePrevious;
 			
 			// Labels
 			private Label emailLabel;
@@ -68,6 +67,7 @@ public class Launcher extends Application {
 			
 			// Hbox
 			private HBox hboxSignIn;	
+			private HBox hboxSwitch;
 
 			// Vbox
 			private VBox vboxLogo;
@@ -76,7 +76,7 @@ public class Launcher extends Application {
 			this.grid = new GridPane();		
 			this.root = new BorderPane();
 			this.logoPane = new GridPane();
-			this.tutorialPane = new GridPane();
+			this.tutorialButtonPane = new GridPane();
 			
 			// Setting logo 
 			Image logo = new Image("file:res/rsz_31logo.png",600,400,true,true);
@@ -123,16 +123,7 @@ public class Launcher extends Application {
 	                "-fx-effect: dropshadow(three-pass-box, gray, 4, 0.5, 0, 0)"
 			);
 			
-			// Setting menubar
-			menuBar = new MenuBar();
-			menuBar.useSystemMenuBarProperty();
-			
-			menuAbout = new Menu("About");
-			itemGithub = new MenuItem("Github");
-			
-			menuAbout.getItems().add(itemGithub);
-			menuBar.getMenus().add(menuAbout);
-			
+				
 			
 			// BorderPane Top	
 			logoPane.setAlignment(Pos.TOP_CENTER);
@@ -154,28 +145,40 @@ public class Launcher extends Application {
 			grid.add(hboxSignIn, 0, 9);
 			
 			// BorderPane Bottom
-			tutorialPane.setAlignment(Pos.BOTTOM_RIGHT);
-			tutorialPane.setPadding(new Insets(25, 25, 25, 25));
-			tutorialPane.setHgap(10);
-			tutorialPane.add(tutorialButton, 0, 1);
+			tutorialButtonPane.setAlignment(Pos.BOTTOM_RIGHT);
+			tutorialButtonPane.setPadding(new Insets(25, 25, 25, 25));
+			tutorialButtonPane.setHgap(10);
+			tutorialButtonPane.add(tutorialButton, 0, 1);
 			
 			// Tutorial Button Handler	
 			tutorialButton.setOnAction(new EventHandler<ActionEvent>() {			
 				@Override
 				public void handle(ActionEvent event) {
-					tutorialRoot = new StackPane();
+					tutorialPane = new BorderPane();
+					
+					switchPagePrevious = new Button("Previous");
+						switchPagePrevious.setPrefWidth(180);
+					switchPageNext = new Button("Next");
+						switchPageNext.setPrefWidth(180);
+						
+					hboxSwitch = new HBox();
+					hboxSwitch.setAlignment(Pos.CENTER);
+					hboxSwitch.setPadding(new Insets(52,52,55,52));
+					hboxSwitch.setSpacing(50);
+					
+					hboxSwitch.getChildren().addAll(switchPagePrevious, switchPageNext);
+					tutorialPane.setBottom(hboxSwitch);
+					
 					Stage tutorialStage = new Stage();
 					tutorialStage.setTitle("Sinapsi Tutorial");
-					tutorialStage.setScene(new Scene(tutorialRoot, 400, 600));
+					tutorialStage.setScene(new Scene(tutorialPane, 400, 600));
 					tutorialStage.setResizable(false);
 					tutorialStage.show();
-					System.out.println("Tutorial opened");
 				}
 			});
 			
 			
-			root.setBottom(tutorialPane);
-			// root.setTop(menuBar);
+			root.setBottom(tutorialButtonPane);
 			root.setTop(logoPane);
 			root.setCenter(grid);
 			Scene firstScene = new Scene(root, 800, 600);
@@ -185,6 +188,8 @@ public class Launcher extends Application {
 			primaryStage.setResizable(false);
 			primaryStage.show();
 		} 
+		
+		
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
