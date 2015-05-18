@@ -46,17 +46,18 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     private SecretKey serverSessionKey;
     private PublicKey serverPublicKey;
 
-
-
     private RetrofitInterface cryptedRetrofit;
     private RetrofitInterface uncryptedRetrofit;
 
+    private OnlineStatusProvider onlineStatusProvider;
     /**
      * Default ctor
      *
      * @param retrofitLog
      */
-    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog) {
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider) {
+
+        this.onlineStatusProvider = onlineStatusProvider;
 
         Gson gson = new GsonBuilder().create();
 
@@ -145,7 +146,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      */
     @Override
     public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<String, String>> keys) {
-
+        if(!onlineStatusProvider.isOnline()) return;
         KeyGenerator kg = new KeyGenerator();
         final PrivateKey prk = kg.getPrivateKey();
         final PublicKey puk = kg.getPublicKey();
@@ -177,7 +178,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     @Override
     public void login(String email, String password, final WebServiceCallback<User> result) {
-
+        checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
         try {
             Encrypt encrypt = new Encrypt(getServerPublicKey());
             SecretKey sk = encrypt.getEncryptedSessionKey();
@@ -201,12 +203,14 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     @Override
     public void register(String email, String password, WebServiceCallback<User> result) {
+        if(!onlineStatusProvider.isOnline()) return;
         uncryptedRetrofit.register(email, password, convertCallback(result));
     }
 
     @Override
     public void getAllDevicesByUser(UserInterface user, WebServiceCallback<List<DeviceInterface>> result) {
         checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAllDevicesByUser(user.getEmail(), convertCallback(result));
     }
 
@@ -219,6 +223,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                                int deviceClientVersion,
                                WebServiceCallback<DeviceInterface> result) {
         checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.registerDevice(
                 emailUser,
                 deviceName,
@@ -232,6 +237,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void getAvailableActions(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
         checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAvailableActions(
                 device.getId(),
                 convertCallback(result));
@@ -240,6 +246,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void setAvailableActions(DeviceInterface device, List<MacroComponent> actions, WebServiceCallback<String> result) {
         checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.setAvailableActions(
                 device.getId(),
                 actions,
@@ -249,6 +256,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void getAvailableTriggers(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
         checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAvailableTriggers(
                 device.getId(),
                 convertCallback(result));
@@ -257,6 +265,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void setAvailableTriggers(DeviceInterface device, List<MacroComponent> triggers, WebServiceCallback<String> result) {
         checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.setAvailableTriggers(
                 device.getId(),
                 triggers,

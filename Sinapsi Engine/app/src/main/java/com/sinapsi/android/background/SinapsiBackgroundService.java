@@ -2,8 +2,11 @@ package com.sinapsi.android.background;
 
 import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -14,6 +17,7 @@ import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
 import com.sinapsi.android.enginesystem.AndroidNotificationAdapter;
 import com.sinapsi.client.persistence.UserSettingsFacade;
+import com.sinapsi.client.web.OnlineStatusProvider;
 import com.sinapsi.client.web.RetrofitWebServiceFacade;
 import com.sinapsi.android.enginesystem.AndroidActivationManager;
 import com.sinapsi.android.enginesystem.AndroidDialogAdapter;
@@ -62,20 +66,23 @@ import retrofit.android.AndroidLog;
  * in order to remain running on the system. The engine is initialized
  * here and
  */
-public class SinapsiBackgroundService extends Service {
+public class SinapsiBackgroundService extends Service implements OnlineStatusProvider {
 
     private MacroEngine engine;
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
     private DeviceInterface device;
 
-    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
+    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"), this);
 
     private UserSettingsFacade settings;
 
     private Map<String, WebServiceConnectionListener> connectionListeners = new HashMap<>();
 
     private boolean started = false;
+
+    private boolean onlineMode = false;
+
 
     WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
         @Override
@@ -90,17 +97,16 @@ public class SinapsiBackgroundService extends Service {
 
                         @Override
                         public void success(String s, Object response) {
-                            sinapsiLog.log("EXECUTION_CONTINUE",s);
+                            sinapsiLog.log("EXECUTION_CONTINUE", s);
                         }
 
                         @Override
                         public void failure(Throwable error) {
-                            sinapsiLog.log("EXECUTION_CONTINUE","FAIL");
+                            sinapsiLog.log("EXECUTION_CONTINUE", "FAIL");
                         }
                     });
         }
     };
-
 
 
     @Override
@@ -110,7 +116,7 @@ public class SinapsiBackgroundService extends Service {
         settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
         //loadSettings(settings);
 
-        if(device == null) {
+        if (device == null) {
             AndroidDeviceInfo adi = new AndroidDeviceInfo();
             device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
         }
@@ -163,9 +169,6 @@ public class SinapsiBackgroundService extends Service {
 
         // starts the engine (and the TriggerOnEngineStart activates
         engine.startEngine();
-
-
-
 
 
     }
@@ -230,7 +233,6 @@ public class SinapsiBackgroundService extends Service {
         return web;
     }
 
-    
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -241,15 +243,47 @@ public class SinapsiBackgroundService extends Service {
         return null; //TODO: impl
     }
 
+    /**
+     * Adds a web service connection listener to the notification set.
+     * From now on, when the online/offline mode changes, the specified listener
+     * is notified.
+     *
+     * @param wscl the connection listener
+     */
     public void addWebServiceConnectionListener(WebServiceConnectionListener wscl) {
         connectionListeners.put(wscl.getClass().getName(), wscl);
     }
 
+    /**
+     * Removes a web service connection listener to from the notification set.
+     *
+     * @param wscl the connection listener
+     */
     public void removeWebServiceConnectionListener(WebServiceConnectionListener wscl) {
         connectionListeners.remove(wscl.getClass().getName());
     }
 
-    //TODO: when a change in connection is detected, notify listeners
+    private void notifyWebServiceConnectionListeners(boolean online) {
+        for (WebServiceConnectionListener wscl : connectionListeners.values()) {
+            if (online) wscl.onOnlineMode();
+            else wscl.onOfflineMode();
+        }
+    }
+
+
+    /**
+     * Online status getter.
+     */
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        boolean tmpOnlineVal =  netInfo != null && netInfo.isConnectedOrConnecting();
+        if(onlineMode != tmpOnlineVal) notifyWebServiceConnectionListeners(tmpOnlineVal);
+        onlineMode = tmpOnlineVal;
+        return tmpOnlineVal;
+    }
+
 
     /**
      * Binder class received by activities in order to access
@@ -329,7 +363,7 @@ public class SinapsiBackgroundService extends Service {
      * Viene creata una macro che si attiva ogni volta che il wifi
      * si connette ad una rete, e che quindi stampa un messaggio
      * nel log e successivamente mostra una notifica.
-     *
+     * <p/>
      * Il lavoro che fa questo metodo e' in sostanza quello
      * che dovra' essere fatto dal macro editor. Le uniche differenze
      * sono che il macro editor comunichera' con una GUI, e che controllera'
@@ -458,7 +492,7 @@ public class SinapsiBackgroundService extends Service {
     }
 
 
-    private void foregroundMode(){
+    private void foregroundMode() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         builder.setContentTitle(getString(R.string.app_name))
                 .setContentText("Sinapsi Engine service is running")
