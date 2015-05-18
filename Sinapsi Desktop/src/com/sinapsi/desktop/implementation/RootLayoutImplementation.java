@@ -55,6 +55,7 @@ public class RootLayoutImplementation extends Application {
 				
 		// Hyperlinks
 		private Hyperlink registerLink;
+		private Hyperlink forgotPasswordLink;
 					
 		// TextFields
 		private TextField emailField;
@@ -114,6 +115,11 @@ public class RootLayoutImplementation extends Application {
 		registerLink.setTextFill(Color.web("#256581"));
 		registerLabel = new TextFlow(new Text("New to Sinapsi?"), registerLink);
 		
+		// Setting 'forgot password?' label (clickable) and color
+		forgotPasswordLink = new Hyperlink("Forgot password?");
+		forgotPasswordLink.setPadding(new Insets(2, 24, 2, 24));
+		forgotPasswordLink.setTextFill(Color.web("#256581"));
+		
 		// Setting button text 
 		signIn = new Button("Sign in");
 
@@ -141,7 +147,7 @@ public class RootLayoutImplementation extends Application {
 		
 		// BorderPane Top	
 		logoPane.setAlignment(Pos.TOP_CENTER);
-		logoPane.setVgap(10);
+		logoPane.setVgap(8);
 		logoPane.add(logoView, 0, 6);
 		
 		
@@ -156,7 +162,8 @@ public class RootLayoutImplementation extends Application {
 		grid.add(passwordLabel, 0, 4);
 		grid.add(passwordField, 0, 5);
 		grid.add(registerLabel, 0, 6);
-		grid.add(hboxSignIn, 0, 9);
+		grid.add(forgotPasswordLink, 0, 7);
+		grid.add(hboxSignIn, 0, 10);
 		
 		// BorderPane Bottom
 		tutorialButtonPane.setAlignment(Pos.BOTTOM_RIGHT);
@@ -197,6 +204,7 @@ public class RootLayoutImplementation extends Application {
 			}
 		});
 		
+		// Register link handler
 		registerLink.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
@@ -206,6 +214,14 @@ public class RootLayoutImplementation extends Application {
 				registerStage.setTitle("Registration");
 				registerStage.setResizable(false);
 				registerStage.show();
+			}
+		});
+		
+		// Forgot password link handler
+		forgotPasswordLink.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				getHostServices().showDocument("http://todaymade.com/blog/wp-content/uploads/2013/03/troll-face.png");
 			}
 		});
 		
