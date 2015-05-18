@@ -7,8 +7,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServlet;
+
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.webservice.security.Password;
 
 /**
  * Class that perform user query
@@ -73,6 +76,30 @@ public class UserDBManager {
     }
     
     /**
+     * Update a user token in the db
+     * @param email email of the user
+     * @param token secure random token
+     * @throws SQLException
+     */
+    public void updateToken(String email, String token) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+           
+        try {
+            c = db.connect();
+            s = c.prepareStatement("UPDATE users SET token = ? WHERE email = ?");
+            s.setString(1, token);
+            s.setString(2, email);
+            s.execute();
+               
+        } catch(Exception e) {
+            db.disconnect(c, s);
+            throw e;
+        }
+        db.disconnect(c, s);
+    }
+    
+    /**
      * Return all users
      * @return list of users
      * @throws SQLException
@@ -103,6 +130,35 @@ public class UserDBManager {
         }
         db.disconnect(c, s, r);
         return users;
+    }
+    
+    /**
+     * Check if exist user a user with the token passed 
+     * @param email
+     * @param token
+     * @return boolean
+     * @throws SQLException
+     */
+    public boolean checkToken(String email, String token) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        boolean tokenMatch = false;
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT id FROM users WHERE email = ? and token = ?");
+            s.setString(1, email);
+            s.setString(2, token);
+            r = s.executeQuery();
+            if (r.next()) 
+                tokenMatch = true;
+            
+        } catch(SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return tokenMatch;
     }
     
     /**

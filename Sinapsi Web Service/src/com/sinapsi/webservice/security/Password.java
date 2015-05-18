@@ -1,4 +1,4 @@
-package com.sinapsi.webservice.db;
+package com.sinapsi.webservice.security;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
