@@ -28,7 +28,7 @@ When a client connects to the web service for the first time, it sends the list 
     
 ##Security
 The connection between server and clients is crypted using [BGP library](https://github.com/AyoubOuarrak/Bit-Good-Privacy). 
-###Comunication
+###Communication
 When a client wants to join Sinapsi, first, it generates the public and private key, and sends it to the server, e-mail , the newly generated public key and the encrypted session key. The server receives the request and generates, public key and private key, and sends to the client its public key and the encrypted session key. The client can now login, encrypting credentials with the server's public key and sending the generated string to the server. The server receive the encrypted string and decrypt it using its private key and the encrypted session key of the client. Now the server can response to the client crypting all data using the client's public key, and the client decrypt data recived from server, using its private key and encrypted session key of the server.
 ##Installation
 ###Android

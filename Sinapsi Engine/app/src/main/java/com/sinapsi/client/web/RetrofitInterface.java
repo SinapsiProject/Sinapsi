@@ -12,6 +12,8 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.crypto.SecretKey;
+
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -23,15 +25,15 @@ import retrofit.http.Query;
  */
 public interface RetrofitInterface {
 
-    public static final String LOGIN = "login";
-    public static final String LOGOUT = "logout"; //TODO: implement logout
-    public static final String REQUEST_LOGIN = "request_login";
-    public static final String REGISTER = "register";
-    public static final String DEVICES = "devices";
-    public static final String AVAILABLE_ACTIONS = "available_actions";
-    public static final String AVAILABLE_TRIGGERS = "available_triggers";
-    public static final String REMOTE_MACRO = "remote_macro";
-    public static final String MACROS = "macro";
+    public static final String LOGIN = "/login";
+    public static final String LOGOUT = "/logout"; //TODO: implement logout
+    public static final String REQUEST_LOGIN = "/request_login";
+    public static final String REGISTER = "/register";
+    public static final String DEVICES = "/devices";
+    public static final String AVAILABLE_ACTIONS = "/available_actions";
+    public static final String AVAILABLE_TRIGGERS = "/available_triggers";
+    public static final String REMOTE_MACRO = "/remote_macro";
+    public static final String MACROS = "/macro";
 
     public static final String ACTION = "?action=";
 
@@ -48,6 +50,7 @@ public interface RetrofitInterface {
     @POST(REQUEST_LOGIN)
     public void requestLogin(
             @Query("email") String email,
+            @Body PublicKey publicKey,
             Callback<HashMap.SimpleEntry<String, String>> keys);
 
     /**
@@ -59,7 +62,7 @@ public interface RetrofitInterface {
     @POST(LOGIN)
     public void login(
             @Query("email") String email,
-            @Body String password,
+            @Body HashMap.SimpleEntry<String, SecretKey> passwordAndSessionKey,
             Callback<User> user);
 
 
@@ -171,7 +174,7 @@ public interface RetrofitInterface {
 
     /**
      * Delte a macro
-     * 
+     *
      * @param email email of the user
      * @param macro the macro
      */

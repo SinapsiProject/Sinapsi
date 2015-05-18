@@ -35,10 +35,4 @@ public interface BGPKeysProvider {
      * @return the session key
      */
     public SecretKey getServerSessionKey();
-
-    /**
-     * Key pair getter
-     * @return the key pair
-     */
-    public KeyPair getKeyPair();
 }
