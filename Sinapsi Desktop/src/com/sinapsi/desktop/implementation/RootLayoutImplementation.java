@@ -24,6 +24,10 @@ import javafx.stage.Stage;
 
 public class RootLayoutImplementation extends Application {
 
+	/**
+	 * Layout components 
+	 */
+	
 	// Stages
 		private Stage primaryStage;
 		private Stage tutorialStage;
@@ -76,6 +80,11 @@ public class RootLayoutImplementation extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
+	
+	/**
+	 * Main layout launcher
+	 */
 	
 	public void initLayout() {
 		this.grid = new GridPane();		
@@ -154,6 +163,12 @@ public class RootLayoutImplementation extends Application {
 		tutorialButtonPane.setPadding(new Insets(25, 25, 25, 25));
 		tutorialButtonPane.setHgap(10);
 		tutorialButtonPane.add(tutorialButton, 0, 1);
+		
+		/**
+		 * 
+		 * All the actions of the login layout
+		 * 
+		 */
 		
 		// Tutorial Button Handler	
 		tutorialButton.setOnAction(new EventHandler<ActionEvent>() {			
