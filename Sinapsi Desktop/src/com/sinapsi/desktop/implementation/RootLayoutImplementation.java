@@ -213,9 +213,9 @@ public class RootLayoutImplementation extends Application {
 		root.setBottom(tutorialButtonPane);
 		root.setTop(logoPane);
 		root.setCenter(grid);
-		Scene firstScene = new Scene(root, 800, 600);
+		Scene loginScene = new Scene(root, 800, 600);
 		
-		primaryStage.setScene(firstScene);
+		primaryStage.setScene(loginScene);
 		primaryStage.setTitle("Sinapsi Login");
 		primaryStage.setResizable(false);
 		primaryStage.show();
