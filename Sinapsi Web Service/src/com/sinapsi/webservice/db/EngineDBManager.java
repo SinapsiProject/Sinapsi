@@ -492,7 +492,7 @@ public class EngineDBManager {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        
+        int idMacro = macro.getId();
         ArrayList<Integer> idMacros = new ArrayList<Integer>();
         ArrayList<Integer> idDevices = new ArrayList<Integer>();
         ArrayList<Integer> minVersionActions = new ArrayList<Integer>();

@@ -83,12 +83,6 @@ public class MacroServlet extends HttpServlet {
                     engineManager.addUserMacro(userManager.getUserByEmail(email).getId(), macro);
                 } break;
                 
-                
-                case "update": {
-                    //TODO
-                } break;
-                
-                
                 case "delete": {
                     engineManager.deleteUserMacro(macro.getId());
                     
