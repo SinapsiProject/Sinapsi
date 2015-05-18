@@ -159,8 +159,7 @@ public class Launcher extends Application {
 			tutorialPane.setHgap(10);
 			tutorialPane.add(tutorialButton, 0, 1);
 			
-			// Actions
-		
+			// Tutorial Button Handler	
 			tutorialButton.setOnAction(new EventHandler<ActionEvent>() {			
 				@Override
 				public void handle(ActionEvent event) {
