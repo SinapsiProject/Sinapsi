@@ -1,10 +1,12 @@
 package com.sinapsi.android.background;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
 import com.sinapsi.client.AppConsts;
@@ -20,10 +22,10 @@ import com.sinapsi.android.enginesystem.AndroidWifiAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
+import com.sinapsi.engine.R;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.ActionContinueConfirmDialog;
 import com.sinapsi.engine.components.ActionLog;
-import com.sinapsi.engine.components.ActionLuaScript;
 import com.sinapsi.engine.components.ActionSendSMS;
 import com.sinapsi.engine.components.ActionSetVariable;
 import com.sinapsi.engine.components.ActionSimpleNotification;
@@ -48,7 +50,9 @@ import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit.android.AndroidLog;
 
@@ -68,6 +72,10 @@ public class SinapsiBackgroundService extends Service {
     private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"));
 
     private UserSettingsFacade settings;
+
+    private Map<String, WebServiceConnectionListener> connectionListeners = new HashMap<>();
+
+    private boolean started = false;
 
     WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
         @Override
@@ -141,7 +149,6 @@ public class SinapsiBackgroundService extends Service {
 
                 ActionWifiState.class,
                 ActionSendSMS.class,
-                ActionLuaScript.class,
                 ActionSetVariable.class,
                 ActionContinueConfirmDialog.class,
                 ActionLog.class,
@@ -208,11 +215,41 @@ public class SinapsiBackgroundService extends Service {
         return new ArrayList<>();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        foregroundMode();
+        started = true;
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public RetrofitWebServiceFacade getWeb() {
+        return web;
+    }
+
+    
 
     @Override
     public IBinder onBind(Intent intent) {
         return new SinapsiServiceBinder();
     }
+
+    public List<MacroInterface> getMacros() {
+        return null; //TODO: impl
+    }
+
+    public void addWebServiceConnectionListener(WebServiceConnectionListener wscl) {
+        connectionListeners.put(wscl.getClass().getName(), wscl);
+    }
+
+    public void removeWebServiceConnectionListener(WebServiceConnectionListener wscl) {
+        connectionListeners.remove(wscl.getClass().getName());
+    }
+
+    //TODO: when a change in connection is detected, notify listeners
 
     /**
      * Binder class received by activities in order to access
@@ -306,13 +343,15 @@ public class SinapsiBackgroundService extends Service {
                 new ActualParamBuilder()
                         .put("wifi_connection_status", ConnectionStatusChoices.CONNECTED.toString())
                         .create().toString(),
-                myMacro));
+                myMacro,
+                device));
 
         myMacro.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Wifi enabled")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro.addAction(getComponentFactory().newAction(
@@ -320,7 +359,8 @@ public class SinapsiBackgroundService extends Service {
                 new ActualParamBuilder()
                         .put("notification_title", "Yeah!")
                         .put("notification_message", "Connected to @{wifi_ssid}.")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         engine.addMacro(myMacro);
@@ -331,14 +371,16 @@ public class SinapsiBackgroundService extends Service {
         myMacro2.setTrigger(getComponentFactory().newTrigger(
                 TriggerScreenPower.TRIGGER_SCREEN_POWER,
                 null,
-                myMacro2
+                myMacro2,
+                device
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Lo schermo e' @{screen_power}")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
@@ -348,14 +390,16 @@ public class SinapsiBackgroundService extends Service {
                         .put("var_scope", VariableManager.Scopes.LOCAL.toString())
                         .put("var_type", VariableManager.Types.STRING.toString())
                         .put("var_value", "@{screen_power} @{screen_power}")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Lo schermo e' @{screen_power}")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         engine.addMacro(myMacro2);
@@ -381,28 +425,32 @@ public class SinapsiBackgroundService extends Service {
                 new ActualParamBuilder()
                         .put("wifi_connection_status", ConnectionStatusChoices.CONNECTED.toString())
                         .create().toString(),
-                myMacro3));
+                myMacro3,
+                device));
 
         myMacro3.addAction(getComponentFactory().newAction(
                 ActionContinueConfirmDialog.ACTION_CONTINUE_CONFIRM_DIALOG,
                 new ActualParamBuilder()
                         .put("dialog_title", "Continuare?")
                         .put("dialog_message", "Sicuro di voler disattivare il wifi?")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro3.addAction(getComponentFactory().newAction(
                 ActionWifiState.ACTION_WIFI_STATE,
                 new ActualParamBuilder()
                         .put("wifi_switch", false)
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
         myMacro3.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Il wifi e' disattivato")
-                        .create().toString()
+                        .create().toString(),
+                device
         ));
 
 
@@ -410,7 +458,14 @@ public class SinapsiBackgroundService extends Service {
     }
 
 
-    //TODO: foreground notification mode
+    private void foregroundMode(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        builder.setContentTitle(getString(R.string.app_name))
+                .setContentText("Sinapsi Engine service is running")
+                .setSmallIcon(R.drawable.ic_launcher);
+        Notification forenotif = builder.build();
+        startForeground(1, forenotif);
+    }
 
 
 }

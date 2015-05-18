@@ -14,9 +14,9 @@ import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.webservice.db.DeviceManager;
+import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
-import com.sinapsi.webservice.db.UserManager;
+import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -45,9 +45,9 @@ public class LoginServlet extends HttpServlet {
         Gson gson = new Gson();
         
         // objects that manipulate data in the db
-        UserManager userManager = new UserManager();
-        KeysDBManager keysManager = new KeysDBManager();
-        DeviceManager deviceManager = new DeviceManager();
+        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+        KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
 
         try {
             String email = request.getParameter("email");

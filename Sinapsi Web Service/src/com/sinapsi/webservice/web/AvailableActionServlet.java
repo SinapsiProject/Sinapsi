@@ -15,9 +15,9 @@ import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.MacroComponent;
-import com.sinapsi.webservice.db.EngineManager;
+import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
-import com.sinapsi.webservice.db.UserManager;
+import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -34,9 +34,9 @@ public class AvailableActionServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        EngineManager engineManager = new EngineManager();
-        KeysDBManager keysManager = new KeysDBManager();
-        UserManager userManager = new UserManager();
+        EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
+        KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
         Gson gson = new Gson();
 
         int idDevice = Integer.parseInt(request.getParameter("device"));
@@ -62,9 +62,9 @@ public class AvailableActionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        EngineManager engineManager = new EngineManager();
-        KeysDBManager keysManager = new KeysDBManager();
-        UserManager userManager = new UserManager();
+        EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
+        KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
         Gson gson = new Gson();
 
         int idDevice = Integer.parseInt(request.getParameter("device"));

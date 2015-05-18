@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServlet;
+
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 
@@ -16,14 +18,30 @@ import com.sinapsi.model.UserInterface;
  * Class that perform devices query 
  *
  */
-public class DeviceManager extends UserManager {
+public class DeviceDBManager extends UserDBManager {
 	private DatabaseController db;
 	
 	/**
 	 * Default ctor
 	 */
-	public DeviceManager() {
+	public DeviceDBManager() {
 		db = new DatabaseController();
+	}
+	
+	/**
+     * Secondaty ctor
+     * @param db database controller
+     */
+	public DeviceDBManager(DatabaseController db) {
+	    this.db = db;
+	}
+	
+	 /**
+     * Secondary ctor, use the context listener to access to the db controller
+     * @param http http servlet
+     */
+	public DeviceDBManager(HttpServlet http) {
+	    db = (DatabaseController) http.getServletContext().getAttribute("db");
 	}
 	
     /**
@@ -235,5 +253,42 @@ public class DeviceManager extends UserManager {
         }
         db.disconnect(c, s, r);
         return devices;
+    }
+
+    /**
+     * Return the id of web device of the user identify by the id, if the user hasn't any
+     * web device connected, create a new one
+     * 
+     * @param idUser id user
+     * @throws Exception 
+     */
+    public int getIdWebDevice(int idUser) throws Exception {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        int idDevice = -1;
+        
+        try {
+            c = db.connect();
+            String query = "SELECT id FROM device WHERE iduser = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idUser);
+            r = s.executeQuery();
+            
+            if(r.next()) {
+                idDevice = r.getInt("id");
+            
+            // create a new Web Device
+            } else {
+                DeviceInterface newDevice = newDevice("Cloud", "Sinapsi", "Web", idUser, 1);
+                idDevice = newDevice.getId();
+            }
+        } catch(SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        
+        db.disconnect(c, s, r);
+        return idDevice;
     }
 }

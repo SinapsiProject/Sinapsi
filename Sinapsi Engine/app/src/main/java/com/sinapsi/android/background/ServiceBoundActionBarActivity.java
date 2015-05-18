@@ -3,10 +3,13 @@ package com.sinapsi.android.background;
 import android.content.ComponentName;
 import android.support.v7.app.ActionBarActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Activity extension to identify ActionBarActivities binded with SinapsiBackgroundService
  */
-public class ServiceBindedActionBarActivity extends ActionBarActivity implements ServiceConnectionListener {
+public class ServiceBoundActionBarActivity extends ActionBarActivity implements ServiceConnectionListener {
 
     private ServiceConnectionBridge bridge = new ServiceConnectionBridge(this);
 
@@ -14,6 +17,8 @@ public class ServiceBindedActionBarActivity extends ActionBarActivity implements
      * The background service object.
      */
     protected SinapsiBackgroundService service = null;
+
+    private List<ServiceBoundFragment> fragments = new ArrayList<>();
 
 
     @Override
@@ -35,6 +40,9 @@ public class ServiceBindedActionBarActivity extends ActionBarActivity implements
     @Override
     public void onServiceConnected(ComponentName name) {
         service = bridge.get();
+        for(ServiceBoundFragment f: fragments){
+            f.onServiceConnected(service);
+        }
     }
 
     /**
@@ -44,11 +52,16 @@ public class ServiceBindedActionBarActivity extends ActionBarActivity implements
     @Override
     public void onServiceDisconnected(ComponentName name) {
         service = null;
+        for(ServiceBoundFragment f: fragments){
+            f.onServiceDisconnected();
+        }
     }
 
     public boolean isServiceConnected(){
         return bridge.isConnected();
     }
 
-
+    public void addFragmentForConnectionListening(ServiceBoundFragment f){
+        fragments.add(f);
+    }
 }

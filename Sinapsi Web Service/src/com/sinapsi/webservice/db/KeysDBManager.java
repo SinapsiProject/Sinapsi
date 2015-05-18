@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.crypto.SecretKey;
+import javax.servlet.http.HttpServlet;
 
 import com.bgp.keymanager.PrivateKeyManager;
 import com.bgp.keymanager.PublicKeyManager;
@@ -27,6 +28,22 @@ public class KeysDBManager {
 	 */
 	public KeysDBManager() {
 		db = new DatabaseController();
+	}
+	
+	/**
+     * Secondaty ctor
+     * @param db database controller
+     */
+	public KeysDBManager(DatabaseController db) {
+	    this.db = db;
+	}
+	
+	/**
+	 * Secondary ctor, use the context listener to access to the db controller
+	 * @param http http servlet obj
+	 */
+	public KeysDBManager(HttpServlet http) {
+	    db = (DatabaseController) http.getServletContext().getAttribute("db");
 	}
 	
 	/**

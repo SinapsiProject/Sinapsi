@@ -1,7 +1,7 @@
 package com.sinapsi.client;
 
 /**
- * Class containing a set of final fields useful for development
+ * Class containing a set of constant fields useful for development
  */
 public class AppConsts {
 

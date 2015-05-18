@@ -3,8 +3,10 @@ package com.sinapsi.client.web;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
+
 import java.security.PublicKey;
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -22,22 +24,25 @@ import retrofit.http.Query;
 public interface RetrofitInterface {
 
     public static final String LOGIN = "login";
-    public static final String LOGOUT = "logout";
+    public static final String LOGOUT = "logout"; //TODO: implement logout
     public static final String REQUEST_LOGIN = "request_login";
     public static final String REGISTER = "register";
     public static final String DEVICES = "devices";
     public static final String AVAILABLE_ACTIONS = "available_actions";
     public static final String AVAILABLE_TRIGGERS = "available_triggers";
     public static final String REMOTE_MACRO = "remote_macro";
+    public static final String MACROS = "macro";
 
     public static final String ACTION = "?action=";
 
     public static final String ADD = "add";
     public static final String GET = "get";
+    public static final String DEL = "del";
 
 
     /**
      * Pre login request
+     *
      * @param email email of the user
      */
     @POST(REQUEST_LOGIN)
@@ -47,7 +52,8 @@ public interface RetrofitInterface {
 
     /**
      * Login request
-     * @param email email of the user
+     *
+     * @param email    email of the user
      * @param password password of the user
      */
     @POST(LOGIN)
@@ -59,7 +65,8 @@ public interface RetrofitInterface {
 
     /**
      * Registration request
-     * @param email email of the user
+     *
+     * @param email    email of the user
      * @param password password of the user
      */
     @POST(REGISTER)
@@ -71,9 +78,10 @@ public interface RetrofitInterface {
 
     /**
      * Device connected request
+     *
      * @param email user email
      */
-    @GET(DEVICES+ACTION+GET)
+    @GET(DEVICES + ACTION + GET)
     public void getAllDevicesByUser(
             @Query("email") String email,
             Callback<List<DeviceInterface>> devices);
@@ -81,14 +89,14 @@ public interface RetrofitInterface {
 
     /**
      * Device registration request
-     * @param name name of the device
-     * @param model model of the device
-     * @param type type of the device (mobile/desktop)
+     *
+     * @param name    name of the device
+     * @param model   model of the device
+     * @param type    type of the device (mobile/desktop)
      * @param version version of the device
-     * @param idUser id of the device's user
-
+     * @param idUser  id of the device's user
      */
-    @POST(DEVICES+ACTION+ADD)
+    @POST(DEVICES + ACTION + ADD)
     public void registerDevice(
             @Query("email") String email,
             @Query("name") String name,
@@ -101,6 +109,7 @@ public interface RetrofitInterface {
 
     /**
      * Request the available actions
+     *
      * @param idDevice the id of the device
      */
     @GET(AVAILABLE_ACTIONS)
@@ -111,8 +120,9 @@ public interface RetrofitInterface {
 
     /**
      * Send the available actions on the current device
+     *
      * @param idDevice id device
-     * @param actions list of actions that are available
+     * @param actions  list of actions that are available
      */
     @POST(AVAILABLE_ACTIONS)
     public void setAvailableActions(
@@ -123,6 +133,7 @@ public interface RetrofitInterface {
 
     /**
      * Request the available triggers
+     *
      * @param idDevice the id of the device
      */
     @GET(AVAILABLE_TRIGGERS)
@@ -133,6 +144,7 @@ public interface RetrofitInterface {
 
     /**
      * Send the available triggers on the current device
+     *
      * @param idDevice id device
      * @param triggers list of actions that are available
      */
@@ -144,8 +156,45 @@ public interface RetrofitInterface {
 
 
     /**
+     * Sends a macro to the server, and if it has the same id of another
+     * macro, this is updated. If there are no macros with the same id,
+     * the passed macro is added.
+     *
+     * @param email the user's email
+     * @param macro the macro
+     */
+    @POST(MACROS + ACTION + ADD)
+    public void updateOrAddMacro(
+            @Query("email") String email,
+            @Body MacroInterface macro,
+            Callback<String> result);
+
+    /**
+     * Delte a macro
+     * 
+     * @param email email of the user
+     * @param macro the macro
+     */
+    @POST(MACROS + ACTION + DEL)
+    public void deleteMacro(
+            @Query("email") String email,
+            @Body MacroInterface macro,
+            Callback<String> result);
+
+    /**
+     * Gets all the macros from the server
+     *
+     * @param email the user's email
+     */
+    @GET(MACROS + ACTION + GET)
+    public void getAllMacros(
+            @Query("email") String email,
+            Callback<List<MacroInterface>> result);
+
+    /**
      * Call this method to continue the execution of a macro on another device.
-     * @param id the device id
+     *
+     * @param id  the device id
      * @param red the remote execution descriptor
      */
     @POST(REMOTE_MACRO)
@@ -153,5 +202,6 @@ public interface RetrofitInterface {
             @Query("device_id") int id,
             @Body RemoteExecutionDescriptor red,
             Callback<String> result);
+
 
 }

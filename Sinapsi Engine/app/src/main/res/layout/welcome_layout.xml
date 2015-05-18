@@ -16,25 +16,23 @@
 
 
     <TextView
-        android:editable="false"
         android:id="@+id/signUp_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="New to Sinapsi? Sign Up"
+        android:text="@string/text_new_to_sinapsi"
         android:gravity="center"
-        android:textSize="25dp"
+        android:textSize="25sp"
         android:clickable="true"
         android:background="#ECEDF2"
         android:textColor="#ff20647f" />
 
     <TextView
-        android:editable="false"
         android:id="@+id/signIn_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Sign In"
+        android:text="@string/text_sign_in"
         android:gravity="center"
-        android:textSize="25dp"
+        android:textSize="25sp"
         android:clickable="true"
         android:layout_marginTop="40dp"
         android:background="#ECEDF2"
