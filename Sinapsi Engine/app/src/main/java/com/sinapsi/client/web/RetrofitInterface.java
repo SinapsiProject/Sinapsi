@@ -12,6 +12,8 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.crypto.SecretKey;
+
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -48,6 +50,7 @@ public interface RetrofitInterface {
     @POST(REQUEST_LOGIN)
     public void requestLogin(
             @Query("email") String email,
+            @Body PublicKey publicKey,
             Callback<HashMap.SimpleEntry<String, String>> keys);
 
     /**
@@ -59,7 +62,7 @@ public interface RetrofitInterface {
     @POST(LOGIN)
     public void login(
             @Query("email") String email,
-            @Body String password,
+            @Body HashMap.SimpleEntry<String, SecretKey> passwordAndSessionKey,
             Callback<User> user);
 
 
