@@ -50,14 +50,14 @@ public interface RetrofitInterface {
     @POST(REQUEST_LOGIN)
     public void requestLogin(
             @Query("email") String email,
-            @Body PublicKey publicKey,
+            @Body byte[] publicKey,
             Callback<HashMap.SimpleEntry<String, String>> keys);
 
     /**
      * Login request
      *
      * @param email    email of the user
-     * @param sessionkey session key pf the user
+     * @param sessionKey session key pf the user
      * @param password password of the user
      */
     @POST(LOGIN)

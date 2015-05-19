@@ -151,29 +151,33 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         final PrivateKey prk = kg.getPrivateKey();
         final PublicKey puk = kg.getPublicKey();
 
-        uncryptedRetrofit.requestLogin(email,
-                puk,
-                new Callback<HashMap.SimpleEntry<String, String>>() {
-            @Override
-            public void success(HashMap.SimpleEntry<String, String> keys, Response response) {
-                try {
+        try {
+            uncryptedRetrofit.requestLogin(email,
+                    PublicKeyManager.convertToByte(puk),
+                    new Callback<HashMap.SimpleEntry<String, String>>() {
+                @Override
+                public void success(HashMap.SimpleEntry<String, String> keys, Response response) {
                     RetrofitWebServiceFacade.this.publicKey = puk;
                     RetrofitWebServiceFacade.this.privateKey = prk;
-                    RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getKey());
+
+                    try {
+                        RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getKey());
+
+                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                        e.printStackTrace();
+                    }
+
                     RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
-
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
                 }
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                keys.failure(error);
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    keys.failure(error);
+                }
+            });
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
