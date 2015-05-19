@@ -51,7 +51,7 @@ public interface RetrofitInterface {
     public void requestLogin(
             @Query("email") String email,
             @Body byte[] publicKey,
-            Callback<HashMap.SimpleEntry<String, String>> keys);
+            Callback<HashMap.SimpleEntry<byte[], byte[]>> keys);
 
     /**
      * Login request

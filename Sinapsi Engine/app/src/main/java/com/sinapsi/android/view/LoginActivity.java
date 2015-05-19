@@ -143,9 +143,9 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
 
 
             // first, request login
-            service.getWebServiceFacade().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<HashMap.SimpleEntry<String, String>>() {
+            service.getWebServiceFacade().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>>() {
                 @Override
-                public void success(HashMap.SimpleEntry<String, String> stringStringSimpleEntry, Object response) {
+                public void success(HashMap.SimpleEntry<byte[], byte[]> stringStringSimpleEntry, Object response) {
                     attemptLogin();
                 }
 

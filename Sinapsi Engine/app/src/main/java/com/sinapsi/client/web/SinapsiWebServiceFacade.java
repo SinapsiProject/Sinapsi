@@ -33,7 +33,7 @@ public interface SinapsiWebServiceFacade {
      * @param keys public key and session key recived from the server
      */
     public void requestLogin(String email,
-                             WebServiceCallback<HashMap.SimpleEntry<String, String>> keys);
+                             WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keys);
 
     /**
      * Logs in the user

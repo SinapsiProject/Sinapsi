@@ -135,8 +135,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      */
     private void checkKeys() {
         if (publicKey == null || privateKey == null || serverPublicKey == null || serverSessionKey == null) //TODO: check
-            throw new RuntimeException(
-                    "Missing key. Did you log in?");
+            throw new RuntimeException("Missing key. Did you log in?");
     }
 
     /**
@@ -145,8 +144,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * @param keys public key and session key recived from the server
      */
     @Override
-    public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<String, String>> keys) {
+    public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keys) {
         if(!onlineStatusProvider.isOnline()) return;
+
         KeyGenerator kg = new KeyGenerator();
         final PrivateKey prk = kg.getPrivateKey();
         final PublicKey puk = kg.getPublicKey();
@@ -154,9 +154,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         try {
             uncryptedRetrofit.requestLogin(email,
                     PublicKeyManager.convertToByte(puk),
-                    new Callback<HashMap.SimpleEntry<String, String>>() {
+                    new Callback<HashMap.SimpleEntry<byte[], byte[]>>() {
                 @Override
-                public void success(HashMap.SimpleEntry<String, String> keys, Response response) {
+                public void success(HashMap.SimpleEntry<byte[], byte[]> keys, Response response) {
                     RetrofitWebServiceFacade.this.publicKey = puk;
                     RetrofitWebServiceFacade.this.privateKey = prk;
 
@@ -184,6 +184,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public void login(String email, String password, final WebServiceCallback<User> result) {
         checkKeys();
         if(!onlineStatusProvider.isOnline()) return;
+
         try {
             Encrypt encrypt = new Encrypt(getServerPublicKey());
             SecretKey sk = encrypt.getEncryptedSessionKey();
