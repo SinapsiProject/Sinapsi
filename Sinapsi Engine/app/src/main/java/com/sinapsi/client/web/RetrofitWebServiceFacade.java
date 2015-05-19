@@ -144,7 +144,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * @param keys public key and session key recived from the server
      */
     @Override
-    public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keys) {
+    public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keysCallback) {
         if(!onlineStatusProvider.isOnline()) return;
 
         KeyGenerator kg = new KeyGenerator();
@@ -168,11 +168,12 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                     }
 
                     RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
+                    keysCallback.success(keys, response);
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
-                    keys.failure(error);
+                    keysCallback.failure(error);
                 }
             });
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
