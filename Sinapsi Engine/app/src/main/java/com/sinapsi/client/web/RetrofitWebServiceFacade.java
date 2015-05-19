@@ -141,7 +141,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     /**
      * Request login
      * @param email email of the user
-     * @param keys public key and session key recived from the server
+     * @param keysCallback public key and session key recived from the server
      */
     @Override
     public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keysCallback) {
