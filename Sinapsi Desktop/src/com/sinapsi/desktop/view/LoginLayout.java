@@ -3,8 +3,6 @@ package com.sinapsi.desktop.view;
 
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -13,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -85,7 +82,7 @@ public class LoginLayout extends Application {
 		this.primaryStage.setTitle("Sinapsi Login");
 		this.primaryStage.setResizable(false);
 		
-		initLayout();
+		initLogin();
 	}
 
 	public static void main(String[] args) {
@@ -94,10 +91,10 @@ public class LoginLayout extends Application {
 	
 	
 	/**
-	 * Main layout launcher
+	 * Login layout launcher
 	 */
 	
-	public void initLayout() {
+	public void initLogin() {
 		this.grid = new GridPane();		
 		this.root = new BorderPane();
 		this.logoPane = new GridPane();
@@ -243,13 +240,12 @@ public class LoginLayout extends Application {
 		
 		
 		// About link handler
-				aboutSinapsiLink.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						getHostServices().showDocument("https://github.com/SinapsiProject");
-						
-					}
-				});
+		aboutSinapsiLink.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				getHostServices().showDocument("https://github.com/SinapsiProject");
+			}
+		});
 		
 		
 		root.setBottom(tutorialButtonPane);
