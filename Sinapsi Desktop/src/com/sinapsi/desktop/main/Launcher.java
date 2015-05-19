@@ -4,7 +4,7 @@
 
 package com.sinapsi.desktop.main;
 
-import com.sinapsi.desktop.implementation.RootLayoutImplementation;
+import com.sinapsi.desktop.view.LoginLayout;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -15,7 +15,7 @@ public class Launcher extends Application {
 	
 	@Override
 	public void start(Stage stage) {
-		RootLayoutImplementation root = new RootLayoutImplementation();
+		LoginLayout root = new LoginLayout();
 		this.primaryStage = stage;
 		root.start(primaryStage);
 	}

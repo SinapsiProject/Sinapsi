@@ -1,6 +1,10 @@
-package com.sinapsi.desktop.implementation;
+package com.sinapsi.desktop.view;
+
+
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -9,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -22,13 +27,13 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
-public class RootLayoutImplementation extends Application {
+public class LoginLayout extends Application {
 
 	/**
 	 * Layout components 
 	 */
 	
-	// Stages
+		// Stages
 		private Stage primaryStage;
 		private Stage tutorialStage;
 		private Stage registerStage;
@@ -56,6 +61,7 @@ public class RootLayoutImplementation extends Application {
 		// Hyperlinks
 		private Hyperlink registerLink;
 		private Hyperlink forgotPasswordLink;
+		private Hyperlink aboutSinapsiLink;
 					
 		// TextFields
 		private TextField emailField;
@@ -67,7 +73,11 @@ public class RootLayoutImplementation extends Application {
 
 		// Vbox
 		private VBox vboxLogo;
-	
+		
+		
+		// Other stuff
+		
+		
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -120,6 +130,10 @@ public class RootLayoutImplementation extends Application {
 		forgotPasswordLink.setPadding(new Insets(2, 24, 2, 24));
 		forgotPasswordLink.setTextFill(Color.web("#256581"));
 		
+		// Setting 'about label (clickable) and color
+		aboutSinapsiLink = new Hyperlink("About");
+		aboutSinapsiLink.setTextFill(Color.web("#256581"));
+		
 		// Setting button text 
 		signIn = new Button("Sign in");
 
@@ -169,7 +183,8 @@ public class RootLayoutImplementation extends Application {
 		tutorialButtonPane.setAlignment(Pos.BOTTOM_RIGHT);
 		tutorialButtonPane.setPadding(new Insets(25, 25, 25, 25));
 		tutorialButtonPane.setHgap(10);
-		tutorialButtonPane.add(tutorialButton, 0, 1);
+		tutorialButtonPane.add(aboutSinapsiLink, 0, 1);
+		tutorialButtonPane.add(tutorialButton, 1, 1);
 		
 		/**
 		 * 
@@ -197,8 +212,8 @@ public class RootLayoutImplementation extends Application {
 				tutorialPane.setBottom(hboxSwitch);
 				
 				tutorialStage = new Stage();
-				tutorialStage.setTitle("Sinapsi Tutorial");
-				tutorialStage.setScene(new Scene(tutorialPane, 400, 600));
+				tutorialStage.setTitle("Image List");
+				tutorialStage.setScene(new Scene(tutorialPane, 400, 550));
 				tutorialStage.setResizable(false);
 				tutorialStage.show();
 			}
@@ -216,6 +231,7 @@ public class RootLayoutImplementation extends Application {
 				registerStage.show();
 			}
 		});
+	
 		
 		// Forgot password link handler
 		forgotPasswordLink.setOnAction(new EventHandler<ActionEvent>() {
@@ -224,6 +240,16 @@ public class RootLayoutImplementation extends Application {
 				getHostServices().showDocument("http://todaymade.com/blog/wp-content/uploads/2013/03/troll-face.png");
 			}
 		});
+		
+		
+		// About link handler
+				aboutSinapsiLink.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						getHostServices().showDocument("https://github.com/SinapsiProject");
+						
+					}
+				});
 		
 		
 		root.setBottom(tutorialButtonPane);
