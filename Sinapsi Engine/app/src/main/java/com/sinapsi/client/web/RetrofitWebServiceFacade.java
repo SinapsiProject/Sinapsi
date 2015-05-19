@@ -155,6 +155,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
             uncryptedRetrofit.requestLogin(email,
                     PublicKeyManager.convertToByte(puk),
                     new Callback<HashMap.SimpleEntry<byte[], byte[]>>() {
+
                 @Override
                 public void success(HashMap.SimpleEntry<byte[], byte[]> keys, Response response) {
                     RetrofitWebServiceFacade.this.publicKey = puk;
@@ -184,13 +185,17 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void login(String email, String password, final WebServiceCallback<User> result) {
         checkKeys();
+
         if(!onlineStatusProvider.isOnline()) return;
 
         try {
             Encrypt encrypt = new Encrypt(getServerPublicKey());
             SecretKey sk = encrypt.getEncryptedSessionKey();
 
-            cryptedRetrofit.login(email, SessionKeyManager.convertToString(sk), password, new Callback<User>() {
+            uncryptedRetrofit.login(email,
+                    new HashMap.SimpleEntry<byte[], String>(SessionKeyManager.convertToByte(sk), encrypt.encrypt(password)),
+                    new Callback<User>() {
+
                 @Override
                 public void success(User user, Response response) {
                     result.success(user, response);

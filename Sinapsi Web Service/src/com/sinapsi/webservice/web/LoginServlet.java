@@ -2,13 +2,18 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+
+import javax.crypto.SecretKey;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
+import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.FactoryModelInterface;
@@ -51,27 +56,30 @@ public class LoginServlet extends HttpServlet {
 
         try {
             String email = request.getParameter("email");
-            String sessionKey = request.getParameter("key");
-            String encryptedJsonBody = BodyReader.read(request);
-
+            String jsonBody = BodyReader.read(request);
+           
+            // return the string from the decrypted json string
+            HashMap.SimpleEntry<byte[], String> pwdSes = gson.fromJson(jsonBody, 
+                                                      new TypeToken<HashMap.SimpleEntry<byte[], String>>() {}.getType());
+            
+            SecretKey clientSessionKey = SessionKeyManager.convertToKey(pwdSes.getKey());
+            
             // update session key of the client 
-            keysManager.updateRemoteSessionKey(email, sessionKey);
+            keysManager.updateRemoteSessionKey(email, SessionKeyManager.convertToString(clientSessionKey));
             
             // Create the encrypter 
             Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
             
             // create the decrypter using local private key, and the client encrypted session key, then  decrypt the jsoned body
             Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
-            String jsonBody = decrypter.decrypt(encryptedJsonBody);
             
-            // return the string from the decrypted json string
-            String pwd = gson.fromJson(jsonBody, new TypeToken<String>() {}.getType());
-
+            String password = decrypter.decrypt(pwdSes.getValue());
+            
             User user = (User) userManager.getUserByEmail(email);           
             
             if (user != null) {
                 // the user is ok
-                if (userManager.checkUser(email, pwd)) {          
+                if (userManager.checkUser(email, password)) {          
                     // set the connected devices
                     user.setDevices(deviceManager.getUserDevices(email));
                     
@@ -92,7 +100,7 @@ public class LoginServlet extends HttpServlet {
             // the user doesn't exist in the db
             } else {
                 FactoryModelInterface factory = new FactoryModel();
-                user = (User) factory.newUser(0, email, pwd, null);
+                user = (User) factory.newUser(0, email, password, null);
                 user.errorOccured(true);
                 user.setErrorDescription("User doesnt exist");
                 // send encrypted data
