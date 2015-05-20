@@ -188,6 +188,7 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
 
     private void handleRetrofitError(Throwable t) {
         RetrofitError error = (RetrofitError) t;
+        error.printStackTrace();
         String errstring = "An error occurred while communicating with the server.\n";
 
         String errtitle = "Error: " + error.getKind().toString();
@@ -201,6 +202,7 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
                 break;
             case CONVERSION:
                 errstring += "Conversion error";
+
                 break;
             case HTTP:
                 errstring += "HTTP Error " + error.getResponse().getStatus();
@@ -317,6 +319,3 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
         mEmailView.setAdapter(adapter);
     }
 }
-
-
-

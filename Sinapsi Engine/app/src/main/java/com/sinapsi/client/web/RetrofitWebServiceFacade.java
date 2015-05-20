@@ -2,6 +2,7 @@ package com.sinapsi.client.web;
 
 import android.util.Base64;
 
+import com.bgp.codec.DecodingMethod;
 import com.bgp.codec.EncodingMethod;
 import com.bgp.encryption.Encrypt;
 import com.bgp.generator.KeyGenerator;
@@ -32,6 +33,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
+import retrofit.mime.TypedOutput;
 
 /**
  * WebService draft class.
@@ -51,42 +53,82 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     private RetrofitInterface cryptedRetrofit;
     private RetrofitInterface uncryptedRetrofit;
+    private RetrofitInterface loginRetrofit;
+
+    private EncodingMethod encodingMethod;
+    private DecodingMethod decodingMethod;
 
     private OnlineStatusProvider onlineStatusProvider;
     /**
      * Default ctor
      *
      * @param retrofitLog
+     * @param onlineStatusProvider
      */
-    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider) {
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider, EncodingMethod encodingMethod, DecodingMethod decodingMethod) {
 
         this.onlineStatusProvider = onlineStatusProvider;
+        this.encodingMethod = encodingMethod;
+        this.decodingMethod = decodingMethod;
 
         Gson gson = new GsonBuilder().create();
 
+        final GsonConverter defaultGsonConverter = new GsonConverter(gson);
+        final BGPGsonConverter cryptInOutGsonConverter = new BGPGsonConverter(gson, this, this.encodingMethod, this.decodingMethod);
+
+        //This converter only decrypts data from server
+        final GsonConverter loginGsonConverter = new BGPGsonConverter(gson, this, this.encodingMethod, this.decodingMethod){
+            @Override
+            public TypedOutput toBody(Object object) {
+                return defaultGsonConverter.toBody(object);
+            }
+        };
+
         RestAdapter cryptedRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
-                .setConverter(new BGPGsonConverter(gson, this))
+                .setConverter(cryptInOutGsonConverter)
                 .setLog(retrofitLog)
                 .build();
 
         RestAdapter uncryptedRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
-                .setConverter(new GsonConverter(gson))
+                .setConverter(defaultGsonConverter)
+                .setLog(retrofitLog)
+                .build();
+
+        RestAdapter loginRestAdapter = new RestAdapter.Builder()
+                .setEndpoint(AppConsts.SINAPSI_URL)
+                .setConverter(loginGsonConverter)
                 .setLog(retrofitLog)
                 .build();
 
         if (AppConsts.DEBUG) {
             cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
             uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
+            loginRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
         } else {
             cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
             uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
+            loginRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
         }
 
         cryptedRetrofit = cryptedRestAdapter.create(RetrofitInterface.class);
 
         uncryptedRetrofit = uncryptedRestAdapter.create(RetrofitInterface.class);
+
+        loginRetrofit = loginRestAdapter.create(RetrofitInterface.class);
+    }
+
+    /**
+     * Ctor with default encoding/decoding methods
+     *
+     * @param retrofitLog
+     * @param onlineStatusProvider
+     */
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider){
+        this(retrofitLog, onlineStatusProvider, null, null);
+        //using null as methods here is safe because will force bgp library to use
+        //default apache common codec methods
     }
 
     @Override
@@ -166,12 +208,12 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
                     try {
                         RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getKey());
-
+                        RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
                     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                         e.printStackTrace();
                     }
 
-                    RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
+
                     keysCallback.success(keys, response);
                 }
 
@@ -193,15 +235,10 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
         try {
             Encrypt encrypt = new Encrypt(getServerPublicKey());
-            encrypt.setCustomEncoding(new EncodingMethod() {
-                @Override
-                public String encodeAsString(byte[] bytes) {
-                    return Base64.encodeToString(bytes, Base64.DEFAULT);
-                }
-            });
+            encrypt.setCustomEncoding(encodingMethod);
             SecretKey sk = encrypt.getEncryptedSessionKey();
 
-            uncryptedRetrofit.login(email,
+            loginRetrofit.login(email,
                     new HashMap.SimpleEntry<byte[], String>(SessionKeyManager.convertToByte(sk), encrypt.encrypt(password)),
                     new Callback<User>() {
 

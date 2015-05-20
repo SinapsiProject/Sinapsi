@@ -1,10 +1,13 @@
 package com.sinapsi.client.web;
 
+import com.bgp.codec.DecodingMethod;
+import com.bgp.codec.EncodingMethod;
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,33 +30,34 @@ public class BGPGsonConverter extends GsonConverter {
     protected Gson myGson;
     private BGPKeysProvider keysProvider;
 
+    private EncodingMethod encodingMethod;
+    private DecodingMethod decodingMethod;
+
     /**
      * Default ctor
      * @param gson the gson object
      * @param keysProvider the key provider
      */
-    public BGPGsonConverter(Gson gson, BGPKeysProvider keysProvider) {
+    public BGPGsonConverter(Gson gson, BGPKeysProvider keysProvider, EncodingMethod encodingMethod, DecodingMethod decodingMethod) {
         super(gson, "UTF-8");
         this.myGson = gson;
         this.keysProvider = keysProvider;
+        this.encodingMethod = encodingMethod;
+        this.decodingMethod = decodingMethod;
     }
 
     /// Converts from body to object
     @Override
     public Object fromBody(final TypedInput body, Type type) throws ConversionException {
-        InputStreamReader inStrReader = null;
         String cryptedString = null;
         try {
-            //gets a new InputStreamReader
-            inStrReader = new InputStreamReader(body.in(), "UTF-8");
-            //converts the string from json to HashMap.SimpleEntry<SessionKey,String>
-            cryptedString =  myGson.fromJson(
-                    inStrReader,
-                    new TypeToken<String>(){}.getType());
+            cryptedString = fromStream(body.in());
 
             //decrypts the message
             //TODO: edit the decrypter to user the server session key
             Decrypt decrypter = new Decrypt(keysProvider.getPrivateKey(), keysProvider.getServerSessionKey());
+            decrypter.setCustomDecoding(decodingMethod);
+
             String uncryptedStr = decrypter.decrypt(cryptedString);
 
             //calls super to convert to object
@@ -79,14 +83,6 @@ public class BGPGsonConverter extends GsonConverter {
 
         } catch (Exception e) {
             throw new ConversionException(e);
-        } finally {
-            if (inStrReader != null) {
-                try {
-                    inStrReader.close();
-                } catch (IOException ignored) {
-                    //
-                }
-            }
         }
 
     }
@@ -99,6 +95,7 @@ public class BGPGsonConverter extends GsonConverter {
 
         try {
             Encrypt encrypter = new Encrypt(keysProvider.getServerPublicKey());
+            encrypter.setCustomEncoding(encodingMethod);
             String cryptedString = encrypter.encrypt(message);
             return super.toBody(cryptedString);
         } catch (Exception e) {
@@ -106,6 +103,19 @@ public class BGPGsonConverter extends GsonConverter {
 
         }
         return null;
+    }
+
+    public static String fromStream(InputStream in) throws IOException
+    {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder out = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+        String line;
+        while ((line = reader.readLine()) != null) {
+            out.append(line);
+            out.append(newLine);
+        }
+        return out.toString();
     }
 
 

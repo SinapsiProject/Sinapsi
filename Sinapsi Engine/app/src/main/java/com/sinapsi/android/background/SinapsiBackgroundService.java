@@ -12,6 +12,8 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
+import com.sinapsi.android.web.AndroidBase64DecodingMethod;
+import com.sinapsi.android.web.AndroidBase64EncodingMethod;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
@@ -73,7 +75,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     private SinapsiLog sinapsiLog;
     private DeviceInterface device;
 
-    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"), this);
+    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"), this, new AndroidBase64EncodingMethod(), new AndroidBase64DecodingMethod());
 
     private UserSettingsFacade settings;
 
