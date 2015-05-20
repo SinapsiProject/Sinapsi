@@ -40,12 +40,7 @@ When we finish the Desktop client , we will put the executable files to the offi
     
 ##Contribution
 We want that Sinapsi be a universal tool to make amazing things with our devices, so we would be happy to receive yours feedback about the project. If you have in mind an idea to make Sinapsi more awesome, contact us:    marco.grillo@studenti.unipr.it , ayoub.ouarrak@studenti.unipr.it , giuseppe.petrosino@studenti.unipr.it
-   
-###I'm a script kiddy and I want to contribute 
-The structure of code is complicated, and... Well, may God have mercy on you.
-   
-###I am a very pretty girl and I want to contribute
-You're Welcome, we really need female staff in our team.
+
    
 ##Authors 
 _Marco Grillo_ (https://github.com/MarcoGrillo)   
