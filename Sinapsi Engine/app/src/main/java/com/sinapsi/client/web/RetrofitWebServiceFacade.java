@@ -1,5 +1,8 @@
 package com.sinapsi.client.web;
 
+import android.util.Base64;
+
+import com.bgp.codec.EncodingMethod;
 import com.bgp.encryption.Encrypt;
 import com.bgp.generator.KeyGenerator;
 import com.bgp.keymanager.PublicKeyManager;
@@ -190,6 +193,12 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
         try {
             Encrypt encrypt = new Encrypt(getServerPublicKey());
+            encrypt.setCustomEncoding(new EncodingMethod() {
+                @Override
+                public String encodeAsString(byte[] bytes) {
+                    return Base64.encodeToString(bytes, Base64.DEFAULT);
+                }
+            });
             SecretKey sk = encrypt.getEncryptedSessionKey();
 
             uncryptedRetrofit.login(email,

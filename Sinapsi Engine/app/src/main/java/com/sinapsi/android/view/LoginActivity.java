@@ -167,7 +167,7 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
         service.getWebServiceFacade().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
             @Override
             public void success(User user, Object response) {
-                if (user.isErrorOccured()) {
+                if (user.isErrorOccured()) { //TODO: Null pointer exception!
                     Lol.d(this, "Error! Message received: " + user.getErrorDescription());
                 } else {
                     Lol.d(this, "Success! user id received: " + user.getId());
