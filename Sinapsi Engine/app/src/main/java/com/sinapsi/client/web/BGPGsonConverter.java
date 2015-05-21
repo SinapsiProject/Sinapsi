@@ -94,6 +94,7 @@ public class BGPGsonConverter extends GsonConverter {
         String message = myGson.toJson(object);
 
         try {
+            // use 128 bits/16bytes lenght key for session
             Encrypt encrypter = new Encrypt(keysProvider.getServerPublicKey());
             encrypter.setCustomEncoding(encodingMethod);
             String cryptedString = encrypter.encrypt(message);

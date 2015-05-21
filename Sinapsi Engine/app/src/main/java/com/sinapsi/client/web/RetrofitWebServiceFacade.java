@@ -1,5 +1,6 @@
 package com.sinapsi.client.web;
 
+import android.provider.SyncStateContract;
 import android.util.Base64;
 
 import com.bgp.codec.DecodingMethod;
@@ -192,7 +193,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keysCallback) {
         if(!onlineStatusProvider.isOnline()) return;
 
-        KeyGenerator kg = new KeyGenerator();
+        KeyGenerator kg = new KeyGenerator(1024, "RSA");
         final PrivateKey prk = kg.getPrivateKey();
         final PublicKey puk = kg.getPublicKey();
 
@@ -262,6 +263,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public void register(String email, String password, WebServiceCallback<User> result) {
         if(!onlineStatusProvider.isOnline()) return;
         uncryptedRetrofit.register(email, password, convertCallback(result));
+
     }
 
     @Override
