@@ -1,5 +1,6 @@
 package com.sinapsi.android.view;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,7 +17,7 @@ import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.sinapsi.android.background.ServiceBoundFragment;
+import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.WebServiceConnectionListener;
 import com.sinapsi.android.utils.ArrayListAdapter;
@@ -34,7 +35,9 @@ import java.util.List;
 /**
  * The main macro manager fragment.
  */
-public class MacroManagerFragment extends ServiceBoundFragment implements WebServiceConnectionListener {
+public class MacroManagerFragment extends SinapsiFragment implements WebServiceConnectionListener {
+
+
 
     private ViewTransitionManager transitionManager;
     private ArrayListAdapter<MacroInterface> macroList;
@@ -235,6 +238,11 @@ public class MacroManagerFragment extends ServiceBoundFragment implements WebSer
     private void updateMacroList(List<MacroInterface> ml) {
         macroList.clear();
         macroList.addAll(ml);
+    }
+
+    @Override
+    public String getName(Context context) {
+        return context.getString(R.string.macro_manager_fragment_title);
     }
 
     @Override

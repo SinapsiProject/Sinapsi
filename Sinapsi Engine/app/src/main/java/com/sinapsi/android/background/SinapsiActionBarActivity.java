@@ -1,7 +1,12 @@
 package com.sinapsi.android.background;
 
 import android.content.ComponentName;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+
+import com.sinapsi.android.SinapsiAndroidApplication;
+import com.sinapsi.android.TempParameterManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +14,7 @@ import java.util.List;
 /**
  * Activity extension to identify ActionBarActivities binded with SinapsiBackgroundService
  */
-public class ServiceBoundActionBarActivity extends ActionBarActivity implements ServiceConnectionListener {
+public class SinapsiActionBarActivity extends ActionBarActivity implements ServiceConnectionListener {
 
     private ServiceConnectionBridge bridge = new ServiceConnectionBridge(this);
 
@@ -18,7 +23,15 @@ public class ServiceBoundActionBarActivity extends ActionBarActivity implements 
      */
     protected SinapsiBackgroundService service = null;
 
-    private List<ServiceBoundFragment> fragments = new ArrayList<>();
+    private List<SinapsiFragment> fragments = new ArrayList<>();
+
+    private TempParameterManager tempParameterManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        tempParameterManager = ((SinapsiAndroidApplication)getApplication()).getParameterManager();
+    }
 
 
     @Override
@@ -40,7 +53,7 @@ public class ServiceBoundActionBarActivity extends ActionBarActivity implements 
     @Override
     public void onServiceConnected(ComponentName name) {
         service = bridge.get();
-        for(ServiceBoundFragment f: fragments){
+        for(SinapsiFragment f: fragments){
             f.onServiceConnected(service);
         }
     }
@@ -52,7 +65,7 @@ public class ServiceBoundActionBarActivity extends ActionBarActivity implements 
     @Override
     public void onServiceDisconnected(ComponentName name) {
         service = null;
-        for(ServiceBoundFragment f: fragments){
+        for(SinapsiFragment f: fragments){
             f.onServiceDisconnected();
         }
     }
@@ -61,7 +74,23 @@ public class ServiceBoundActionBarActivity extends ActionBarActivity implements 
         return bridge.isConnected();
     }
 
-    public void addFragmentForConnectionListening(ServiceBoundFragment f){
+    public void addFragmentForConnectionListening(SinapsiFragment f){
         fragments.add(f);
+    }
+
+    public Intent generateParameterizedIntent(Class<?> target, Object... parameters){
+        return tempParameterManager.newIntentForTempParameters(this, target, parameters);
+    }
+
+    public TempParameterManager getTempParameterManager() {
+        return tempParameterManager;
+    }
+
+    public Object[] getTempParameters(){
+        return tempParameterManager.getTempParameters(getIntent());
+    }
+
+    public Object[] pullTempParameters(){
+        return tempParameterManager.pullTempParameters(getIntent());
     }
 }

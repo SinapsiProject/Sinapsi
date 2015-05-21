@@ -187,7 +187,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     private SystemFacade createAndroidSystemFacade() {
         SystemFacade sf = new SystemFacade();
 
-        sf.addSystemService(SystemFacade.SERVICE_DIALOGS, new AndroidDialogAdapter(this));
+        sf.addSystemService(SystemFacade.SERVICE_DIALOGS, new AndroidDialogAdapter(this));//TODO: move fields
         sf.addSystemService(SystemFacade.SERVICE_SMS, new AndroidSMSAdapter(this));
         sf.addSystemService(SystemFacade.SERVICE_WIFI, new AndroidWifiAdapter(this));
         sf.addSystemService(SystemFacade.SERVICE_NOTIFICATION, new AndroidNotificationAdapter(getApplicationContext()));

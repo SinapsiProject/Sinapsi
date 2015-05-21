@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.sinapsi.android.Lol;
-import com.sinapsi.android.background.ServiceBoundActionBarActivity;
+import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.R;
@@ -42,7 +42,7 @@ import retrofit.RetrofitError;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends ServiceBoundActionBarActivity implements LoaderCallbacks<Cursor>{
+public class LoginActivity extends SinapsiActionBarActivity implements LoaderCallbacks<Cursor>{
 
     // UI references.
     private AutoCompleteTextView mEmailView;
