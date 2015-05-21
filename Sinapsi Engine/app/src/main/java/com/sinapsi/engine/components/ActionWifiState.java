@@ -2,7 +2,6 @@ package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
@@ -30,7 +29,7 @@ public class ActionWifiState extends Action{
     @Override
     public void onActivate(final ExecutionInterface s) throws JSONException{
 
-        WifiAdapter wa = (WifiAdapter) s.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
+        WifiAdapter wa = (WifiAdapter) s.getSystemFacade().getSystemService(WifiAdapter.SERVICE_WIFI);
         JSONObject pjo = getParsedParams(s.getLocalVars(),s.getGlobalVars());
         boolean activate;
 
@@ -55,7 +54,7 @@ public class ActionWifiState extends Action{
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String,Integer>()
-                .put(SystemFacade.REQUIREMENT_WIFI, 1)
+                .put(WifiAdapter.REQUIREMENT_WIFI, 1)
                 .create();
     }
 

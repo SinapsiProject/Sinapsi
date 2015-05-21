@@ -6,7 +6,6 @@ import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.engine.system.DialogAdapter;
-import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.utils.JSONUtils;
 
@@ -26,7 +25,7 @@ public class ActionStringInputDialog extends Action{
 
     @Override
     protected void onActivate(final ExecutionInterface ei) throws JSONException {
-        DialogAdapter da = (DialogAdapter) ei.getSystemFacade().getSystemService(SystemFacade.SERVICE_DIALOGS);
+        DialogAdapter da = (DialogAdapter) ei.getSystemFacade().getSystemService(DialogAdapter.SERVICE_DIALOGS);
         JSONObject pjo = getParsedParams(ei.getLocalVars(), ei.getGlobalVars());
         String message = pjo.getString("dialog_message");
         String title = pjo.getString("dialog_title");
@@ -83,7 +82,7 @@ public class ActionStringInputDialog extends Action{
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>()
-                .put(SystemFacade.REQUIREMENT_INPUT_DIALOGS, 1)
+                .put(DialogAdapter.REQUIREMENT_INPUT_DIALOGS, 1)
                 .create();
     }
 }

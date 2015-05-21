@@ -10,6 +10,9 @@ import com.sinapsi.engine.parameters.SwitchStatusChoices;
  */
 public interface WifiAdapter {
 
+    String SERVICE_WIFI = "SERVICE_WIFI";
+    String REQUIREMENT_WIFI = "REQUIREMENT_WIFI";
+
     /**
      * Getter of the main wifi adapter's status.
      * @return ENABLED, DISABLED, ENABLING or DISABLING

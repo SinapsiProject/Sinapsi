@@ -3,7 +3,6 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.NotificationAdapter;
-import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
@@ -35,7 +34,7 @@ public class ActionSimpleNotification extends Action {
         title = pjo.getString("notification_title");
         message = pjo.getString("notification_message");
 
-        ((NotificationAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_NOTIFICATION)).showSimpleNotification(title,message);
+        ((NotificationAdapter) di.getSystemFacade().getSystemService(NotificationAdapter.SERVICE_NOTIFICATION)).showSimpleNotification(title,message);
     }
 
     @Override
@@ -59,7 +58,7 @@ public class ActionSimpleNotification extends Action {
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>()
-                .put(SystemFacade.REQUIREMENT_SIMPLE_NOTIFICATIONS, 1)
+                .put(NotificationAdapter.REQUIREMENT_SIMPLE_NOTIFICATIONS, 1)
                 .create();
     }
 }

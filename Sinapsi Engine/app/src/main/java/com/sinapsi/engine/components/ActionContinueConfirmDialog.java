@@ -3,7 +3,6 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.system.DialogAdapter;
-import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
@@ -33,7 +32,7 @@ public class ActionContinueConfirmDialog extends Action {
 
     @Override
     public void onActivate(final ExecutionInterface di) throws JSONException{
-        DialogAdapter da = (DialogAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_DIALOGS);
+        DialogAdapter da = (DialogAdapter) di.getSystemFacade().getSystemService(DialogAdapter.SERVICE_DIALOGS);
         JSONObject pjo = getParsedParams(di.getLocalVars(),di.getGlobalVars());
         String message = pjo.getString("dialog_message");
         String title = pjo.getString("dialog_title");
@@ -74,7 +73,7 @@ public class ActionContinueConfirmDialog extends Action {
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>()
-                .put(SystemFacade.REQUIREMENT_SIMPLE_DIALOGS, 1)
+                .put(DialogAdapter.REQUIREMENT_SIMPLE_DIALOGS, 1)
                 .create();
     }
 }

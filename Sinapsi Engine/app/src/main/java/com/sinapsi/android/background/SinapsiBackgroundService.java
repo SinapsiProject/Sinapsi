@@ -49,7 +49,12 @@ import com.sinapsi.engine.log.LogMessage;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.log.SystemLogInterface;
 import com.sinapsi.engine.parameters.ConnectionStatusChoices;
+import com.sinapsi.engine.system.CommonDeviceConsts;
+import com.sinapsi.engine.system.DialogAdapter;
+import com.sinapsi.engine.system.NotificationAdapter;
+import com.sinapsi.engine.system.SMSAdapter;
 import com.sinapsi.engine.system.SystemFacade;
+import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
@@ -187,24 +192,24 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     private SystemFacade createAndroidSystemFacade() {
         SystemFacade sf = new SystemFacade();
 
-        sf.addSystemService(SystemFacade.SERVICE_DIALOGS, new AndroidDialogAdapter(this));//TODO: move fields
-        sf.addSystemService(SystemFacade.SERVICE_SMS, new AndroidSMSAdapter(this));
-        sf.addSystemService(SystemFacade.SERVICE_WIFI, new AndroidWifiAdapter(this));
-        sf.addSystemService(SystemFacade.SERVICE_NOTIFICATION, new AndroidNotificationAdapter(getApplicationContext()));
+        sf.addSystemService(DialogAdapter.SERVICE_DIALOGS, new AndroidDialogAdapter(this));
+        sf.addSystemService(SMSAdapter.SERVICE_SMS, new AndroidSMSAdapter(this));
+        sf.addSystemService(WifiAdapter.SERVICE_WIFI, new AndroidWifiAdapter(this));
+        sf.addSystemService(NotificationAdapter.SERVICE_NOTIFICATION, new AndroidNotificationAdapter(getApplicationContext()));
 
 
         PackageManager pm = getPackageManager();
 
-        sf.setRequirementSpec(SystemFacade.REQUIREMENT_LUA, true);
-        sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_DIALOGS, true);
-        sf.setRequirementSpec(SystemFacade.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
-        sf.setRequirementSpec(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, true);
-        sf.setRequirementSpec(SystemFacade.REQUIREMENT_AC_CHARGER, true);
-        sf.setRequirementSpec(SystemFacade.REQUIREMENT_INPUT_DIALOGS, true);
+        sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_LUA, true);
+        sf.setRequirementSpec(DialogAdapter.REQUIREMENT_SIMPLE_DIALOGS, true);
+        sf.setRequirementSpec(NotificationAdapter.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
+        sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_INTERCEPT_SCREEN_POWER, true);
+        sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_AC_CHARGER, true);
+        sf.setRequirementSpec(DialogAdapter.REQUIREMENT_INPUT_DIALOGS, true);
         if (pm.hasSystemFeature(PackageManager.FEATURE_WIFI))
-            sf.setRequirementSpec(SystemFacade.REQUIREMENT_WIFI, true);
+            sf.setRequirementSpec(WifiAdapter.REQUIREMENT_WIFI, true);
         if (pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
-            sf.setRequirementSpec(SystemFacade.REQUIREMENT_SMS_READ, true);
+            sf.setRequirementSpec(SMSAdapter.REQUIREMENT_SMS_READ, true);
 
 
         return sf;

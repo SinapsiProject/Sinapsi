@@ -14,7 +14,10 @@ import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.components.TriggerWifi;
 import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.engine.system.CommonDeviceConsts;
+import com.sinapsi.engine.system.SMSAdapter;
 import com.sinapsi.engine.system.SystemFacade;
+import com.sinapsi.engine.system.WifiAdapter;
 
 /**
  * ActivationManager - implementation for the Android platform.
@@ -41,7 +44,7 @@ public class AndroidActivationManager extends ActivationManager {
                                     ContextWrapper contextWrapper,
                                     SystemFacade sf) {
         super(defaultExecutionInterface);
-        if(sf.checkRequirement(SystemFacade.REQUIREMENT_WIFI, 1)) wifiActivator = new BroadcastActivator(
+        if(sf.checkRequirement(WifiAdapter.REQUIREMENT_WIFI, 1)) wifiActivator = new BroadcastActivator(
                 this, newIntentFilter(
                 "android.net.wifi.STATE_CHANGE",
                 "android.net.wifi.WIFI_STATE_CHANGED"),
@@ -53,7 +56,7 @@ public class AndroidActivationManager extends ActivationManager {
         };
 
 
-        if(sf.checkRequirement(SystemFacade.REQUIREMENT_SMS_READ, 1)) smsActivator = new BroadcastActivator(
+        if(sf.checkRequirement(SMSAdapter.REQUIREMENT_SMS_READ, 1)) smsActivator = new BroadcastActivator(
                 this, newIntentFilter(
                 "android.provider.Telephony.SMS_RECEIVED"),
                 contextWrapper, executionInterface) {
@@ -76,7 +79,7 @@ public class AndroidActivationManager extends ActivationManager {
             }
         };
 
-        if(sf.checkRequirement(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, 1)) screenPowerActivator = new BroadcastActivator(
+        if(sf.checkRequirement(CommonDeviceConsts.REQUIREMENT_INTERCEPT_SCREEN_POWER, 1)) screenPowerActivator = new BroadcastActivator(
                 this, newIntentFilter(
                 Intent.ACTION_SCREEN_OFF,
                 Intent.ACTION_SCREEN_ON),
@@ -90,7 +93,7 @@ public class AndroidActivationManager extends ActivationManager {
             }
         };
 
-        if(sf.checkRequirement(SystemFacade.REQUIREMENT_AC_CHARGER, 1)) acPowerActivator = new BroadcastActivator(
+        if(sf.checkRequirement(CommonDeviceConsts.REQUIREMENT_AC_CHARGER, 1)) acPowerActivator = new BroadcastActivator(
                 this, newIntentFilter(
                 Intent.ACTION_POWER_CONNECTED,
                 Intent.ACTION_POWER_DISCONNECTED),
