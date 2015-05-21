@@ -39,7 +39,7 @@ playstore
 When we finish the Desktop client , we will put the executable files to the official website of Sinapsi
     
 ##Contribution
-We want that Sinapsi be a universal tool to make amazing things with our devices, so we would be happy to receive yours feedback about the project. If you have in mind an idea to make Sinapsi more awesome, contact us:    marco.grillo@studenti.unipr.it , ayoub.ouarrak@studenti.unipr.it , giuseppe.petrosino@studenti.unipr.it
+We want that Sinapsi be a universal tool to make amazing things with our devices, so we would be happy to receive yours feedback about the project. If you have in mind an idea to make Sinapsi more awesome, contact us: projectsinapsi@gmail.com
 
    
 ##Authors 
