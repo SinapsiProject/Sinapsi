@@ -5,6 +5,7 @@ import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.engine.Trigger;
+import com.sinapsi.model.datatypes.RGBColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,11 @@ public class Macro extends ComunicationInfo implements MacroInterface {
     private List<Action> actions;
     private String name;
     private int id;
+
+    private String iconName = "ic_macro_default.png";
+    private RGBColor iconColor = new RGBColor(159,179,192); //sinapsi_blue_grey
+    private boolean valid = true;
+    private String failurePolicy = ""; //TODO: define consts
 
     /**
      * Macro ctor.
@@ -93,6 +99,78 @@ public class Macro extends ComunicationInfo implements MacroInterface {
     @Override
     public Trigger getTrigger() {
         return trigger;
+    }
+
+    /**
+     * Macro's icon name getter
+     * @return the icon name
+     */
+    @Override
+    public String getIconName() {
+        return iconName;
+    }
+
+    /**
+     * Macro's icon name setter
+     * @param iconName the icon name
+     */
+    @Override
+    public void setIconName(String iconName) {
+        this.iconName = iconName;
+    }
+
+    /**
+     * Macro's accent color getter
+     * @return the color
+     */
+    @Override
+    public RGBColor getMacroColor() {
+        return iconColor;
+    }
+
+    /**
+     * Macro's accent color setter
+     * @param color the color
+     */
+    @Override
+    public void setMacroColor(RGBColor color) {
+        this.iconColor = color;
+    }
+
+    /**
+     * Macro validity getter
+     * @return the validity
+     */
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
+
+    /**
+     * Macro validity setter
+     * @param valid the validity
+     */
+    @Override
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
+    /**
+     * Macro execution failure policy getter
+     * @return the policy
+     */
+    @Override
+    public String getExecutionFailurePolicy() {
+        return failurePolicy;
+    }
+
+    /**
+     * Macro execution failure policy setter
+     * @param policy the policy
+     */
+    @Override
+    public void setExecutionFailurePolicy(String policy) {
+        this.failurePolicy = policy;
     }
 
 

@@ -8,6 +8,10 @@ import android.app.Application;
  */
 public class SinapsiAndroidApplication extends Application {
 
+    private TempParameterManager parameterManager = new TempParameterManager();
 
+    public TempParameterManager getParameterManager(){
+        return parameterManager;
+    }
 
 }

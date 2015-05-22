@@ -5,7 +5,7 @@ import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
-import com.sinapsi.engine.system.SystemFacade;
+import com.sinapsi.engine.system.CommonDeviceConsts;
 import com.sinapsi.utils.HashMapBuilder;
 
 import org.json.JSONException;
@@ -47,7 +47,7 @@ public class TriggerScreenPower extends Trigger {
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>()
-                .put(SystemFacade.REQUIREMENT_INTERCEPT_SCREEN_POWER, 1)
+                .put(CommonDeviceConsts.REQUIREMENT_INTERCEPT_SCREEN_POWER, 1)
                 .create();
     }
 }

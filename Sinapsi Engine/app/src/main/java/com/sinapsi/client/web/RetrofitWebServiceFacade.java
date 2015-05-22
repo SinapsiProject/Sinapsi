@@ -1,5 +1,10 @@
 package com.sinapsi.client.web;
 
+import android.provider.SyncStateContract;
+import android.util.Base64;
+
+import com.bgp.codec.DecodingMethod;
+import com.bgp.codec.EncodingMethod;
 import com.bgp.encryption.Encrypt;
 import com.bgp.generator.KeyGenerator;
 import com.bgp.keymanager.PublicKeyManager;
@@ -29,6 +34,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
+import retrofit.mime.TypedOutput;
 
 /**
  * WebService draft class.
@@ -48,42 +54,82 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     private RetrofitInterface cryptedRetrofit;
     private RetrofitInterface uncryptedRetrofit;
+    private RetrofitInterface loginRetrofit;
+
+    private EncodingMethod encodingMethod;
+    private DecodingMethod decodingMethod;
 
     private OnlineStatusProvider onlineStatusProvider;
     /**
      * Default ctor
      *
      * @param retrofitLog
+     * @param onlineStatusProvider
      */
-    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider) {
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider, EncodingMethod encodingMethod, DecodingMethod decodingMethod) {
 
         this.onlineStatusProvider = onlineStatusProvider;
+        this.encodingMethod = encodingMethod;
+        this.decodingMethod = decodingMethod;
 
         Gson gson = new GsonBuilder().create();
 
+        final GsonConverter defaultGsonConverter = new GsonConverter(gson);
+        final BGPGsonConverter cryptInOutGsonConverter = new BGPGsonConverter(gson, this, this.encodingMethod, this.decodingMethod);
+
+        //This converter only decrypts data from server
+        final GsonConverter loginGsonConverter = new BGPGsonConverter(gson, this, this.encodingMethod, this.decodingMethod){
+            @Override
+            public TypedOutput toBody(Object object) {
+                return defaultGsonConverter.toBody(object);
+            }
+        };
+
         RestAdapter cryptedRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
-                .setConverter(new BGPGsonConverter(gson, this))
+                .setConverter(cryptInOutGsonConverter)
                 .setLog(retrofitLog)
                 .build();
 
         RestAdapter uncryptedRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(AppConsts.SINAPSI_URL)
-                .setConverter(new GsonConverter(gson))
+                .setConverter(defaultGsonConverter)
+                .setLog(retrofitLog)
+                .build();
+
+        RestAdapter loginRestAdapter = new RestAdapter.Builder()
+                .setEndpoint(AppConsts.SINAPSI_URL)
+                .setConverter(loginGsonConverter)
                 .setLog(retrofitLog)
                 .build();
 
         if (AppConsts.DEBUG) {
             cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
             uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
+            loginRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
         } else {
             cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
             uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
+            loginRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
         }
 
         cryptedRetrofit = cryptedRestAdapter.create(RetrofitInterface.class);
 
         uncryptedRetrofit = uncryptedRestAdapter.create(RetrofitInterface.class);
+
+        loginRetrofit = loginRestAdapter.create(RetrofitInterface.class);
+    }
+
+    /**
+     * Ctor with default encoding/decoding methods
+     *
+     * @param retrofitLog
+     * @param onlineStatusProvider
+     */
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider){
+        this(retrofitLog, onlineStatusProvider, null, null);
+        //using null as methods here is safe because will force bgp library to use
+        //default apache common codec methods
     }
 
     @Override
@@ -135,56 +181,68 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      */
     private void checkKeys() {
         if (publicKey == null || privateKey == null || serverPublicKey == null || serverSessionKey == null) //TODO: check
-            throw new RuntimeException(
-                    "Missing key. Did you log in?");
+            throw new RuntimeException("Missing key. Did you log in?");
     }
 
     /**
      * Request login
      * @param email email of the user
-     * @param keys public key and session key recived from the server
+     * @param keysCallback public key and session key recived from the server
      */
     @Override
-    public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<String, String>> keys) {
+    public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keysCallback) {
         if(!onlineStatusProvider.isOnline()) return;
-        KeyGenerator kg = new KeyGenerator();
+
+        KeyGenerator kg = new KeyGenerator(1024, "RSA");
         final PrivateKey prk = kg.getPrivateKey();
         final PublicKey puk = kg.getPublicKey();
 
-        uncryptedRetrofit.requestLogin(email,
-                puk,
-                new Callback<HashMap.SimpleEntry<String, String>>() {
-            @Override
-            public void success(HashMap.SimpleEntry<String, String> keys, Response response) {
-                try {
+        try {
+            uncryptedRetrofit.requestLogin(email,
+                    PublicKeyManager.convertToByte(puk),
+                    new Callback<HashMap.SimpleEntry<byte[], byte[]>>() {
+
+                @Override
+                public void success(HashMap.SimpleEntry<byte[], byte[]> keys, Response response) {
                     RetrofitWebServiceFacade.this.publicKey = puk;
                     RetrofitWebServiceFacade.this.privateKey = prk;
-                    RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getKey());
-                    RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
 
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    try {
+                        RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getKey());
+                        RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
+                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    keysCallback.success(keys, response);
                 }
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                keys.failure(error);
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    keysCallback.failure(error);
+                }
+            });
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void login(String email, String password, final WebServiceCallback<User> result) {
         checkKeys();
+
         if(!onlineStatusProvider.isOnline()) return;
+
         try {
             Encrypt encrypt = new Encrypt(getServerPublicKey());
+            encrypt.setCustomEncoding(encodingMethod);
             SecretKey sk = encrypt.getEncryptedSessionKey();
 
-            cryptedRetrofit.login(email, SessionKeyManager.convertToString(sk), password, new Callback<User>() {
+            loginRetrofit.login(email,
+                    new HashMap.SimpleEntry<byte[], String>(SessionKeyManager.convertToByte(sk), encrypt.encrypt(password)),
+                    new Callback<User>() {
+
                 @Override
                 public void success(User user, Response response) {
                     result.success(user, response);
@@ -205,6 +263,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public void register(String email, String password, WebServiceCallback<User> result) {
         if(!onlineStatusProvider.isOnline()) return;
         uncryptedRetrofit.register(email, password, convertCallback(result));
+
     }
 
     @Override

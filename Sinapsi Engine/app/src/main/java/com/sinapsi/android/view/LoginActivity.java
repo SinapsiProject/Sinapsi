@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.sinapsi.android.Lol;
-import com.sinapsi.android.background.ServiceBoundActionBarActivity;
+import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.R;
@@ -42,7 +42,7 @@ import retrofit.RetrofitError;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends ServiceBoundActionBarActivity implements LoaderCallbacks<Cursor>{
+public class LoginActivity extends SinapsiActionBarActivity implements LoaderCallbacks<Cursor>{
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -143,9 +143,9 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
 
 
             // first, request login
-            service.getWebServiceFacade().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<HashMap.SimpleEntry<String, String>>() {
+            service.getWebServiceFacade().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>>() {
                 @Override
-                public void success(HashMap.SimpleEntry<String, String> stringStringSimpleEntry, Object response) {
+                public void success(HashMap.SimpleEntry<byte[], byte[]> stringStringSimpleEntry, Object response) {
                     attemptLogin();
                 }
 
@@ -159,13 +159,15 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
     }
 
     public void attemptLogin() {
+        Lol.d("attempt login");
         if(!isServiceConnected()) return;
+        Lol.d("service connected");
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         service.getWebServiceFacade().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
             @Override
             public void success(User user, Object response) {
-                if (user.isErrorOccured()) {
+                if (user.isErrorOccured()) { //TODO: Null pointer exception!
                     Lol.d(this, "Error! Message received: " + user.getErrorDescription());
                 } else {
                     Lol.d(this, "Success! user id received: " + user.getId());
@@ -186,6 +188,7 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
 
     private void handleRetrofitError(Throwable t) {
         RetrofitError error = (RetrofitError) t;
+        error.printStackTrace();
         String errstring = "An error occurred while communicating with the server.\n";
 
         String errtitle = "Error: " + error.getKind().toString();
@@ -199,6 +202,7 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
                 break;
             case CONVERSION:
                 errstring += "Conversion error";
+
                 break;
             case HTTP:
                 errstring += "HTTP Error " + error.getResponse().getStatus();
@@ -315,6 +319,3 @@ public class LoginActivity extends ServiceBoundActionBarActivity implements Load
         mEmailView.setAdapter(adapter);
     }
 }
-
-
-

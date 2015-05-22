@@ -15,5 +15,6 @@
     <string name="text_new_to_sinapsi">New to Sinapsi? Sign Up</string>
     <string name="text_sign_in">Sign In</string>
     <string name="description_more">More options</string>
+    <string name="macro_manager_fragment_title">Macros</string>
 
 </resources>

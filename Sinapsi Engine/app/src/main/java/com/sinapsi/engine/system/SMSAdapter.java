@@ -8,6 +8,10 @@ import java.util.List;
  */
 public interface SMSAdapter{
 
+    String SERVICE_SMS = "SERVICE_SMS";
+    String REQUIREMENT_SMS_READ = "REQUIREMENT_SMS_READ";
+    String REQUIREMENT_SMS_SEND = "REQUIREMENT_SMS_SEND";
+
     /**
      * Pure SMS-related info container
      */

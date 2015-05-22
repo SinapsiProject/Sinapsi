@@ -3,7 +3,6 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.parameters.ConnectionStatusChoices;
@@ -43,7 +42,7 @@ public class TriggerWifi extends Trigger {
 
     @Override
     protected JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException {
-        WifiAdapter wa = (WifiAdapter) di.getSystemFacade().getSystemService(SystemFacade.SERVICE_WIFI);
+        WifiAdapter wa = (WifiAdapter) di.getSystemFacade().getSystemService(WifiAdapter.SERVICE_WIFI);
         return new JSONObject() //TODO: change, check from Event date (intent extras on android)
                 .put("wifi_status", wa.getStatus().toString())
                 .put("wifi_connection_status", wa.getConnectionStatus().toString())
@@ -53,7 +52,7 @@ public class TriggerWifi extends Trigger {
     @Override
     public HashMap<String,Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>()
-                .put(SystemFacade.REQUIREMENT_WIFI, 1)
+                .put(WifiAdapter.REQUIREMENT_WIFI, 1)
                 .create();
     }
 

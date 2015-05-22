@@ -111,19 +111,4 @@ public class SystemFacade {
     }
 
 
-    public static final String REQUIREMENT_WIFI = "REQUIREMENT_WIFI";
-    public static final String REQUIREMENT_SMS_READ = "REQUIREMENT_SMS_READ";
-    public static final String REQUIREMENT_SMS_SEND = "REQUIREMENT_SMS_SEND";
-    public static final String REQUIREMENT_LUA = "REQUIREMENT_LUA";
-    public static final String REQUIREMENT_SIMPLE_DIALOGS = "REQUIREMENT_SIMPLE_DIALOGS";
-    public static final String REQUIREMENT_SIMPLE_NOTIFICATIONS = "REQUIREMENT_SIMPLE_NOTIFICATIONS";
-    public static final String REQUIREMENT_INTERCEPT_SCREEN_POWER = "REQUIREMENT_INTERCEPT_SCREEN_POWER";
-    public static final String REQUIREMENT_INPUT_DIALOGS = "REQUIREMENT_INPUT_DIALOGS";
-    public static final String REQUIREMENT_AC_CHARGER = "REQUIREMENT_AC_CHARGER";
-
-    public static final String SERVICE_WIFI = "SERVICE_WIFI";
-    public static final String SERVICE_SMS = "SERVICE_SMS";
-    public static final String SERVICE_DIALOGS = "SERVICE_DIALOGS";
-    public static final String SERVICE_NOTIFICATION = "SERVICE_NOTIFICATION";
-
 }

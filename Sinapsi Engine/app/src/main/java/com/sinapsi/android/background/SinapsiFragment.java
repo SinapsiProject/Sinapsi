@@ -1,11 +1,14 @@
 package com.sinapsi.android.background;
 
 import android.app.Fragment;
+import android.content.Context;
 
 /**
  * Fragment extension representing a Fragment that refers to a SinapsiBackgroundService
  */
-public class ServiceBoundFragment extends Fragment {
+public abstract class SinapsiFragment extends Fragment {
+
+    public abstract String getName(Context context);
 
     protected SinapsiBackgroundService service = null;
     private boolean connectedToService = false;

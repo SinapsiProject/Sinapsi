@@ -3,7 +3,7 @@ package com.sinapsi.engine.components;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.engine.system.SystemFacade;
+import com.sinapsi.engine.system.SMSAdapter;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.utils.HashMapBuilder;
@@ -50,7 +50,7 @@ public class TriggerSMS extends Trigger{
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>()
-                .put(SystemFacade.REQUIREMENT_SMS_READ, 1)
+                .put(SMSAdapter.REQUIREMENT_SMS_READ, 1)
                 .create();
     }
 }

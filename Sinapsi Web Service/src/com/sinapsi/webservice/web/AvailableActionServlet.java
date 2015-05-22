@@ -64,7 +64,7 @@ public class AvailableActionServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
-        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");       
         Gson gson = new Gson();
 
         int idDevice = Integer.parseInt(request.getParameter("device"));
@@ -82,6 +82,7 @@ public class AvailableActionServlet extends HttpServlet {
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             // extract the list of actions from the jsoned triggers
             List<MacroComponent> actions = gson.fromJson(jsonBody, new TypeToken<List<MacroComponent>>() {}.getType());
+            
             // add the list of actions in the db
             engineManager.addAvailableActions(idDevice, actions);
             success = true;

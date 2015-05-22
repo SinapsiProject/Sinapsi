@@ -2,9 +2,9 @@ package com.sinapsi.engine.components;
 
 import com.sinapsi.engine.SinapsiVersions;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
+import com.sinapsi.engine.system.CommonDeviceConsts;
 import com.sinapsi.utils.HashMapBuilder;
 
 import org.json.JSONException;
@@ -74,7 +74,7 @@ public class ActionLuaScript extends Action{
     @Override
     public HashMap<String, Integer> getSystemRequirementKeys() {
         return new HashMapBuilder<String, Integer>().
-                put(SystemFacade.REQUIREMENT_LUA, 1)
+                put(CommonDeviceConsts.REQUIREMENT_LUA, 1)
                 .create();
     }
 
