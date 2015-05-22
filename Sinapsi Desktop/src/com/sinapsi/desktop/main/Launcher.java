@@ -128,7 +128,7 @@ public class Launcher extends Application {
 			public void run() {
 				if(SystemTray.isSupported()) {
 					stage.hide();
-					showProgramIsMinimizedMsg();
+					minimizedMessage();
 				} else {
 					System.exit(0);
 				}
@@ -137,10 +137,10 @@ public class Launcher extends Application {
 	}
 	
 	// Minimized window message
-	public void showProgramIsMinimizedMsg() {
+	public void minimizedMessage() {
 	        if (firstTime) {
 	            trayIcon.displayMessage("Sinapsi",
-	                    "Ora Sinapsi è nella barra applicazioni!.",
+	                    "Sinapsi is now minimized!.",
 	                    TrayIcon.MessageType.INFO);
 	            firstTime = false;
 	        }
