@@ -71,10 +71,6 @@ public class LoginLayout extends Application {
 		// Vbox
 		private VBox vboxLogo;
 		
-		
-		// Other stuff
-		
-		
 	
 	@Override
 	public void start(Stage primaryStage) {
