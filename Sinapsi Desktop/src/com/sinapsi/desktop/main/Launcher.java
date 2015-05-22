@@ -14,7 +14,6 @@ import java.awt.MenuItem;
 import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -61,13 +60,12 @@ public class Launcher extends Application {
 	// Creating TrayIcon while launching
 	public void createTrayIcon(final Stage stage) {
 		if(SystemTray.isSupported()) {
-			// Get the SystemTray istance
+			// Get the SystemTray instance
 			tray = SystemTray.getSystemTray();
-
+			String path = "/Sinapsi Desktop/resources/tutorial.png";
 			// Loading image
 			try {
-				URL url = new URL("https://www.dropbox.com/home/Immagini/icon.png");
-                icon = ImageIO.read(url);
+				icon = ImageIO.read(getClass().getClassLoader().getResourceAsStream(path));
             } catch (IOException ex) {
                 System.out.println(ex);
             }
