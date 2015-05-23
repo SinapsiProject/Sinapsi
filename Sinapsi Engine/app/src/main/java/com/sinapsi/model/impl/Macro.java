@@ -1,11 +1,10 @@
 package com.sinapsi.model.impl;
 
+import com.sinapsi.engine.Action;
+import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.execution.ActionListExecution;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.engine.Trigger;
-import com.sinapsi.model.datatypes.RGBColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ public class Macro extends ComunicationInfo implements MacroInterface {
     private int id;
 
     private String iconName = "ic_macro_default.png";
-    private RGBColor iconColor = new RGBColor(159,179,192); //sinapsi_blue_grey
+    private String iconColor = "";//(159,179,192); //sinapsi_blue_grey
     private boolean valid = true;
     private String failurePolicy = ""; //TODO: define consts
 
@@ -124,7 +123,7 @@ public class Macro extends ComunicationInfo implements MacroInterface {
      * @return the color
      */
     @Override
-    public RGBColor getMacroColor() {
+    public String getMacroColor() {
         return iconColor;
     }
 
@@ -133,7 +132,7 @@ public class Macro extends ComunicationInfo implements MacroInterface {
      * @param color the color
      */
     @Override
-    public void setMacroColor(RGBColor color) {
+    public void setMacroColor(String color) {
         this.iconColor = color;
     }
 

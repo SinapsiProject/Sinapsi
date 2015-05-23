@@ -26,8 +26,8 @@ public interface MacroInterface {
     public String getIconName();
     public void setIconName(String iconName);
 
-    public RGBColor getMacroColor();
-    public void setMacroColor(RGBColor color);
+    public String getMacroColor();
+    public void setMacroColor(String color);
 
     public boolean isValid();
     public void setValid(boolean valid);
