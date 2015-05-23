@@ -3,7 +3,6 @@ package com.sinapsi.model;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.execution.ExecutionInterface;
-import com.sinapsi.model.datatypes.RGBColor;
 
 import java.util.List;
 
