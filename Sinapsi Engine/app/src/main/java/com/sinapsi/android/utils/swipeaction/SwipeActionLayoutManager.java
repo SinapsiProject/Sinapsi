@@ -59,9 +59,24 @@ public class SwipeActionLayoutManager {
         b.setIconDrawable(action.getIcon());
 
         b.setColorNormal(action.getColorNormal());
+        b.setColorPressed(action.getColorPressed());
+
+        
 
         b.setLayoutParams(new ViewGroup.LayoutParams(50, 50));
         b.setOnClickListener(action);
         linearLayout.addView(b);
+    }
+
+    /**
+     * sets the alpha of the linearLayout instance containing all the action buttons
+     *
+     * @param alpha a value from 0 to 1
+     */
+    public void setAlpha(float alpha){
+        linearLayout.setAlpha(alpha);
+        for(int i = 0; i < linearLayout.getChildCount(); ++i){
+            linearLayout.getChildAt(i).setAlpha(alpha);
+        }
     }
 }

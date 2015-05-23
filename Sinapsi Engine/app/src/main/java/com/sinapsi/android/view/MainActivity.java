@@ -39,7 +39,10 @@ public class MainActivity extends SinapsiActionBarActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerListView = (ListView) findViewById(R.id.left_drawer);
 
-        initFragmentMap();
+        //Add here all the fragments
+        initFragmentMap(
+                new MacroManagerFragment(),
+                new AboutFragment());
 
         drawerListView.setAdapter(new ArrayAdapter<>(
                 this,
@@ -54,16 +57,17 @@ public class MainActivity extends SinapsiActionBarActivity {
 
         //TODO: set main fragment
         currentTitle = fragmentTitles[0];
+        selectItem(0);
+
     }
 
-    private void initFragmentMap(){
+    private void initFragmentMap(SinapsiFragment... fragments){
         List<String> titles = new ArrayList<>();
-        //ADD HERE ALL THE FRAGMENTS
-        MacroManagerFragment macroManagerFragment = new MacroManagerFragment();
-        fragmentMap.put(macroManagerFragment.getName(this), macroManagerFragment);
-        titles.add(macroManagerFragment.getName(this));
-        addFragmentForConnectionListening(macroManagerFragment);
-        //...
+        for(SinapsiFragment sf: fragments){
+            fragmentMap.put(sf.getName(this), sf);
+            titles.add(sf.getName(this));
+            addFragmentForConnectionListening(sf);
+        }
         fragmentTitles= titles.toArray(new String[titles.size()]);
     }
 

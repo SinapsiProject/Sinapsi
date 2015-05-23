@@ -1,4 +1,4 @@
-package com.sinapsi.android.utils;
+package com.sinapsi.android.utils.animation;
 
 import android.view.View;
 

@@ -1,7 +1,6 @@
 package com.sinapsi.android.view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,14 +22,14 @@ import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.WebServiceConnectionListener;
-import com.sinapsi.android.utils.ArrayListAdapter;
-import com.sinapsi.android.utils.ViewTransitionManager;
+import com.sinapsi.android.utils.lists.ArrayListAdapter;
+import com.sinapsi.android.utils.animation.ViewTransitionManager;
+import com.sinapsi.android.utils.lists.RecyclerItemClickListener;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
 import com.sinapsi.android.utils.swipeaction.SwipeActionMacroExampleButton;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.model.impl.Macro;
 import com.sinapsi.utils.HashMapBuilder;
 
 import java.util.Arrays;
@@ -90,6 +89,11 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
             @Override
             public View onCreateView(ViewGroup parent, int viewType) {
                 View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.macro_manager_element, parent, false);
+
+                final TextView macroTitle = (TextView) v.findViewById(R.id.macro_element_title);
+                macroTitle.setSelected(true);
+                final CircularImageView circularImageView = (CircularImageView) v.findViewById(R.id.macro_element_icon);
+
                 final SwipeLayout sl = (SwipeLayout) v.findViewById(R.id.macro_element_swipe_layout);
                 final ImageButton button = (ImageButton) v.findViewById(R.id.show_more_macro_actions_button);
                 final Animation rotation = AnimationUtils.loadAnimation(getActivity(), R.anim.button_rotate);
@@ -108,6 +112,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
 
                 sl.setShowMode(SwipeLayout.ShowMode.PullOut);
+                final SwipeActionLayoutManager salm = new SwipeActionLayoutManager(
+                        getActivity(), (LinearLayout)v.findViewById(R.id.bottom_wrapper));
                 sl.addSwipeListener(new SwipeLayout.SwipeListener() {
                     @Override
                     public void onStartOpen(SwipeLayout swipeLayout) {
@@ -132,8 +138,13 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     }
 
                     @Override
-                    public void onUpdate(SwipeLayout swipeLayout, int i, int i2) {
+                    public void onUpdate(SwipeLayout swipeLayout, int leftOffset, int topOffset) {
+                        float alpha = Math.abs((float) leftOffset / (float) swipeLayout.getBottomView().getWidth());
+                        float oppositeAlpha = 1.0f - alpha;
+                        salm.setAlpha(alpha);
 
+                        macroTitle.setAlpha(oppositeAlpha);
+                        circularImageView.setAlpha(oppositeAlpha);
                     }
 
                     @Override
@@ -142,8 +153,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     }
                 });
 
-                TextView eventTitle = (TextView) v.findViewById(R.id.macro_title);
-                eventTitle.setSelected(true);
+
 
                 return v;
             }
@@ -153,7 +163,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 View v = viewHolder.itemView;
 
                 Lol.d(ArrayListAdapter.class, elem.getName() + " just binded to a viewHolder");
-                ((TextView) v.findViewById(R.id.macro_title)).setText(elem.getName());
+                ((TextView) v.findViewById(R.id.macro_element_title)).setText(elem.getName());
                 //TODO: set description and other data
 
                 LinearLayout ll = (LinearLayout) v.findViewById(R.id.bottom_wrapper);
@@ -176,6 +186,17 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         };
 
         macroListRecycler.setAdapter(macroList);
+        macroListRecycler.addOnItemTouchListener(new RecyclerItemClickListener(getActivity()) {
+            @Override
+            public void onItemClick(View view, int position) {
+                SwipeLayout sl = (SwipeLayout)view.findViewById(R.id.macro_element_swipe_layout);
+                if(sl.getOpenStatus() == SwipeLayout.Status.Open)
+                    sl.close(true);
+                else if(sl.getOpenStatus() == SwipeLayout.Status.Close)
+                    sl.open(true);
+            }
+        });
+
 
         macroListRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

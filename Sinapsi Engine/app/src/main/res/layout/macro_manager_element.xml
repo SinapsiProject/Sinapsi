@@ -50,7 +50,7 @@
                 app:border="true"
                 app:border_color="#EEEEEE"
                 app:border_width="4dp"
-                app:shadow="true" />
+                app:shadow="false" />
 
             <ImageButton
                 android:id="@+id/show_more_macro_actions_button"
@@ -66,11 +66,13 @@
 
 
             <TextView
-                android:id="@+id/macro_title"
+                android:id="@+id/macro_element_title"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_toEndOf="@id/macro_element_icon"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
 
+                android:layout_toEndOf="@id/macro_element_icon"
                 android:layout_toLeftOf="@id/show_more_macro_actions_button"
                 android:layout_toRightOf="@id/macro_element_icon"
                 android:layout_toStartOf="@id/show_more_macro_actions_button"

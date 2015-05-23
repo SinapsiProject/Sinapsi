@@ -1,9 +1,11 @@
-package com.sinapsi.android.utils;
+package com.sinapsi.android.utils.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.os.Build;
 import android.view.View;
+
+import com.sinapsi.android.utils.VersionUtils;
 
 import java.util.List;
 import java.util.Map;

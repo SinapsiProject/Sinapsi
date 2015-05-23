@@ -13,8 +13,6 @@ import com.sinapsi.model.MacroInterface;
  */
 public class SwipeActionMacroExampleButton extends SwipeActionButton<MacroInterface>{
 
-
-
     /**
      * Default ctor
      *
@@ -45,5 +43,10 @@ public class SwipeActionMacroExampleButton extends SwipeActionButton<MacroInterf
     @Override
     public int getColorNormal() {
         return context.getResources().getColor(R.color.sinapsi_blue);
+    }
+
+    @Override
+    public int getColorPressed() {
+        return context.getResources().getColor(R.color.sinapsi_blue_dark);
     }
 }
