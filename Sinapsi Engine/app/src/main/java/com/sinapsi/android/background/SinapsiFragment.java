@@ -1,6 +1,6 @@
 package com.sinapsi.android.background;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 
 /**
@@ -12,6 +12,7 @@ public abstract class SinapsiFragment extends Fragment {
 
     protected SinapsiBackgroundService service = null;
     private boolean connectedToService = false;
+    private boolean isVisible = false;
 
 
     public void onServiceConnected(SinapsiBackgroundService service){

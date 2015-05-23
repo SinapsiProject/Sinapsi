@@ -1,6 +1,7 @@
 package com.sinapsi.android.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,6 +18,8 @@ import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.pkmmte.view.CircularImageView;
+import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.WebServiceConnectionListener;
@@ -26,6 +29,7 @@ import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
 import com.sinapsi.android.utils.swipeaction.SwipeActionMacroExampleButton;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.utils.HashMapBuilder;
 
 import java.util.Arrays;
@@ -42,6 +46,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
     private ViewTransitionManager transitionManager;
     private ArrayListAdapter<MacroInterface> macroList;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private boolean created = false;
 
     private enum States {
         NO_ELEMENTS,
@@ -57,19 +62,21 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         View rootView = inflater.inflate(R.layout.fragment_macro_manager, container, false);
 
 
+
         FloatingActionButton fab =(FloatingActionButton) rootView.findViewById(R.id.new_macro_button);
         RecyclerView macroListRecycler = (RecyclerView) rootView.findViewById(R.id.macro_list_recycler);
 
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
+        Lol.printNullity(this, "swipeRefreshLayout", swipeRefreshLayout);
 
         transitionManager = new ViewTransitionManager(new HashMapBuilder<String, List<View>>()
                 .put(States.NO_ELEMENTS.name(), Arrays.asList(
                         rootView.findViewById(R.id.no_macros_text), fab))
                 .put(States.NO_CONNECTION.name(), Collections.singletonList(
                         rootView.findViewById(R.id.no_connection_layout)))
-                .put(States.LIST, Arrays.asList(
+                .put(States.LIST.name(), Arrays.asList(
                         macroListRecycler, fab))
-                .put(States.PROGRESS, Collections.singletonList(
+                .put(States.PROGRESS.name(), Collections.singletonList(
                         rootView.findViewById(R.id.macro_list_progress)))
                 .create());
 
@@ -153,7 +160,15 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 //TODO: put real context actions here
                 salm.addAction(new SwipeActionMacroExampleButton(elem, getActivity()));
 
-                //TODO: set the icon here
+                CircularImageView ciw = (CircularImageView) v.findViewById(R.id.macro_element_icon);
+
+                int resourceId = getResources().getIdentifier(elem.getIconName(), "drawable", v.getContext().getPackageName());
+                if(resourceId == 0)
+                    ciw.setImageResource(R.drawable.ic_macro_default);
+                else
+                    ciw.setImageResource(resourceId);
+
+                ciw.setBackgroundColor(Color.parseColor(elem.getMacroColor()));
             }
         };
 
@@ -184,7 +199,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEditor();
+                newMacro();
             }
         });
 
@@ -205,23 +220,33 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         swipeRefreshLayout.setColorSchemeResources(R.color.sinapsi_blue);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
-
-        return super.onCreateView(inflater, container, savedInstanceState);
+        created = true;
+        updateContent();
+        return rootView;
     }
 
     private void updateContent() {
+        Lol.d(this, "Update content started");
         if(!isServiceConnected()) return;
         swipeRefreshLayout.setRefreshing(true);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
+
+
         //TODO: handle server sync
-        updateMacroList(service.getMacros());
+        //updateMacroList(service.getMacros());
+        //TODO: remove and decomment the line above, this is just for test
+        updateMacroList(Arrays.asList(new FactoryModel().newMacro("MacroName", 1)));
+
+        Lol.d(this, "Macro showed: " + macroList.getItemCount());
 
         swipeRefreshLayout.setRefreshing(false);
         transitionManager.makeTransitionIfDifferent(States.LIST.name());
+        Lol.d(this, "Update content finished");
     }
 
-    private void startEditor() {
+    private void newMacro() {
+        Lol.d(this, "newMacro called");
         //TODO: impl
     }
 
@@ -249,8 +274,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
     public void onServiceConnected(SinapsiBackgroundService service) {
         super.onServiceConnected(service);
         service.addWebServiceConnectionListener(this);
-        updateContent();
+
+        //updates on service connected only if this is visible to the user
+        if(created)updateContent();
     }
-
-
 }

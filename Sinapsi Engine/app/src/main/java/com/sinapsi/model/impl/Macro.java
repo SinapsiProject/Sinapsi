@@ -20,8 +20,8 @@ public class Macro extends ComunicationInfo implements MacroInterface {
     private String name;
     private int id;
 
-    private String iconName = "ic_macro_default.png";
-    private String iconColor = "";//(159,179,192); //sinapsi_blue_grey
+    private String iconName = "ic_macro_default";
+    private String iconColor = "#667a7f";
     private boolean valid = true;
     private String failurePolicy = ""; //TODO: define consts
 

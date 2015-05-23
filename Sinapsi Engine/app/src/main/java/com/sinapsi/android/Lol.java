@@ -34,7 +34,7 @@ public class Lol {
      * @param message the message
      */
     public static void d(Class clazz, String message){
-        if(AppConsts.DEBUG)Log.d(clazz.getSimpleName(), message);
+        if(AppConsts.DEBUG)Log.d(getTag(clazz), message);
     }
 
     /**
@@ -43,7 +43,23 @@ public class Lol {
      * @param message the message
      */
     public static void d(Object o, String message){
-        if(AppConsts.DEBUG)Lol.d(o.getClass(),message);
+        if(AppConsts.DEBUG)Lol.d(getTag(o),message);
+    }
+
+    public static String getTag(Object o){
+        return getTag(o.getClass());
+    }
+
+    public static String getTag(Class clazz){
+        return clazz.getSimpleName();
+    }
+
+    public static void printNullity(String tag, String name, Object o){
+        d(tag, name + " is " + ((o==null)?"null":"not null"));
+    }
+
+    public static void printNullity(Object caller, String name, Object o){
+        printNullity(getTag(caller), name, o);
     }
 
 }

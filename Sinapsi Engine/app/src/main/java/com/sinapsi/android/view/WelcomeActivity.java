@@ -28,7 +28,11 @@ public class WelcomeActivity extends Activity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(register, 0);
+
+                //TODO: bypasses login for test purposes
+                //startActivityForResult(register, 0);
+                Intent i = new Intent(WelcomeActivity.this, MainActivity.class);
+                startActivity(i);
             }
         });
 

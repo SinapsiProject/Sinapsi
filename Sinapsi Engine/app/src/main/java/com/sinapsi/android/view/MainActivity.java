@@ -1,7 +1,7 @@
 package com.sinapsi.android.view;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.engine.R;
@@ -61,6 +62,7 @@ public class MainActivity extends SinapsiActionBarActivity {
         MacroManagerFragment macroManagerFragment = new MacroManagerFragment();
         fragmentMap.put(macroManagerFragment.getName(this), macroManagerFragment);
         titles.add(macroManagerFragment.getName(this));
+        addFragmentForConnectionListening(macroManagerFragment);
         //...
         fragmentTitles= titles.toArray(new String[titles.size()]);
     }
@@ -90,15 +92,15 @@ public class MainActivity extends SinapsiActionBarActivity {
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
-        // Create a new fragment and specify the planet to show based on position
         Fragment fragment = fragmentMap.get(fragmentTitles[position]);
+        Lol.printNullity(this, "selected fragment with name '" + fragmentTitles[position] + "'" , fragment);
 
         /*Bundle args = new Bundle();
         args.putInt(..., ...);
         fragment.setArguments(args);*/
 
         // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();

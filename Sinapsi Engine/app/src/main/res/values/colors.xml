@@ -282,6 +282,9 @@
     <color name="sinapsi_blue_dark">#054561</color>
     <color name="sinapsi_blue_light">#4585A1</color>
     <color name="full_transparent">#00000000</color>
+    <color name="sinapsi_blue_grey_light">#9FB3C0</color>
+    <color name="sinapsi_blue_grey">#667a7f</color>
+    <color name="sinapsi_blue_grey_dark">#465a5f</color>
 
 
 </resources>
