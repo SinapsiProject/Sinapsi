@@ -30,6 +30,7 @@ import com.sinapsi.android.utils.swipeaction.SwipeActionMacroExampleButton;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.Macro;
 import com.sinapsi.utils.HashMapBuilder;
 
 import java.util.Arrays;
@@ -151,6 +152,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
             public void onBindViewHolder(ItemViewHolder viewHolder, MacroInterface elem) {
                 View v = viewHolder.itemView;
 
+                Lol.d(ArrayListAdapter.class, elem.getName() + " just binded to a viewHolder");
                 ((TextView) v.findViewById(R.id.macro_title)).setText(elem.getName());
                 //TODO: set description and other data
 
