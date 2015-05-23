@@ -1,4 +1,4 @@
-package com.sinapsi.android;
+package com.sinapsi.android.utils;
 
 import android.content.Context;
 import android.content.Intent;

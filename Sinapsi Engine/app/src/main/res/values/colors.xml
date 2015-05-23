@@ -285,6 +285,7 @@
     <color name="sinapsi_blue_grey_light">#9FB3C0</color>
     <color name="sinapsi_blue_grey">#667a7f</color>
     <color name="sinapsi_blue_grey_dark">#465a5f</color>
+    <color name="error_red">#FF3333</color>
 
 
 </resources>

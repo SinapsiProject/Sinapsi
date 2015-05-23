@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
 import com.sinapsi.android.SinapsiAndroidApplication;
-import com.sinapsi.android.TempParameterManager;
+import com.sinapsi.android.utils.TempParameterManager;
 
 import java.util.ArrayList;
 import java.util.List;

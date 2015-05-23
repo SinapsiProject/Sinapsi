@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.sinapsi.android.SinapsiAndroidApplication;
-import com.sinapsi.android.TempParameterManager;
+import com.sinapsi.android.utils.TempParameterManager;
 
 import java.util.ArrayList;
 import java.util.List;

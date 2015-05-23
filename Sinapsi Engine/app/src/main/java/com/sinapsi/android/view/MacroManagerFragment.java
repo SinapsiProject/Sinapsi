@@ -22,6 +22,7 @@ import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.WebServiceConnectionListener;
+import com.sinapsi.android.utils.DrawableUtils;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.RecyclerItemClickListener;
@@ -30,6 +31,7 @@ import com.sinapsi.android.utils.swipeaction.SwipeActionMacroExampleButton;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.Macro;
 import com.sinapsi.utils.HashMapBuilder;
 
 import java.util.Arrays;
@@ -140,11 +142,12 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     @Override
                     public void onUpdate(SwipeLayout swipeLayout, int leftOffset, int topOffset) {
                         float alpha = Math.abs((float) leftOffset / (float) swipeLayout.getBottomView().getWidth());
-                        float oppositeAlpha = 1.0f - alpha;
+
                         salm.setAlpha(alpha);
 
+                        /*float oppositeAlpha = 1.0f - alpha;
                         macroTitle.setAlpha(oppositeAlpha);
-                        circularImageView.setAlpha(oppositeAlpha);
+                        circularImageView.setAlpha(oppositeAlpha);*/
                     }
 
                     @Override
@@ -163,7 +166,10 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 View v = viewHolder.itemView;
 
                 Lol.d(ArrayListAdapter.class, elem.getName() + " just binded to a viewHolder");
-                ((TextView) v.findViewById(R.id.macro_element_title)).setText(elem.getName());
+                TextView title = ((TextView) v.findViewById(R.id.macro_element_title));
+                title.setText(elem.getName());
+                if(!elem.isValid()) title.setTextColor(v.getResources().getColor(R.color.error_red));
+
                 //TODO: set description and other data
 
                 LinearLayout ll = (LinearLayout) v.findViewById(R.id.bottom_wrapper);
@@ -175,11 +181,17 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                 CircularImageView ciw = (CircularImageView) v.findViewById(R.id.macro_element_icon);
 
-                int resourceId = getResources().getIdentifier(elem.getIconName(), "drawable", v.getContext().getPackageName());
+                ciw.setImageDrawable(DrawableUtils.generateMacroIcon(elem, v.getContext()));
+
+                ciw.setBorderWidth(1);
+                ciw.setBorderColor(v.getResources().getColor(R.color.cardview_light_background));
+
+                /*int resourceId = getResources().getIdentifier(elem.getIconName(), "drawable", v.getContext().getPackageName());
                 if(resourceId == 0)
                     ciw.setImageResource(R.drawable.ic_macro_default);
                 else
-                    ciw.setImageResource(resourceId);
+                    ciw.setImageResource(resourceId);*/
+
 
                 //ciw.setBackgroundColor(Color.parseColor(elem.getMacroColor()));
             }
@@ -259,10 +271,26 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
         //TODO: handle server sync
         //updateMacroList(service.getMacros());
-        //TODO: remove and decomment the line above, this is just for test
+        //TODO: remove the lines below and decomment the line above, this is just for test
+        MacroInterface mi1 = new FactoryModel().newMacro("Stupid Macro", 1);
+        MacroInterface mi2 = new FactoryModel().newMacro("Macro With SMS Icon", 2);
+        MacroInterface mi3 = new FactoryModel().newMacro("Invalid Macro", 3);
+        MacroInterface mi4 = new FactoryModel().newMacro("Macro with very very very long name", 4);
+
+        mi1.setMacroColor("#66BB33");
+        mi2.setMacroColor("#CC9922");
+        mi3.setMacroColor("#3366CC");
+        mi4.setMacroColor("#3366CC");
+
+        mi2.setIconName("ic_macro_sms");
+
+        mi3.setValid(false);
+
         updateMacroList(Arrays.asList(
-                new FactoryModel().newMacro("Macro 1", 1),
-                new FactoryModel().newMacro("Macro 2", 2)
+                mi1,
+                mi2,
+                mi3,
+                mi4
         ));
 
         Lol.d(this, "Macro showed: " + macroList.getItemCount());
