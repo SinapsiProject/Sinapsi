@@ -161,6 +161,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                 //TODO: put real context actions here
                 salm.addAction(new SwipeActionMacroExampleButton(elem, getActivity()));
+                salm.addAction(new SwipeActionMacroExampleButton(elem, getActivity()));
 
                 CircularImageView ciw = (CircularImageView) v.findViewById(R.id.macro_element_icon);
 
@@ -170,7 +171,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 else
                     ciw.setImageResource(resourceId);
 
-                ciw.setBackgroundColor(Color.parseColor(elem.getMacroColor()));
+                //ciw.setBackgroundColor(Color.parseColor(elem.getMacroColor()));
             }
         };
 
@@ -238,7 +239,10 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         //TODO: handle server sync
         //updateMacroList(service.getMacros());
         //TODO: remove and decomment the line above, this is just for test
-        updateMacroList(Arrays.asList(new FactoryModel().newMacro("MacroName", 1)));
+        updateMacroList(Arrays.asList(
+                new FactoryModel().newMacro("Macro 1", 1),
+                new FactoryModel().newMacro("Macro 2", 2)
+        ));
 
         Lol.d(this, "Macro showed: " + macroList.getItemCount());
 

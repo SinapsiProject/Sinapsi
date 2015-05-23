@@ -113,7 +113,7 @@ android:layout_height="match_parent">
         android:layout_alignParentRight="true"
         fab:fab_colorNormal="@color/sinapsi_blue"
         fab:fab_colorPressed="@color/sinapsi_blue_dark"
-        fab:fab_size="mini"
+        fab:fab_size="normal"
         fab:fab_icon="@drawable/ic_action_add"
         />
 

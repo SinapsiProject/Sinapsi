@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.sinapsi.engine.R;
+
 /**
  * An utility class to initialize and show SwipeActionButtons on a LinearLayout
  */
@@ -51,48 +54,14 @@ public class SwipeActionLayoutManager {
      * @param action the action
      */
     public void addAction(SwipeActionButton action) {
-        Button b = new Button(context);
-        switch (drawableLocation) {
+        FloatingActionButton b = new FloatingActionButton(context);
 
-            case TOP:
-                b.setCompoundDrawablesWithIntrinsicBounds(null, action.getIcon(), null, null);
-                break;
-            case BOTTOM:
-                b.setCompoundDrawablesWithIntrinsicBounds(null, null, null, action.getIcon());
-                break;
-            case LEFT:
-                b.setCompoundDrawablesWithIntrinsicBounds(action.getIcon(), null, null, null);
-                break;
-            case RIGHT:
-                b.setCompoundDrawablesWithIntrinsicBounds(null, null, action.getIcon(), null);
-                break;
-        }
-        b.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-        //since background color is transparent, this will give back touch feedback
-        b.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        ((Button) view).setBackgroundColor(Color.argb(100, 255, 255, 255));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        ((Button) view).setBackgroundColor(Color.TRANSPARENT);
-                        break;
-                    case MotionEvent.ACTION_CANCEL:
-                        ((Button) view).setBackgroundColor(Color.TRANSPARENT);
-                }
-                return false;
+        b.setIconDrawable(action.getIcon());
 
-            }
-        });
-        b.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        b.setText(action.getName());
-        b.setMaxLines(1);
+        b.setColorNormal(action.getColorNormal());
+
+        b.setLayoutParams(new ViewGroup.LayoutParams(50, 50));
         b.setOnClickListener(action);
-        b.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-        b.setHorizontallyScrolling(true);
-        b.setSelected(true);
         linearLayout.addView(b);
     }
 }

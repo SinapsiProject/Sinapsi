@@ -51,5 +51,12 @@ public abstract class SwipeActionButton<E> implements View.OnClickListener {
      */
     public abstract Drawable getIcon();
 
+    /**
+     * The background color for this action button
+     *
+     * @return the color
+     */
+    public abstract int getColorNormal();
+
 
 }

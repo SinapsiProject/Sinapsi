@@ -28,7 +28,7 @@ public class SwipeActionMacroExampleButton extends SwipeActionButton<MacroInterf
 
     @Override
     public void onDo(View v, MacroInterface e) {
-        Toast.makeText(context,"Test button on Macro '" + e.getName() + "'", Toast.LENGTH_SHORT);
+        Toast.makeText(context,"Test button on Macro '" + e.getName() + "'", Toast.LENGTH_SHORT).show();
         //Do something with macro object...
     }
 
@@ -40,5 +40,10 @@ public class SwipeActionMacroExampleButton extends SwipeActionButton<MacroInterf
     @Override
     public Drawable getIcon() {
         return context.getResources().getDrawable(R.drawable.ic_action_help);
+    }
+
+    @Override
+    public int getColorNormal() {
+        return context.getResources().getColor(R.color.sinapsi_blue);
     }
 }
