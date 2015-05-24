@@ -159,9 +159,8 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
     }
 
     public void attemptLogin() {
-        Lol.d("attempt login");
         if(!isServiceConnected()) return;
-        Lol.d("service connected");
+        
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         service.getWebServiceFacade().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
