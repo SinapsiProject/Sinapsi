@@ -71,7 +71,7 @@ public class GraphicsUtils {
                             scaleColorProperty(errorBGColor, ColorProperties.BRIGHTNESS, 2.0f),
                             scaleColorProperty(errorBGColor, ColorProperties.SATURATION, 0.5f)});*/
             layers[0] = cd;
-            Drawable error = getColoredDrawable(d, context.getResources().getColor(R.color.error_red));
+            Drawable error = getColoredDrawable(d, context.getResources().getColor(R.color.red_700));
             layers[1] = error;
         }
 

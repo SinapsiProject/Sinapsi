@@ -37,7 +37,7 @@ public class MainActivity extends SinapsiActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState); //TODO: check if this will change the current fragment showed
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -62,7 +62,7 @@ public class MainActivity extends SinapsiActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         setupDrawerToggle();
-        //TODO: set main fragment
+
         currentTitle = fragmentTitles[0];
         selectItem(0);
 

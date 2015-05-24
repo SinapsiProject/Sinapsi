@@ -173,7 +173,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 if(!elem.isValid()) {
                     String text = "<font color=" + GraphicsUtils.getStringHexOfColor(getResources().getColor(R.color.error_red)) +">";
                     text += elem.getName() + "</font>";
-                    title.setText(Html.fromHtml(text));
+                    title.setText(Html.fromHtml(text)); //TODO: this seems to not work
                 }else{
                     title.setText(elem.getName());
                 }
