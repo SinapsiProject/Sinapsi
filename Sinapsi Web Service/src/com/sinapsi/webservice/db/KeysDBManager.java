@@ -24,14 +24,14 @@ public class KeysDBManager {
 	private DatabaseController db;
 	
 	/**
-	 * Defautl ctor
+	 * Default ctor
 	 */
 	public KeysDBManager() {
 		db = new DatabaseController();
 	}
 	
 	/**
-     * Secondaty ctor
+     * Secondary ctor
      * @param db database controller
      */
 	public KeysDBManager(DatabaseController db) {
@@ -58,7 +58,6 @@ public class KeysDBManager {
 	        
 	     try {
 	    	 c = db.connect();
-	    	 //TODO: find a way to save private key in a crypted way
 	    	 String query = "UPDATE users SET publickey = ? WHERE email = ?";
 	         s = c.prepareStatement(query);
 	         s.setString(1, publicKey);
@@ -84,7 +83,6 @@ public class KeysDBManager {
             
          try {
              c = db.connect();
-             //TODO: find a way to save private key in a crypted way
              String query = "UPDATE users SET sessionkey = ? WHERE email = ?";
              s = c.prepareStatement(query);
              s.setString(1, sessionKey);
@@ -112,7 +110,6 @@ public class KeysDBManager {
 	        
 	     try {
 	    	 c = db.connect();
-	    	 //TODO: find a way to save private key in a crypted way
 	    	 String query = "UPDATE users SET localpublickey = ?, privatekey = ?, localsessionkey = ? WHERE email = ?";
 	         s = c.prepareStatement(query);
 	         s.setString(1, publicKey);

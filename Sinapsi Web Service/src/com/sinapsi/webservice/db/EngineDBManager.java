@@ -445,6 +445,36 @@ public class EngineDBManager {
     }
     
     /**
+     * Control if exist a macro by id
+     * @param id id of the macro
+     * @return boolean
+     * @throws SQLException
+     */
+    public boolean checkMacro(int id) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        boolean macroFound = false;
+        
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT * FROM macro WHERE id = ?");
+            s.setInt(1, id);
+            r = s.executeQuery();
+        
+            if(r.next())
+                macroFound = true;
+            
+        }catch(SQLException e) {
+            db.disconnect(c, s, r);
+            throw e;
+        }
+        
+        db.disconnect(c, s, r);
+        return macroFound;
+    }
+    
+    /**
      * Delete from the db a macro
      * @param idMacro id of the macro
      * @throws SQLException
@@ -496,7 +526,11 @@ public class EngineDBManager {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        int idMacro = macro.getId();
+        
+        // macro already exist
+        if(checkMacro(macro.getId()))
+            updateMacro(idUser, macro);
+            
         ArrayList<Integer> idMacros = new ArrayList<Integer>();
         ArrayList<Integer> idDevices = new ArrayList<Integer>();
         ArrayList<Integer> minVersionActions = new ArrayList<Integer>();
@@ -558,6 +592,48 @@ public class EngineDBManager {
         }
         
         db.disconnect(c, s, r);
+    }
+
+    /**
+     * Update macro
+     * @param idUser id of the user
+     * @param macro macro to update
+     * @throws SQLException
+     */
+    private void updateMacro(int idUser, MacroInterface macro) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+       
+        try {
+            c = db.connect();
+            List<Action> actions = macro.getActions();
+            int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion()); 
+            
+            for(Action action : actions) {
+                s = null;
+                String query = "UPDATE macro " +
+                               "SET name=?, iduser=?, triggerjson=?, iddevice=?, idtrigger=?, icon=?, color=?, incomplete=?, errorpolicy=? " + 
+                               "WHERE email = ?";
+                
+                s = c.prepareStatement(query);
+                s.setString(1, macro.getName());
+                s.setInt(2, idUser);
+                s.setString(3, macro.getTrigger().getActualParameters());
+                s.setInt(4, action.getExecutionDevice().getId());
+                s.setInt(5, idTrigger);
+                s.setString(6, macro.getIconName());
+                s.setString(7, macro.getMacroColor());
+                s.setInt(8, macro.isValid() ? 0 : 1);
+                s.setString(9, macro.getExecutionFailurePolicy());
+                s.execute();
+            }
+               
+        } catch(Exception e) {
+            db.disconnect(c, s);
+            throw e;
+        }
+        db.disconnect(c, s);
+        
     }
     
 }
