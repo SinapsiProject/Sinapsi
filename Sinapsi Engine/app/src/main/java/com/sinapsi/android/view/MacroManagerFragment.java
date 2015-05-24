@@ -57,6 +57,9 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
     private SwipeRefreshLayout swipeRefreshLayout;
     private boolean created = false;
 
+    private boolean isListOnTop = true;
+    private boolean isElementSwipingHorizontally = false;
+
     private enum States {
         NO_ELEMENTS,
         NO_CONNECTION,
@@ -129,22 +132,22 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     @Override
                     public void onStartOpen(SwipeLayout swipeLayout) {
                         button.startAnimation(rotation);
-                        swipeRefreshLayout.setEnabled(false);
+                        setIsElementSwipingHorizontally(true);
                     }
 
                     @Override
                     public void onOpen(SwipeLayout swipeLayout) {
-                        //swipeRefreshLayout.setEnabled(true);
+                        //setIsElementSwipingHorizontally(true);
                     }
 
                     @Override
                     public void onStartClose(SwipeLayout swipeLayout) {
-                        swipeRefreshLayout.setEnabled(false);
+                        setIsElementSwipingHorizontally(true);
                     }
 
                     @Override
                     public void onClose(SwipeLayout swipeLayout) {
-                        swipeRefreshLayout.setEnabled(true);
+                        setIsElementSwipingHorizontally(false);
                         button.clearAnimation();
                     }
 
@@ -163,7 +166,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                     @Override
                     public void onHandRelease(SwipeLayout swipeLayout, float v, float v2) {
-                        swipeRefreshLayout.setEnabled(true);
+                        setIsElementSwipingHorizontally(false);
                     }
                 });
 
@@ -325,7 +328,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     // enabling or disabling the refresh layout
                     enable = firstItemVisible && topOfFirstItemVisible;
                 }
-                swipeRefreshLayout.setEnabled(enable);
+                setIsListOnTop(enable);
             }
         });
 
@@ -444,5 +447,15 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
         //updates on service connected only if this is visible to the user
         if(created)updateContent();
+    }
+
+    public void setIsListOnTop(boolean b){
+        isListOnTop = b;
+        swipeRefreshLayout.setEnabled(isListOnTop && !isElementSwipingHorizontally);
+    }
+
+    public void setIsElementSwipingHorizontally(boolean b){
+        isElementSwipingHorizontally = b;
+        swipeRefreshLayout.setEnabled(isListOnTop && !isElementSwipingHorizontally);
     }
 }
