@@ -2,6 +2,7 @@ package com.sinapsi.android.view;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -405,7 +406,9 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
     private void newMacro() {
         Lol.d(this, "newMacro called");
-        //TODO: impl
+        //TODO: easier way to call from SinapsiFragments
+        Intent i = ((MainActivity) getActivity()).generateParameterizedIntent(EditorActivity.class, "Parameter passing across activities test passed");
+        startActivity(i);
     }
 
     @Override

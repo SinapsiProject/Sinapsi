@@ -21,5 +21,6 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="are_you_sure_delete_macro">Are you sure do you want to delete macro \'%s\'?</string>
     <string name="delete">Delete</string>
+    <string name="title_activity_editor">EditorActivity</string>
 
 </resources>

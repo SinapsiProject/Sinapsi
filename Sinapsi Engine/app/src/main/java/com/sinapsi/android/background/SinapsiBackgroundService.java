@@ -500,6 +500,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
 
     private void foregroundMode() {
+        //TODO: useful toggles OR return to MainActivity pending intent
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         builder.setContentTitle(getString(R.string.app_name))
                 .setContentText("Sinapsi Engine service is running")
