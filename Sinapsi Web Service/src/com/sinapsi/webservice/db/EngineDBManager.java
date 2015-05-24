@@ -429,6 +429,10 @@ public class EngineDBManager {
                 for(Action actionI :  getActions(r.getInt("id"))) 
                     macro.addAction(actionI);                  
                 
+                macro.setIconName(r.getString("icon"));
+                macro.setValid(r.getInt("incomplete") == 0 ? true : false);
+                macro.setMacroColor(r.getString("color"));
+                macro.setExecutionFailurePolicy(r.getString("errorpolicy"));
                 macros.add(macro);
             }
 
@@ -502,23 +506,26 @@ public class EngineDBManager {
         try {
             c = db.connect();
             
-            String nameMacro = macro.getName();
             List<Action> actions = macro.getActions();
-            String paramenterTrigger = macro.getTrigger().getActualParameters();
             int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion());   
             
             for(Action action : actions) {
                 s = null;
                 r = null;
-                String query = "INSERT INTO macro(name, iduser, triggerjson, iddevice, idtrigger)" +
-                                "VALUES(?, ?, ?, ?, ?)";
+                String query = "INSERT INTO macro(name, iduser, triggerjson, iddevice, idtrigger, icon, color, incomplete, errorpolicy)" +
+                                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
                 s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                s.setString(1, nameMacro);
+                s.setString(1, macro.getName());
                 s.setInt(2, idUser);
-                s.setString(3, paramenterTrigger);
+                s.setString(3, macro.getTrigger().getActualParameters());
                 s.setInt(4, action.getExecutionDevice().getId());
                 s.setInt(5, idTrigger);
+                s.setString(6, macro.getIconName());
+                s.setString(7, macro.getMacroColor());
+                s.setInt(8, macro.isValid() ? 0 : 1);
+                s.setString(9, macro.getExecutionFailurePolicy());
+                              
                 s.execute();
                 r = s.getGeneratedKeys();
                 r.next();
