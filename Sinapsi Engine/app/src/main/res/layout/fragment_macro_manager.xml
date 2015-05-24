@@ -101,7 +101,9 @@ android:layout_height="match_parent">
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scrollbars="vertical"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"/>
 
 
 
@@ -111,6 +113,7 @@ android:layout_height="match_parent">
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         fab:fab_colorNormal="@color/sinapsi_blue"
         fab:fab_colorPressed="@color/sinapsi_blue_dark"
         fab:fab_size="normal"

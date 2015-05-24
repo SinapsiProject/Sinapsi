@@ -39,12 +39,19 @@ public abstract class ArrayListAdapter<T> extends RecyclerView.Adapter<ArrayList
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position){
-        onBindViewHolder(holder, arrayList.get(position));
+        onBindViewHolder(holder, arrayList.get(position), position);
     }
 
     public abstract View onCreateView(ViewGroup parent, int viewType);
 
-    public abstract void onBindViewHolder(ItemViewHolder viewHolder, T elem);
+    public abstract void onBindViewHolder(ItemViewHolder viewHolder, T elem, int position);
+
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
 
 
     @Override
@@ -139,6 +146,7 @@ public abstract class ArrayListAdapter<T> extends RecyclerView.Adapter<ArrayList
     public T remove(int location) {
         T result = arrayList.remove(location);
         notifyItemRemoved(location);
+        notifyItemRangeChanged(location, arrayList.size());
         return result;
     }
 

@@ -1,6 +1,7 @@
 package com.sinapsi.android.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -24,6 +26,7 @@ import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.WebServiceConnectionListener;
+import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.utils.GraphicsUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
@@ -37,6 +40,9 @@ import com.sinapsi.utils.HashMapBuilder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 /**
  * The main macro manager fragment.
@@ -90,6 +96,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         macroList = new ArrayListAdapter<MacroInterface>() {
             @Override
             public View onCreateView(ViewGroup parent, int viewType) {
+
+
                 View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.macro_manager_element, parent, false);
 
                 final TextView macroTitle = (TextView) v.findViewById(R.id.macro_element_title);
@@ -164,7 +172,9 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
             }
 
             @Override
-            public void onBindViewHolder(ItemViewHolder viewHolder, MacroInterface elem) {
+            public void onBindViewHolder(final ItemViewHolder viewHolder, final MacroInterface elem, final int position) {
+
+
                 View v = viewHolder.itemView;
 
                 Lol.d(ArrayListAdapter.class, elem.getName() + " just binded to a viewHolder");
@@ -186,11 +196,28 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 SwipeActionLayoutManager salm = new SwipeActionLayoutManager(getActivity(), ll);
                 salm.clear();
 
+                //TODO: extend SwipeActionButton class, use constructor params and leave onDo, to reduce code size
                 salm.addSwipeAction(new SwipeActionButton(elem, getActivity()) {
                     @Override
                     public void onDo(View v, Object o) {
-                        //TODO: ask confirm
-                        //TODO: delete from local db manager
+                        DialogUtils.showYesNoDialog(
+                                getActivity(),
+                                context.getString(R.string.delete),
+                                String.format(context.getString(R.string.are_you_sure_delete_macro), elem.getName()),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //TODO: delete from local db, and web service if connected
+                                        updateContent();
+                                        dialog.dismiss();
+                                    }
+                                },
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
                         sl.close();
                     }
 
@@ -260,10 +287,13 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                 ciw.setBorderWidth(1);
                 ciw.setBorderColor(v.getResources().getColor(R.color.cardview_light_background));
+
+
             }
         };
 
-        macroListRecycler.setAdapter(macroList);
+
+        macroListRecycler.setAdapter(new ScaleInAnimationAdapter( new AlphaInAnimationAdapter(macroList)));
         /*macroListRecycler.addOnItemTouchListener(new RecyclerItemClickListener(getActivity()) {
             @Override
             public void onItemClick(View view, int position) {
@@ -355,6 +385,14 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 mi1,
                 mi2,
                 mi3,
+                mi4,
+                mi1,
+                mi2,
+                mi3,
+                mi4,
+                mi1,
+                mi2,
+                mi3,
                 mi4
         ));
 
@@ -378,6 +416,12 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
     @Override
     public void onOfflineMode() {
         //TODO: impl
+    }
+
+    public void removeMacro(MacroInterface elem, int position){
+
+
+        //TODO: remove from db
     }
 
     private void updateMacroList(List<MacroInterface> ml) {

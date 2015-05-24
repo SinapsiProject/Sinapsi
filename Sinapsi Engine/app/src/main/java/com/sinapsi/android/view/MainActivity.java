@@ -117,7 +117,7 @@ public class MainActivity extends SinapsiActionBarActivity {
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
+                .replace(R.id.container, fragment)
                 .commit();
 
         // Highlight the selected item, update the title, and close the drawer

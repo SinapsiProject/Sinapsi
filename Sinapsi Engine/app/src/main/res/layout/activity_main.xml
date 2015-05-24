@@ -5,10 +5,11 @@
     android:layout_height="match_parent">
     <!-- The main content view -->
     <FrameLayout
-        android:id="@+id/content_frame"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     <!-- The navigation drawer -->
+
     <!-- TODO: add user details on top of the list -->
     <ListView android:id="@+id/left_drawer"
         android:layout_width="240dp"

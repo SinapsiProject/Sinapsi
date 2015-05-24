@@ -31,17 +31,15 @@ public class ViewTransitionManager {
 
     public void makeTransition(String viewsKey){
         if (map.containsKey(viewsKey)){
-
-            for(String s: map.keySet()){
-                List<View> statusViews = map.get(s);
-                if(s.equals(viewsKey)){
-                    for(View v: map.get(viewsKey))
-                        showView(true, v);
-                }else{
-                    for(View v: map.get(s))
-                        showView(false, v);
-                }
+            //hides everything
+            for(List<View> lv: map.values()){
+                for(View v: lv)
+                    showView(false, v);
             }
+            //shows only the selected views
+            for(View sv: map.get(viewsKey))
+                showView(true, sv);
+            currentState = viewsKey;
         }else throw new RuntimeException("Invalid key: "+viewsKey);
     }
 
