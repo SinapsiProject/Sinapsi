@@ -1,5 +1,7 @@
 package com.sinapsi.android.background;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 
@@ -27,5 +29,16 @@ public abstract class SinapsiFragment extends Fragment {
 
     public boolean isServiceConnected() {
         return connectedToService;
+    }
+
+    public Intent generateParameterizedIntent(Class<?> target, Object... params){
+        Activity a = getActivity();
+        if(a instanceof SinapsiActionBarActivity){
+            return ((SinapsiActionBarActivity) a).generateParameterizedIntent(target, params);
+        }else if(a instanceof SinapsiActivity) {
+            return ((SinapsiActivity) a).generateParameterizedIntent(target, params);
+        }else {
+            throw new RuntimeException("Sinapsi Fragment can be child only of a SinapsiActivity or SinapsiActionBarActivity");
+        }
     }
 }

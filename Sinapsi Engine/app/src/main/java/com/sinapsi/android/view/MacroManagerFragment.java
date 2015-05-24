@@ -192,7 +192,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 }else{
                     title.setText(elem.getName());
                 }
-                
+
                 //TODO: set description and other data
 
                 final SwipeLayout sl = (SwipeLayout) v.findViewById(R.id.macro_element_swipe_layout);
@@ -379,9 +379,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
     private void newMacro() {
         Lol.d(this, "newMacro called");
-        //TODO: easier way to call from SinapsiFragments
         //TODO: return temp parameter mechanism
-        Intent i = ((MainActivity) getActivity()).generateParameterizedIntent(EditorActivity.class, "Parameter passing across activities test passed");
+        Intent i = generateParameterizedIntent(EditorActivity.class, "Parameter passing across activities test passed");
         startActivity(i);
     }
 
