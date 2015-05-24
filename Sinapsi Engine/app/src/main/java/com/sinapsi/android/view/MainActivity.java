@@ -1,9 +1,11 @@
 package com.sinapsi.android.view;
 
+import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +33,8 @@ public class MainActivity extends SinapsiActionBarActivity {
 
     private CharSequence currentTitle;
 
+    private ActionBarDrawerToggle drawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); //TODO: check if this will change the current fragment showed
@@ -55,6 +59,9 @@ public class MainActivity extends SinapsiActionBarActivity {
             }
         });
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        setupDrawerToggle();
         //TODO: set main fragment
         currentTitle = fragmentTitles[0];
         selectItem(0);
@@ -82,6 +89,10 @@ public class MainActivity extends SinapsiActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(drawerToggle.onOptionsItemSelected(item))
+            return true;
+
         int id = item.getItemId();
 
         //TODO impl
@@ -122,10 +133,38 @@ public class MainActivity extends SinapsiActionBarActivity {
     }
 
 
+    private void setupDrawerToggle() {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.drawer_open, R.string.drawer_close) {
 
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+                invalidateOptionsMenu();
+            }
 
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(currentTitle);
+                invalidateOptionsMenu();
+            }
+        };
 
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerLayout.setDrawerListener(drawerToggle);
+    }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
 
-
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
 }

@@ -15,7 +15,7 @@ import com.sinapsi.model.MacroInterface;
 /**
  * Collections of methods to elaborate drawables
  */
-public class DrawableUtils {
+public class GraphicsUtils {
 
     /**
      * Return a coloured clone instance of source
@@ -133,5 +133,14 @@ public class DrawableUtils {
         }
 
         return Color.argb(a, r, g, b);
+    }
+
+    public static String getStringHexOfColor(int color){
+        int a = Color.alpha(color);
+        int r = Color.red(color);
+        int g = Color.green(color);
+        int b = Color.blue(color);
+
+        return String.format("#%02X%02X%02X%02X", a, r, g, b);
     }
 }

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.WebServiceConnectionListener;
-import com.sinapsi.android.utils.DrawableUtils;
+import com.sinapsi.android.utils.GraphicsUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.android.utils.swipeaction.SwipeActionButton;
@@ -168,14 +169,22 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                 Lol.d(ArrayListAdapter.class, elem.getName() + " just binded to a viewHolder");
                 TextView title = ((TextView) v.findViewById(R.id.macro_element_title));
-                title.setText(elem.getName());
-                if(!elem.isValid()) title.setTextColor(v.getResources().getColor(R.color.error_red));
+
+                if(!elem.isValid()) {
+                    String text = "<font color=" + GraphicsUtils.getStringHexOfColor(getResources().getColor(R.color.error_red)) +">";
+                    text += elem.getName() + "</font>";
+                    title.setText(Html.fromHtml(text));
+                }else{
+                    title.setText(elem.getName());
+                }
+
 
                 //TODO: set description and other data
 
                 final SwipeLayout sl = (SwipeLayout) v.findViewById(R.id.macro_element_swipe_layout);
                 LinearLayout ll = (LinearLayout) v.findViewById(R.id.bottom_wrapper);
                 SwipeActionLayoutManager salm = new SwipeActionLayoutManager(getActivity(), ll);
+                salm.clear();
 
                 salm.addSwipeAction(new SwipeActionButton(elem, getActivity()) {
                     @Override
@@ -247,7 +256,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                 CircularImageView ciw = (CircularImageView) v.findViewById(R.id.macro_element_icon);
 
-                ciw.setImageDrawable(DrawableUtils.generateMacroIcon(elem, v.getContext()));
+                ciw.setImageDrawable(GraphicsUtils.generateMacroIcon(elem, v.getContext()));
 
                 ciw.setBorderWidth(1);
                 ciw.setBorderColor(v.getResources().getColor(R.color.cardview_light_background));

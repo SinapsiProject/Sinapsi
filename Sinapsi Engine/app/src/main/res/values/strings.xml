@@ -17,5 +17,7 @@
     <string name="description_more">More options</string>
     <string name="macro_manager_fragment_title">Macros</string>
     <string name="about_fragment_title">About</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 
 </resources>
