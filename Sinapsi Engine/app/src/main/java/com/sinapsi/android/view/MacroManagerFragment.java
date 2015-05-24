@@ -31,6 +31,7 @@ import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.utils.GraphicsUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
+import com.sinapsi.android.utils.swipeaction.SmartSwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
 import com.sinapsi.engine.R;
@@ -191,8 +192,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 }else{
                     title.setText(elem.getName());
                 }
-
-
+                
                 //TODO: set description and other data
 
                 final SwipeLayout sl = (SwipeLayout) v.findViewById(R.id.macro_element_swipe_layout);
@@ -200,8 +200,13 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 SwipeActionLayoutManager salm = new SwipeActionLayoutManager(getActivity(), ll);
                 salm.clear();
 
-                //TODO: extend SwipeActionButton class, use constructor params and leave onDo, to reduce code size
-                salm.addSwipeAction(new SwipeActionButton(elem, getActivity()) {
+                salm.addSwipeAction(new SmartSwipeActionButton(
+                        elem,
+                        getActivity(),
+                        "Delete Macro",
+                        getResources().getDrawable(R.drawable.ic_action_trash),
+                        getResources().getColor(R.color.red_700),
+                        getResources().getColor(R.color.red_900)) {
                     @Override
                     public void onDo(View v, Object o) {
                         DialogUtils.showYesNoDialog(
@@ -224,53 +229,19 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                 });
                         sl.close();
                     }
-
-                    @Override
-                    public String getName() {
-                        return "Delete Macro";
-                    }
-
-                    @Override
-                    public Drawable getIcon() {
-                        return context.getResources().getDrawable(R.drawable.ic_action_trash);
-                    }
-
-                    @Override
-                    public int getColorNormal() {
-                        return context.getResources().getColor(R.color.red_700);
-                    }
-
-                    @Override
-                    public int getColorPressed() {
-                        return context.getResources().getColor(R.color.red_900);
-                    }
                 });
 
-                salm.addSwipeAction(new SwipeActionButton(elem, getActivity()) {
+                salm.addSwipeAction(new SmartSwipeActionButton(
+                        elem,
+                        getActivity(),
+                        "Edit Macro",
+                        getResources().getDrawable(R.drawable.ic_action_edit),
+                        getResources().getColor(R.color.sinapsi_blue),
+                        getResources().getColor(R.color.sinapsi_blue_dark)) {
                     @Override
                     public void onDo(View v, Object o) {
                         //TODO: start editor passing the macro
                         sl.close();
-                    }
-
-                    @Override
-                    public String getName() {
-                        return "Edit Macro";
-                    }
-
-                    @Override
-                    public Drawable getIcon() {
-                        return context.getResources().getDrawable(R.drawable.ic_action_edit);
-                    }
-
-                    @Override
-                    public int getColorNormal() {
-                        return context.getResources().getColor(R.color.sinapsi_blue);
-                    }
-
-                    @Override
-                    public int getColorPressed() {
-                        return context.getResources().getColor(R.color.sinapsi_blue_dark);
                     }
                 });
 
@@ -367,7 +338,6 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
-
         //TODO: handle server sync
         //updateMacroList(service.getMacros());
         //TODO: remove the lines below and decomment the line above, this is just for test
@@ -410,6 +380,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
     private void newMacro() {
         Lol.d(this, "newMacro called");
         //TODO: easier way to call from SinapsiFragments
+        //TODO: return temp parameter mechanism
         Intent i = ((MainActivity) getActivity()).generateParameterizedIntent(EditorActivity.class, "Parameter passing across activities test passed");
         startActivity(i);
     }
