@@ -528,8 +528,10 @@ public class EngineDBManager {
         ResultSet r = null;
         
         // macro already exist
-        if(checkMacro(macro.getId()))
+        if(checkMacro(macro.getId())) {
             updateMacro(idUser, macro);
+            return;
+        }
             
         ArrayList<Integer> idMacros = new ArrayList<Integer>();
         ArrayList<Integer> idDevices = new ArrayList<Integer>();
@@ -632,8 +634,6 @@ public class EngineDBManager {
             db.disconnect(c, s);
             throw e;
         }
-        db.disconnect(c, s);
-        
-    }
-    
+        db.disconnect(c, s);       
+    }   
 }
