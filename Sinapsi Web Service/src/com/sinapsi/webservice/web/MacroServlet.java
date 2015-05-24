@@ -1,13 +1,15 @@
-package com.sinapsi.webservice.utility;
+package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
@@ -16,6 +18,7 @@ import com.sinapsi.model.MacroInterface;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
+import com.sinapsi.webservice.utility.BodyReader;
 
 /**
  * Servlet implementation class MacroServlet

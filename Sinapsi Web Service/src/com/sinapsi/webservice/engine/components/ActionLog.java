@@ -1,4 +1,4 @@
-package com.sinasi.webservice.engine.components;
+package com.sinapsi.webservice.engine.components;
 
 import java.util.HashMap;
 import org.json.JSONException;

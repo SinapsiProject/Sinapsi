@@ -44,7 +44,7 @@ public class RequestLoginSevlet extends HttpServlet {
         Gson gson = new Gson();
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         // generate local public/private keys
-        KeyGenerator generator = new KeyGenerator(1024, "RSA");
+        KeyGenerator generator = new KeyGenerator();
 
         try {
             String email = request.getParameter("email");
