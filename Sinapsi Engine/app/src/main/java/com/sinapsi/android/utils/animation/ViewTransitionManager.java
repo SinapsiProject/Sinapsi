@@ -2,9 +2,12 @@ package com.sinapsi.android.utils.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 
+import com.sinapsi.android.Lol;
 import com.sinapsi.android.utils.VersionUtils;
 
 import java.util.List;
@@ -28,15 +31,17 @@ public class ViewTransitionManager {
 
     public void makeTransition(String viewsKey){
         if (map.containsKey(viewsKey)){
-            //hides everything
-            for(List<View> lv: map.values()){
-                for(View v: lv)
-                    showView(false, v);
+
+            for(String s: map.keySet()){
+                List<View> statusViews = map.get(s);
+                if(s.equals(viewsKey)){
+                    for(View v: map.get(viewsKey))
+                        showView(true, v);
+                }else{
+                    for(View v: map.get(s))
+                        showView(false, v);
+                }
             }
-            //shows only the selected view group
-            for(View sv: map.get(viewsKey))
-                showView(true, sv);
-            currentState = viewsKey;
         }else throw new RuntimeException("Invalid key: "+viewsKey);
     }
 
@@ -61,28 +66,35 @@ public class ViewTransitionManager {
         private int animShortTime = 500;
 
         @Override
-        public void setVisibility(final View view, final boolean show) {
+        @SuppressLint("NewApi")
+        public void setVisibility(final View v, final boolean show) {
             VersionUtils.versionedDo(
                     new VersionUtils.VersionedTask(-1) {
                         @Override
                         public void doTask() {
-                            view.setVisibility(show ? View.VISIBLE : View.GONE);
+                            Lol.d("TransitionAnimation","No animation");
+                            v.setVisibility(show ? View.VISIBLE : View.GONE);
                         }
                     },
                     Build.VERSION.SDK_INT,
                     new VersionUtils.VersionedTask(Build.VERSION_CODES.HONEYCOMB_MR2) {
                         @Override
                         public void doTask() {
-                            //view.setVisibility(show ? View.VISIBLE : View.GONE);
-                            //view.setAlpha(0.0f);
-                            view.animate().setDuration(animShortTime).alpha(show ? 1 : 0)
+                            Lol.d("TransitionAnimation", "Alpha animation");
+                            v.setVisibility(show ? View.GONE : View.VISIBLE);
+                            Lol.d("TransitionAnimation","visibility -> " + ((v.getVisibility() == View.VISIBLE)? "visible":"gone"));
+                            v.setAlpha(show ? 0 : 1);
+
+                            v.animate().setDuration(animShortTime).alpha(show ? 1 : 0)
                                     .setListener(new AnimatorListenerAdapter() {
                                         @Override
                                         public void onAnimationEnd(Animator animation) {
                                             super.onAnimationEnd(animation);
-                                            view.setVisibility(show ? View.VISIBLE : View.GONE);
+                                            v.setVisibility(show ? View.VISIBLE : View.GONE);
+                                            Lol.d("TransitionAnimation", "visibility -> " + ((v.getVisibility() == View.VISIBLE) ? "visible" : "gone"));
                                         }
                                     }).start();
+                            //TODO: alpha animation seems not to work
                         }
                     });
         }

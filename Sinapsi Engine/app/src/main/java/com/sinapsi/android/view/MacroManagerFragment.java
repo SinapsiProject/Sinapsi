@@ -95,7 +95,6 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 final TextView macroTitle = (TextView) v.findViewById(R.id.macro_element_title);
                 macroTitle.setSelected(true);
                 final CircularImageView circularImageView = (CircularImageView) v.findViewById(R.id.macro_element_icon);
-
                 final SwipeLayout sl = (SwipeLayout) v.findViewById(R.id.macro_element_swipe_layout);
                 final ImageButton button = (ImageButton) v.findViewById(R.id.show_more_macro_actions_button);
                 final Animation rotation = AnimationUtils.loadAnimation(getActivity(), R.anim.button_rotate);
@@ -111,6 +110,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 };
 
                 button.setOnClickListener(openCloseListener);
+                circularImageView.setOnClickListener(openCloseListener);
 
                 LinearLayout bottomWrapper = (LinearLayout)v.findViewById(R.id.bottom_wrapper);
                 sl.setShowMode(SwipeLayout.ShowMode.PullOut);
@@ -321,9 +321,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.sinapsi_blue);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
-
-        created = true;
         updateContent();
+        created = true;
         return rootView;
     }
 
