@@ -104,18 +104,21 @@ public class KeysDBManager {
 	 * @param privateKey 
 	 * @throws Exception 
 	 */
-	public void updateLocalKeys(String email, String publicKey, String privateKey, String sessionKey) throws Exception {
+	public void updateLocalKeys(String email, String publicKey, String privateKey, String sessionKey, String unSessionKey) throws Exception {
 		 Connection c = null;
 	     PreparedStatement s = null;
 	        
 	     try {
 	    	 c = db.connect();
-	    	 String query = "UPDATE users SET localpublickey = ?, privatekey = ?, localsessionkey = ? WHERE email = ?";
+	    	 String query = "UPDATE users " +
+	    	                "SET localpublickey = ?, privatekey = ?, localsessionkey = ?, localuncryptedsessionkey = ? " +
+	    	                "WHERE email = ?";
 	         s = c.prepareStatement(query);
 	         s.setString(1, publicKey);
 	         s.setString(2, privateKey);
 	         s.setString(3, sessionKey);
-	         s.setString(4, email);
+	         s.setString(4, unSessionKey);
+	         s.setString(5, email);
 	         s.execute();
 	            
 	     } catch(Exception e) {
@@ -209,7 +212,7 @@ public class KeysDBManager {
 	/**
 	 * Return the client  session key from db
 	 * @param email email of the user associated to the session key in the db
-	 * @return public key object
+	 * @return Secret key object
 	 * @throws Exception
 	 */
 	public SecretKey getClientSessionKey(String email) throws Exception {
@@ -236,7 +239,7 @@ public class KeysDBManager {
 	/**
 	 * Return the local session key from db
 	 * @param email email of the user associated to the session key in the db
-	 * @return public key object
+	 * @return Secret key object
 	 * @throws Exception
 	 */
 	public SecretKey getLocalSessionKey(String email) throws Exception {
@@ -259,4 +262,32 @@ public class KeysDBManager {
 	     db.disconnect(c, s, r);
 	     return SessionKeyManager.convertToKey(sessionKey);
 	}
+
+	/**
+     * Return the local uncrypted session key from db
+     * @param email email of the user associated to the session key in the db
+     * @return Secret key object
+	 * @throws SQLException 
+     * @throws Exception
+     */
+    public SecretKey getLocalUncryptedSessionKey(String email) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        String sessionKey = null;
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT localuncryptedsessionkey FROM users WHERE email = ?");
+            s.setString(1, email);
+            r = s.executeQuery();
+            if (r.next()) {
+               sessionKey = r.getString("localuncryptedsessionkey");
+            }
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return SessionKeyManager.convertToKey(sessionKey);
+    }
 }
