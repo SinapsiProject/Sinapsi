@@ -1,6 +1,7 @@
 package com.sinapsi.android.view;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,19 +20,17 @@ import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.pkmmte.view.CircularImageView;
 import com.sinapsi.android.Lol;
-import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.SinapsiBackgroundService;
+import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.WebServiceConnectionListener;
 import com.sinapsi.android.utils.DrawableUtils;
-import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
-import com.sinapsi.android.utils.lists.RecyclerItemClickListener;
+import com.sinapsi.android.utils.lists.ArrayListAdapter;
+import com.sinapsi.android.utils.swipeaction.SwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
-import com.sinapsi.android.utils.swipeaction.SwipeActionMacroExampleButton;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.model.impl.Macro;
 import com.sinapsi.utils.HashMapBuilder;
 
 import java.util.Arrays;
@@ -112,10 +111,10 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                 button.setOnClickListener(openCloseListener);
 
-
+                LinearLayout bottomWrapper = (LinearLayout)v.findViewById(R.id.bottom_wrapper);
                 sl.setShowMode(SwipeLayout.ShowMode.PullOut);
                 final SwipeActionLayoutManager salm = new SwipeActionLayoutManager(
-                        getActivity(), (LinearLayout)v.findViewById(R.id.bottom_wrapper));
+                        getActivity(), bottomWrapper);
                 sl.addSwipeListener(new SwipeLayout.SwipeListener() {
                     @Override
                     public void onStartOpen(SwipeLayout swipeLayout) {
@@ -145,9 +144,11 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                         salm.setAlpha(alpha);
 
-                        /*float oppositeAlpha = 1.0f - alpha;
+                        float oppositeAlpha = 1.0f - alpha;
                         macroTitle.setAlpha(oppositeAlpha);
-                        circularImageView.setAlpha(oppositeAlpha);*/
+                        //circularImageView.setAlpha(oppositeAlpha);
+
+
                     }
 
                     @Override
@@ -156,7 +157,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     }
                 });
 
-
+                bottomWrapper.setMinimumWidth(v.getWidth() - (circularImageView.getWidth() + button.getWidth()));
 
                 return v;
             }
@@ -172,12 +173,77 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                 //TODO: set description and other data
 
+                final SwipeLayout sl = (SwipeLayout) v.findViewById(R.id.macro_element_swipe_layout);
                 LinearLayout ll = (LinearLayout) v.findViewById(R.id.bottom_wrapper);
                 SwipeActionLayoutManager salm = new SwipeActionLayoutManager(getActivity(), ll);
 
-                //TODO: put real context actions here
-                salm.addAction(new SwipeActionMacroExampleButton(elem, getActivity()));
-                salm.addAction(new SwipeActionMacroExampleButton(elem, getActivity()));
+                salm.addSwipeAction(new SwipeActionButton(elem, getActivity()) {
+                    @Override
+                    public void onDo(View v, Object o) {
+                        //TODO: ask confirm
+                        //TODO: delete from local db manager
+                        sl.close();
+                    }
+
+                    @Override
+                    public String getName() {
+                        return "Delete Macro";
+                    }
+
+                    @Override
+                    public Drawable getIcon() {
+                        return context.getResources().getDrawable(R.drawable.ic_action_trash);
+                    }
+
+                    @Override
+                    public int getColorNormal() {
+                        return context.getResources().getColor(R.color.red_700);
+                    }
+
+                    @Override
+                    public int getColorPressed() {
+                        return context.getResources().getColor(R.color.red_900);
+                    }
+                });
+
+                salm.addSwipeAction(new SwipeActionButton(elem, getActivity()) {
+                    @Override
+                    public void onDo(View v, Object o) {
+                        //TODO: start editor passing the macro
+                        sl.close();
+                    }
+
+                    @Override
+                    public String getName() {
+                        return "Edit Macro";
+                    }
+
+                    @Override
+                    public Drawable getIcon() {
+                        return context.getResources().getDrawable(R.drawable.ic_action_edit);
+                    }
+
+                    @Override
+                    public int getColorNormal() {
+                        return context.getResources().getColor(R.color.sinapsi_blue);
+                    }
+
+                    @Override
+                    public int getColorPressed() {
+                        return context.getResources().getColor(R.color.sinapsi_blue_dark);
+                    }
+                });
+
+                ImageButton closeContextImageButton = new ImageButton(getActivity());
+                closeContextImageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_cancel_dark));
+                closeContextImageButton.setBackgroundColor(getResources().getColor(R.color.full_transparent));
+                closeContextImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sl.close();
+                    }
+                });
+                salm.addCustomView(closeContextImageButton);
 
                 CircularImageView ciw = (CircularImageView) v.findViewById(R.id.macro_element_icon);
 
@@ -185,20 +251,11 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                 ciw.setBorderWidth(1);
                 ciw.setBorderColor(v.getResources().getColor(R.color.cardview_light_background));
-
-                /*int resourceId = getResources().getIdentifier(elem.getIconName(), "drawable", v.getContext().getPackageName());
-                if(resourceId == 0)
-                    ciw.setImageResource(R.drawable.ic_macro_default);
-                else
-                    ciw.setImageResource(resourceId);*/
-
-
-                //ciw.setBackgroundColor(Color.parseColor(elem.getMacroColor()));
             }
         };
 
         macroListRecycler.setAdapter(macroList);
-        macroListRecycler.addOnItemTouchListener(new RecyclerItemClickListener(getActivity()) {
+        /*macroListRecycler.addOnItemTouchListener(new RecyclerItemClickListener(getActivity()) {
             @Override
             public void onItemClick(View view, int position) {
                 SwipeLayout sl = (SwipeLayout)view.findViewById(R.id.macro_element_swipe_layout);
@@ -207,7 +264,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 else if(sl.getOpenStatus() == SwipeLayout.Status.Close)
                     sl.open(true);
             }
-        });
+        });*/
 
 
         macroListRecycler.setOnScrollListener(new RecyclerView.OnScrollListener() {

@@ -63,7 +63,7 @@ public class DrawableUtils {
             layers[0] = cd;
             layers[1] = d;
         }else{
-            int errorBGColor = Color.GRAY;
+            int errorBGColor = Color.LTGRAY;
             ColorDrawable cd = new ColorDrawable(errorBGColor);
             /*GradientDrawable gd = new GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,

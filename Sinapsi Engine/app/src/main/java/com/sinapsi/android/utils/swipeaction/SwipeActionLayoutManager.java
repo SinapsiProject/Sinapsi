@@ -53,7 +53,7 @@ public class SwipeActionLayoutManager {
      *
      * @param action the action
      */
-    public void addAction(SwipeActionButton action) {
+    public void addSwipeAction(SwipeActionButton action) {
         FloatingActionButton b = new FloatingActionButton(context);
 
         b.setIconDrawable(action.getIcon());
@@ -61,21 +61,32 @@ public class SwipeActionLayoutManager {
         b.setColorNormal(action.getColorNormal());
         b.setColorPressed(action.getColorPressed());
 
-        
+        b.setSize(FloatingActionButton.SIZE_MINI);
 
         b.setLayoutParams(new ViewGroup.LayoutParams(50, 50));
         b.setOnClickListener(action);
         linearLayout.addView(b);
     }
 
+
+    /**
+     * adds a custom view to the linear layout
+     *
+     * @param v the view
+     */
+    public void addCustomView(View v) {
+        linearLayout.addView(v);
+    }
+
+
     /**
      * sets the alpha of the linearLayout instance containing all the action buttons
      *
      * @param alpha a value from 0 to 1
      */
-    public void setAlpha(float alpha){
+    public void setAlpha(float alpha) {
         linearLayout.setAlpha(alpha);
-        for(int i = 0; i < linearLayout.getChildCount(); ++i){
+        for (int i = 0; i < linearLayout.getChildCount(); ++i) {
             linearLayout.getChildAt(i).setAlpha(alpha);
         }
     }

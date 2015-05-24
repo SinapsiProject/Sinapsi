@@ -6,89 +6,101 @@
     android:layout_marginBottom="5dp"
     android:background="@color/cardview_light_background"
     app:cardCornerRadius="5dp"
-    > <!--TODO: add elevation? -->
-
-    <com.daimajia.swipe.SwipeLayout
-        android:id="@+id/macro_element_swipe_layout"
+    >
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         >
-        <!-- Bottom View Start-->
-        <LinearLayout
-            android:id="@+id/bottom_wrapper"
-            android:layout_width="160dp"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_gravity="center_vertical"
-            android:weightSum="1">
-            <!--What you want to show-->
-
-            <!--Actions are added here-->
-            <!--Actions are added here-->
-            <!--Actions are added here-->
-            <!--Actions are added here-->
-        </LinearLayout>
-        <!-- Bottom View End-->
-
-        <!-- Surface View Start -->
-        <RelativeLayout
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/macro_element_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:src="@drawable/ic_action_help"
+            android:visibility="visible"
+            app:border="true"
+            app:border_color="#EEEEEE"
+            app:border_width="4dp"
+            app:shadow="false" />
+        <com.daimajia.swipe.SwipeLayout
+            android:id="@+id/macro_element_swipe_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <!-- Bottom View Start-->
+            <LinearLayout
+                android:id="@+id/bottom_wrapper"
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
+                android:weightSum="1"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp">
+                <!--What you want to show-->
 
-            android:padding="10dp">
+                <!--Actions are added here-->
+                <!--Actions are added here-->
+                <!--Actions are added here-->
+                <!--Actions are added here-->
+            </LinearLayout>
+            <!-- Bottom View End-->
 
-            <com.pkmmte.view.CircularImageView
-                android:id="@+id/macro_element_icon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginRight="5dp"
-                android:src="@drawable/ic_action_help"
-                android:visibility="visible"
-                app:border="true"
-                app:border_color="#EEEEEE"
-                app:border_width="4dp"
-                app:shadow="false" />
+            <!-- Surface View Start -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
 
-            <ImageButton
-                android:id="@+id/show_more_macro_actions_button"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-
-                android:background="@color/full_transparent"
-                android:contentDescription="@string/description_more"
-                android:src="@drawable/ic_action_gear" />
-
-
-            <TextView
-                android:id="@+id/macro_element_title"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-
-                android:layout_toEndOf="@id/macro_element_icon"
-                android:layout_toLeftOf="@id/show_more_macro_actions_button"
-                android:layout_toRightOf="@id/macro_element_icon"
-                android:layout_toStartOf="@id/show_more_macro_actions_button"
-                android:ellipsize="marquee"
-
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:gravity="center_vertical"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:scrollHorizontally="true"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:padding="10dp">
 
 
-        </RelativeLayout>
-        <!-- Surface View End -->
-    </com.daimajia.swipe.SwipeLayout>
+
+                <ImageButton
+                    android:id="@+id/show_more_macro_actions_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+
+                    android:background="@color/full_transparent"
+                    android:contentDescription="@string/description_more"
+                    android:src="@drawable/ic_action_gear" />
+
+
+                <TextView
+                    android:id="@+id/macro_element_title"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@id/show_more_macro_actions_button"
+                    android:layout_toStartOf="@id/show_more_macro_actions_button"
+                    android:ellipsize="marquee"
+
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="center_vertical"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+
+            </RelativeLayout>
+            <!-- Surface View End -->
+        </com.daimajia.swipe.SwipeLayout>
+    </LinearLayout>
+
+
 
 </android.support.v7.widget.CardView>
