@@ -504,7 +504,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         builder.setContentTitle(getString(R.string.app_name))
                 .setContentText("Sinapsi Engine service is running")
-                .setSmallIcon(R.drawable.ic_launcher);
+                .setSmallIcon(R.drawable.ic_macro_default);
         Notification forenotif = builder.build();
         startForeground(1, forenotif);
     }
