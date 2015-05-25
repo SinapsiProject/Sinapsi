@@ -287,5 +287,6 @@
     <color name="sinapsi_blue_grey_dark">#465a5f</color>
     <color name="error_red">#FF3333</color>
 
+    <color name="cardview_red_background">#fffae6e6</color>
 
 </resources>

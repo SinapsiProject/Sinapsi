@@ -21,11 +21,11 @@
         <item name="android:colorBackground">@android:color/black</item>
     </style>
     <style name="App_EditTextStyle" parent="@android:style/Widget.EditText">
-        <item name="android:textColor">@color/abc_primary_text_material_light</item>
+        <item name="android:textColor">@color/abc_secondary_text_material_light</item>
         <item name="android:layout_height">45dip</item>
     </style>
     <style name="App_AutoCompleteTextViewStyle" parent="@android:style/Widget.AutoCompleteTextView">
-        <item name="android:textColor">@color/abc_primary_text_material_light</item>
+        <item name="android:textColor">@color/abc_secondary_text_material_light</item>
         <item name="android:layout_height">45dip</item>
     </style>
 </resources>

@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -181,6 +182,10 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
 
                 View v = viewHolder.itemView;
+
+                CardView cardView = (CardView) v.findViewById(R.id.macro_element_cardview);
+                /*if(elem.isValid())cardView.setCardBackgroundColor(getResources().getColor(R.color.cardview_light_background));
+                else cardView.setCardBackgroundColor(getResources().getColor(R.color.cardview_red_background));*/
 
                 Lol.d(ArrayListAdapter.class, elem.getName() + " just binded to a viewHolder");
                 TextView title = ((TextView) v.findViewById(R.id.macro_element_title));

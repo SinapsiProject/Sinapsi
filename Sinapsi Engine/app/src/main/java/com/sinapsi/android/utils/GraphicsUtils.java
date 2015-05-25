@@ -42,16 +42,14 @@ public class GraphicsUtils {
 
         Drawable[] layers = new Drawable[2];
 
-
-
-
         int resourceId = context.getResources().getIdentifier(macro.getIconName(), "drawable", context.getPackageName());
         Drawable d = context.getResources().getDrawable(resourceId);
 
         float scaleSize = 0.75f;
         if(d == null) return null;
 
-        d.setBounds(0, 0, (int) (d.getIntrinsicWidth() * scaleSize), (int) (d.getIntrinsicHeight() * scaleSize));//TODO: resize image (shrink)
+        //d.setBounds(0, 0, (int) (d.getIntrinsicWidth() * scaleSize), (int) (d.getIntrinsicHeight() * scaleSize));
+        //TODO: resize image (shrink)
 
         if(macro.isValid()){
             ColorDrawable cd = new ColorDrawable(macroColor); //the new material style
@@ -63,15 +61,15 @@ public class GraphicsUtils {
             layers[0] = cd;
             layers[1] = d;
         }else{
-            int errorBGColor = Color.LTGRAY;
-            ColorDrawable cd = new ColorDrawable(errorBGColor);
+
+            ColorDrawable cd = new ColorDrawable(context.getResources().getColor(R.color.cardview_light_background));
             /*GradientDrawable gd = new GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{
                             scaleColorProperty(errorBGColor, ColorProperties.BRIGHTNESS, 2.0f),
                             scaleColorProperty(errorBGColor, ColorProperties.SATURATION, 0.5f)});*/
             layers[0] = cd;
-            Drawable error = getColoredDrawable(d, context.getResources().getColor(R.color.red_700));
+            Drawable error = getColoredDrawable(d, context.getResources().getColor(R.color.error_red));
             layers[1] = error;
         }
 
@@ -136,11 +134,10 @@ public class GraphicsUtils {
     }
 
     public static String getStringHexOfColor(int color){
-        int a = Color.alpha(color);
         int r = Color.red(color);
         int g = Color.green(color);
         int b = Color.blue(color);
 
-        return String.format("#%02X%02X%02X%02X", a, r, g, b);
+        return String.format("#%02X%02X%02X", r, g, b);
     }
 }
