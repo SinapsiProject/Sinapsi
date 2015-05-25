@@ -16,7 +16,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
-        Object[] params = getTempParameters();
+        Object[] params = pullTempParameters();
         Lol.printNullity(this, "params", params);
         Lol.d(this, "params size: " + params.length);
 

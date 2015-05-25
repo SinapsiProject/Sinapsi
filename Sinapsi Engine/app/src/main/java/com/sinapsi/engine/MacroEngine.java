@@ -114,6 +114,10 @@ public class MacroEngine {
         activator.setEnabled(true);
     }
 
+    public HashMap<String, MacroInterface> getMacros() {
+        return macros;
+    }
+
     private class MissingMacroException extends Exception {
     }
 }

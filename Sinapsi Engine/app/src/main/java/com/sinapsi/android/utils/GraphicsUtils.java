@@ -37,7 +37,7 @@ public class GraphicsUtils {
      * @param context the context, used to resolve the icon resource
      * @return the icon drawable
      */
-    public static Drawable generateMacroIcon(MacroInterface macro, Context context){
+    public static Drawable generateMacroIconWhiteOnColor(MacroInterface macro, Context context){
         int macroColor = Color.parseColor(macro.getMacroColor());
 
         Drawable[] layers = new Drawable[2];
@@ -73,9 +73,22 @@ public class GraphicsUtils {
             layers[1] = error;
         }
 
-
-
         return new LayerDrawable(layers);
+    }
+
+
+    public static Drawable generateMacroIconColoredOnTransparent(MacroInterface macro, Context context){
+        Drawable[] layers = new Drawable[2];
+        int resourceId = context.getResources().getIdentifier(macro.getIconName(), "drawable", context.getPackageName());
+        Drawable d = context.getResources().getDrawable(resourceId);
+
+        if(d == null) return null;
+
+        int macroColor = Color.parseColor(macro.getMacroColor());
+
+        layers[0] = new ColorDrawable(context.getResources().getColor(R.color.cardview_light_background));
+        layers[1] = getColoredDrawable(d, macroColor);
+        return  new LayerDrawable(layers);
     }
 
 

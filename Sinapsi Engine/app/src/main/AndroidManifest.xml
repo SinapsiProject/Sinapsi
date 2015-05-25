@@ -21,7 +21,7 @@
     <application
         android:name="com.sinapsi.android.SinapsiAndroidApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_s_on_gear"
+        android:icon="@drawable/ic_launcher2"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity android:name="com.sinapsi.android.view.WelcomeActivity" >

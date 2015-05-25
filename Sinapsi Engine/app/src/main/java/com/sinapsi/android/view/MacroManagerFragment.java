@@ -3,7 +3,6 @@ package com.sinapsi.android.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,7 +18,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -33,11 +31,9 @@ import com.sinapsi.android.utils.GraphicsUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.android.utils.swipeaction.SmartSwipeActionButton;
-import com.sinapsi.android.utils.swipeaction.SwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.utils.HashMapBuilder;
 
 import java.util.Arrays;
@@ -193,7 +189,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 if(!elem.isValid()) {
                     String text = "<font color=" + GraphicsUtils.getStringHexOfColor(getResources().getColor(R.color.error_red)) +">";
                     text += elem.getName() + "</font>";
-                    title.setText(Html.fromHtml(text)); //TODO: this seems to not work
+                    title.setText(Html.fromHtml(text));
                 }else{
                     title.setText(elem.getName());
                 }
@@ -262,8 +258,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 salm.addCustomView(closeContextImageButton);
 
                 CircularImageView ciw = (CircularImageView) v.findViewById(R.id.macro_element_icon);
-
-                ciw.setImageDrawable(GraphicsUtils.generateMacroIcon(elem, v.getContext()));
+                ciw.setImageDrawable(GraphicsUtils.generateMacroIconColoredOnTransparent(elem, v.getContext()));
 
                 ciw.setBorderWidth(1);
                 ciw.setBorderColor(v.getResources().getColor(R.color.cardview_light_background));
@@ -344,36 +339,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
 
         //TODO: handle server sync
-        //updateMacroList(service.getMacros());
-        //TODO: remove the lines below and decomment the line above, this is just for test
-        MacroInterface mi1 = new FactoryModel().newMacro("Stupid Macro", 1);
-        MacroInterface mi2 = new FactoryModel().newMacro("Macro With SMS Icon", 2);
-        MacroInterface mi3 = new FactoryModel().newMacro("Invalid Macro", 3);
-        MacroInterface mi4 = new FactoryModel().newMacro("Macro with very very very long name", 4);
+        updateMacroList(service.getMacros());
 
-        mi1.setMacroColor("#66BB33");
-        mi2.setMacroColor("#CC9922");
-        mi3.setMacroColor("#3366CC");
-        mi4.setMacroColor("#3366CC");
-
-        mi2.setIconName("ic_macro_sms");
-
-        mi3.setValid(false);
-
-        updateMacroList(Arrays.asList(
-                mi1,
-                mi2,
-                mi3,
-                mi4,
-                mi1,
-                mi2,
-                mi3,
-                mi4,
-                mi1,
-                mi2,
-                mi3,
-                mi4
-        ));
 
         Lol.d(this, "Macro showed: " + macroList.getItemCount());
 

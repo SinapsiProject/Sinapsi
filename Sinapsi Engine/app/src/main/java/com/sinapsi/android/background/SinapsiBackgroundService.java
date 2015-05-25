@@ -247,7 +247,9 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     }
 
     public List<MacroInterface> getMacros() {
-        return null; //TODO: impl
+
+        //TODO: handle server sync
+        return new ArrayList<>(engine.getMacros().values());
     }
 
     /**
@@ -378,7 +380,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
      * all'utente.
      */
     public void createLocalMacroExamples() {
-        MacroInterface myMacro = fm.newMacro("Ex. WIFI->LOG->NOTIF", 1);
+        MacroInterface myMacro = fm.newMacro("Wifi connection", 1);
         myMacro.setTrigger(getComponentFactory().newTrigger(
                 TriggerWifi.TRIGGER_WIFI,
                 new ActualParamBuilder()
@@ -403,12 +405,13 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                         .create().toString(),
                 device
         ));
-
+        myMacro.setMacroColor("#3333AA");
+        myMacro.setIconName("ic_macro_default");
         engine.addMacro(myMacro);
 
 
         //MACRO 2
-        MacroInterface myMacro2 = fm.newMacro("Ex. SCREEN->VARIABLE-LOG", 2);
+        MacroInterface myMacro2 = fm.newMacro("Screen Log", 2);
         myMacro2.setTrigger(getComponentFactory().newTrigger(
                 TriggerScreenPower.TRIGGER_SCREEN_POWER,
                 null,
@@ -443,6 +446,8 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 device
         ));
 
+        myMacro2.setMacroColor("#33AA33");
+        myMacro2.setIconName("ic_macro_default");
         engine.addMacro(myMacro2);
 
         //MACRO3
@@ -494,7 +499,8 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 device
         ));
 
-
+        myMacro3.setMacroColor("#AA3333");
+        myMacro3.setIconName("ic_macro_default");
         //engine.addMacro(myMacro3);
     }
 
@@ -504,7 +510,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         builder.setContentTitle(getString(R.string.app_name))
                 .setContentText("Sinapsi Engine service is running")
-                .setSmallIcon(R.drawable.ic_macro_default);
+                .setSmallIcon(R.drawable.ic_notif_icon);
         Notification forenotif = builder.build();
         startForeground(1, forenotif);
     }
