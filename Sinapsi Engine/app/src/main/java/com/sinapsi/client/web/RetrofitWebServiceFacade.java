@@ -13,10 +13,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sinapsi.android.Lol;
 import com.sinapsi.client.AppConsts;
+import com.sinapsi.client.web.gson.DeviceInterfaceInstanceCreator;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.User;
 
 import java.security.KeyPair;
@@ -43,6 +45,8 @@ import retrofit.mime.TypedOutput;
  * variable.
  */
 public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKeysProvider {
+
+    private FactoryModel factoryModel = new FactoryModel();
 
     //local keys
     private PublicKey publicKey;
@@ -73,7 +77,10 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         this.encodingMethod = encodingMethod;
         this.decodingMethod = decodingMethod;
 
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(DeviceInterface.class, new DeviceInterfaceInstanceCreator(factoryModel))
+                .create();
+
 
         final GsonConverter defaultGsonConverter = new GsonConverter(gson);
         final BGPGsonConverter cryptInOutGsonConverter = new BGPGsonConverter(gson, this, this.encodingMethod, this.decodingMethod);
