@@ -23,12 +23,17 @@ import com.sinapsi.server.websocket.Message;
 import com.sinapsi.server.websocket.WebSocketLocalClient;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
+import com.sinapsi.webservice.engine.components.ActionSendEmail;
+import com.sinapsi.webservice.engine.components.TriggerEmailReceived;
+import com.sinapsi.webservice.engine.system.EmailAdapter;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 
@@ -81,6 +86,13 @@ public class WebServiceEngine {
      */
     private MacroEngine loadEngine(UserInterface user){
         SystemFacade systemFacade = new SystemFacade();
+        
+        //HERE ARE ALL THE ADPTERS
+        systemFacade.addSystemService(EmailAdapter.SERVICE_EMAIL, new EmailAdapter(user));
+        
+        // at engine start up, det dynamcly the triggers requirments
+        // systemFacade.setRequirementSpec(key, value);
+        
         DeviceInterface webServiceDevice = getWebServiceDevice(user);
 
         //Interfaces called when the user want to continue macro in other device
@@ -112,7 +124,6 @@ public class WebServiceEngine {
             }
         };
 
-        //TODO:
         VariableManager globalVar = new VariableManager();
         
         ExecutionInterface executionInterface = new ExecutionInterface(
@@ -124,14 +135,17 @@ public class WebServiceEngine {
         
         WebServiceActivationManager activationManager = new WebServiceActivationManager(executionInterface);
 
-        MacroEngine result = new MacroEngine(
+        // add list of trigger and actions
+        MacroEngine macroEngine = new MacroEngine(
                 webServiceDevice,
                 activationManager,
                 sinapsiLog,
                 ActionLog.class,
-                ActionSetVariable.class);
+                ActionSendEmail.class,
+                ActionSetVariable.class,
+                TriggerEmailReceived.class);
 
-        return result;
+        return macroEngine;
     }
 
     /**
