@@ -39,6 +39,7 @@ public class LoginLayout extends Application {
 		private BorderPane root;
 		private GridPane grid;
 		private GridPane logoPane;
+		private GridPane registrationPane;
 		private GridPane tutorialButtonPane;
 		private BorderPane tutorialPane;
 					
@@ -47,10 +48,16 @@ public class LoginLayout extends Application {
 		private Button tutorialButton;
 		private Button switchPageNext;
 		private Button switchPagePrevious;
+		
+		private Button signUp;
+		private Button cancel;
 					
 		// Labels
 		private Label emailLabel;
 		private Label passwordLabel;
+
+		private Label registrationPassword;
+		private Label registrationPasswordConfirmed;
 		
 		// TextFlow
 		private TextFlow registerLabel;
@@ -64,9 +71,16 @@ public class LoginLayout extends Application {
 		private TextField emailField;
 		private PasswordField passwordField;
 		
+		private TextField registrationEmailField;
+		private TextField registrationUsername;
+		private PasswordField registrationPasswordField;
+		private PasswordField registrationPasswordFieldConfirmed;
+		
+		
 		// Hbox
 		private HBox hboxSignIn;	
 		private HBox hboxSwitch;
+		private HBox hboxRegistration;
 
 		// Vbox
 		private VBox vboxLogo;
@@ -177,7 +191,8 @@ public class LoginLayout extends Application {
 		tutorialButtonPane.setPadding(new Insets(25, 25, 25, 25));
 		tutorialButtonPane.setHgap(10);
 		tutorialButtonPane.add(aboutSinapsiLink, 0, 1);
-		tutorialButtonPane.add(tutorialButton, 1, 1);
+		tutorialButtonPane.add(tutorialButton, 1, 1);	
+	
 		
 		/**
 		 * 
@@ -217,11 +232,35 @@ public class LoginLayout extends Application {
 			
 			@Override
 			public void handle(ActionEvent event) {
+				registrationPasswordField = new PasswordField();
+				registrationPasswordFieldConfirmed = new PasswordField();
+				registrationPassword = new Label("New password");
+				registrationPasswordConfirmed = new Label("Confirm password");
 				
-				registerStage = new Stage();
-				registerStage.setTitle("Registration");
-				registerStage.setResizable(false);
-				registerStage.show();
+				signUp = new Button("Sign up");
+				cancel = new Button("Cancel");
+				
+				hboxRegistration = new HBox(10);
+				hboxRegistration.setSpacing(25);
+				hboxRegistration.setAlignment(Pos.CENTER);
+				hboxRegistration.getChildren().add(signUp);
+				hboxRegistration.getChildren().add(cancel);
+				
+				grid.getChildren().clear();
+				
+				// Registration Pane
+				grid.setAlignment(Pos.CENTER);
+				grid.setHgap(15);
+				grid.setVgap(10);
+				grid.setPadding(new Insets(25, 25, 25, 25));
+				
+				grid.add(emailLabel, 0, 2);
+				grid.add(emailField, 0, 3);
+				grid.add(registrationPassword, 0, 4);
+				grid.add(registrationPasswordField, 0, 5);
+				grid.add(registrationPasswordConfirmed, 0, 6);
+				grid.add(registrationPasswordFieldConfirmed, 0, 7);
+				grid.add(hboxRegistration, 0, 9);
 			}
 		});
 	
