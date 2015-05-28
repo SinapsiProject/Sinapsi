@@ -226,7 +226,7 @@ public class LoginLayout extends Application {
 				hboxSwitch.getChildren().addAll(switchPagePrevious, switchPageNext);
 				tutorialPane.setBottom(hboxSwitch);
 				
-				FadeTransition thirdTransition = new FadeTransition(Duration.millis(700), tutorialPane);
+				FadeTransition thirdTransition = new FadeTransition(Duration.millis(800), tutorialPane);
 				thirdTransition.setFromValue(0.0);
 				thirdTransition.setToValue(1.0);
 				thirdTransition.play();

@@ -13,10 +13,14 @@ import java.awt.TrayIcon;
 import java.awt.MenuItem;
 import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import retrofit.http.GET;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -62,10 +66,9 @@ public class Launcher extends Application {
 		if(SystemTray.isSupported()) {
 			// Get the SystemTray instance
 			tray = SystemTray.getSystemTray();
-			String path = "/Sinapsi Desktop/resources/tutorial.png";
 			// Loading image
 			try {
-				icon = ImageIO.read(getClass().getClassLoader().getResourceAsStream(path));
+				icon = ImageIO.read(GET.class.getResource("/res/first_logo.ico"));
             } catch (IOException ex) {
                 System.out.println(ex);
             }
