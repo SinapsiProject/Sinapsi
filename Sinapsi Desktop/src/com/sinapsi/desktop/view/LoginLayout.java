@@ -2,6 +2,7 @@ package com.sinapsi.desktop.view;
 
 
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,6 +27,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class LoginLayout extends Application {
 
@@ -264,7 +266,12 @@ public class LoginLayout extends Application {
 				grid.add(registrationPasswordField, 0, 5);
 				grid.add(registrationPasswordConfirmed, 0, 6);
 				grid.add(registrationPasswordFieldConfirmed, 0, 7);
-				grid.add(hboxRegistration, 0, 9);				
+				grid.add(hboxRegistration, 0, 9);	
+				
+				FadeTransition firstTransition = new FadeTransition(Duration.millis(500), grid);
+				firstTransition.setFromValue(0.0);
+				firstTransition.setToValue(1.0);
+				firstTransition.play();
 			}
 		});
 	
@@ -291,6 +298,7 @@ public class LoginLayout extends Application {
 			public void handle(ActionEvent event) {
 				grid.getChildren().clear();
 				
+
 				grid.setAlignment(Pos.CENTER);
 				grid.setHgap(15);
 				grid.setVgap(10);
@@ -303,6 +311,11 @@ public class LoginLayout extends Application {
 				grid.add(registerLabel, 0, 6);
 				grid.add(forgotPasswordLink, 0, 7);
 				grid.add(hboxSignIn, 0, 10);
+				FadeTransition secondTransition = new FadeTransition(Duration.millis(500), grid);
+				secondTransition.setFromValue(0.0);
+				secondTransition.setToValue(1.0);
+				secondTransition.play();
+				
 			}
 		});
 		
