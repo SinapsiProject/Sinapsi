@@ -226,8 +226,13 @@ public class LoginLayout extends Application {
 				hboxSwitch.getChildren().addAll(switchPagePrevious, switchPageNext);
 				tutorialPane.setBottom(hboxSwitch);
 				
+				FadeTransition thirdTransition = new FadeTransition(Duration.millis(700), tutorialPane);
+				thirdTransition.setFromValue(0.0);
+				thirdTransition.setToValue(1.0);
+				thirdTransition.play();
+				
 				tutorialStage = new Stage();
-				tutorialStage.setTitle("Image List");
+				tutorialStage.setTitle("What is Sinapsi?");
 				tutorialStage.setScene(new Scene(tutorialPane, 400, 550));
 				tutorialStage.setResizable(false);
 				tutorialStage.show();
@@ -319,9 +324,14 @@ public class LoginLayout extends Application {
 			}
 		});
 		
+		
 		root.setBottom(tutorialButtonPane);
 		root.setTop(logoPane);
 		root.setCenter(grid);
+		FadeTransition rootTransition = new FadeTransition(Duration.millis(1300), root);
+		rootTransition.setFromValue(0.0);
+		rootTransition.setToValue(1.0);
+		rootTransition.play();
 		Scene loginScene = new Scene(root, 800, 600);
 		
 		primaryStage.setScene(loginScene);
