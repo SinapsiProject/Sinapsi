@@ -8,7 +8,10 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -164,7 +167,9 @@ public class LoginLayout extends Application {
                 "-fx-effect: dropshadow(three-pass-box, gray, 4, 0.5, 0, 0)"
 		);
 		
-			
+		// Registration Buttons 
+		signUp = new Button("Sign up");
+		cancel = new Button("Cancel");
 		
 		// BorderPane Top	
 		logoPane.setAlignment(Pos.TOP_CENTER);
@@ -237,8 +242,7 @@ public class LoginLayout extends Application {
 				registrationPassword = new Label("New password");
 				registrationPasswordConfirmed = new Label("Confirm password");
 				
-				signUp = new Button("Sign up");
-				cancel = new Button("Cancel");
+				
 				
 				hboxRegistration = new HBox(10);
 				hboxRegistration.setSpacing(25);
@@ -260,7 +264,7 @@ public class LoginLayout extends Application {
 				grid.add(registrationPasswordField, 0, 5);
 				grid.add(registrationPasswordConfirmed, 0, 6);
 				grid.add(registrationPasswordFieldConfirmed, 0, 7);
-				grid.add(hboxRegistration, 0, 9);
+				grid.add(hboxRegistration, 0, 9);				
 			}
 		});
 	
@@ -282,6 +286,25 @@ public class LoginLayout extends Application {
 			}
 		});
 		
+		cancel.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				grid.getChildren().clear();
+				
+				grid.setAlignment(Pos.CENTER);
+				grid.setHgap(15);
+				grid.setVgap(10);
+				grid.setPadding(new Insets(25, 25, 25, 25));
+					
+				grid.add(emailLabel, 0, 2);
+				grid.add(emailField, 0, 3);
+				grid.add(passwordLabel, 0, 4);
+				grid.add(passwordField, 0, 5);
+				grid.add(registerLabel, 0, 6);
+				grid.add(forgotPasswordLink, 0, 7);
+				grid.add(hboxSignIn, 0, 10);
+			}
+		});
 		
 		root.setBottom(tutorialButtonPane);
 		root.setTop(logoPane);
