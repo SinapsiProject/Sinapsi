@@ -29,7 +29,7 @@ public class DatabaseController {
         url = bundle.getString("database.url");
         driver = bundle.getString("database.driver");
         user = bundle.getString("database.user");
-        password = bundle.getString("database.string");
+        password = bundle.getString("database.password");
         
         try {
             Class.forName(driver);
