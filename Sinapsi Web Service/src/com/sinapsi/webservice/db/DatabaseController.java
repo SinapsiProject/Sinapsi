@@ -17,6 +17,8 @@ public class DatabaseController {
     FactoryModelInterface factory;
     private String url;
     private String driver;
+    private String user;
+    private String password;
 
     /**
      * Class constructor
@@ -26,7 +28,9 @@ public class DatabaseController {
         ResourceBundle bundle = ResourceBundle.getBundle("configuration");
         url = bundle.getString("database.url");
         driver = bundle.getString("database.driver");
-
+        user = bundle.getString("database.user");
+        password = bundle.getString("database.string");
+        
         try {
             Class.forName(driver);
         } catch (Throwable t) {
@@ -40,7 +44,7 @@ public class DatabaseController {
      * @throws SQLException
      */
     Connection connect() throws SQLException {
-        return DriverManager.getConnection(url, "andrej", "ragnarock");
+        return DriverManager.getConnection(url, user, password);
     }
 
     /**

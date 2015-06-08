@@ -2,6 +2,7 @@ package com.sinapsi.webservice.engine.system;
 
 import com.sinapsi.model.UserInterface;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -21,10 +22,16 @@ import javax.mail.internet.MimeMultipart;
  */
 public class EmailAdapter {
     private UserInterface user;
+    private final String username;
+    private final String password;
+    
     public static final String SERVICE_EMAIL = "SERVICE_EMAIL";
 
     public EmailAdapter(UserInterface u) {
         this.user = u;
+        ResourceBundle bundle = ResourceBundle.getBundle("email");
+        username = bundle.getString("email.user");
+        password = bundle.getString("email.password");
     }
 
     /**
@@ -38,8 +45,8 @@ public class EmailAdapter {
         Properties props = System.getProperties();
         props.put("mail.smtp.starttls.enable", true);
         props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.user", "projectsinapsi");
-        props.put("mail.smtp.password", "password");
+        props.put("mail.smtp.user", username);
+        props.put("mail.smtp.password", password);
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.auth", true);
 
@@ -47,7 +54,7 @@ public class EmailAdapter {
         MimeMessage message = new MimeMessage(session);
 
         try {
-            InternetAddress from = new InternetAddress("projectsinapsi");
+            InternetAddress from = new InternetAddress(username);
             message.setSubject(subject);
             message.setFrom(from);
             message.addRecipients(Message.RecipientType.TO,
@@ -71,7 +78,7 @@ public class EmailAdapter {
 
             // Send message
             Transport transport = session.getTransport("smtp");
-            transport.connect("smtp.gmail.com", "projectsinapsi", "password");
+            transport.connect("smtp.gmail.com", username, password);
             System.out.println("Transport: " + transport.toString());
             transport.sendMessage(message, message.getAllRecipients());
 

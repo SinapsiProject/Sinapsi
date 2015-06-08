@@ -1,3 +1,5 @@
+.Ulysses-Group.plist
+*.properties
 *.pydevproject
 .metadata
 .gradle
@@ -41,3 +43,16 @@ Sinapsi Engine/build
 Sinapsi Engine/.idea/libraries/support_v4_21_0_3.xml
 
 Sinapsi Engine/.idea/libraries/support_v4_21_0_3.xml
+
+Sinapsi Engine/.idea/libraries/support_annotations_21_0_3.xml
+
+Sinapsi Engine/.idea/libraries/appcompat_v7_21_0_3.xml
+
+Sinapsi Engine/.idea/libraries/appcompat_v7_21_0_3.xml
+
+Sinapsi Engine/.idea/libraries/play_services_6_5_87.xml
+
+Sinapsi Engine/build/intermediates/model_data.bin
+
+Sinapsi Engine/.idea/dictionaries/Giuseppe.xml
+
