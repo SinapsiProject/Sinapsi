@@ -39,7 +39,7 @@ public class EmailAdapter {
         props.put("mail.smtp.starttls.enable", true);
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.user", "projectsinapsi");
-        props.put("mail.smtp.password", "8uhBgt5rdX");
+        props.put("mail.smtp.password", "password");
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.auth", true);
 
@@ -71,7 +71,7 @@ public class EmailAdapter {
 
             // Send message
             Transport transport = session.getTransport("smtp");
-            transport.connect("smtp.gmail.com", "projectsinapsi", "8uhBgt5rdX");
+            transport.connect("smtp.gmail.com", "projectsinapsi", "password");
             System.out.println("Transport: " + transport.toString());
             transport.sendMessage(message, message.getAllRecipients());
 
