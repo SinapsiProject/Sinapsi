@@ -118,6 +118,6 @@ public class MacroEngine {
         return macros;
     }
 
-    private class MissingMacroException extends Exception {
+    public class MissingMacroException extends Exception {
     }
 }

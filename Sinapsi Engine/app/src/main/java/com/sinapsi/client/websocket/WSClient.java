@@ -37,7 +37,7 @@ public class WSClient extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        //TODO: ?
+        //Override this to handle messages
     }
 
     @Override

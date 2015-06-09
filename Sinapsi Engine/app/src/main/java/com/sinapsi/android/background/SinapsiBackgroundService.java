@@ -11,6 +11,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
+import com.google.gson.Gson;
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
 import com.sinapsi.android.web.AndroidBase64DecodingMethod;
 import com.sinapsi.android.web.AndroidBase64EncodingMethod;
@@ -60,6 +61,8 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
+import com.sinapsi.wsproto.SinapsiMessageTypes;
+import com.sinapsi.wsproto.WebSocketMessage;
 
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -136,6 +139,26 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 @Override
                 public void onMessage(String message) {
                     super.onMessage(message);
+                    Gson gson = new Gson();
+                    WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
+                    switch (wsMsg.getMsgType()){
+                        case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR:
+                        {
+                            RemoteExecutionDescriptor red = (RemoteExecutionDescriptor) wsMsg.getData();
+                            try {
+                                engine.continueMacro(red);
+                            } catch (MacroEngine.MissingMacroException e) {
+                                //TODO: missing macro. handle error.
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
+                        case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION:
+                        {
+                            //TODO: impl (after alpha)
+                        }
+                        break;
+                    }
                 }
 
                 @Override
