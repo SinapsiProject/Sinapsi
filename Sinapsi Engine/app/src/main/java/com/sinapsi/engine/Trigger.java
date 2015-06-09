@@ -223,9 +223,6 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
                 return false;
             }
         }
-
-        //TODO: test, check, and probably remake this with a JSONReader (it will be available on all clients and servers, with GSON)
-
         return true;
     }
 
