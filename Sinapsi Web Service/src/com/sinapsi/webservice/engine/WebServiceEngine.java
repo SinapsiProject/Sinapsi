@@ -19,23 +19,17 @@ import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.server.websocket.Message;
-import com.sinapsi.server.websocket.WebSocketLocalClient;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.engine.components.ActionSendEmail;
 import com.sinapsi.webservice.engine.components.TriggerEmailReceived;
 import com.sinapsi.webservice.engine.system.EmailAdapter;
-
-import java.net.URI;
-import java.net.URISyntaxException;
+import com.sinapsi.webservice.websocket.Server;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.json.Json;
-import javax.json.JsonObject;
+import org.java_websocket.WebSocket;
 
 /**
  * Web Service engine
@@ -47,6 +41,7 @@ public class WebServiceEngine {
     private Map<Integer, MacroEngine> engines = new HashMap<>();
     private EngineDBManager engineDb = new EngineDBManager();
     private DeviceDBManager deviceDB = new DeviceDBManager();
+    private Server wsserver;
     
     public static final String DEFAULT_WEB_SERVICE_DEVICE_NAME = "Cloud";
     public static final String DEFAULT_WEB_SERVICE_DEVICE_MODEL = "Sinapsi";
@@ -78,6 +73,14 @@ public class WebServiceEngine {
             engines.put(user.getId(), macroEngine);
         }
     }
+    
+    /**
+     * Add to the engine a websocket server
+     * @param wsserver Web Socket server
+     */
+    public void addWSServer(Server wsserver) {
+        this.wsserver = wsserver;
+    }
 
     /**
      * Load the macro engine for the user
@@ -106,21 +109,15 @@ public class WebServiceEngine {
 
                 //call the websocket server passing the red object, device target and sender device
                 Gson gson = new Gson();
-                String url = "ws://localhost:8181/sinapsi/websocket/" + ei.getDevice().getId();
-                WebSocketLocalClient clientEndpoint = null;
+                
+                WebSocket clientTarget;
                 try {
-                    clientEndpoint = new WebSocketLocalClient(new URI(url));
-                } catch (URISyntaxException e) {
-                    // TODO Auto-generated catch block
+                    clientTarget = wsserver.getClient(deviceDB.getUserEmail(dev.getId()));
+                    wsserver.send(clientTarget, gson.toJson(red));  
+                    
+                } catch (SQLException e) {
                     e.printStackTrace();
-                }
-
-                JsonObject message = Json.createObjectBuilder()
-                                          .add("data", gson.toJson(red))
-                                          .add("to", Integer.toString(dev.getId()))
-                                          .add("type", Message.REMOTE_MACRO_TYPE).build();
-
-                WebSocketLocalClient.send(clientEndpoint.getSession(), new Message(message));
+                }                             
             }
         };
 

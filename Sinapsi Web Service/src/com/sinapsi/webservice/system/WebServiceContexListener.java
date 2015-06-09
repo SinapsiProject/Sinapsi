@@ -1,5 +1,7 @@
 package com.sinapsi.webservice.system;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
@@ -13,10 +15,11 @@ import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.engine.WebServiceEngine;
+import com.sinapsi.webservice.websocket.Server;
 
 /**
  * Context Listener class.
- * Init the database controller and the Web service Engine
+ * Initialize the database controller, Web service Engine and the web socket server
  *
  */
 @WebListener
@@ -28,11 +31,11 @@ public class WebServiceContexListener implements ServletContextListener {
     private KeysDBManager keysDbManager;
     private EngineDBManager engineDbManager;
     private DeviceDBManager deviceDbManager;
+    private Server wsServer;
    
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -47,11 +50,29 @@ public class WebServiceContexListener implements ServletContextListener {
         engineDbManager = new EngineDBManager(db);
         deviceDbManager = new DeviceDBManager(db);
         
-        // init the engine
+        // initialize web socket server on port 8887
         try {
+            wsServer = new Server(8887);
+        } catch (UnknownHostException e2) {
+            e2.printStackTrace();
+        }
+        
+        // start web socket server
+        new Thread() {
+            public void run() {
+                try {
+                    wsServer.init();
+                } catch (InterruptedException | IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }.start();   
+        
+        // initialize Sinapsi engine
+        try {
+            engine.addWSServer(wsServer);
             engine.initEngines(userDbManager.getUsers());
         } catch (SQLException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
         
@@ -61,6 +82,7 @@ public class WebServiceContexListener implements ServletContextListener {
         context.setAttribute("users_db", userDbManager);
         context.setAttribute("keys_db", keysDbManager);
         context.setAttribute("engines_db", engineDbManager);
-        context.setAttribute("devices_db", deviceDbManager);   
+        context.setAttribute("devices_db", deviceDbManager);  
+        context.setAttribute("wsserver", wsServer);         
     }
 }

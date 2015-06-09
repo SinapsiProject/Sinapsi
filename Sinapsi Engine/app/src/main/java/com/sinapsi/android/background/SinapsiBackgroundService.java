@@ -26,6 +26,7 @@ import com.sinapsi.android.enginesystem.AndroidDialogAdapter;
 import com.sinapsi.android.enginesystem.AndroidSMSAdapter;
 import com.sinapsi.android.enginesystem.AndroidWifiAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
+import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.R;
@@ -60,6 +61,7 @@ import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +76,7 @@ import retrofit.android.AndroidLog;
  * here and
  */
 public class SinapsiBackgroundService extends Service implements OnlineStatusProvider {
-
+    private WSClient wsClient;  //TODO: Initialize object
     private MacroEngine engine;
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
@@ -173,6 +175,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         engine.addMacros(loadSavedMacros());
 
         createLocalMacroExamples(); //TODO: this is here for debug, delete
+
 
         // starts the engine (and the TriggerOnEngineStart activates
         engine.startEngine();
@@ -365,6 +368,14 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
      */
     public DeviceInterface getDevice() {
         return device;
+    }
+
+    /**
+     * Return the WSClient object
+     * @return WSClient
+     */
+    public WSClient getWSClient() {
+        return wsClient;
     }
 
     /**

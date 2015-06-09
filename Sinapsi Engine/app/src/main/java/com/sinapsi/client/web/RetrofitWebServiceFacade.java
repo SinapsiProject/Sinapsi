@@ -259,6 +259,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 @Override
                 public void success(User user, Response response) {
                     result.success(user, response);
+
                 }
 
                 @Override
