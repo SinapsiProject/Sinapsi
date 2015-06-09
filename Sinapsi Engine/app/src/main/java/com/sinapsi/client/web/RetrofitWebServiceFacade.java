@@ -1,8 +1,5 @@
 package com.sinapsi.client.web;
 
-import android.provider.SyncStateContract;
-import android.util.Base64;
-
 import com.bgp.codec.DecodingMethod;
 import com.bgp.codec.EncodingMethod;
 import com.bgp.encryption.Encrypt;
@@ -11,9 +8,9 @@ import com.bgp.keymanager.PublicKeyManager;
 import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sinapsi.android.Lol;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.client.web.gson.DeviceInterfaceInstanceCreator;
+import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
@@ -21,7 +18,7 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.User;
 
-import java.security.KeyPair;
+import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -64,14 +61,24 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     private EncodingMethod encodingMethod;
     private DecodingMethod decodingMethod;
 
+    private WebSocketConnectionListener webSocketConnectedListener;
+
     private OnlineStatusProvider onlineStatusProvider;
+    private WSClient wsClient;
+
     /**
      * Default ctor
      *
      * @param retrofitLog
      * @param onlineStatusProvider
      */
-    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider, EncodingMethod encodingMethod, DecodingMethod decodingMethod) {
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
+                                    OnlineStatusProvider onlineStatusProvider,
+                                    WebSocketConnectionListener webSocketConnectionListener,
+                                    EncodingMethod encodingMethod,
+                                    DecodingMethod decodingMethod) {
+
+        this.webSocketConnectedListener = webSocketConnectionListener;
 
         this.onlineStatusProvider = onlineStatusProvider;
         this.encodingMethod = encodingMethod;
@@ -134,8 +141,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * @param retrofitLog
      * @param onlineStatusProvider
      */
-    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider){
-        this(retrofitLog, onlineStatusProvider, null, null);
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider,WebSocketConnectionListener webSocketConnectionListener){
+        this(retrofitLog, onlineStatusProvider, webSocketConnectionListener, null, null);
         //using null as methods here is safe because will force bgp library to use
         //default apache common codec methods
     }
@@ -214,27 +221,27 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                     PublicKeyManager.convertToByte(puk),
                     new Callback<HashMap.SimpleEntry<byte[], byte[]>>() {
 
-                @Override
-                public void success(HashMap.SimpleEntry<byte[], byte[]> keys, Response response) {
-                    RetrofitWebServiceFacade.this.publicKey = puk;
-                    RetrofitWebServiceFacade.this.privateKey = prk;
+                        @Override
+                        public void success(HashMap.SimpleEntry<byte[], byte[]> keys, Response response) {
+                            RetrofitWebServiceFacade.this.publicKey = puk;
+                            RetrofitWebServiceFacade.this.privateKey = prk;
 
-                    try {
-                        RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getKey());
-                        RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
-                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                        e.printStackTrace();
-                    }
+                            try {
+                                RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getKey());
+                                RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
+                            } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                                e.printStackTrace();
+                            }
 
 
-                    keysCallback.success(keys, response);
-                }
+                            keysCallback.success(keys, response);
+                        }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    keysCallback.failure(error);
-                }
-            });
+                        @Override
+                        public void failure(RetrofitError error) {
+                            keysCallback.failure(error);
+                        }
+                    });
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -256,17 +263,17 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                     new HashMap.SimpleEntry<byte[], String>(SessionKeyManager.convertToByte(sk), encrypt.encrypt(password)),
                     new Callback<User>() {
 
-                @Override
-                public void success(User user, Response response) {
-                    result.success(user, response);
+                        @Override
+                        public void success(User user, Response response) {
+                            initWebSocketConnection();
+                            result.success(user, response);
+                        }
 
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    result.failure(error);
-                }
-            });
+                        @Override
+                        public void failure(RetrofitError error) {
+                            result.failure(error);
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -349,4 +356,28 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public void continueMacroOnDevice(DeviceInterface device, RemoteExecutionDescriptor red, WebServiceCallback<String> result) {
         //TODO: define this method
     }
+
+
+    private void initWebSocketConnection(){
+        try {
+            wsClient = new WSClient();
+            //...
+            //TODO: connect to the server
+            //...
+            if(webSocketConnectedListener != null)
+                webSocketConnectedListener.onWebSocketConnected(wsClient);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public WSClient getWebSocketClient() {
+        return wsClient;
+    }
+
+    public interface WebSocketConnectionListener {
+        public void onWebSocketConnected(WSClient client);
+        public void onWebSocketDisconnected();
+    }
+
 }

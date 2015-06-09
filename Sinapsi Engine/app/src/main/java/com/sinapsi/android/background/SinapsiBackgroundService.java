@@ -75,14 +75,19 @@ import retrofit.android.AndroidLog;
  * in order to remain running on the system. The engine is initialized
  * here and
  */
-public class SinapsiBackgroundService extends Service implements OnlineStatusProvider {
-    private WSClient wsClient;  //TODO: Initialize object
+public class SinapsiBackgroundService extends Service implements OnlineStatusProvider, RetrofitWebServiceFacade.WebSocketConnectionListener {
+    private WSClient wsClient;
     private MacroEngine engine;
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
     private DeviceInterface device;
 
-    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(new AndroidLog("RETROFIT"), this, new AndroidBase64EncodingMethod(), new AndroidBase64DecodingMethod());
+    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(
+            new AndroidLog("RETROFIT"),
+            this,
+            this,
+            new AndroidBase64EncodingMethod(),
+            new AndroidBase64DecodingMethod());
 
     private UserSettingsFacade settings;
 
@@ -294,6 +299,16 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         if(onlineMode != tmpOnlineVal) notifyWebServiceConnectionListeners(tmpOnlineVal);
         onlineMode = tmpOnlineVal;
         return tmpOnlineVal;
+    }
+
+    @Override
+    public void onWebSocketConnected(WSClient client) {
+        this.wsClient = client;
+    }
+
+    @Override
+    public void onWebSocketDisconnected() {
+        this.wsClient = null;
     }
 
 
