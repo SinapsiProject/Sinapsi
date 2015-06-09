@@ -2,6 +2,8 @@ package com.sinapsi.desktop.view;
 
 
 
+import com.sinapsi.desktop.controller.LayoutController;
+
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -155,7 +157,7 @@ public class LoginLayout extends Application {
 		hboxSignIn.getChildren().add(signIn);
 		
 		// Setting tutorial button
-		Image tutorialLogo = new Image("file:res/tutorial.png");
+		Image tutorialLogo = new Image("file:res/tutorial2p.png");
 		ImageView tutorialButtonView = new ImageView();
 		tutorialButtonView.setImage(tutorialLogo);
 		tutorialButton = new Button();
@@ -206,6 +208,14 @@ public class LoginLayout extends Application {
 		 * All the actions of the login layout
 		 * 
 		 */
+		signIn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				
+				LayoutController controller = new LayoutController(LoginLayout.this.signIn);
+				controller.login();
+			}
+		});
 		
 		// Tutorial Button Handler	
 		tutorialButton.setOnAction(new EventHandler<ActionEvent>() {			
@@ -323,7 +333,7 @@ public class LoginLayout extends Application {
 				
 			}
 		});
-		
+				
 		
 		root.setBottom(tutorialButtonPane);
 		root.setTop(logoPane);
