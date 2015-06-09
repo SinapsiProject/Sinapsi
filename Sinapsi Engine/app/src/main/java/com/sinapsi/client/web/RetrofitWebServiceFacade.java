@@ -18,6 +18,8 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.User;
 
+import org.java_websocket.handshake.ServerHandshake;
+
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -61,7 +63,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     private EncodingMethod encodingMethod;
     private DecodingMethod decodingMethod;
 
-    private WebSocketConnectionListener webSocketConnectedListener;
 
     private OnlineStatusProvider onlineStatusProvider;
     private WSClient wsClient;
@@ -74,11 +75,11 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      */
     public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
                                     OnlineStatusProvider onlineStatusProvider,
-                                    WebSocketConnectionListener webSocketConnectionListener,
+                                    WSClient webSocketClient,
                                     EncodingMethod encodingMethod,
                                     DecodingMethod decodingMethod) {
 
-        this.webSocketConnectedListener = webSocketConnectionListener;
+        this.wsClient = webSocketClient;
 
         this.onlineStatusProvider = onlineStatusProvider;
         this.encodingMethod = encodingMethod;
@@ -141,8 +142,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * @param retrofitLog
      * @param onlineStatusProvider
      */
-    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider,WebSocketConnectionListener webSocketConnectionListener){
-        this(retrofitLog, onlineStatusProvider, webSocketConnectionListener, null, null);
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider, WSClient webSocketClient){
+        this(retrofitLog, onlineStatusProvider, webSocketClient, null, null);
         //using null as methods here is safe because will force bgp library to use
         //default apache common codec methods
     }
@@ -265,7 +266,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
                         @Override
                         public void success(User user, Response response) {
-                            initWebSocketConnection();
+                            if(wsClient == null) throw new RuntimeException("Web Socket client object is strangely null");
+                            wsClient.establishConnection();
                             result.success(user, response);
                         }
 
@@ -358,26 +360,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
 
-    private void initWebSocketConnection(){
-        try {
-            wsClient = new WSClient();
-            //...
-            //TODO: connect to the server
-            //...
-            if(webSocketConnectedListener != null)
-                webSocketConnectedListener.onWebSocketConnected(wsClient);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
-
     public WSClient getWebSocketClient() {
         return wsClient;
     }
 
-    public interface WebSocketConnectionListener {
-        public void onWebSocketConnected(WSClient client);
-        public void onWebSocketDisconnected();
-    }
 
 }

@@ -61,6 +61,8 @@ import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 
+import org.java_websocket.handshake.ServerHandshake;
+
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,19 +77,14 @@ import retrofit.android.AndroidLog;
  * in order to remain running on the system. The engine is initialized
  * here and
  */
-public class SinapsiBackgroundService extends Service implements OnlineStatusProvider, RetrofitWebServiceFacade.WebSocketConnectionListener {
+public class SinapsiBackgroundService extends Service implements OnlineStatusProvider {
     private WSClient wsClient;
     private MacroEngine engine;
     private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
     private DeviceInterface device;
 
-    private RetrofitWebServiceFacade web = new RetrofitWebServiceFacade(
-            new AndroidLog("RETROFIT"),
-            this,
-            this,
-            new AndroidBase64EncodingMethod(),
-            new AndroidBase64DecodingMethod());
+    private RetrofitWebServiceFacade web;
 
     private UserSettingsFacade settings;
 
@@ -127,6 +124,43 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     public void onCreate() {
         super.onCreate();
 
+
+        // web service and web socket initialization ----------------
+        try{
+            wsClient = new WSClient() {
+                @Override
+                public void onOpen(ServerHandshake handshakedata) {
+                    super.onOpen(handshakedata);
+                }
+
+                @Override
+                public void onMessage(String message) {
+                    super.onMessage(message);
+                }
+
+                @Override
+                public void onError(Exception ex) {
+                    super.onError(ex);
+                }
+
+                @Override
+                public void onClose(int code, String reason, boolean remote) {
+                    super.onClose(code, reason, remote);
+                }
+            };
+        } catch (URISyntaxException e){
+            e.printStackTrace();
+        }
+
+        web = new RetrofitWebServiceFacade(
+                new AndroidLog("RETROFIT"),
+                this,
+                wsClient,
+                new AndroidBase64EncodingMethod(),
+                new AndroidBase64DecodingMethod());
+
+
+        // loading settings from shared preferences -----------------
         settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
         //loadSettings(settings);
 
@@ -135,6 +169,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
         }
 
+        // initializing sinapsi log ---------------------------------
         sinapsiLog = new SinapsiLog();
         sinapsiLog.addLogInterface(new SystemLogInterface() {
             @Override
@@ -176,7 +211,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 ActionStringInputDialog.class);
         // here ends engine initialization      ---------------------
 
-        // loads macros from local db/web service
+        // loads macros from local db/web service -------------------
         engine.addMacros(loadSavedMacros());
 
         createLocalMacroExamples(); //TODO: this is here for debug, delete
@@ -295,20 +330,10 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        boolean tmpOnlineVal =  netInfo != null && netInfo.isConnectedOrConnecting();
-        if(onlineMode != tmpOnlineVal) notifyWebServiceConnectionListeners(tmpOnlineVal);
+        boolean tmpOnlineVal = netInfo != null && netInfo.isConnectedOrConnecting();
+        if (onlineMode != tmpOnlineVal) notifyWebServiceConnectionListeners(tmpOnlineVal);
         onlineMode = tmpOnlineVal;
         return tmpOnlineVal;
-    }
-
-    @Override
-    public void onWebSocketConnected(WSClient client) {
-        this.wsClient = client;
-    }
-
-    @Override
-    public void onWebSocketDisconnected() {
-        this.wsClient = null;
     }
 
 
@@ -387,6 +412,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     /**
      * Return the WSClient object
+     *
      * @return WSClient
      */
     public WSClient getWSClient() {
