@@ -34,6 +34,6 @@ public class LogMessage{
         return timestamp;
     }
 
-    //TODO: here can be added more info, for example references to components or devices
+    //here can be added more info, for example references to components or devices
 
 }
