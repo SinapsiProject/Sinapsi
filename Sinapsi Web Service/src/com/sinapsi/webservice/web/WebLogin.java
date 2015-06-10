@@ -43,15 +43,14 @@ public class WebLogin extends HttpServlet {
                    
                     cookie.setMaxAge(60*60);
                     response.addCookie(cookie);
-                    response.sendRedirect("index.jsp");
+                    //response.sendRedirect("index.jsp");
+                    request.getRequestDispatcher("index.jsp").forward(request, response);
                 } else {
-                   //getServletContext().getRequestDispatcher("login.html");
-                    response.sendRedirect("login.html");
+                    request.getRequestDispatcher("login.html").forward(request, response);
                 }
             // the user doesn't exist in the db
             } else {
-               // getServletContext().getRequestDispatcher("login.html");
-                response.sendRedirect("login.html");
+                request.getRequestDispatcher("login.html").forward(request, response);
             }
 		} catch(Exception e) {
 		    e.printStackTrace();
