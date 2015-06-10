@@ -159,7 +159,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                             try {
                                 engine.continueMacro(red);
                             } catch (MacroEngine.MissingMacroException e) {
-                                //TODO: missing macro. handle error.
+                                //TODO: missing macro. handle error. maybe resync data
                                 e.printStackTrace();
                             }
                         }
