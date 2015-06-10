@@ -1,12 +1,15 @@
 package com.sinapsi.webservice.web;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.java_websocket.WebSocket;
+
 import com.bgp.decryption.Decrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -15,6 +18,8 @@ import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
 import com.sinapsi.webservice.websocket.Server;
+import com.sinapsi.wsproto.SinapsiMessageTypes;
+import com.sinapsi.wsproto.WebSocketMessage;
 
 /**
  * Servlet implementation class RemoteMacroExecutionServlet
@@ -62,7 +67,8 @@ public class RemoteMacroExecution extends HttpServlet {
             
             } else {                
                 WebSocket clientTarget = wsserver.getClient(deviceManager.getUserEmail(deviceTarget));
-                wsserver.send(clientTarget, gson.toJson(RED));               
+                WebSocketMessage message = new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, RED);
+                wsserver.send(clientTarget, gson.toJson(message));               
             }
             
         } catch(Exception e) {
