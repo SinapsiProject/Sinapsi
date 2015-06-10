@@ -69,7 +69,7 @@
                 <ul class="nav" id="main-menu">
 
                     <li>
-                        <a class="active-menu" href="index.jsp"><i class="fa fa-dashboard"></i> Dashboard</a>
+                        <a href="index.jsp"><i class="fa fa-dashboard"></i> Dashboard</a>
                     </li>
 					<li>
                         <a href="web_charts"><i class="fa fa-bar-chart-o"></i> Charts</a>
@@ -84,7 +84,7 @@
                         <a href="web_macro_editor"><i class="fa fa-edit"></i> Macro Editor </a>
                     </li> 
                     <li>
-                        <a href="#"><i class="fa fa-fw fa-file"></i> Log <span class="fa arrow"></span></a>
+                        <a class="active-menu" href="#"><i class="fa fa-fw fa-file"></i> Log <span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
                                 <a href="web_log?type=tomcat">Tomcat</a>
@@ -93,7 +93,7 @@
                                 <a href="web_log?type=db">Database</a>
                             </li>
                             <li>
-                                <a href="web_log?type=ws">WebSocket</a>
+                                <a class="active-menu" href="web_log?type=ws">WebSocket</a>
                             </li>
                         </ul>
                     </li>

@@ -69,7 +69,7 @@
                 <ul class="nav" id="main-menu">
 
                     <li>
-                        <a class="active-menu" href="index.jsp"><i class="fa fa-dashboard"></i> Dashboard</a>
+                        <a href="index.jsp"><i class="fa fa-dashboard"></i> Dashboard</a>
                     </li>
 					<li>
                         <a href="web_charts"><i class="fa fa-bar-chart-o"></i> Charts</a>
@@ -78,7 +78,7 @@
                         <a href="web_clients"><i class="fa fa-sitemap"></i> Clients Connected </a>
                     </li>
                     <li>
-                        <a href="web_macro_manager"><i class="fa fa-wrench"></i> Macro Manager </a>
+                        <a class="active-menu" href="web_macro_manager"><i class="fa fa-wrench"></i> Macro Manager </a>
                     </li>
                     <li>
                         <a href="web_macro_editor"><i class="fa fa-edit"></i> Macro Editor </a>
