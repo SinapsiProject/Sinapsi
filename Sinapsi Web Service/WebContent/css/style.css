@@ -101,7 +101,7 @@ h1 {
 }
 h1::after {
   content: '';
-  width: 500px;
+  width: 450px;
   display: block;
   background: #fff;
   height: 3px;
@@ -143,9 +143,16 @@ p {
   overflow: hidden;
 }
 .wrapper.form-success .container h1 {
-  -webkit-transform: translateY(85px);
-      -ms-transform: translateY(85px);
-          transform: translateY(85px);
+    -webkit-transform: translateY(85px);
+    -ms-transform: translateY(85px);
+    transform: translateY(85px);
+}
+.wrapper.form-success h1::after {
+    -webkit-transition-duration: 500ms;
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -o-transform: scale(0);
+    -ms-transform: scale(0);
 }
 
 .container {

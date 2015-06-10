@@ -68,7 +68,8 @@ public class RemoteMacroExecution extends HttpServlet {
             } else {                
                 WebSocket clientTarget = wsserver.getClient(deviceManager.getUserEmail(deviceTarget));
                 WebSocketMessage message = new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, RED);
-                wsserver.send(clientTarget, gson.toJson(message));               
+                wsserver.send(clientTarget, gson.toJson(message));  
+                //TODO: define comunication error with the client policy
             }
             
         } catch(Exception e) {
