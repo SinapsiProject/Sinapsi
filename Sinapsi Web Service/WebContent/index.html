@@ -1,120 +1,38 @@
-<!DOCTYPE html>
-<!-- Created by Simon Lissack for idrsolutions.com -->
-<html>
+<!doctype html>
+<html lang="en" class="no-js">
     <head>
-        <title>Messenger</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width">
+        <meta charset="utf-8"/>
+        <title>Sinapsi</title>
+        <meta name="vieport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+        <script type="application/javascript" src="js/particleground.js"></script>
+        <script type="application/javascript" src="js/demo.js"></script>
+       
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
     </head>
+    
     <body>
-       
-        <div>
-            <input type="file" id="imageinput"/>
-            <button type="button" onclick="sendImage();" >Send</button>
-        </div>
-        <div>
-            <input type="text" id="messageinput"/>
-            <button type="button" onclick="sendText();" >Send</button>
-        </div>
-       
-        <div>
-            <button type="button" onclick="openSocket();" >Open</button>
-            <button type="button" onclick="closeSocket();" >Close</button>
-        </div>
-        <!-- Server responses get written here -->
-        <div id="messages"></div>
-       
-        <!-- Script to utilise the WebSocket -->
-        <script type="text/javascript">
-                       
-            var webSocket;
-            var messages = document.getElementById("messages");
-           
-           
-            function openSocket(){
-                // Ensures only one connection is open at a time
-                if(webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED){
-                    writeResponse("WebSocket is already opened.");
-                    return;
-                }
-                // Create a new instance of the websocket
-                webSocket = new WebSocket("ws://localhost:8080/sinapsi/websocket/9");
+        <div id="particles">
+            <div id="intro">
+                <div class="wrapper">
+                <div class="container">
+                    <h1>Sinapsi</h1>   
+                    <form id="form" class="form" method="post" action="login.jsp">
+                        <input type="email" placeholder="email@domain" required>
+                        <input type="password" placeholder="password" required>
+                        <button type="submit" id="login-button" >Login</button>
+                    </form>
+                    
+                </div>
+                </div>
                 
-                 
-                /**
-                 * Binds functions to the listeners for the websocket.
-                 */
-                webSocket.onopen = function(event){
-                    if(event.data === undefined)
-                        return;
- 
-                    writeResponse(event.data);
-                };
- 
-                webSocket.onmessage = function(event){
-                    writeResponse(event.data);
-                };
- 
-                webSocket.onclose = function(event){
-                    messages.innerHTML += "<br/>" + "Connection closed";
-                };
-            }
-           
-            /**
-             * Sends the value of the text input to the server
-             */
-            function sendImage(){
-                var file = document.getElementById("imageinput").files[0];
- 
-                var reader = new FileReader();
-                // Builds a JSON object for the image and sends it
-                reader.onloadend = function(){
-                    var json = JSON.stringify({
-                        "type":"image",
-                        "data":reader.result
-                    });
-                    webSocket.send(json);
-                };
-                // Make sure the file exists and is an image
-                if(file && file.type.match("image")){
-                    reader.readAsDataURL(file);
-                }
-            }
-           
-            function sendText(){
-                var json = JSON.stringify({
-                	"to":"7",
-                	"from":"8",
-                    "type":"text",
-                    "data":document.getElementById("messageinput").value
-                });
-                webSocket.send(json);
-            }
-           
-            function closeSocket(){
-                webSocket.close();
-            }
- 
-            function writeResponse(json){
-               
-                var response = JSON.parse(json);
-                var output;
-               
-                // Determine the type of message recieved and handle accordingly
-                switch (response.type){
-                    case "image":
-                        output = "<img src=\'" + response.data + "\'/>";
-                        break;
-                    case "text":
-                        output = response.data;
-                        break;
-                }
-       
-                messages.innerHTML += "<br/>"
-                        + output;
-            }
-           
-        </script>
-       
+            </div>
+            
+        </div>
+        <footer>
+            © 2015 Sinapsi
+        </footer>
+        <script type="application/javascript" src="js/index.js"></script>  
     </body>
-</html>
+</html> 

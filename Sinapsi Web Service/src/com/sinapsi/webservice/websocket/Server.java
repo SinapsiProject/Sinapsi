@@ -48,8 +48,7 @@ public class Server extends WebSocketServer {
         clients.put(handshake.getFieldValue("Username"), conn);
         clientsWS.put(conn, handshake.getFieldValue("Username"));
         
-        this.broadcast("new connection: " + handshake.getFieldValue("Username"));
-  
+        broadcast("new connection: " + handshake.getFieldValue("Username"));
         System.out.println(handshake.getFieldValue("Username") + " connected!");
     }
 
@@ -58,11 +57,11 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        clients.remove(clientsWS.get(conn));
-        clientsWS.remove(conn);
-        
-        this.broadcast(clientsWS.get(conn) + " disconnected!");
+        broadcast(clientsWS.get(conn) + " disconnected!");
         System.out.println(clientsWS.get(conn) + " disconnected!");
+        
+        clients.remove(clientsWS.get(conn));
+        clientsWS.remove(conn);      
     }
 
     /**
