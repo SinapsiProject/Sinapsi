@@ -343,6 +343,7 @@ public class LoginLayout extends Application {
 		rootTransition.setToValue(1.0);
 		rootTransition.play();
 		Scene loginScene = new Scene(root, 800, 600);
+		loginScene.getStylesheets().add("");
 		
 		primaryStage.setScene(loginScene);
 		primaryStage.setTitle("Sinapsi Login");
