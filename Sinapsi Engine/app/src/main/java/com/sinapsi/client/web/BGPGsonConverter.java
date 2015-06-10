@@ -54,7 +54,6 @@ public class BGPGsonConverter extends GsonConverter {
             cryptedString = fromStream(body.in());
 
             //decrypts the message
-            //TODO: edit the decrypter to user the server session key
             Decrypt decrypter = new Decrypt(keysProvider.getPrivateKey(), keysProvider.getServerSessionKey());
             decrypter.setCustomDecoding(decodingMethod);
 

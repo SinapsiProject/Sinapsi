@@ -202,7 +202,8 @@ public interface RetrofitInterface {
      */
     @POST(REMOTE_MACRO)
     public void continueMacroOnDevice(
-            @Query("device_id") int id,
+            @Query("from_device") int from_device_id,
+            @Query("to_device") int to_device_id,
             @Body RemoteExecutionDescriptor red,
             Callback<String> result);
 
