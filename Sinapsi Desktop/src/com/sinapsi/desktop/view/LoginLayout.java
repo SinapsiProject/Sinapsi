@@ -21,7 +21,10 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -150,6 +153,7 @@ public class LoginLayout extends Application {
 		
 		// Setting button text 
 		signIn = new Button("Sign in");
+		signIn.setId("login-button");
 
 		// and hbox 
 		hboxSignIn = new HBox(10);
@@ -157,23 +161,18 @@ public class LoginLayout extends Application {
 		hboxSignIn.getChildren().add(signIn);
 		
 		// Setting tutorial button
-		Image tutorialLogo = new Image("file:res/tutorial2p.png");
-		ImageView tutorialButtonView = new ImageView();
-		tutorialButtonView.setImage(tutorialLogo);
-		tutorialButton = new Button();
-		tutorialButton.setGraphic(tutorialButtonView);
-		tutorialButton.setStyle(
-				"-fx-background-radius: 5em; " +
-                "-fx-min-width: 30px; " +
-                "-fx-min-height: 30px; " +
-                "-fx-max-width: 30px; " +
-                "-fx-max-height: 30px;"+
-                "-fx-effect: dropshadow(three-pass-box, gray, 4, 0.5, 0, 0)"
-		);
+		//Image tutorialLogo = new Image("file:res/tutorial2p.png");
+		//ImageView tutorialButtonView = new ImageView();
+		//tutorialButtonView.setImage(tutorialLogo);
+		tutorialButton = new Button("?");
+		//tutorialButton.setGraphic(tutorialButtonView);
+		tutorialButton.setId("tutorial-button");
 		
 		// Registration Buttons 
 		signUp = new Button("Sign up");
+			signUp.setId("register-button");
 		cancel = new Button("Cancel");
+			cancel.setId("cancel-button");
 		
 		// BorderPane Top	
 		logoPane.setAlignment(Pos.TOP_CENTER);
@@ -225,8 +224,10 @@ public class LoginLayout extends Application {
 				
 				switchPagePrevious = new Button("Previous");
 					switchPagePrevious.setPrefWidth(180);
+					switchPagePrevious.setId("previous-button");
 				switchPageNext = new Button("Next");
 					switchPageNext.setPrefWidth(180);
+					switchPageNext.setId("next-button");
 					
 				hboxSwitch = new HBox();
 				hboxSwitch.setAlignment(Pos.CENTER);
@@ -241,9 +242,12 @@ public class LoginLayout extends Application {
 				thirdTransition.setToValue(1.0);
 				thirdTransition.play();
 				
+				Scene tutorialScene = new Scene(tutorialPane,400,550);
+				tutorialScene.getStylesheets().add("file:style/style.css");
+				
 				tutorialStage = new Stage();
 				tutorialStage.setTitle("What is Sinapsi?");
-				tutorialStage.setScene(new Scene(tutorialPane, 400, 550));
+				tutorialStage.setScene(tutorialScene);
 				tutorialStage.setResizable(false);
 				tutorialStage.show();
 			}
@@ -338,6 +342,7 @@ public class LoginLayout extends Application {
 		root.setBottom(tutorialButtonPane);
 		root.setTop(logoPane);
 		root.setCenter(grid);
+		//root.setBackground(new Background(new BackgroundFill(Color.web("#256581"), CornerRadii.EMPTY, Insets.EMPTY)));
 		FadeTransition rootTransition = new FadeTransition(Duration.millis(1300), root);
 		rootTransition.setFromValue(0.0);
 		rootTransition.setToValue(1.0);

@@ -1,0 +1,151 @@
+/**
+ * @author Marco Grillo 
+ */
+
+@font-face {
+	-fx-font-family: 'Minimal';
+    src: url('file:res/quicksand2.otf');
+}
+
+.background {
+	-fx-background-color: #256581;
+}
+
+.label {
+	-fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+}
+
+.hyperlink {
+	-fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+}
+
+.text-field {
+	-fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;
+    -fx-border-color: rgba(0,0,0,0.3);
+    -fx-border-width: 1pt;
+    -fx-border-style: solid ;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+ }
+
+
+#tutorial-button {
+	-fx-background-radius: 5em;
+    -fx-min-width: 40px;  
+    -fx-min-height: 40px;  
+    -fx-max-width: 40px; 
+    -fx-max-height: 40px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 15pt;
+    -fx-font-style: italic;
+    -fx-font-weight: lighter;
+    -fx-font-smoothing-type: lcd;
+    -fx-background-color: #256581;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow(three-pass-box, gray, 4, 0.5, 0, 0)
+}
+
+#tutorial-button:hover {
+	-fx-background-color: rgba(37, 101, 129, 0.9);
+}
+
+#login-button {
+	-fx-padding: 5 22 5 22;
+	-fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;   
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1.5;
+    -fx-background-color: #256581;
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 11pt;
+    -fx-text-fill: #ffffff;
+    -fx-background-insets: 0 0 0 0, 0, 1, 2;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#login-button:hover {
+	-fx-background-color: rgba(37, 101, 129, 0.9);
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#next-button {
+	-fx-padding: 5 22 5 22;
+	-fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;   
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1.5;
+    -fx-background-color: #256581;
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 11pt;
+    -fx-text-fill: #ffffff;
+    -fx-background-insets: 0 0 0 0, 0, 1, 2;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#next-button:hover {
+	-fx-background-color: rgba(37, 101, 129, 0.9);
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#previous-button {
+	-fx-padding: 5 22 5 22;
+	-fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;   
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1.5;
+    -fx-background-color: #256581;
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 11pt;
+    -fx-text-fill: #ffffff;
+    -fx-background-insets: 0 0 0 0, 0, 1, 2;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#previous-button:hover {
+	-fx-background-color: rgba(37, 101, 129, 0.9);
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#register-button {
+	-fx-padding: 5 22 5 22;
+	-fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;   
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1.5;
+    -fx-background-color: #256581;
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 11pt;
+    -fx-text-fill: #ffffff;
+    -fx-background-insets: 0 0 0 0, 0, 1, 2;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#register-button:hover {
+	-fx-background-color: rgba(37, 101, 129, 0.9);
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#cancel-button {
+	-fx-padding: 5 22 5 22;
+	-fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;   
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1.5;
+    -fx-background-color: #256581;
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 11pt;
+    -fx-text-fill: #ffffff;
+    -fx-background-insets: 0 0 0 0, 0, 1, 2;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#cancel-button:hover {
+	-fx-background-color: rgba(37, 101, 129, 0.9);
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
