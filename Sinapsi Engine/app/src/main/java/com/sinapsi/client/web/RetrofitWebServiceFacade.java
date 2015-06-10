@@ -200,14 +200,14 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * Check to ensure the keys are not null. Throws a runtime exception
      */
     private void checkKeys() {
-        if (publicKey == null || privateKey == null || serverPublicKey == null || serverSessionKey == null) //TODO: check
+        if (publicKey == null || privateKey == null || serverPublicKey == null || serverSessionKey == null)
             throw new RuntimeException("Missing key. Did you log in?");
     }
 
     /**
      * Request login
      * @param email email of the user
-     * @param keysCallback public key and session key recived from the server
+     * @param keysCallback public key and session key received from the server
      */
     @Override
     public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keysCallback) {
@@ -355,8 +355,14 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void continueMacroOnDevice(DeviceInterface device, RemoteExecutionDescriptor red, WebServiceCallback<String> result) {
-        //TODO: define this method
+    public void continueMacroOnDevice(DeviceInterface fromDevice, DeviceInterface toDevice, RemoteExecutionDescriptor red, WebServiceCallback<String> result) {
+        checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
+        cryptedRetrofit.continueMacroOnDevice(
+                fromDevice.getId(),
+                toDevice.getId(),
+                red,
+                convertCallback(result));
     }
 
 

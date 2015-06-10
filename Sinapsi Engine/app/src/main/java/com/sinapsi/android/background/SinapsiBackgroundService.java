@@ -97,35 +97,46 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     private boolean onlineMode = false;
 
-
-    WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
-        @Override
-        public void continueExecutionOnDevice(ExecutionInterface ei, DeviceInterface di) {
-            web.continueMacroOnDevice(
-                    di,
-                    new RemoteExecutionDescriptor(
-                            ei.getMacro().getId(),
-                            ei.getLocalVars(),
-                            ei.getExecutionStackIndexes()),
-                    new SinapsiWebServiceFacade.WebServiceCallback<String>() {
-
-                        @Override
-                        public void success(String s, Object response) {
-                            sinapsiLog.log("EXECUTION_CONTINUE", s);
-                        }
-
-                        @Override
-                        public void failure(Throwable error) {
-                            sinapsiLog.log("EXECUTION_CONTINUE", "FAIL");
-                        }
-                    });
-        }
-    };
+    WebExecutionInterface defaultWebExecutionInterface;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // loading settings from shared preferences -----------------
+        settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
+        //loadSettings(settings);
+
+        if (device == null) {
+            AndroidDeviceInfo adi = new AndroidDeviceInfo();
+            device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
+        }
+
+        new WebExecutionInterface() {
+            @Override
+            public void continueExecutionOnDevice(ExecutionInterface ei, DeviceInterface di) {
+                web.continueMacroOnDevice(
+                        device,
+                        di,
+                        new RemoteExecutionDescriptor(
+                                ei.getMacro().getId(),
+                                ei.getLocalVars(),
+                                ei.getExecutionStackIndexes()),
+                        new SinapsiWebServiceFacade.WebServiceCallback<String>() {
+
+                            @Override
+                            public void success(String s, Object response) {
+                                sinapsiLog.log("EXECUTION_CONTINUE", s);
+                            }
+
+                            @Override
+                            public void failure(Throwable error) {
+                                sinapsiLog.log("EXECUTION_CONTINUE", "FAIL");
+                            }
+                        });
+            }
+        };
 
 
         // web service and web socket initialization ----------------
@@ -182,15 +193,6 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 new AndroidBase64EncodingMethod(),
                 new AndroidBase64DecodingMethod());
 
-
-        // loading settings from shared preferences -----------------
-        settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
-        //loadSettings(settings);
-
-        if (device == null) {
-            AndroidDeviceInfo adi = new AndroidDeviceInfo();
-            device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
-        }
 
         // initializing sinapsi log ---------------------------------
         sinapsiLog = new SinapsiLog();

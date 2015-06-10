@@ -4,6 +4,7 @@ import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 
 import java.util.AbstractMap;
@@ -30,7 +31,7 @@ public interface SinapsiWebServiceFacade {
      * Request login
      *
      * @param email email of the user
-     * @param keys public key and session key recived from the server
+     * @param keys  public key and session key recived from the server
      */
     public void requestLogin(String email,
                              WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keys);
@@ -131,12 +132,14 @@ public interface SinapsiWebServiceFacade {
     /**
      * Asks the server to continued the specified macro on a remote device
      *
-     * @param device the device
-     * @param red    a descriptor containing infos about the execution that needs
-     *               to be continued
-     * @param result a string containing infos on the operation result
+     * @param fromDevice the device that sends the request
+     * @param toDevice   the device on which the macro will continue
+     * @param red        a descriptor containing infos about the execution that needs
+     *                   to be continued
+     * @param result     a string containing infos on the operation result
      */
-    public void continueMacroOnDevice(DeviceInterface device,
+    public void continueMacroOnDevice(DeviceInterface fromDevice,
+                                      DeviceInterface toDevice,
                                       RemoteExecutionDescriptor red,
                                       WebServiceCallback<String> result);
 
