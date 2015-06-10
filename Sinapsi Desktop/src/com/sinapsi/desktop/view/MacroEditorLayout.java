@@ -18,6 +18,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
 public class MacroEditorLayout extends Application {
@@ -31,7 +33,7 @@ public class MacroEditorLayout extends Application {
 	// Panes
 	private BorderPane mainPane;
 	private SplitPane splitPane;
-	private ScrollPane descriptionPane;
+	private StackPane descriptionPane;
 	
 	// Buttons
 	private Button editButton;
@@ -63,6 +65,8 @@ public class MacroEditorLayout extends Application {
 	// Hbox
 	private HBox buttonBox;
 	
+	// Shape
+	private Rectangle macroSquare;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -81,7 +85,7 @@ public class MacroEditorLayout extends Application {
 		// Setting main pane
 		mainPane = new BorderPane();
 		splitPane = new SplitPane();
-		descriptionPane = new ScrollPane();
+		descriptionPane = new StackPane();
 		
 		tableView = new TableView();
 		groupColumn = new TableColumn("Groups");
@@ -112,12 +116,16 @@ public class MacroEditorLayout extends Application {
 									  runMacro, stopMacro, editButton, tryButton, helpButton);
 		buttonBox = new HBox();
 		buttonBox.setPadding(new Insets(5, 0, 5, 0));
-		buttonBox.getChildren().add(buttonBar);
+		//buttonBox.getChildren().add(buttonBar);
+		
+		macroSquare = new Rectangle(50, 50);
 		
 		macroDescription = new Label("Macro description");
 		
 		splitPane.setPrefWidth(350);
 		splitPane.getItems().add(tableView);
+		
+		descriptionPane.getChildren().add(macroSquare);
 		
 		mainPane.setCenter(descriptionPane);
 		mainPane.setLeft(splitPane);
