@@ -43,8 +43,8 @@ public class WebLogin extends HttpServlet {
                    
                     cookie.setMaxAge(60*60);
                     response.addCookie(cookie);
-                    //response.sendRedirect("index.jsp");
-                    request.getRequestDispatcher("index.jsp").forward(request, response);
+                    response.sendRedirect("index.jsp");
+                    //request.getRequestDispatcher("index.jsp").forward(request, response);
                 } else {
                     request.getRequestDispatcher("login.html").forward(request, response);
                 }
