@@ -15,6 +15,10 @@ import java.util.List;
  *
  */
 public class Macro extends ComunicationInfo implements MacroInterface {
+
+    public static final String ABORT_ON_UNAVAILABLE_AT_START = "ABORT_ON_UNAVAILABLE_AT_START";
+    public static final String ABORT_ON_UNAVAILABLE_AT_SWITCH = "ABORT_ON_UNAVAILABLE_AT_SWITCH";
+
     private Trigger trigger;
     private List<Action> actions;
     private String name;
@@ -23,7 +27,7 @@ public class Macro extends ComunicationInfo implements MacroInterface {
     private String iconName = "ic_macro_default";
     private String iconColor = "#667a7f";
     private boolean valid = true;
-    private String failurePolicy = ""; //TODO: define consts
+    private String failurePolicy = ABORT_ON_UNAVAILABLE_AT_SWITCH;
 
     /**
      * Macro ctor.

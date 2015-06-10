@@ -7,6 +7,7 @@ public class AppConsts {
 
     public static final boolean DEBUG = true;
     public static final String SINAPSI_URL = "http://massolit.ns0.it:8181/sinapsi";
+    public static final String SINAPSI_WS_URL = "ws://massolit.ns0.it:8887";
     public static final String PREFS_FILE_NAME = "SinapsiPrefs";
 
     public static final String DEFAULT_MACRO_COLOR = "#667a7f";//TODO: sinapsi blue_grey
