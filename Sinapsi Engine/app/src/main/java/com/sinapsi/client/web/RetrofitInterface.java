@@ -26,7 +26,6 @@ import retrofit.http.Query;
 public interface RetrofitInterface {
 
     public static final String LOGIN = "/login";
-    public static final String LOGOUT = "/logout"; //TODO: implement logout
     public static final String REQUEST_LOGIN = "/request_login";
     public static final String REGISTER = "/register";
     public static final String DEVICES = "/devices";
@@ -197,7 +196,8 @@ public interface RetrofitInterface {
     /**
      * Call this method to continue the execution of a macro on another device.
      *
-     * @param id  the device id
+     * @param from_device_id the device id
+     * @param to_device_id the destination device id
      * @param red the remote execution descriptor
      */
     @POST(REMOTE_MACRO)
@@ -206,6 +206,8 @@ public interface RetrofitInterface {
             @Query("to_device") int to_device_id,
             @Body RemoteExecutionDescriptor red,
             Callback<String> result);
+
+
 
 
 }
