@@ -35,4 +35,7 @@ public interface MacroInterface {
     public void setExecutionFailurePolicy(String policy);
 
     public void execute(ExecutionInterface fs);
+
+    public void setEnabled(boolean enabled);
+    public boolean isEnabled();
 }

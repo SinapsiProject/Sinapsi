@@ -18,6 +18,7 @@ public class Macro extends ComunicationInfo implements MacroInterface {
 
     public static final String ABORT_ON_UNAVAILABLE_AT_START = "ABORT_ON_UNAVAILABLE_AT_START";
     public static final String ABORT_ON_UNAVAILABLE_AT_SWITCH = "ABORT_ON_UNAVAILABLE_AT_SWITCH";
+    public static final String ENQUEUE_CONTINUE_REQUEST = "ENQUEUE_CONTINUE_REQUEST";
 
     private Trigger trigger;
     private List<Action> actions;
@@ -28,6 +29,7 @@ public class Macro extends ComunicationInfo implements MacroInterface {
     private String iconColor = "#667a7f";
     private boolean valid = true;
     private String failurePolicy = ABORT_ON_UNAVAILABLE_AT_SWITCH;
+    private boolean enabled = true;
 
     /**
      * Macro ctor.
@@ -188,5 +190,16 @@ public class Macro extends ComunicationInfo implements MacroInterface {
     public void execute(ExecutionInterface sf) {
         sf.pushScope(new ActionListExecution(actions));
         sf.execute();
+    }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        getTrigger().setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
     }
 }

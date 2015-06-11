@@ -25,6 +25,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
     protected DeviceInterface executionDevice;
     protected String params;
     protected MacroInterface macro;
+    private boolean enabled = true;
 
     /**
      * Default ctor, needed by ComponentLoader to create an instance
@@ -77,8 +78,14 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      */
     public void activate(Event e, ExecutionInterface di) {
         di.getLog().log(getName(), "Trigger activated by activation manager.");
+
+        if(!isEnabled()){
+            di.getLog().log(getName(), "Trigger is disabled. Macro '" + macro.getId() + ":" + macro.getName() + "' will not start.");
+            return;
+        }
+
         if (checkParameters(e, di)) {
-            di.getLog().log(getName(), "Parameter check success. Starting macro " + macro.getId() + ":'" + macro.getName() + "'");
+            di.getLog().log(getName(), "Parameter check success. Starting macro '" + macro.getId() + ":'" + macro.getName() + "'");
             di.setMacro(macro);
             try {
                 JSONObject valuesObj = extractParameterValues(e, di);
@@ -307,4 +314,20 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      * or a JSONObject containing the parameters.
      */
     protected abstract JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException;
+
+    /**
+     * Enabled status getter. When a trigger is disabled, the macro never starts.
+     * @return enabled status
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Enabled status setter.  When a trigger is disabled, the macro never starts.
+     * @param enabled
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }

@@ -63,7 +63,9 @@ public class MacroEngine {
      */
     public void addMacro(MacroInterface m){
         if(m.getTrigger().getExecutionDevice().getId() == device.getId())
-            m.getTrigger().register(activator);
+            if(m.isEnabled())
+                m.getTrigger().register(activator);
+
         macros.put(m.getName(), m);
         log.log("MACROENGINE", "Added macro " + m.getId() + ":'" + m.getName()+"' to the engine");
     }
@@ -116,6 +118,13 @@ public class MacroEngine {
 
     public HashMap<String, MacroInterface> getMacros() {
         return macros;
+    }
+
+    public void setMacroEnabled(int id, boolean enabled) throws MissingMacroException {
+        MacroInterface m = getMacroById(id);
+        if(m == null) throw new MissingMacroException();
+        m.setEnabled(enabled);
+
     }
 
     public class MissingMacroException extends Exception {
