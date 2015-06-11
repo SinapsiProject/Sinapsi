@@ -53,6 +53,9 @@ public class MacroEditorLayout extends Application {
 	
 	// Labels
 	private Label macroDescription;
+	private Label macroName;
+	private Label actionName;
+	
 	
 	// Textfields
 	private TextField macroNameField;
