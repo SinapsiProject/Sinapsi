@@ -21,6 +21,7 @@ import com.sinapsi.client.AppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
 import com.sinapsi.android.enginesystem.AndroidNotificationAdapter;
+import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.web.OnlineStatusProvider;
 import com.sinapsi.client.web.RetrofitWebServiceFacade;
@@ -84,22 +85,23 @@ import retrofit.android.AndroidLog;
  */
 public class SinapsiBackgroundService extends Service implements OnlineStatusProvider {
     private WSClient wsClient;
+    private RetrofitWebServiceFacade web;
+    private SyncManager syncManager = new SyncManager();
+    private UserSettingsFacade settings;
+
+    private WebExecutionInterface defaultWebExecutionInterface;
     private MacroEngine engine;
-    private FactoryModel fm = new FactoryModel();
     private SinapsiLog sinapsiLog;
     private DeviceInterface device;
 
-    private RetrofitWebServiceFacade web;
-
-    private UserSettingsFacade settings;
+    private FactoryModel fm = new FactoryModel();
 
     private Map<String, WebServiceConnectionListener> connectionListeners = new HashMap<>();
 
     private boolean started = false;
-
     private boolean onlineMode = false;
 
-    WebExecutionInterface defaultWebExecutionInterface;
+
 
 
     @Override
@@ -152,26 +154,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 @Override
                 public void onMessage(String message) {
                     super.onMessage(message);
-                    Gson gson = new Gson();
-                    WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
-                    switch (wsMsg.getMsgType()){
-                        case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR:
-                        {
-                            RemoteExecutionDescriptor red = (RemoteExecutionDescriptor) wsMsg.getData();
-                            try {
-                                engine.continueMacro(red);
-                            } catch (MacroEngine.MissingMacroException e) {
-                                //TODO: missing macro. handle error. maybe resync data
-                                e.printStackTrace();
-                            }
-                        }
-                        break;
-                        case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION:
-                        {
-                            //TODO: impl (after alpha)
-                        }
-                        break;
-                    }
+                    handleWsMessage(message, true);
                 }
 
                 @Override
@@ -183,6 +166,37 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 public void onClose(int code, String reason, boolean remote) {
                     super.onClose(code, reason, remote);
                 }
+
+                private void handleWsMessage(String message, boolean firstcall){
+                    Gson gson = new Gson();
+                    WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
+                    switch (wsMsg.getMsgType()){
+                        case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR:
+                        {
+                            RemoteExecutionDescriptor red = (RemoteExecutionDescriptor) wsMsg.getData();
+                            try {
+                                engine.continueMacro(red);
+                            } catch (MacroEngine.MissingMacroException e) {
+                                if(firstcall){
+                                    //retries after a sync
+                                    syncManager.sync();
+                                    handleWsMessage(message, false);
+                                }else{
+                                    e.printStackTrace();
+                                    //TODO: the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
+                                }
+
+                            }
+                        }
+                        break;
+                        case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION:
+                        {
+                            //TODO: impl (after alpha)
+                        }
+                        break;
+                    }
+                }
+
             };
         } catch (URISyntaxException e){
             e.printStackTrace();
@@ -241,10 +255,10 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         // loads macros from local db/web service -------------------
         engine.addMacros(loadSavedMacros());
 
-        createLocalMacroExamples(); //TODO: this is here for debug, delete
+        if(AppConsts.DEBUG_MACROS)createLocalMacroExamples();
 
 
-        // starts the engine (and the TriggerOnEngineStart activates
+        // starts the engine (and the TriggerOnEngineStart activates)
         engine.startEngine();
 
 

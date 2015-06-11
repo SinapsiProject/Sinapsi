@@ -15,4 +15,8 @@ public class SyncManager {
 
     //TODO: impl
 
+    public void sync(){
+        
+    }
+
 }
