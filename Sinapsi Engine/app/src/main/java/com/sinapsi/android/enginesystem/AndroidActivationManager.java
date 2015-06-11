@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.SmsMessage;
 
+import com.sinapsi.android.Lol;
 import com.sinapsi.android.utils.IntentUtils;
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
@@ -145,6 +146,7 @@ public class AndroidActivationManager extends ActivationManager {
      */
     private void manageRegistrations() {
         for (BroadcastActivator ba : activators) {
+            if(ba == null) continue;
             if (ba.getTriggersCount() == 0 && ba.isRegistered())
                 ba.unregister();
             else if (ba.getTriggersCount() > 0 && !ba.isRegistered()) {
