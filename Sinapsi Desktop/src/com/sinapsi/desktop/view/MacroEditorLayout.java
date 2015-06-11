@@ -16,6 +16,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
@@ -33,7 +34,7 @@ public class MacroEditorLayout extends Application {
 	// Panes
 	private BorderPane mainPane;
 	private SplitPane splitPane;
-	private StackPane descriptionPane;
+	private GridPane descriptionPane;
 	
 	// Buttons
 	private Button editButton;
@@ -86,7 +87,7 @@ public class MacroEditorLayout extends Application {
 		// Setting main pane
 		mainPane = new BorderPane();
 		splitPane = new SplitPane();
-		descriptionPane = new StackPane();
+		descriptionPane = new GridPane();
 		
 		tableView = new TableView();
 		groupColumn = new TableColumn("Groups");
