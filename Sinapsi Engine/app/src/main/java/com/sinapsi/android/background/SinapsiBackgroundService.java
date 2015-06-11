@@ -1,6 +1,7 @@
 package com.sinapsi.android.background;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.google.gson.Gson;
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
+import com.sinapsi.android.view.MainActivity;
 import com.sinapsi.android.web.AndroidBase64DecodingMethod;
 import com.sinapsi.android.web.AndroidBase64EncodingMethod;
 import com.sinapsi.client.AppConsts;
@@ -583,11 +585,16 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
 
     private void foregroundMode() {
-        //TODO: useful toggles OR return to MainActivity pending intent
+        //TODO: useful toggles instead of classic content pending intent
+
+        Intent i1 = new Intent(this, MainActivity.class);
+        PendingIntent maini = PendingIntent.getActivity(this,0,i1,0);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         builder.setContentTitle(getString(R.string.app_name))
                 .setContentText("Sinapsi Engine service is running")
-                .setSmallIcon(R.drawable.ic_notif_icon);
+                .setSmallIcon(R.drawable.ic_notif_icon)
+                .setContentIntent(maini);
         Notification forenotif = builder.build();
         startForeground(1, forenotif);
     }

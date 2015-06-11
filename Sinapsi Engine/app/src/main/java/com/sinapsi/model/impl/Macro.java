@@ -191,7 +191,7 @@ public class Macro extends ComunicationInfo implements MacroInterface {
         sf.pushScope(new ActionListExecution(actions));
         sf.execute();
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
