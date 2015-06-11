@@ -11,6 +11,8 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import retrofit.RetrofitError;
 import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import com.sinapsi.client.web.*;
 import com.sinapsi.client.web.SinapsiWebServiceFacade.WebServiceCallback;
@@ -24,6 +26,7 @@ public class LayoutController {
 	private Button signInButton;
 	private RetrofitWebServiceFacade retrofitService;
 	private WSClient wsClient;
+	private Alert dialogError;
 
 	public LayoutController(Button button) {
 		signInButton = button;
@@ -52,7 +55,7 @@ public class LayoutController {
 				}
 
 				public void handleWsMessage(String message, boolean firstCall) {
-					// TODO
+					// TODO 
 				}
 			};
 
@@ -94,11 +97,12 @@ public class LayoutController {
 					@Override
 					public void success(User t, Object response) {
 						if(t.isErrorOccured()) {
-							// TODO
+							System.out.println("fanculo");
 						}
 						else {
-							wsClient.establishConnection();
+							//wsClient.establishConnection();
 							// Info user
+							System.out.println("Fanculo, user id: " + t.getId());
 						}
 					}
 
@@ -141,7 +145,11 @@ public class LayoutController {
 			errstring += "An unexpected error occurred";
 			break;
 		}
-
-			// Dialog with errtitle and errstring
+		
+		dialogError = new Alert(AlertType.ERROR);
+		dialogError.setTitle(errtitle);
+		dialogError.setContentText(errstring);
+		dialogError.showAndWait();
+		
 	}
 }

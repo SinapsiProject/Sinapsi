@@ -41,7 +41,7 @@
     -fx-font-style: italic;
     -fx-font-weight: lighter;
     -fx-font-smoothing-type: lcd;
-    -fx-background-color: #256581;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
     -fx-opacity: 0.7;
     -fx-effect: dropshadow(three-pass-box, gray, 4, 0.5, 0, 0)
 }
@@ -57,7 +57,7 @@
     -fx-background-radius: 10 10 10 10;   
     -fx-border-color: #ffffff;
     -fx-border-width: 1.5;
-    -fx-background-color: #256581;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
     -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
     -fx-font-size: 11pt;
     -fx-text-fill: #ffffff;
@@ -77,7 +77,7 @@
     -fx-background-radius: 10 10 10 10;   
     -fx-border-color: #ffffff;
     -fx-border-width: 1.5;
-    -fx-background-color: #256581;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
     -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
     -fx-font-size: 11pt;
     -fx-text-fill: #ffffff;
@@ -97,7 +97,7 @@
     -fx-background-radius: 10 10 10 10;   
     -fx-border-color: #ffffff;
     -fx-border-width: 1.5;
-    -fx-background-color: #256581;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
     -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
     -fx-font-size: 11pt;
     -fx-text-fill: #ffffff;
@@ -117,7 +117,7 @@
     -fx-background-radius: 10 10 10 10;   
     -fx-border-color: #ffffff;
     -fx-border-width: 1.5;
-    -fx-background-color: #256581;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
     -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
     -fx-font-size: 11pt;
     -fx-text-fill: #ffffff;
@@ -137,7 +137,7 @@
     -fx-background-radius: 10 10 10 10;   
     -fx-border-color: #ffffff;
     -fx-border-width: 1.5;
-    -fx-background-color: #256581;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
     -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
     -fx-font-size: 11pt;
     -fx-text-fill: #ffffff;

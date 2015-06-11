@@ -213,7 +213,7 @@ public class LoginLayout extends Application {
 			public void handle(ActionEvent event) {
 				
 				LayoutController controller = new LayoutController(LoginLayout.this.signIn);
-				controller.login();
+				controller.login(emailField.getText(), passwordField.getText());
 			}
 		});
 		
