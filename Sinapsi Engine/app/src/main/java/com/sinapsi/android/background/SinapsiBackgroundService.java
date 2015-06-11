@@ -168,6 +168,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 }
 
                 private void handleWsMessage(String message, boolean firstcall){
+                    Lol.d(SinapsiBackgroundService.class, "WebSocket message received: '" + message + "'");
                     Gson gson = new Gson();
                     WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
                     switch (wsMsg.getMsgType()){
