@@ -48,6 +48,7 @@
 
 #tutorial-button:hover {
 	-fx-background-color: rgba(37, 101, 129, 0.9);
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
 }
 
 #login-button {
@@ -148,4 +149,14 @@
 #cancel-button:hover {
 	-fx-background-color: rgba(37, 101, 129, 0.9);
 	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#about-button {
+	-fx-background-insets: 0,0,1,2;
+	-fx-background-color: transparent;
+	-fx-graphic: url("../res/git.png");
+}
+
+#about-button:hover {
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 }

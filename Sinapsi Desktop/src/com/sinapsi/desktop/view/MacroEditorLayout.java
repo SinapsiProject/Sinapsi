@@ -65,8 +65,6 @@ public class MacroEditorLayout extends Application {
 	// Hbox
 	private HBox buttonBox;
 	
-	// Shape
-	private Rectangle macroSquare;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -118,14 +116,12 @@ public class MacroEditorLayout extends Application {
 		buttonBox.setPadding(new Insets(5, 0, 5, 0));
 		//buttonBox.getChildren().add(buttonBar);
 		
-		macroSquare = new Rectangle(50, 50);
 		
 		macroDescription = new Label("Macro description");
 		
 		splitPane.setPrefWidth(350);
 		splitPane.getItems().add(tableView);
 		
-		descriptionPane.getChildren().add(macroSquare);
 		
 		mainPane.setCenter(descriptionPane);
 		mainPane.setLeft(splitPane);

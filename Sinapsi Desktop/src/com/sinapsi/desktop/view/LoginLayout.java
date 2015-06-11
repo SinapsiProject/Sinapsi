@@ -61,7 +61,9 @@ public class LoginLayout extends Application {
 		
 		private Button signUp;
 		private Button cancel;
-					
+		
+		private Button aboutSinapsilink;
+		
 		// Labels
 		private Label emailLabel;
 		private Label passwordLabel;
@@ -75,7 +77,6 @@ public class LoginLayout extends Application {
 		// Hyperlinks
 		private Hyperlink registerLink;
 		private Hyperlink forgotPasswordLink;
-		private Hyperlink aboutSinapsiLink;
 					
 		// TextFields
 		private TextField emailField;
@@ -148,8 +149,8 @@ public class LoginLayout extends Application {
 		forgotPasswordLink.setTextFill(Color.web("#256581"));
 		
 		// Setting 'about label (clickable) and color
-		aboutSinapsiLink = new Hyperlink("About");
-		aboutSinapsiLink.setTextFill(Color.web("#256581"));
+		aboutSinapsilink = new Button();
+		aboutSinapsilink.setId("about-button");
 		
 		// Setting button text 
 		signIn = new Button("Sign in");
@@ -198,7 +199,7 @@ public class LoginLayout extends Application {
 		tutorialButtonPane.setAlignment(Pos.BOTTOM_RIGHT);
 		tutorialButtonPane.setPadding(new Insets(25, 25, 25, 25));
 		tutorialButtonPane.setHgap(10);
-		tutorialButtonPane.add(aboutSinapsiLink, 0, 1);
+		tutorialButtonPane.add(aboutSinapsilink, 0, 1);
 		tutorialButtonPane.add(tutorialButton, 1, 1);	
 	
 		
@@ -306,7 +307,7 @@ public class LoginLayout extends Application {
 		
 		
 		// About link handler
-		aboutSinapsiLink.setOnAction(new EventHandler<ActionEvent>() {
+		aboutSinapsilink.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				getHostServices().showDocument("https://github.com/SinapsiProject");
