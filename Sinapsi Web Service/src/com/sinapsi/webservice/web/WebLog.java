@@ -1,11 +1,17 @@
 package com.sinapsi.webservice.web;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class WebLog
@@ -28,16 +34,61 @@ public class WebLog extends HttpServlet {
 		String type = request.getParameter("type");
 		
 		switch (type) {
-            case "tomcat":
-                request.getRequestDispatcher("tomcat_log.jsp").forward(request, response);
+            case "tomcat": 
+                try {
+                    //TODO: read a specific file log from a time range
+
+                    FileInputStream fstram = new FileInputStream(new File("/var/log/tomcat7/localhost_access_log.2015-06-10.txt"));
+                    HttpSession session = request.getSession();
+                    BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
+                    
+                    if(brr == null)
+                        brr = new BufferedReader(new InputStreamReader(fstram));
+                    
+                    session.setAttribute("log_buffer", brr);
+                    request.getRequestDispatcher("log.jsp").forward(request, response);
+                    
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
                 break;
 
+            case "catalina":
+                try {
+                    FileInputStream fstram = new FileInputStream(new File("/var/log/tomcat7/catalina.out"));
+                    HttpSession session = request.getSession();
+                    BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
+                    
+                    if(brr == null)
+                        brr = new BufferedReader(new InputStreamReader(fstram));
+                    
+                    session.setAttribute("log_buffer", brr);
+                    request.getRequestDispatcher("log.jsp").forward(request, response);
+                    
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+                
             case "db":
-                request.getRequestDispatcher("db_log.jsp").forward(request, response);
+                try {
+                    FileInputStream fstram = new FileInputStream(new File("/var/log/postgresql/postgresql-9.1-main.log "));
+                    HttpSession session = request.getSession();
+                    BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
+                    
+                    if(brr == null)
+                        brr = new BufferedReader(new InputStreamReader(fstram));
+                    
+                    session.setAttribute("log_buffer", brr);
+                    request.getRequestDispatcher("log.jsp").forward(request, response);
+                    
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
                 break;
                 
             case "ws":
-                request.getRequestDispatcher("ws_log.jsp").forward(request, response);
+                request.getRequestDispatcher("log.jsp").forward(request, response);
                 break;
         }
 	}

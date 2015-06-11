@@ -90,6 +90,9 @@
                                 <a href="web_log?type=tomcat">Tomcat</a>
                             </li>
                             <li>
+                                <a href="web_log?type=catalina">Catalina</a>
+                            </li>
+                            <li>
                                 <a href="web_log?type=db">Database</a>
                             </li>
                             <li>

@@ -1,3 +1,4 @@
+<%@page import="java.io.BufferedReader"%>
 <%@ page 
     language="java" 
     contentType="text/html; charset=utf-8"
@@ -21,20 +22,20 @@
     <!-- Google Fonts-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
-
+   
 <body>
     <%
-            String email = null;
-            Cookie[] cookies = request.getCookies();
-            if(cookies != null) {
-                for(Cookie cookie : cookies) {
-                    if(cookie.getName().equals("user")) 
-                        email = cookie.getValue();
-                }
-            }
-            if(email == null) 
-                response.sendRedirect("login.html");
-        %>
+       String email = null;
+       Cookie[] cookies = request.getCookies();
+       if(cookies != null) {
+          for(Cookie cookie : cookies) {
+             if(cookie.getName().equals("user")) 
+                email = cookie.getValue();
+          }
+       }
+       if(email == null) 
+           response.sendRedirect("login.html");
+    %>
     <div id="wrapper">
         <nav class="navbar navbar-default top-navbar" role="navigation">
             <div class="navbar-header">
@@ -87,7 +88,10 @@
                         <a class="active-menu" href="#"><i class="fa fa-fw fa-file"></i> Log <span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a class="active-menu" href="web_log?type=tomcat">Tomcat</a>
+                                <a href="web_log?type=tomcat">Tomcat</a>
+                            </li>
+                            <li>
+                                <a href="web_log?type=catalina">Catalina</a>
                             </li>
                             <li>
                                 <a href="web_log?type=db">Database</a>
@@ -106,13 +110,36 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-header">
-                            Sinapsi <small>Summary</small>
+                            <small>Log</small>
                         </h1>
-                        <h2>Work in progress</h2>
                     </div>
                 </div>
                 <!-- /. ROW  -->
-
+                <!-- /. ROW  -->
+                <div class="row">
+                    <div class="col-md-12" >
+                    <div style="max-height:700px; 
+                                overflow: scroll;
+                                border: 1px solid rgba(67, 67, 67, 0.36);
+                                padding-left: 4px;">
+                                                   
+                        <%
+                           BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
+                           session.removeAttribute("log_buffer");
+                           if(brr != null) {
+                               String line;
+                               while((line = brr.readLine()) != null) { 
+                        %>
+                                   "<%=line%>"<br>   
+                        <% 
+                               }
+                           }
+                               
+                        %>
+                        </div>
+                    </div>
+                </div>
+               <!-- /. ROW  -->
                
                 <!-- /. ROW  -->
 				

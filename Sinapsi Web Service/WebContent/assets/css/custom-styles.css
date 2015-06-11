@@ -60,6 +60,7 @@ p {
     line-height:25px;
     padding-top:20px;
 }
+
 /*----------------------------------------------
    DASHBOARD STYLES    
 ------------------------------------------------*/
@@ -287,6 +288,7 @@ line-height: 21px;
 padding-top: 4px;
 }
 .active-menu {
+    
     background-color:#225081!important;
 }
 
@@ -363,6 +365,7 @@ color:#fff;
 margin: 8px 0;
 }
 .navbar-default {
+    
 border:0px solid black;
      
 }
@@ -426,7 +429,6 @@ line-height: 1.428571429;
 display: block;
 padding-top: 14px;
 font-size: 19px;
-}
-}
 
+}
 
