@@ -68,6 +68,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     private OnlineStatusProvider onlineStatusProvider;
     private WSClient wsClient = null;
     private WebSocketEventHandler webSocketEventHandler;
+    private LoginStatusListener loginStatusListener;
+
+    private UserInterface loggedUser = null;
 
     /**
      * Default ctor
@@ -78,12 +81,14 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
                                     OnlineStatusProvider onlineStatusProvider,
                                     WebSocketEventHandler wsEventHandler,
+                                    LoginStatusListener loginStatusListener,
                                     EncodingMethod encodingMethod,
                                     DecodingMethod decodingMethod) {
 
         this.webSocketEventHandler = wsEventHandler;
 
         this.onlineStatusProvider = onlineStatusProvider;
+        this.loginStatusListener = loginStatusListener;
         this.encodingMethod = encodingMethod;
         this.decodingMethod = decodingMethod;
 
@@ -146,8 +151,11 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * @param retrofitLog
      * @param onlineStatusProvider
      */
-    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider, WebSocketEventHandler wsEventHandler){
-        this(retrofitLog, onlineStatusProvider, wsEventHandler, null, null);
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
+                                    OnlineStatusProvider onlineStatusProvider,
+                                    WebSocketEventHandler wsEventHandler,
+                                    LoginStatusListener loginStatusListener){
+        this(retrofitLog, onlineStatusProvider, wsEventHandler, loginStatusListener, null, null);
         //using null as methods here is safe because will force bgp library to use
         //default apache common codec methods
     }
@@ -301,6 +309,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                             }
 
                             wsClient.establishConnection();
+                            loggedUser = user;
+                            loginStatusListener.onLogIn(user);
                             result.success(user, response);
                         }
 
@@ -412,7 +422,16 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         localUncryptedSessionKey = null;
         serverSessionKey = null;
         serverPublicKey = null;
+        loggedUser = null;
+        loginStatusListener.onLogOut();
     }
 
+    public UserInterface getLoggedUser() {
+        return loggedUser;
+    }
 
+    public interface LoginStatusListener {
+        public void onLogIn(UserInterface user);
+        public void onLogOut();
+    }
 }

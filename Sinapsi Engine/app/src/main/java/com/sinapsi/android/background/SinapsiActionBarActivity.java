@@ -59,7 +59,7 @@ public class SinapsiActionBarActivity extends ActionBarActivity implements Servi
     }
 
     /**
-     * This method can be overridden to do something after service connection
+     * This method can be overridden to do something after service disconnection
      * @param name
      */
     @Override

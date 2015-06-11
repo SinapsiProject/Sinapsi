@@ -62,6 +62,7 @@ import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.wsproto.SinapsiMessageTypes;
@@ -84,7 +85,7 @@ import retrofit.android.AndroidLog;
  * in order to remain running on the system. The engine is initialized
  * here and
  */
-public class SinapsiBackgroundService extends Service implements OnlineStatusProvider, WebSocketEventHandler {
+public class SinapsiBackgroundService extends Service implements OnlineStatusProvider, WebSocketEventHandler, RetrofitWebServiceFacade.LoginStatusListener {
     private WSClient wsClient;
     private RetrofitWebServiceFacade web;
     private SyncManager syncManager = new SyncManager();
@@ -95,13 +96,14 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     private SinapsiLog sinapsiLog;
     private DeviceInterface device;
 
-    private FactoryModel fm = new FactoryModel();
+    private static FactoryModel fm = new FactoryModel();
 
     private Map<String, WebServiceConnectionListener> connectionListeners = new HashMap<>();
 
     private boolean started = false;
     private boolean onlineMode = false;
-
+    private static final UserInterface logoutUser = fm.newUser(-1, "Not logged in yet.", "");
+    private UserInterface loggedUser = logoutUser;
 
 
 
@@ -153,6 +155,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
         web = new RetrofitWebServiceFacade(
                 new AndroidLog("RETROFIT"),
+                this,
                 this,
                 this,
                 new AndroidBase64EncodingMethod(),
@@ -380,6 +383,20 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             }
             break;
         }
+    }
+
+    public UserInterface getLoggedUser() {
+        return loggedUser;
+    }
+
+    @Override
+    public void onLogIn(UserInterface user) {
+        this.loggedUser = user;
+    }
+
+    @Override
+    public void onLogOut() {
+        this.loggedUser = logoutUser;
     }
 
 

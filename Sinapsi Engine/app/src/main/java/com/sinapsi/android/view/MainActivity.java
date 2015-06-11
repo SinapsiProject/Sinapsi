@@ -1,5 +1,6 @@
 package com.sinapsi.android.view;
 
+import android.content.ComponentName;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,7 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
@@ -28,6 +31,8 @@ public class MainActivity extends SinapsiActionBarActivity {
     private DrawerLayout drawerLayout;
     private ListView drawerListView;
 
+    private LinearLayout drawerLinearLayout;
+
     private Map<String, SinapsiFragment> fragmentMap = new HashMap<>();
     private String[] fragmentTitles;
 
@@ -42,6 +47,7 @@ public class MainActivity extends SinapsiActionBarActivity {
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerListView = (ListView) findViewById(R.id.left_drawer);
+        drawerLinearLayout = (LinearLayout) findViewById(R.id.left_drawer_linear);
 
         //Add here all the fragments
         initFragmentMap(
@@ -62,6 +68,9 @@ public class MainActivity extends SinapsiActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         setupDrawerToggle();
+
+
+
 
         currentTitle = fragmentTitles[0];
         selectItem(0);
@@ -123,7 +132,7 @@ public class MainActivity extends SinapsiActionBarActivity {
         // Highlight the selected item, update the title, and close the drawer
         drawerListView.setItemChecked(position, true);
         setTitle(fragmentTitles[position]);
-        drawerLayout.closeDrawer(drawerListView);
+        drawerLayout.closeDrawer(drawerLinearLayout);
     }
 
     @Override
@@ -166,5 +175,12 @@ public class MainActivity extends SinapsiActionBarActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name) {
+        super.onServiceConnected(name);
+        TextView userText = (TextView) findViewById(R.id.user_text_view);
+        userText.setText(service.getLoggedUser().getEmail());
     }
 }

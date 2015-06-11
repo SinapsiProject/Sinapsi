@@ -153,6 +153,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                 @Override
                 public void failure(Throwable t) {
                     handleRetrofitError(t);
+                    showProgress(false);
                 }
             });
 
@@ -181,6 +182,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
             @Override
             public void failure(Throwable error) {
                 handleRetrofitError(error);
+                showProgress(false);
             }
         });
 
