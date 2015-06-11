@@ -258,6 +258,7 @@ public class LoginLayout extends Application {
 			
 			@Override
 			public void handle(ActionEvent event) {
+				registrationEmailField = new TextField();
 				registrationPasswordField = new PasswordField();
 				registrationPasswordFieldConfirmed = new PasswordField();
 				registrationPassword = new Label("New password");
@@ -280,7 +281,7 @@ public class LoginLayout extends Application {
 				grid.setPadding(new Insets(25, 25, 25, 25));
 				
 				grid.add(emailLabel, 0, 2);
-				grid.add(emailField, 0, 3);
+				grid.add(registrationEmailField, 0, 3);
 				grid.add(registrationPassword, 0, 4);
 				grid.add(registrationPasswordField, 0, 5);
 				grid.add(registrationPasswordConfirmed, 0, 6);
@@ -322,6 +323,8 @@ public class LoginLayout extends Application {
 				grid.setHgap(15);
 				grid.setVgap(10);
 				grid.setPadding(new Insets(25, 25, 25, 25));
+				
+				emailField.clear();
 					
 				grid.add(emailLabel, 0, 2);
 				grid.add(emailField, 0, 3);
