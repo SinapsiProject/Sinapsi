@@ -74,36 +74,22 @@ public class LoginServlet extends HttpServlet {
             Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
             
             String password = decrypter.decrypt(pwdSes.getValue());
-            
             User user = (User) userManager.getUserByEmail(email);           
             
-            if (user != null) {
-                // the user is ok
-                if (userManager.checkUser(email, password)) {          
-                    // set the connected devices
-                    user.setDevices(deviceManager.getUserDevices(email));
+            if (userManager.checkUser(email, password)) {          
+                // set the connected devices
+                user.setDevices(deviceManager.getUserDevices(email));
                     
-                    // and send the encrypted data
-                    out.print(encrypter.encrypt(gson.toJson(user)));
-                    out.flush();
+                // and send the encrypted data
+                out.print(encrypter.encrypt(gson.toJson(user)));
+                out.flush();
                 
-                // login error, (email incorrect or password incorrect)
-                } else {
-                    // set error description
-                    user.errorOccured(true);
-                    user.setErrorDescription("Login error");
-                    // send encrypted data            
-                    out.print(encrypter.encrypt(gson.toJson(user)));
-                    out.flush();
-                }
-            
-            // the user doesn't exist in the db
+            // login error, (email incorrect or password incorrect)
             } else {
-                FactoryModelInterface factory = new FactoryModel();
-                user = (User) factory.newUser(0, email, password, null);
+                // set error description
                 user.errorOccured(true);
-                user.setErrorDescription("User doesnt exist");
-                // send encrypted data
+                user.setErrorDescription("Login error");
+                // send encrypted data            
                 out.print(encrypter.encrypt(gson.toJson(user)));
                 out.flush();
             }

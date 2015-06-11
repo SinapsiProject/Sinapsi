@@ -38,7 +38,7 @@ public class WebLog extends HttpServlet {
                 try {
                     //TODO: read a specific file log from a time range
 
-                    FileInputStream fstram = new FileInputStream(new File("/var/log/tomcat7/localhost_access_log.2015-06-10.txt"));
+                    FileInputStream fstram = new FileInputStream(new File("/var/log/tomcat7/localhost_access_log.2015-06-11.txt"));
                     HttpSession session = request.getSession();
                     BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
                     
@@ -72,7 +72,7 @@ public class WebLog extends HttpServlet {
                 
             case "db":
                 try {
-                    FileInputStream fstram = new FileInputStream(new File("/var/log/postgresql/postgresql-9.1-main.log "));
+                    FileInputStream fstram = new FileInputStream(new File("/var/log/postgresql/postgresql-9.1-main.log"));
                     HttpSession session = request.getSession();
                     BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
                     

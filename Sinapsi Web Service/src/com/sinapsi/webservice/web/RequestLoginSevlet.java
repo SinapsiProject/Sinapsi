@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.PublicKey;
 import java.util.HashMap;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.encryption.Encrypt;
 import com.bgp.generator.KeyGenerator;
 import com.bgp.keymanager.PrivateKeyManager;
@@ -16,7 +18,11 @@ import com.bgp.keymanager.PublicKeyManager;
 import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.model.FactoryModelInterface;
+import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.User;
 import com.sinapsi.webservice.db.KeysDBManager;
+import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -43,12 +49,25 @@ public class RequestLoginSevlet extends HttpServlet {
         response.setContentType("application/json");
         Gson gson = new Gson();
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
         // generate local public/private keys
         KeyGenerator generator = new KeyGenerator(1024, "RSA");
 
         try {    
             String email = request.getParameter("email");
-                      
+            User user = (User) userManager.getUserByEmail(email); 
+            
+            //User doesn't exist
+            if (user == null) {   
+                FactoryModelInterface factory = new FactoryModel();
+                user = (User) factory.newUser(0, email, "", null);
+                user.errorOccured(true);
+                user.setErrorDescription("User doesnt exist");
+                // send data
+                out.print(gson.toJson(user));
+                out.flush();
+            }
+            
             byte[] byteKey = gson.fromJson(BodyReader.read(request), new TypeToken<byte[]>(){}.getType());
             PublicKey clientPublicKey = PublicKeyManager.convertToKey(byteKey);
             
