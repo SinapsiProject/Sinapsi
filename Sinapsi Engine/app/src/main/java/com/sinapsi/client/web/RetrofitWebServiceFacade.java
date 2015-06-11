@@ -86,7 +86,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         this.decodingMethod = decodingMethod;
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(DeviceInterface.class, new DeviceInterfaceInstanceCreator(factoryModel))
+                .registerTypeAdapter(
+                        DeviceInterface.class,
+                        new DeviceInterfaceInstanceCreator(factoryModel))
                 .create();
 
 

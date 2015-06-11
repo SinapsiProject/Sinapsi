@@ -171,9 +171,6 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                     Lol.d(this, "Error! Message received: " + user.getErrorDescription());
                 } else {
                     Lol.d(this, "Success! user id received: " + user.getId());
-                    // start websocket client
-                    service.getWSClient().establishConnection();
-
                     Intent i = new Intent(LoginActivity.this, MainActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
