@@ -11,20 +11,14 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -32,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 public class LoginLayout extends Application {
@@ -39,17 +34,17 @@ public class LoginLayout extends Application {
 	/**
 	 * Layout components 
 	 */
+		// Controller 
+		private LayoutController controller;
 	
 		// Stages
 		private Stage primaryStage;
 		private Stage tutorialStage;
-		private Stage registerStage;
 					
 		// Panes
 		private BorderPane root;
 		private GridPane grid;
 		private GridPane logoPane;
-		private GridPane registrationPane;
 		private GridPane tutorialButtonPane;
 		private BorderPane tutorialPane;
 					
@@ -83,7 +78,6 @@ public class LoginLayout extends Application {
 		private PasswordField passwordField;
 		
 		private TextField registrationEmailField;
-		private TextField registrationUsername;
 		private PasswordField registrationPasswordField;
 		private PasswordField registrationPasswordFieldConfirmed;
 		
@@ -114,6 +108,10 @@ public class LoginLayout extends Application {
 	/**
 	 * Login layout launcher
 	 */
+	
+	public void showErrorDialog() {
+		
+	}
 	
 	public void initLogin() {
 		this.grid = new GridPane();		
@@ -161,12 +159,8 @@ public class LoginLayout extends Application {
 		hboxSignIn.setAlignment(Pos.CENTER);
 		hboxSignIn.getChildren().add(signIn);
 		
-		// Setting tutorial button
-		//Image tutorialLogo = new Image("file:res/tutorial2p.png");
-		//ImageView tutorialButtonView = new ImageView();
-		//tutorialButtonView.setImage(tutorialLogo);
+
 		tutorialButton = new Button("?");
-		//tutorialButton.setGraphic(tutorialButtonView);
 		tutorialButton.setId("tutorial-button");
 		
 		// Registration Buttons 
@@ -212,7 +206,7 @@ public class LoginLayout extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				
-				LayoutController controller = new LayoutController(LoginLayout.this.signIn);
+				controller = new LayoutController(LoginLayout.this.signIn);
 				controller.login(emailField.getText(), passwordField.getText());
 			}
 		});
@@ -346,7 +340,7 @@ public class LoginLayout extends Application {
 		root.setBottom(tutorialButtonPane);
 		root.setTop(logoPane);
 		root.setCenter(grid);
-		//root.setBackground(new Background(new BackgroundFill(Color.web("#256581"), CornerRadii.EMPTY, Insets.EMPTY)));
+		
 		FadeTransition rootTransition = new FadeTransition(Duration.millis(1300), root);
 		rootTransition.setFromValue(0.0);
 		rootTransition.setToValue(1.0);
@@ -354,6 +348,12 @@ public class LoginLayout extends Application {
 		Scene loginScene = new Scene(root, 800, 600);
 		loginScene.getStylesheets().add("file:style/style.css");
 		
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			public void handle(WindowEvent event) {
+				controller.logout();
+				System.exit(0);
+			};
+		});
 		primaryStage.setScene(loginScene);
 		primaryStage.setTitle("Sinapsi Login");
 		primaryStage.setResizable(false);
