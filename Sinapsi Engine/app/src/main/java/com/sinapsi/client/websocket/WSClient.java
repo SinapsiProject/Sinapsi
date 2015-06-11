@@ -36,6 +36,7 @@ public class WSClient extends WebSocketClient {
         this.username = username;
     }
 
+
     /**
      * Method called when the connection to web socket server is established
      * @param handshakedata

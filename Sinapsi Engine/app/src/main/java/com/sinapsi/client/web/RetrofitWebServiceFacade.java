@@ -17,6 +17,7 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.wsproto.WebSocketEventHandler;
 
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -65,7 +66,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
 
     private OnlineStatusProvider onlineStatusProvider;
-    private WSClient wsClient;
+    private WSClient wsClient = null;
+    private WebSocketEventHandler webSocketEventHandler;
 
     /**
      * Default ctor
@@ -75,11 +77,11 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      */
     public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
                                     OnlineStatusProvider onlineStatusProvider,
-                                    WSClient webSocketClient,
+                                    WebSocketEventHandler wsEventHandler,
                                     EncodingMethod encodingMethod,
                                     DecodingMethod decodingMethod) {
 
-        this.wsClient = webSocketClient;
+        this.webSocketEventHandler = wsEventHandler;
 
         this.onlineStatusProvider = onlineStatusProvider;
         this.encodingMethod = encodingMethod;
@@ -144,8 +146,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * @param retrofitLog
      * @param onlineStatusProvider
      */
-    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider, WSClient webSocketClient){
-        this(retrofitLog, onlineStatusProvider, webSocketClient, null, null);
+    public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog, OnlineStatusProvider onlineStatusProvider, WebSocketEventHandler wsEventHandler){
+        this(retrofitLog, onlineStatusProvider, wsEventHandler, null, null);
         //using null as methods here is safe because will force bgp library to use
         //default apache common codec methods
     }
@@ -251,7 +253,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void login(String email, String password, final WebServiceCallback<User> result) {
+    public void login(final String email, String password, final WebServiceCallback<User> result) {
         checkKeys();
 
         if(!onlineStatusProvider.isOnline()) return;
@@ -268,8 +270,36 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
                         @Override
                         public void success(User user, Response response) {
-                            if (wsClient == null)
-                                throw new RuntimeException("Web Socket client object is strangely null");
+                            try{
+                                wsClient = new WSClient(email){
+                                    @Override
+                                    public void onOpen(ServerHandshake handshakedata) {
+                                        super.onOpen(handshakedata);
+                                        webSocketEventHandler.onWebSocketOpen();
+                                    }
+
+                                    @Override
+                                    public void onMessage(String message) {
+                                        super.onMessage(message);
+                                        webSocketEventHandler.onWebSocketMessage(message);
+                                    }
+
+                                    @Override
+                                    public void onClose(int code, String reason, boolean remote) {
+                                        super.onClose(code, reason, remote);
+                                        webSocketEventHandler.onWebSocketClose(code, reason, remote);
+                                    }
+
+                                    @Override
+                                    public void onError(Exception ex) {
+                                        super.onError(ex);
+                                        webSocketEventHandler.onWebSocketError(ex);
+                                    }
+                                };
+                            } catch (URISyntaxException e){
+                                e.printStackTrace();
+                            }
+
                             wsClient.establishConnection();
                             result.success(user, response);
                         }

@@ -65,6 +65,7 @@ import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.wsproto.SinapsiMessageTypes;
+import com.sinapsi.wsproto.WebSocketEventHandler;
 import com.sinapsi.wsproto.WebSocketMessage;
 
 import org.java_websocket.handshake.ServerHandshake;
@@ -83,7 +84,7 @@ import retrofit.android.AndroidLog;
  * in order to remain running on the system. The engine is initialized
  * here and
  */
-public class SinapsiBackgroundService extends Service implements OnlineStatusProvider {
+public class SinapsiBackgroundService extends Service implements OnlineStatusProvider, WebSocketEventHandler {
     private WSClient wsClient;
     private RetrofitWebServiceFacade web;
     private SyncManager syncManager = new SyncManager();
@@ -145,60 +146,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
         // web service and web socket initialization ----------------
         try{
-            wsClient = new WSClient() {
-                @Override
-                public void onOpen(ServerHandshake handshakedata) {
-                    super.onOpen(handshakedata);
-                }
-
-                @Override
-                public void onMessage(String message) {
-                    super.onMessage(message);
-                    handleWsMessage(message, true);
-                }
-
-                @Override
-                public void onError(Exception ex) {
-                    super.onError(ex);
-                }
-
-                @Override
-                public void onClose(int code, String reason, boolean remote) {
-                    super.onClose(code, reason, remote);
-                }
-
-                private void handleWsMessage(String message, boolean firstcall){
-                    Lol.d(SinapsiBackgroundService.class, "WebSocket message received: '" + message + "'");
-                    Gson gson = new Gson();
-                    WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
-                    switch (wsMsg.getMsgType()){
-                        case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR:
-                        {
-                            RemoteExecutionDescriptor red = (RemoteExecutionDescriptor) wsMsg.getData();
-                            try {
-                                engine.continueMacro(red);
-                            } catch (MacroEngine.MissingMacroException e) {
-                                if(firstcall){
-                                    //retries after a sync
-                                    syncManager.sync();
-                                    handleWsMessage(message, false);
-                                }else{
-                                    e.printStackTrace();
-                                    //TODO: the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
-                                }
-
-                            }
-                        }
-                        break;
-                        case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION:
-                        {
-                            //TODO: impl (after alpha)
-                        }
-                        break;
-                    }
-                }
-
-            };
+            wsClient = new WSClient();
         } catch (URISyntaxException e){
             e.printStackTrace();
         }
@@ -206,7 +154,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         web = new RetrofitWebServiceFacade(
                 new AndroidLog("RETROFIT"),
                 this,
-                wsClient,
+                this,
                 new AndroidBase64EncodingMethod(),
                 new AndroidBase64DecodingMethod());
 
@@ -381,6 +329,57 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         if (onlineMode != tmpOnlineVal) notifyWebServiceConnectionListeners(tmpOnlineVal);
         onlineMode = tmpOnlineVal;
         return tmpOnlineVal;
+    }
+
+    @Override
+    public void onWebSocketOpen() {
+
+    }
+
+    @Override
+    public void onWebSocketMessage(String message) {
+        handleWsMessage(message, true);
+    }
+
+    @Override
+    public void onWebSocketError(Exception ex) {
+
+    }
+
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+
+    }
+
+    private void handleWsMessage(String message, boolean firstcall){
+        Lol.d(SinapsiBackgroundService.class, "WebSocket message received: '" + message + "'");
+        Gson gson = new Gson();
+        WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
+        switch (wsMsg.getMsgType()){
+            case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR:
+            {
+                RemoteExecutionDescriptor red = (RemoteExecutionDescriptor) wsMsg.getData();
+                try {
+                    engine.continueMacro(red);
+                } catch (MacroEngine.MissingMacroException e) {
+                    if(firstcall){
+                        //retries after a sync
+                        syncManager.sync();
+                        handleWsMessage(message, false);
+                    }else{
+                        e.printStackTrace();
+                        //TODO: the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
+                    }
+
+                }
+            }
+            break;
+            case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION:
+            {
+                //TODO: impl (after alpha)
+            }
+            break;
+        }
     }
 
 
