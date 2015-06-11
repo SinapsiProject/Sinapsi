@@ -266,7 +266,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
                         @Override
                         public void success(User user, Response response) {
-                            if(wsClient == null) throw new RuntimeException("Web Socket client object is strangely null");
+                            if (wsClient == null)
+                                throw new RuntimeException("Web Socket client object is strangely null");
                             wsClient.establishConnection();
                             result.success(user, response);
                         }
@@ -368,6 +369,17 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     public WSClient getWebSocketClient() {
         return wsClient;
+    }
+
+    @Override
+    public void logout(){
+        if(wsClient.isOpen())
+            wsClient.closeConnection();
+        publicKey = null;
+        privateKey = null;
+        localUncryptedSessionKey = null;
+        serverSessionKey = null;
+        serverPublicKey = null;
     }
 
 

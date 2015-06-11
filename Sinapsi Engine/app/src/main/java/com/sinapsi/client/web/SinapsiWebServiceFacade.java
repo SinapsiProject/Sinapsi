@@ -144,4 +144,11 @@ public interface SinapsiWebServiceFacade {
                                       WebServiceCallback<String> result);
 
 
+    /**
+     * Makes a logout from the server. The client should delete
+     * any keys and close any open connection after this.
+     */
+    public void logout();
+
+
 }
