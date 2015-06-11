@@ -253,7 +253,8 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         // here ends engine initialization      ---------------------
 
         // loads macros from local db/web service -------------------
-        engine.addMacros(loadSavedMacros());
+        syncAndUpdateMacros();
+
 
         if(AppConsts.DEBUG_MACROS)createLocalMacroExamples();
 
@@ -330,9 +331,13 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         return new SinapsiServiceBinder();
     }
 
-    public List<MacroInterface> getMacros() {
+    public void syncAndUpdateMacros(){
+        if(isOnline()) syncManager.sync();
+        engine.addMacros(loadSavedMacros());
 
-        //TODO: handle server sync
+    }
+
+    public List<MacroInterface> getMacros() {
         return new ArrayList<>(engine.getMacros().values());
     }
 

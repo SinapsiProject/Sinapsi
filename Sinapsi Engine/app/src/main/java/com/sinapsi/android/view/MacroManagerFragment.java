@@ -338,7 +338,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
-        //TODO: handle server sync
+        service.syncAndUpdateMacros();
         updateMacroList(service.getMacros());
 
 
