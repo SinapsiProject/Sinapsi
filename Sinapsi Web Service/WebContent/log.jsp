@@ -25,7 +25,6 @@
 <script type="text/javascript">
     function scrollDown() {
         $(document).scrollTop($(document).height());
-        $('#log').scrollTop($('#log').height());
     }
     window.onload = scrollDown;
 </script>
@@ -124,7 +123,7 @@
                 <!-- /. ROW  -->
                 <div class="row">
                     <div class="col-md-12" >
-                    <div id="log" style="max-height:700px; 
+                    <div id="tomcat_log" style="height:100%; 
                                          overflow: scroll;
                                          border: 1px solid rgba(67, 67, 67, 0.36);
                                          padding-left: 4px;">
@@ -145,10 +144,61 @@
                         </div>
                     </div>
                 </div>
+                <script type="application/javascript">
+                    $(document).ready(function() {
+                        $('#tomcat_log').scrollTop($('#tomcat_log').height());
+                    }
+                    
+                </script>
                <!-- /. ROW  -->
                
                 <!-- /. ROW  -->
-				
+				<!-- /. return to top  -->
+            <a href="#" id="back-to-top" title="Back to top" style="
+                    position: fixed;
+                    bottom: 20px;
+                    left: 20px;
+                    z-index: 9999;
+                    width: 32px;
+                    height: 32px;
+                    text-align: center;
+                    line-height: 30px;
+                    background: #eaeaea;
+                    color: #444;
+                    cursor: pointer;
+                    border: 0;
+                    border-radius: 2px;
+                    text-decoration: none;
+                    transition: opacity 0.2s ease-out;
+                    opacity: 0;
+                    -webkit-box-shadow: 0px 1px 16px 0px rgba(50, 50, 50, 1);
+                    -moz-box-shadow:    0px 1px 16px 0px rgba(50, 50, 50, 1);
+                    box-shadow:         0px 1px 16px 0px rgba(50, 50, 50, 1);
+                }">Top</a>
+            
+            <script type="application/javascript">
+                if ($('#back-to-top').length) {
+                var scrollTrigger = 100, // px
+                    backToTop = function () {
+                        var scrollTop = $(window).scrollTop();
+                        if (scrollTop > scrollTrigger) {
+                            $('#back-to-top').css("opacity", "0.7");
+                        } else {
+                            $('#back-to-top').css("opacity", "0");
+                        }
+                    };
+                backToTop();
+                $(window).on('scroll', function () {
+                    backToTop();
+                });
+                $('#back-to-top').on('click', function (e) {
+                    e.preventDefault();
+                    $('html,body').animate({
+                        scrollTop: 0
+                    }, 700);
+                });
+            }
+            </script>
             </div>
             <!-- /. PAGE INNER  -->
             pre-alpha 1.0 version © 2015 Sinapsi
@@ -168,5 +218,6 @@
     <script src="assets/js/morris/morris.js"></script>
     <!-- Custom Js -->
     <script src="assets/js/custom-scripts.js"></script>
+    
 </body>
 </html>

@@ -29,6 +29,7 @@
     // Initializing ///
     $(document).ready(function () {
         mainApp.initFunction();
+        $('#tomcat_log').scrollTop($('#tomcat_log').height());
     });
 
 }(jQuery));
