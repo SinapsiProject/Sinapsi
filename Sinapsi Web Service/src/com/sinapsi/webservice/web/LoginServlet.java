@@ -2,7 +2,6 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import javax.crypto.SecretKey;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -83,6 +82,8 @@ public class LoginServlet extends HttpServlet {
                 
             // login error, (email incorrect or password incorrect)
             } else {
+                keysManager.updateRemotePublicKey(email, null);
+                keysManager.updateLocalKeys(email, null, null, null, null);
                 // set error description
                 user.errorOccured(true);
                 user.setErrorDescription("Login error");
