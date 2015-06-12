@@ -19,6 +19,7 @@ import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.utils.Pair;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
@@ -59,10 +60,10 @@ public class LoginServlet extends HttpServlet {
             String jsonBody = BodyReader.read(request);
            
             // return the string from the decrypted json string
-            HashMap.SimpleEntry<byte[], String> pwdSes = gson.fromJson(jsonBody, 
-                                                      new TypeToken<HashMap.SimpleEntry<byte[], String>>() {}.getType());
+            Pair<byte[], String> pwdSes = gson.fromJson(jsonBody, 
+                                          new TypeToken<HashMap.SimpleEntry<byte[], String>>() {}.getType());
             
-            SecretKey clientSessionKey = SessionKeyManager.convertToKey(pwdSes.getKey());
+            SecretKey clientSessionKey = SessionKeyManager.convertToKey(pwdSes.getFirst());
             
             // update session key of the client 
             keysManager.updateRemoteSessionKey(email, SessionKeyManager.convertToString(clientSessionKey));
@@ -73,7 +74,7 @@ public class LoginServlet extends HttpServlet {
             // create the decrypter using local private key, and the client encrypted session key, then  decrypt the jsoned body
             Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
             
-            String password = decrypter.decrypt(pwdSes.getValue());
+            String password = decrypter.decrypt(pwdSes.getSecond());
             User user = (User) userManager.getUserByEmail(email);           
             
             if (userManager.checkUser(email, password)) {          

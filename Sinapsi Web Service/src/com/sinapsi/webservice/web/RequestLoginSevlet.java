@@ -3,14 +3,11 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.PublicKey;
-import java.util.HashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.bgp.encryption.Encrypt;
 import com.bgp.generator.KeyGenerator;
 import com.bgp.keymanager.PrivateKeyManager;
@@ -18,9 +15,8 @@ import com.bgp.keymanager.PublicKeyManager;
 import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sinapsi.model.FactoryModelInterface;
-import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.utils.Pair;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
@@ -59,12 +55,11 @@ public class RequestLoginSevlet extends HttpServlet {
             
             //User doesn't exist
             if (user == null) {   
-                FactoryModelInterface factory = new FactoryModel();
-                user = (User) factory.newUser(0, email, "", null);
-                user.errorOccured(true);
-                user.setErrorDescription("User doesnt exist");
                 // send data
-                out.print(gson.toJson(user));
+                Pair<byte[], byte[]> pair = new Pair<byte[], byte[]>(null, null);
+                pair.errorOccured(true);
+                pair.setErrorDescription("User doesnt exist");
+                out.print(gson.toJson(pair));
                 out.flush();
             }
             
@@ -93,8 +88,8 @@ public class RequestLoginSevlet extends HttpServlet {
             keysManager.updateLocalKeys(email, localPublicKey, localPrivateKey, localSessionKey, localUncryptedSessionKey);
 
             // send local public key and session key to the client
-            out.print(gson.toJson(new HashMap.SimpleEntry<byte[], byte[]>(PublicKeyManager.convertToByte(generator.getPublicKey()), 
-                                                                          SessionKeyManager.convertToByte(encrypt.getEncryptedSessionKey()))));
+            out.print(gson.toJson(new Pair<byte[], byte[]>(PublicKeyManager.convertToByte(generator.getPublicKey()), 
+                                                           SessionKeyManager.convertToByte(encrypt.getEncryptedSessionKey()))));
             out.flush();
 
         } catch (Exception e) {
