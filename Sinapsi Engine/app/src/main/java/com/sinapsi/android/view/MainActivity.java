@@ -1,6 +1,7 @@
 package com.sinapsi.android.view;
 
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiFragment;
+import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.engine.R;
 
 import java.util.ArrayList;
@@ -68,8 +70,6 @@ public class MainActivity extends SinapsiActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         setupDrawerToggle();
-
-
 
 
         currentTitle = fragmentTitles[0];
@@ -180,7 +180,31 @@ public class MainActivity extends SinapsiActionBarActivity {
     @Override
     public void onServiceConnected(ComponentName name) {
         super.onServiceConnected(name);
-        TextView userText = (TextView) findViewById(R.id.user_text_view);
+        TextView userText = (TextView) findViewById(R.id.user_info_text_view);
         userText.setText(service.getLoggedUser().getEmail());
+        userText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogUtils.showYesNoDialog(
+                        MainActivity.this,
+                        "Log out",
+                        "Are you sure you want to log out?",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //ON YES
+                                service.getWeb().logout();
+                                MainActivity.this.finish();
+                            }
+                        }, new DialogInterface.OnClickListener(){
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //ON NO
+                                dialog.cancel();
+                            }
+                        });
+            }
+        });
     }
 }

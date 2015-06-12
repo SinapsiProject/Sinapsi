@@ -416,6 +416,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     @Override
     public void logout(){
+        if(wsClient == null) return;
         if(wsClient.isOpen())
             wsClient.closeConnection();
         publicKey = null;
