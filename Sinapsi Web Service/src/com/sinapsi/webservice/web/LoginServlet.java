@@ -57,7 +57,7 @@ public class LoginServlet extends HttpServlet {
            
             // return the string from the decrypted json string
             Pair<byte[], String> pwdSes = gson.fromJson(jsonBody, 
-                                          new TypeToken<HashMap.SimpleEntry<byte[], String>>() {}.getType());
+                                          new TypeToken<Pair<byte[], String>>() {}.getType());
             
             SecretKey clientSessionKey = SessionKeyManager.convertToKey(pwdSes.getFirst());
             
