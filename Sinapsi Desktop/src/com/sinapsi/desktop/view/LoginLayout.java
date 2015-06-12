@@ -346,12 +346,12 @@ public class LoginLayout extends Application {
 		rootTransition.setToValue(1.0);
 		rootTransition.play();
 		Scene loginScene = new Scene(root, 800, 600);
-		loginScene.getStylesheets().add("file:style/style.css");
+		loginScene.getStylesheets().add("file:style/login-style.css");
 		
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			public void handle(WindowEvent event) {
-				controller.logout();
 				System.exit(0);
+				controller.logout();
 			};
 		});
 		primaryStage.setScene(loginScene);

@@ -94,11 +94,13 @@ public class LayoutController {
 					public void success(User t, Object response) {
 						if(t.isErrorOccured()) {
 							System.out.println("fanculo");
+							
 						}
 						else {
 							//wsClient.establishConnection();
 							// Info user
 							System.out.println("Fanculo, user id: " + t.getId());
+							
 						}
 					}
 

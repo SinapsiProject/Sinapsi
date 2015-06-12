@@ -2,6 +2,7 @@ package com.sinapsi.desktop.view;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -35,6 +36,7 @@ public class MacroEditorLayout extends Application {
 	private BorderPane mainPane;
 	private SplitPane splitPane;
 	private GridPane descriptionPane;
+	private FlowPane buttonPane;
 	
 	// Buttons
 	private Button editButton;
@@ -50,7 +52,8 @@ public class MacroEditorLayout extends Application {
 	private Button helpButton;	
 	
 	// ButtonBar
-	private ButtonBar buttonBar;
+	private ButtonBar firstButtonBar;
+	private ButtonBar secondButtonBar;
 	
 	// Labels
 	private Label macroDescription;
@@ -67,7 +70,10 @@ public class MacroEditorLayout extends Application {
 	private TableColumn macroColumn;
 	
 	// Hbox
-	private HBox buttonBox;
+	private HBox groupButtonBox;
+	private HBox macroGroupButtonBox;
+	private HBox macroButtonBox;
+	private HBox helpButtonBox;
 	
 	
 	@Override
@@ -88,12 +94,15 @@ public class MacroEditorLayout extends Application {
 		mainPane = new BorderPane();
 		splitPane = new SplitPane();
 		descriptionPane = new GridPane();
+		buttonPane = new FlowPane();
 		
 		tableView = new TableView();
 		groupColumn = new TableColumn("Groups");
 			groupColumn.setResizable(false);
+			groupColumn.setId("table-column");
 		macroColumn = new TableColumn("Macros");
 			macroColumn.setResizable(false);
+			groupColumn.setId("table-column");
 			
 		groupColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.5));
 		macroColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.5));
@@ -101,37 +110,65 @@ public class MacroEditorLayout extends Application {
 		tableView.getColumns().addAll(groupColumn, macroColumn);
 		
 		
-		helpButton = new Button();
+		helpButton = new Button("?");
+			helpButton.setId("help-button-editor");
 		tryButton = new Button();
 		deleteAction = new Button();
-		deleteGroup = new Button();
-		deleteMacro = new Button();
-		newGroup = new Button();
-		newMacro = new Button();
+		deleteGroup = new Button("X");
+			deleteGroup.setId("delete-group-button");
+		deleteMacro = new Button("X");
+			deleteMacro.setId("delete-macro-button");
+		newGroup = new Button("+");
+			newGroup.setId("new-group-button");
+		newMacro = new Button("+");
+			newMacro.setId("new-macro-button");
 		newAction = new Button();
-		runMacro = new Button();
-		stopMacro = new Button();
+		runMacro = new Button(">");
+			runMacro.setId("run-button");
+		stopMacro = new Button("[]");
+			stopMacro.setId("stop-button");
 		editButton = new Button("Edit");
+			editButton.setId("edit-button");
 		
-		buttonBar =  new ButtonBar();
-		buttonBar.getButtons().addAll(newGroup, deleteGroup, newMacro, deleteMacro,
-									  runMacro, stopMacro, editButton, tryButton, helpButton);
-		buttonBox = new HBox();
-		buttonBox.setPadding(new Insets(5, 0, 5, 0));
-		//buttonBox.getChildren().add(buttonBar);
+		firstButtonBar = new ButtonBar();
+		secondButtonBar = new ButtonBar();
+		
+		groupButtonBox = new HBox(15);
+		groupButtonBox.setAlignment(Pos.CENTER_LEFT);
+		groupButtonBox.setPadding(new Insets(5, 95, 5, 5));
+			groupButtonBox.getChildren().addAll(newGroup,deleteGroup);
+		
+		macroGroupButtonBox = new HBox(15);
+		macroGroupButtonBox.setAlignment(Pos.CENTER_RIGHT);
+		macroGroupButtonBox.setPadding(new Insets(5, 230, 5, 5));
+			macroGroupButtonBox.getChildren().addAll(newMacro,deleteMacro);
+		
+		macroButtonBox = new HBox(15);
+		macroButtonBox.setAlignment(Pos.CENTER_RIGHT);
+		macroButtonBox.setPadding(new Insets(5, 130, 5, 5));
+			macroButtonBox.getChildren().addAll(runMacro,stopMacro,editButton);
+			
+		helpButtonBox = new HBox(15);
+		helpButtonBox.setAlignment(Pos.CENTER_RIGHT);
+		helpButtonBox.setPadding(new Insets(5, 5, 5, 5));
+			helpButtonBox.getChildren().add(helpButton);
 		
 		
+			
 		macroDescription = new Label("Macro description");
+		
+		buttonPane.getChildren().addAll(groupButtonBox, macroGroupButtonBox, macroButtonBox, helpButtonBox);
 		
 		splitPane.setPrefWidth(350);
 		splitPane.getItems().add(tableView);
 		
-		
+		mainPane.setBottom(buttonPane);
 		mainPane.setCenter(descriptionPane);
 		mainPane.setLeft(splitPane);
-		mainPane.setBottom(buttonBox);
+		
 		
 		Scene editorScene = new Scene(mainPane, 800, 600);
+		editorScene.getStylesheets().add("file:style/editor-style.css");
 		primaryStage.setScene(editorScene);
 		primaryStage.setTitle("Sinapsi Macro Editor");
 		primaryStage.setResizable(true);

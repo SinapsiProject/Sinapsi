@@ -1,0 +1,122 @@
+@font-face {
+	-fx-font-family: 'Minimal';
+    src: url('file:res/quicksand2.otf');
+}
+
+#table-column {
+    -fx-table-cell-border-color: #256581;
+    -fx-table-header-border-color: #ffffff;
+    -fx-padding: 5;
+}
+
+#new-group-button {
+	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 10pt;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#new-group-button:hover {
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#new-macro-button {
+	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 10pt;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#new-macro-button:hover {
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#delete-group-button {
+	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 10pt;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#delete-group-button:hover {
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#delete-macro-button {
+	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 10pt;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#delete-macro-button:hover {
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#help-button-editor {
+	-fx-background-radius: 5em;
+    -fx-min-width: 25px;  
+    -fx-min-height: 25px;  
+    -fx-max-width: 25px; 
+    -fx-max-height: 25px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 9pt;
+    -fx-font-style: italic;
+    -fx-font-weight: lighter;
+    -fx-font-smoothing-type: lcd;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow(three-pass-box, gray, 4, 0.5, 0, 0)
+}
+
+#help-button-editor:hover {
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#edit-button {
+	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 10pt;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#edit-button:hover {
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#run-button {
+	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 10pt;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#run-button:hover {
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+#stop-button {
+	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
+    -fx-font-size: 10pt;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.3) , 5, 0.0 , 0 , 1 );
+}
+
+#stop-button:hover {
+	-fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}

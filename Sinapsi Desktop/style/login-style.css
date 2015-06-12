@@ -7,10 +7,6 @@
     src: url('file:res/quicksand2.otf');
 }
 
-.background {
-	-fx-background-color: #256581;
-}
-
 .label {
 	-fx-font-family: "Minimal", Helvetica, Arial, sans-serif;
 }
