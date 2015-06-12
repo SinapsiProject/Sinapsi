@@ -145,6 +145,7 @@
 				
             </div>
             <!-- /. PAGE INNER  -->
+            pre-alpha 1.0 version © 2015 Sinapsi
         </div>
         <!-- /. PAGE WRAPPER  -->
     </div>
