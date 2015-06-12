@@ -6,6 +6,7 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.utils.Pair;
 
 import java.security.PublicKey;
 import java.util.AbstractMap;
@@ -50,7 +51,7 @@ public interface RetrofitInterface {
     public void requestLogin(
             @Query("email") String email,
             @Body byte[] publicKey,
-            Callback<HashMap.SimpleEntry<byte[], byte[]>> keys);
+            Callback<Pair<byte[], byte[]>> keys);
 
     /**
      * Login request
@@ -61,7 +62,7 @@ public interface RetrofitInterface {
     @POST(LOGIN)
     public void login(
             @Query("email") String email,
-            @Body HashMap.SimpleEntry<byte[], String> passwordSession,
+            @Body Pair<byte[], String> passwordSession,
             Callback<User> user);
 
 

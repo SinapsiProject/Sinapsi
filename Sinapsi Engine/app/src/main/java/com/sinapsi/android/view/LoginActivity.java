@@ -37,6 +37,7 @@ import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.utils.Pair;
 
 import retrofit.RetrofitError;
 
@@ -144,9 +145,9 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
 
 
             // first, request login
-            service.getWebServiceFacade().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>>() {
+            service.getWebServiceFacade().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<Pair<byte[], byte[]>>() {
                 @Override
-                public void success(HashMap.SimpleEntry<byte[], byte[]> stringStringSimpleEntry, Object response) {
+                public void success(Pair<byte[], byte[]> stringStringSimpleEntry, Object response) {
                     attemptLogin();
                 }
 

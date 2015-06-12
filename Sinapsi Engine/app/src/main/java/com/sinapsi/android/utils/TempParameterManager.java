@@ -36,26 +36,26 @@ public class TempParameterManager{
     }
 
     /**
-     * todo: doku
-     * @param id
-     * @return
+     * Gets the temp parameters for the given id
+     * @param id the id
+     * @return an array of objects
      */
     public Object[] getTempParameters(Integer id){
         return paramMap.get(id);
     }
 
     /**
-     * todo: doku
-     * @param id
+     * Removes the parameters for the given id from the map
+     * @param id the id
      */
     public void removeTempParameters(Integer id){
         paramMap.remove(id);
     }
 
     /**
-     * todo: doku
-     * @param id
-     * @return
+     * Gets the temp parameters for the given id and removes them from the map
+     * @param id the id
+     * @return the temp parameters
      */
     public Object[] pullTempParameters(Integer id){
         Object[] result = getTempParameters(id);
@@ -64,9 +64,9 @@ public class TempParameterManager{
     }
 
     /**
-     * todo: doku
-     * @param i
-     * @return
+     * Gets the temp parameters, using the id in the EXTRA_PARAM_KEY entry in the given intent's extras.
+     * @param i the intent
+     * @return the temp parameters
      */
     public Object[] getTempParameters(Intent i){
         int id = i.getIntExtra(EXTRA_PARAM_KEY,-1);
@@ -75,9 +75,10 @@ public class TempParameterManager{
     }
 
     /**
-     * todo: doku
-     * @param i
-     * @return
+     * Gets the temp parameters, using the id in the EXTRA_PARAM_KEY entry in the given intent's extras,
+     * and removes them from the map
+     * @param i the intent
+     * @return the temp parameters
      */
     public Object[] pullTempParameters(Intent i){
         Object[] result = getTempParameters(i);

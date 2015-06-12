@@ -1,5 +1,7 @@
 package com.sinapsi.engine;
 
+import com.sinapsi.utils.Pair;
+
 import java.util.HashMap;
 
 /**
@@ -7,7 +9,7 @@ import java.util.HashMap;
  */
 public class VariableManager {
 
-    private HashMap<String, HashMap.SimpleEntry<Types, Object>> map = new HashMap<>();
+    private HashMap<String, Pair<Types, Object>> map = new HashMap<>();
 
     /**
      * Puts a variable with the given name, type and value in the map.
@@ -18,18 +20,18 @@ public class VariableManager {
     public void putVar(String strname, Types type, String strvalue) {
         switch (type){
             case STRING:
-                map.put(strname, new HashMap.SimpleEntry<Types, Object>(type, strvalue));
+                map.put(strname, new Pair<Types, Object>(type, strvalue));
                 break;
             case INT:
             {
                 Integer x = Integer.parseInt(strvalue);
-                map.put(strname, new HashMap.SimpleEntry<Types, Object>(type, x));
+                map.put(strname, new Pair<Types, Object>(type, x));
             }
                 break;
             case BOOLEAN:
             {
                 Boolean x = Boolean.parseBoolean(strvalue);
-                map.put(strname,  new HashMap.SimpleEntry<Types, Object>(type, x));
+                map.put(strname,  new Pair<Types, Object>(type, x));
             }
                 break;
         }
@@ -42,7 +44,7 @@ public class VariableManager {
      */
     public Types getVarType(String strName){
         if(map.containsKey(strName))
-            return map.get(strName).getKey();
+            return map.get(strName).getFirst();
         else return null;
     }
 
@@ -54,7 +56,7 @@ public class VariableManager {
      */
     public Object getVarValue(String strName){
         if(map.containsKey(strName))
-            return map.get(strName).getValue();
+            return map.get(strName).getSecond();
         else return null;
     }
 

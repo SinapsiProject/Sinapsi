@@ -6,6 +6,7 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.utils.Pair;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public interface SinapsiWebServiceFacade {
      * @param keys  public key and session key recived from the server
      */
     public void requestLogin(String email,
-                             WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keys);
+                             WebServiceCallback<Pair<byte[], byte[]>> keys);
 
     /**
      * Logs in the user

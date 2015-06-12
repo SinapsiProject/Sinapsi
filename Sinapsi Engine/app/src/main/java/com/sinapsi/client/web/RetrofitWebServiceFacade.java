@@ -17,6 +17,7 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.utils.Pair;
 import com.sinapsi.wsproto.WebSocketEventHandler;
 
 import org.java_websocket.handshake.ServerHandshake;
@@ -222,7 +223,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * @param keysCallback public key and session key received from the server
      */
     @Override
-    public void requestLogin(String email, final WebServiceCallback<HashMap.SimpleEntry<byte[], byte[]>> keysCallback) {
+    public void requestLogin(String email, final WebServiceCallback<Pair<byte[], byte[]>> keysCallback) {
         if(!onlineStatusProvider.isOnline()) return;
 
         KeyGenerator kg = new KeyGenerator(1024, "RSA");
@@ -232,16 +233,16 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         try {
             uncryptedRetrofit.requestLogin(email,
                     PublicKeyManager.convertToByte(puk),
-                    new Callback<HashMap.SimpleEntry<byte[], byte[]>>() {
+                    new Callback<Pair<byte[], byte[]>>() {
 
                         @Override
-                        public void success(HashMap.SimpleEntry<byte[], byte[]> keys, Response response) {
+                        public void success(Pair<byte[], byte[]> keys, Response response) {
                             RetrofitWebServiceFacade.this.publicKey = puk;
                             RetrofitWebServiceFacade.this.privateKey = prk;
 
                             try {
-                                RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getKey());
-                                RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getValue());
+                                RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getFirst());
+                                RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getSecond());
                             } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                                 e.printStackTrace();
                             }
@@ -273,7 +274,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
             localUncryptedSessionKey = encrypt.getSessionKey();
 
             loginRetrofit.login(email,
-                    new HashMap.SimpleEntry<byte[], String>(SessionKeyManager.convertToByte(sk), encrypt.encrypt(password)),
+                    new Pair<byte[], String>(SessionKeyManager.convertToByte(sk), encrypt.encrypt(password)),
                     new Callback<User>() {
 
                         @Override
