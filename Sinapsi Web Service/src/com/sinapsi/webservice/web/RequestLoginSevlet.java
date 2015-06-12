@@ -61,6 +61,7 @@ public class RequestLoginSevlet extends HttpServlet {
                 pair.setErrorDescription("User doesnt exist");
                 out.print(gson.toJson(pair));
                 out.flush();
+                return;
             }
             
             byte[] byteKey = gson.fromJson(BodyReader.read(request), new TypeToken<byte[]>(){}.getType());
