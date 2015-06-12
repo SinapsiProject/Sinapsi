@@ -153,11 +153,15 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
 
                 @Override
                 public void failure(Throwable t) {
-                    if(!(t instanceof RetrofitError))
+                    showProgress(false);
+                    if(!(t instanceof RetrofitError)) {
+                        Lol.d(LoginActivity.class, "User does not exist");
                         mEmailView.setError(getString(R.string.username_does_not_exist));
+                        return;
+                    }
 
                     handleRetrofitError(t);
-                    showProgress(false);
+
                 }
             });
 
@@ -172,7 +176,16 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
         service.getWebServiceFacade().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
             @Override
             public void success(User user, Object response) {
-                if (user.isErrorOccured()) { //TODO: Null pointer exception!
+                if(user ==null){
+                    showProgress(false);
+                    Lol.d("LOGIN->SUCCESS", "USER IS NULL");
+                    DialogUtils.showOkDialog(
+                            LoginActivity.this,
+                            "Error",
+                            "There was an error while communicating with the server");
+                    return;
+                }
+                if (user.isErrorOccured()) {
                     Lol.d(this, "Error! Message received: " + user.getErrorDescription());
                 } else {
                     Lol.d(this, "Success! user id received: " + user.getId());
@@ -181,12 +194,25 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                     startActivity(i);
 
                 }
+                showProgress(false);
             }
 
             @Override
             public void failure(Throwable error) {
-                handleRetrofitError(error);
+
                 showProgress(false);
+                if(!(error instanceof RetrofitError)) {
+                    RuntimeException re = (RuntimeException) error;
+                    Lol.d(LoginActivity.class, "Error! Server reason:" + re.getMessage());
+                    DialogUtils.showOkDialog(
+                            LoginActivity.this,
+                            "Login Error",
+                            "Invalid credentials."
+                    );
+                    return;
+                }
+
+                handleRetrofitError(error);
             }
         });
 

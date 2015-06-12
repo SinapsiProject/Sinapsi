@@ -241,6 +241,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                             if(keys.isErrorOccured()){
                                 //TODO: check reason?
                                 keysCallback.failure(new RuntimeException("Missing user"));
+                                return;
                             }
 
                             RetrofitWebServiceFacade.this.publicKey = puk;
@@ -285,6 +286,12 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
                         @Override
                         public void success(User user, Response response) {
+
+                            if(user.isErrorOccured()){
+                                result.failure(new RuntimeException(user.getErrorDescription()));
+                                return;
+                            }
+
                             try{
                                 wsClient = new WSClient(email){
                                     @Override
