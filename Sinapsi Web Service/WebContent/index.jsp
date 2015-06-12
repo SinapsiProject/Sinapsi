@@ -69,7 +69,7 @@
                 <ul class="nav" id="main-menu">
 
                     <li>
-                        <a class="active-menu" href="index.jsp"><i class="fa fa-dashboard"></i> Dashboard</a>
+                        <a class="active-menu" href="dashboard"><i class="fa fa-dashboard"></i> Dashboard</a>
                     </li>
 					<li>
                         <a href="web_charts"><i class="fa fa-bar-chart-o"></i> Charts</a>
@@ -110,12 +110,63 @@
                     <div class="col-md-12">
                         <h1 class="page-header">
                             Sinapsi <small>Summary</small>
-                        </h1>
-                        <h2>Work in progress</h2>
+                        </h1>                      
                     </div>
                 </div>
+                <%
+                   String users = (String) session.getAttribute("registered_users");
+                   String clients = (String) session.getAttribute("clients_connected");
+                   String serverRequests = (String) session.getAttribute("server_requestes");
+                   
+                   session.removeAttribute("registered_users");
+                   session.removeAttribute("clients_connected");
+                   session.removeAttribute("server_requests");
+                   
+                %>
                 <!-- /. ROW  -->
-
+                <div class="row">
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="panel panel-primary text-center no-boder bg-color-grey">
+                            <div class="panel-body">
+                                <i class="fa fa-users fa-5x"></i>
+                                <h1><%=users%></h1>
+                            </div>
+                           <div class="panel-footer bg-color-grey">
+                                No. of registered user
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="panel panel-primary text-center no-boder bg-color-blue">
+                            <div class="panel-body">
+                                <i class="fa fa-users fa-5x"></i>
+                                <h1><%=clients%></h1>
+                            </div>
+                           <div class="panel-footer bg-color-grey">
+                                No. of clients connected
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="panel panel-primary text-center no-boder bg-color-red">
+                            <div class="panel-body">
+                                <i class="fa fa-bar-chart-o fa-5x"></i>
+                                <h1><%=serverRequests%></h1>
+                            </div>
+                           <div class="panel-footer bg-color-red">
+                                No. of daily server request
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
                
                 <!-- /. ROW  -->
 				

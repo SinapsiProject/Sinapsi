@@ -99,7 +99,7 @@ public class Server extends WebSocketServer {
         this.start();
         System.out.println("websocket server started on port: " + getPort());
 
-        BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
+       /* BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
         
         while (true) {
             String in = sysin.readLine();
@@ -112,7 +112,7 @@ public class Server extends WebSocketServer {
                 this.start();
                 break;
             }
-        }
+        }*/
     }
 
     /**

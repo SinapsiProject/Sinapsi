@@ -69,7 +69,7 @@
                 <ul class="nav" id="main-menu">
 
                     <li>
-                        <a href="index.jsp"><i class="fa fa-dashboard"></i> Dashboard </a>
+                        <a href="dashboard"><i class="fa fa-dashboard"></i> Dashboard </a>
                     </li>
 					<li>
                         <a class="active-menu" href="charts.jsp"><i class="fa fa-bar-chart-o"></i> Charts </a>

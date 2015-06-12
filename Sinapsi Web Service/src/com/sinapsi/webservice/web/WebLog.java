@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -37,8 +40,11 @@ public class WebLog extends HttpServlet {
             case "tomcat": 
                 try {
                     //TODO: read a specific file log from a time range
-
-                    FileInputStream fstram = new FileInputStream(new File("/var/log/tomcat7/localhost_access_log.2015-06-11.txt"));
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String dayliLog = "/var/log/tomcat7/localhost_access_log." + dateFormat.format(date) + ".txt";
+                    
+                    FileInputStream fstram = new FileInputStream(new File(dayliLog));
                     HttpSession session = request.getSession();
                     BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
                     

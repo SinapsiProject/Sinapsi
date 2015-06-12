@@ -117,11 +117,15 @@ color: #5cb85c;
 }
  .bg-color-blue {
 background-color: #fff;
-color: #4CB1CF;
+color: #256581;
+}
+ .bg-color-grey {
+background-color: #fff;
+color: #50636c;
 }
   .bg-color-red {
 background-color: #fff;
-color:#F0433D;
+color:#a23733;
 }
   .bg-color-brown {
 background-color: #fff;
@@ -133,12 +137,12 @@ color:#fff;
 border-top: 0px solid #fff;
 }
  .back-footer-red {
-background-color: #F0433D;
+background-color: #a23733;
 color:#fff;
 border-top: 0px solid #fff;
 }
  .back-footer-blue {
-background-color: #4CB1CF;
+background-color: #256581;
 color:#fff;
 border-top: 0px solid #fff;
 }
