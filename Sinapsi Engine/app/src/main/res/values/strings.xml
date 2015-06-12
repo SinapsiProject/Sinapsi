@@ -22,5 +22,8 @@
     <string name="are_you_sure_delete_macro">Are you sure you want to delete macro \'%s\'?</string>
     <string name="delete">Delete</string>
     <string name="title_activity_editor">EditorActivity</string>
+    <string name="username_does_not_exist">This username does not exist</string>
+    <string name="log_out">Log out</string>
+    <string name="are_you_sure_log_out">Are you sure you want to log out?</string>
 
 </resources>

@@ -237,6 +237,12 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
                         @Override
                         public void success(Pair<byte[], byte[]> keys, Response response) {
+
+                            if(keys.isErrorOccured()){
+                                //TODO: check reason?
+                                keysCallback.failure(new RuntimeException("Missing user"));
+                            }
+
                             RetrofitWebServiceFacade.this.publicKey = puk;
                             RetrofitWebServiceFacade.this.privateKey = prk;
 
