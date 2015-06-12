@@ -3,22 +3,18 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-
 import javax.crypto.SecretKey;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sinapsi.model.FactoryModelInterface;
 import com.sinapsi.model.impl.User;
-import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;

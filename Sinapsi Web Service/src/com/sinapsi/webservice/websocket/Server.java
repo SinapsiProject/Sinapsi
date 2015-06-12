@@ -1,21 +1,17 @@
 package com.sinapsi.webservice.websocket;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-
 import com.google.gson.Gson;
 import com.sinapsi.wsproto.SinapsiMessageTypes;
 import com.sinapsi.wsproto.WebSocketMessage;
