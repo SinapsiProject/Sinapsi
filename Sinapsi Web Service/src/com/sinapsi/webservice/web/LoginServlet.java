@@ -82,14 +82,14 @@ public class LoginServlet extends HttpServlet {
                 
             // login error, (email incorrect or password incorrect)
             } else {
-                keysManager.updateRemotePublicKey(email, null);
-                keysManager.updateLocalKeys(email, null, null, null, null);
                 // set error description
                 user.errorOccured(true);
                 user.setErrorDescription("Login error");
                 // send encrypted data            
                 out.print(encrypter.encrypt(gson.toJson(user)));
                 out.flush();
+                keysManager.updateRemotePublicKey(email, null);
+                keysManager.updateLocalKeys(email, null, null, null, null);
             }
         } catch (Exception e) {
             e.printStackTrace();
