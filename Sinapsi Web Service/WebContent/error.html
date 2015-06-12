@@ -12,15 +12,15 @@
         <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
     </head>
     
-    <body>
+    <body onload="loginError()">
         <div id="particles">
             <div id="intro">
                 <div class="wrapper">
                 <div class="container">
                     <h1>Sinapsi</h1>   
                     <form id="form" class="form" method="post" action="web_login">
-                        <input id="email" type="email" name="email" placeholder="email@domain" required>
-                        <input id="password" type="password" name="password" placeholder="password" required>
+                        <input id="err_email" type="email" name="email" placeholder="email@domain" required>
+                        <input id="err_password" type="password" name="password" placeholder="password" required>
                         <button type="submit" id="login-button" >Login</button>
                     </form>                 
                 </div>

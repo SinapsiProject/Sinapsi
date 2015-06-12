@@ -46,11 +46,11 @@ public class WebLogin extends HttpServlet {
                     response.sendRedirect("dashboard");
                     //request.getRequestDispatcher("index.jsp").forward(request, response);
                 } else {
-                    request.getRequestDispatcher("login.html").forward(request, response);
+                    request.getRequestDispatcher("error.html").forward(request, response);
                 }
             // the user doesn't exist in the db
             } else {
-                request.getRequestDispatcher("login.html").forward(request, response);
+                request.getRequestDispatcher("error.html").forward(request, response);
             }
 		} catch(Exception e) {
 		    e.printStackTrace();
