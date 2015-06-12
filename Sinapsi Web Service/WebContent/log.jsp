@@ -22,7 +22,13 @@
     <!-- Google Fonts-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
-   
+<script type="text/javascript">
+    function scrollDown() {
+        $(document).scrollTop($(document).height());
+        $('#log').scrollTop($('#log').height());
+    }
+    window.onload = scrollDown;
+</script>
 <body>
     <%
        String email = null;
@@ -118,10 +124,10 @@
                 <!-- /. ROW  -->
                 <div class="row">
                     <div class="col-md-12" >
-                    <div style="max-height:700px; 
-                                overflow: scroll;
-                                border: 1px solid rgba(67, 67, 67, 0.36);
-                                padding-left: 4px;">
+                    <div id="log" style="max-height:700px; 
+                                         overflow: scroll;
+                                         border: 1px solid rgba(67, 67, 67, 0.36);
+                                         padding-left: 4px;">
                                                    
                         <%
                            BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");

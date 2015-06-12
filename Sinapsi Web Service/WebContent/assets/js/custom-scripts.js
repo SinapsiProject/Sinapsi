@@ -4,7 +4,6 @@
     http://creativecommons.org/licenses/by/3.0/
 ---------------------------------------------------------  */
 
-
 (function ($) {
     "use strict";
     var mainApp = {
@@ -29,9 +28,6 @@
     
     // Initializing ///
     $(document).ready(function () {
-        $('.row').animate({
-            scrollTop: $('.row').get(0).scrollHeight}, 2000);
-        });
         mainApp.initFunction();
     });
 
