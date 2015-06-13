@@ -15,8 +15,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
+import com.sinapsi.model.UserInterface;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
+import com.sinapsi.webservice.engine.WebServiceEngine;
 import com.sinapsi.webservice.utility.BodyReader;
 import com.sinapsi.webservice.websocket.Server;
 import com.sinapsi.wsproto.SinapsiMessageTypes;
@@ -45,6 +47,7 @@ public class RemoteMacroExecution extends HttpServlet {
 	    int deviceTarget = Integer.parseInt(request.getParameter("to_device"));
 	    int fromDevice = Integer.parseInt(request.getParameter("from_device"));
 	    Server wsserver = (Server) getServletContext().getAttribute("wsserver");
+	    WebServiceEngine engine = (WebServiceEngine) getServletContext().getAttribute("engine");
 
 	    // read the encrypted jsoned body
         String encryptedJsonBody = BodyReader.read(request);
@@ -64,12 +67,9 @@ public class RemoteMacroExecution extends HttpServlet {
             if(deviceManager.getInfoDevice(deviceTarget).getKey().equals("Cloud") &&
                deviceManager.getInfoDevice(deviceTarget).getValue().equals("Sinapsi")) {
                
-                //TODO: execute macro in the web service
-            	MacroEngine cloudMacroEngine;
-            	
-            	//TODO: per farlo, devi, da qui, assegnare a cloudMacroEngine l'oggetto MacroEngine
-            	//in WebServiceEngine corrispondente all'engine dell'utente che ha mandato il red
-            	
+                UserInterface user = deviceManager.getUserDevice(fromDevice);
+            	MacroEngine cloudMacroEngine = engine.getEngineForUser(user);
+
             	cloudMacroEngine.continueMacro(RED);
             
             } else {                

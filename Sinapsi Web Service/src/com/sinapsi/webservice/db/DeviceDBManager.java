@@ -44,6 +44,32 @@ public class DeviceDBManager extends UserDBManager {
 	    db = (DatabaseController) http.getServletContext().getAttribute("db");
 	}
 	
+	/**
+	 * Return the user for a specific id device
+	 * @param idDevice di device
+	 * @return user interface
+	 * @throws SQLException
+	 */
+	public UserInterface getUserDevice(int idDevice) throws SQLException {
+	    Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        UserInterface user = null;
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT iduser, email, password FROM device, users WHERE device.iduser = users.id AND device.id = ?");
+            s.setInt(1, idDevice);
+            r = s.executeQuery();
+            if (r.next()) 
+                user = db.factory.newUser(r.getInt("iduser"), r.getString("email"), r.getString("password"), getUserDevices(r.getString("email")));
+            
+        } catch(SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return user;
+	}
     /**
      * Check if the device with name, model associate to idUser exist
      * @param name name of the device
