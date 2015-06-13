@@ -246,6 +246,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
      */
     public List<MacroInterface> loadSavedMacros() {
         //TODO: implement
+
         return new ArrayList<>();
     }
 

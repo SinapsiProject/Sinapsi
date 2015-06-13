@@ -88,7 +88,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                                     DecodingMethod decodingMethod) {
 
         this.webSocketEventHandler = wsEventHandler;
-
         this.onlineStatusProvider = onlineStatusProvider;
         this.loginStatusListener = loginStatusListener;
         this.encodingMethod = encodingMethod;
