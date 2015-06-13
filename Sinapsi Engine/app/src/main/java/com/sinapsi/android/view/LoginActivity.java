@@ -56,10 +56,13 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
     private View mProgressView;
     private View mLoginFormView;
 
+    private AndroidDeviceInfo adi;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        adi = new AndroidDeviceInfo(this);
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
@@ -149,7 +152,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
 
 
             // first, request login
-            service.getWeb().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<Pair<byte[], byte[]>>() {
+            service.getWeb().requestLogin(email, adi.getDeviceName(), adi.getDeviceModel(), new SinapsiWebServiceFacade.WebServiceCallback<Pair<byte[], byte[]>>() {
                 @Override
                 public void success(Pair<byte[], byte[]> stringStringSimpleEntry, Object response) {
                     attemptLogin();
@@ -177,7 +180,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
 
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
-        service.getWeb().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
+        service.getWeb().login(email, password, adi.getDeviceName(), adi.getDeviceModel(), new SinapsiWebServiceFacade.WebServiceCallback<User>() {
             @Override
             public void success(User user, Object response) {
                 if (user == null) {
@@ -215,7 +218,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
     }
 
     public void registerDeviceAndComplete(UserInterface user){
-        AndroidDeviceInfo adi = new AndroidDeviceInfo(this);
+
         service.getWeb().registerDevice(
                 user,
                 user.getEmail(),

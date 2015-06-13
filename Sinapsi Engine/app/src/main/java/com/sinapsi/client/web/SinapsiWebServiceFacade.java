@@ -34,7 +34,7 @@ public interface SinapsiWebServiceFacade {
      * @param email email of the user
      * @param keys  public key and session key recived from the server
      */
-    public void requestLogin(String email,
+    public void requestLogin(String email, String deviceName, String deviceModel,
                              WebServiceCallback<Pair<byte[], byte[]>> keys);
 
     /**
@@ -46,6 +46,8 @@ public interface SinapsiWebServiceFacade {
      */
     public void login(String email,
                       String password,
+                      String deviceName,
+                      String deviceModel,
                       WebServiceCallback<User> result);
 
     /**
@@ -67,6 +69,8 @@ public interface SinapsiWebServiceFacade {
      * @param result a List of DeviceInterface instances
      */
     public void getAllDevicesByUser(UserInterface user,
+                                    String deviceName,
+                                    String deviceModel,
                                     WebServiceCallback<List<DeviceInterface>> result);
 
 
