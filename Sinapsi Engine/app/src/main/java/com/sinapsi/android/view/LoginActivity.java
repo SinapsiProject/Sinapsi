@@ -39,6 +39,7 @@ import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
 
@@ -222,13 +223,13 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                 adi.getDeviceModel(),
                 adi.getDeviceType(),
                 adi.getVersion(),
-                new SinapsiWebServiceFacade.WebServiceCallback<DeviceInterface>() {
+                new SinapsiWebServiceFacade.WebServiceCallback<Device>() {
                     @Override
-                    public void success(DeviceInterface deviceInterface, Object response) {
+                    public void success(Device device, Object response) {
 
-                        //TODO: 1) set device in background service
-                        //TODO: 2) start background service engine
-                        //TODO: 3) wsclient establish connection
+                        service.setDevice(device);
+                        service.initAndStartEngine();
+                        service.getWSClient().establishConnection();
 
                         Intent i = new Intent(LoginActivity.this, MainActivity.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -239,6 +240,15 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
 
                     @Override
                     public void failure(Throwable error) {
+                        if (!(error instanceof RetrofitError)) {
+                            RuntimeException re = (RuntimeException) error;
+                            Lol.d(LoginActivity.class, "RegisterDevice Error! Server reason:" + re.getMessage());
+                            DialogUtils.showOkDialog(
+                                    LoginActivity.this,
+                                    "Device login error",
+                                    re.getMessage());
+                            return;
+                        }
                         handleRetrofitError(error);
                         showProgress(false);
                     }

@@ -92,12 +92,12 @@ public interface RetrofitInterface {
 
     /**
      * Device registration request
-     *
-     * @param name    name of the device
+     *  @param name    name of the device
      * @param model   model of the device
      * @param type    type of the device (mobile/desktop)
      * @param version version of the device
      * @param idUser  id of the device's user
+     * @param device
      */
     @POST(DEVICES + ACTION + ADD)
     public void registerDevice(
@@ -107,7 +107,7 @@ public interface RetrofitInterface {
             @Query("type") String type,
             @Query("version") int version,
             @Body String idUser,
-            Callback<DeviceInterface> device);
+            Callback<Device> device);
 
 
     /**

@@ -15,6 +15,7 @@ import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
@@ -359,7 +360,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                                String deviceModel,
                                String deviceType,
                                int deviceClientVersion,
-                               WebServiceCallback<DeviceInterface> result) {
+                               final WebServiceCallback<Device> result) {
         checkKeys();
         if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.registerDevice(
@@ -369,7 +370,23 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 deviceType,
                 deviceClientVersion,
                 Integer.toString(user.getId()),
-                convertCallback(result));
+                new Callback<Device>() {
+                    @Override
+                    public void success(Device deviceInterface, Response response) {
+                        if(deviceInterface.isErrorOccured()){
+                            result.failure(new RuntimeException(deviceInterface.getErrorDescription()));
+                            return;
+                        }
+
+                        //TODO: set ws client device
+                        result.success(deviceInterface,response);
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        result.failure(error);
+                    }
+                });
     }
 
     @Override

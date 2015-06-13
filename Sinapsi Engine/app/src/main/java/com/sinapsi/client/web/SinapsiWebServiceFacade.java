@@ -87,7 +87,7 @@ public interface SinapsiWebServiceFacade {
                                String deviceModel,
                                String deviceType,
                                int deviceClientVersion,
-                               WebServiceCallback<DeviceInterface> result);
+                               WebServiceCallback<Device> result);
 
     /**
      * Gets the availability of actions on the specified device
