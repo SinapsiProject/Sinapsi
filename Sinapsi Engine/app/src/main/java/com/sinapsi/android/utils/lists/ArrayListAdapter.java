@@ -76,14 +76,14 @@ public abstract class ArrayListAdapter<T> extends RecyclerView.Adapter<ArrayList
     @Override
     public boolean addAll(int location, Collection<? extends T> collection) {
         boolean result = arrayList.addAll(location, collection);
-        if(result) notifyItemRangeInserted(location, collection.size());
+        if(result) notifyDataSetChanged();
         return result;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> collection) {
         boolean result = arrayList.addAll(collection);
-        if(result) notifyItemRangeInserted(size()-1, collection.size());
+        if(result) notifyDataSetChanged();
         return result;
     }
 
@@ -91,7 +91,7 @@ public abstract class ArrayListAdapter<T> extends RecyclerView.Adapter<ArrayList
     public void clear() {
         int prevSize = size();
         arrayList.clear();
-        notifyItemRangeRemoved(0,prevSize);
+        notifyDataSetChanged();
     }
 
     @Override

@@ -78,9 +78,9 @@ public class ViewTransitionManager {
                     new VersionUtils.VersionedTask(Build.VERSION_CODES.HONEYCOMB_MR2) {
                         @Override
                         public void doTask() {
-                            Lol.d("TransitionAnimation", "Alpha animation");
+                            //Lol.d("TransitionAnimation", "Alpha animation");
                             v.setVisibility(show ? View.GONE : View.VISIBLE);
-                            Lol.d("TransitionAnimation","visibility -> " + ((v.getVisibility() == View.VISIBLE)? "visible":"gone"));
+                            //Lol.d("TransitionAnimation","visibility -> " + ((v.getVisibility() == View.VISIBLE)? "visible":"gone"));
                             v.setAlpha(show ? 0 : 1);
 
                             v.animate().setDuration(animShortTime).alpha(show ? 1 : 0)
@@ -89,7 +89,7 @@ public class ViewTransitionManager {
                                         public void onAnimationEnd(Animator animation) {
                                             super.onAnimationEnd(animation);
                                             v.setVisibility(show ? View.VISIBLE : View.GONE);
-                                            Lol.d("TransitionAnimation", "visibility -> " + ((v.getVisibility() == View.VISIBLE) ? "visible" : "gone"));
+                                            //Lol.d("TransitionAnimation", "visibility -> " + ((v.getVisibility() == View.VISIBLE) ? "visible" : "gone"));
                                         }
                                     }).start();
                             //FIXME: alpha animation seems not to work

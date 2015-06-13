@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         >
-        <com.pkmmte.view.CircularImageView
+        <ImageView
             android:id="@+id/macro_element_icon"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -25,11 +25,11 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:src="@drawable/ic_action_help"
-            android:visibility="visible"
-            app:border="true"
+            android:visibility="visible"/>
+            <!--app:border="true"
             app:border_color="#EEEEEE"
             app:border_width="4dp"
-            app:shadow="false" />
+            app:shadow="false"/>-->
         <com.daimajia.swipe.SwipeLayout
             android:id="@+id/macro_element_swipe_layout"
             android:layout_width="match_parent"
@@ -77,8 +77,7 @@
                     android:src="@drawable/ic_action_gear" />
 
 
-                <TextView
-                    android:id="@+id/macro_element_title"
+                <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
 
@@ -86,15 +85,32 @@
                     android:layout_alignParentStart="true"
                     android:layout_toLeftOf="@id/show_more_macro_actions_button"
                     android:layout_toStartOf="@id/show_more_macro_actions_button"
-                    android:ellipsize="marquee"
 
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:gravity="center_vertical"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:scrollHorizontally="true"
-                    android:singleLine="true"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/macro_element_title"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                    <TextView
+                        android:id="@+id/macro_element_info"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+                </LinearLayout>
+
 
 
             </RelativeLayout>

@@ -380,7 +380,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             break;
             case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION:
             {
-                //TODO: impl (after alpha)
+                //HINT: impl (after alpha)
             }
             break;
         }
