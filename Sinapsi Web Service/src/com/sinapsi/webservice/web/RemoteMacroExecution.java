@@ -58,8 +58,8 @@ public class RemoteMacroExecution extends HttpServlet {
         
         try {
             // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(deviceManager.getUserEmail(fromDevice)), 
-                                            keysManager.getClientSessionKey((deviceManager.getUserEmail(fromDevice))));
+            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(deviceManager.getUserEmail(fromDevice)), 
+                                            keysManager.getUserSessionKey((deviceManager.getUserEmail(fromDevice))));
             //decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             RemoteExecutionDescriptor RED = gson.fromJson(jsonBody,new TypeToken<RemoteExecutionDescriptor>() {}.getType());

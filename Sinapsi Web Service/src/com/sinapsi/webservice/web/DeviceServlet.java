@@ -47,7 +47,7 @@ public class DeviceServlet extends HttpServlet {
             try {
                 // create the keys manger and the encrypter
                 KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
-                Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+                Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
                 
                 User user = (User) deviceManager.getUserByEmail(email);
                 List<DeviceInterface> devices;
@@ -96,9 +96,9 @@ public class DeviceServlet extends HttpServlet {
 
             try {
                 // create the encrypter
-                Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+                Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
                 // create the decrypter
-                Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
+                Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email), keysManager.getUserSessionKey(email));
                 // decrypt the jsoned body
                 String jsonBody = decrypter.decrypt(encryptedJsonbody);
                 // get the id string from the decrypter jsoned body

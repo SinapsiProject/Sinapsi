@@ -83,10 +83,10 @@ public class RequestLoginSevlet extends HttpServlet {
             String localUncryptedSessionKey = SessionKeyManager.convertToString(encrypt.getSessionKey());
             
             // update user keys in the db
-            keysManager.updateRemotePublicKey(email, PublicKeyManager.convertToString(clientPublicKey));
+            keysManager.updateUserPublicKey(email, PublicKeyManager.convertToString(clientPublicKey));
             
             // update local keys in the db
-            keysManager.updateLocalKeys(email, localPublicKey, localPrivateKey, localSessionKey, localUncryptedSessionKey);
+            keysManager.updateServerKeys(email, localPublicKey, localPrivateKey, localSessionKey, localUncryptedSessionKey);
 
             // send local public key and session key to the client
             out.print(gson.toJson(new Pair<byte[], byte[]>(PublicKeyManager.convertToByte(generator.getPublicKey()), 

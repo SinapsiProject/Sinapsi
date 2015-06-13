@@ -61,13 +61,13 @@ public class LoginServlet extends HttpServlet {
             SecretKey clientSessionKey = SessionKeyManager.convertToKey(pwdSes.getFirst());
             
             // update session key of the client 
-            keysManager.updateRemoteSessionKey(email, SessionKeyManager.convertToString(clientSessionKey));
+            keysManager.updateUserSessionKey(email, SessionKeyManager.convertToString(clientSessionKey));
             
             // Create the encrypter using the session key saved in the request login servlet
-            Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email), keysManager.getLocalUncryptedSessionKey(email));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email), keysManager.getServerUncryptedSessionKey(email));
             
             // create the decrypter using local private key, and the client encrypted session key, then  decrypt the jsoned body
-            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
+            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email), keysManager.getUserSessionKey(email));
             
             String password = decrypter.decrypt(pwdSes.getSecond());
             User user = (User) userManager.getUserByEmail(email);           
@@ -88,8 +88,8 @@ public class LoginServlet extends HttpServlet {
                 // send encrypted data            
                 out.print(encrypter.encrypt(gson.toJson(user)));
                 out.flush();
-                keysManager.updateRemotePublicKey(email, null);
-                keysManager.updateLocalKeys(email, null, null, null, null);
+                keysManager.updateUserPublicKey(email, null);
+                keysManager.updateServerKeys(email, null, null, null, null);
             }
         } catch (Exception e) {
             e.printStackTrace();

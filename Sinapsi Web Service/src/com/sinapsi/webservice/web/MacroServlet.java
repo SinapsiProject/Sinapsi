@@ -42,7 +42,7 @@ public class MacroServlet extends HttpServlet {
         
         try {
             // create the encrypter
-            Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
             // get the list of macro from the db
             List<MacroInterface> macros = engineManager.getUserMacro(userManager.getUserByEmail(email).getId());
             // send the encrypted data
@@ -74,7 +74,7 @@ public class MacroServlet extends HttpServlet {
         
         try {
             // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
+            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email), keysManager.getUserSessionKey(email));
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             // extract the list of actions from the jsoned triggers
@@ -101,7 +101,7 @@ public class MacroServlet extends HttpServlet {
         
         try {
             if(success) {
-                Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+                Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
                 if (success)
                     out.print(encrypter.encrypt(gson.toJson("success!")));
                 else

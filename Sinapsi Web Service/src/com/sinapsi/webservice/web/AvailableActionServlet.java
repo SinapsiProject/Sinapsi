@@ -44,7 +44,7 @@ public class AvailableActionServlet extends HttpServlet {
         try {
             String email = userManager.getUserEmail(idDevice);
             // create the encrypter
-            Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
             // get the available actions from the db
             List<MacroComponent> actions = engineManager.getAvailableAction(idDevice);
             // send the encrypted data
@@ -77,7 +77,7 @@ public class AvailableActionServlet extends HttpServlet {
         try {
             String email = userManager.getUserEmail(idDevice);
             // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getPrivateKey(email), keysManager.getClientSessionKey(email));
+            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email), keysManager.getUserSessionKey(email));
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             // extract the list of actions from the jsoned triggers
@@ -96,7 +96,7 @@ public class AvailableActionServlet extends HttpServlet {
         try {
             String email = userManager.getUserEmail(idDevice);
             // return a crypted response to the client
-            Encrypt encrypter = new Encrypt(keysManager.getClientPublicKey(email));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
             if (success)
                 out.print(encrypter.encrypt(gson.toJson("success!")));
             else
