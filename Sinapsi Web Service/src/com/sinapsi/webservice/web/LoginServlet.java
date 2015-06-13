@@ -2,12 +2,14 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import javax.crypto.SecretKey;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.bgp.keymanager.SessionKeyManager;
@@ -52,6 +54,9 @@ public class LoginServlet extends HttpServlet {
 
         try {
             String email = request.getParameter("email");
+            String deviceName = request.getParameter("name");
+            String deviceModel = request.getParameter("model");
+            
             String jsonBody = BodyReader.read(request);
            
             // return the string from the decrypted json string
@@ -88,8 +93,8 @@ public class LoginServlet extends HttpServlet {
                 // send encrypted data            
                 out.print(encrypter.encrypt(gson.toJson(user)));
                 out.flush();
-                keysManager.updateUserPublicKey(email, null);
-                keysManager.updateServerKeys(email, null, null, null, null);
+                keysManager.updateUserPublicKey(email, deviceName, deviceModel, null);
+                keysManager.updateServerKeys(email, deviceName, deviceModel, null, null, null, null);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -46,11 +46,15 @@ public class RequestLoginSevlet extends HttpServlet {
         Gson gson = new Gson();
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+    
         // generate local public/private keys
         KeyGenerator generator = new KeyGenerator(1024, "RSA");
 
         try {    
             String email = request.getParameter("email");
+            String deviceName = request.getParameter("name");
+            String deviceModel = request.getParameter("model");
+            
             User user = (User) userManager.getUserByEmail(email); 
             
             //User doesn't exist
@@ -83,10 +87,10 @@ public class RequestLoginSevlet extends HttpServlet {
             String localUncryptedSessionKey = SessionKeyManager.convertToString(encrypt.getSessionKey());
             
             // update user keys in the db
-            keysManager.updateUserPublicKey(email, PublicKeyManager.convertToString(clientPublicKey));
+            keysManager.updateUserPublicKey(email, deviceName, deviceModel, PublicKeyManager.convertToString(clientPublicKey));
             
             // update local keys in the db
-            keysManager.updateServerKeys(email, localPublicKey, localPrivateKey, localSessionKey, localUncryptedSessionKey);
+            keysManager.updateServerKeys(email, deviceName, deviceModel, localPublicKey, localPrivateKey, localSessionKey, localUncryptedSessionKey);
 
             // send local public key and session key to the client
             out.print(gson.toJson(new Pair<byte[], byte[]>(PublicKeyManager.convertToByte(generator.getPublicKey()), 
