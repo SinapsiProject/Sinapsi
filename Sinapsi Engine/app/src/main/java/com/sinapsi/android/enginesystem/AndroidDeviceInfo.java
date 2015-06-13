@@ -1,5 +1,6 @@
 package com.sinapsi.android.enginesystem;
 
+import android.content.Context;
 import android.os.Build;
 
 import com.sinapsi.engine.system.DeviceInfoAdapter;
@@ -8,6 +9,13 @@ import com.sinapsi.engine.system.DeviceInfoAdapter;
  * Android dependent class, give model and name of the current device
  */
 public class AndroidDeviceInfo implements DeviceInfoAdapter {
+
+    private Context context;
+
+    public AndroidDeviceInfo(Context c){
+        this.context = c;
+    }
+
     /**
      * Return os version
      *
@@ -24,7 +32,7 @@ public class AndroidDeviceInfo implements DeviceInfoAdapter {
      */
     @Override
     public String getDeviceName() {
-        return Build.PRODUCT;
+        return InstallationUUIDManager.id(context);
     }
 
     /**
@@ -34,7 +42,7 @@ public class AndroidDeviceInfo implements DeviceInfoAdapter {
      */
     @Override
     public String getDeviceModel() {
-        return Build.MODEL;
+        return Build.MODEL + " " + Build.PRODUCT;
     }
 
     /**
