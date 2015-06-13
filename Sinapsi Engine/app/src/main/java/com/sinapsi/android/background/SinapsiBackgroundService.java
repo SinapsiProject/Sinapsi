@@ -205,7 +205,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     }
 
     private void loadSettings(UserSettingsFacade settings) {
-        device = settings.getSavedDevice();
+        //TODO: impl
     }
 
     /**

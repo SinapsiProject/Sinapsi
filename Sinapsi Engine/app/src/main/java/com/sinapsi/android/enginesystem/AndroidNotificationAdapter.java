@@ -26,7 +26,7 @@ public class AndroidNotificationAdapter implements NotificationAdapter {
         Notification n  = new NotificationCompat.Builder(context)
                 .setContentTitle(title)
                 .setContentText(message)
-                .setSmallIcon(R.drawable.common_full_open_on_phone) //TODO: change
+                .setSmallIcon(R.drawable.ic_notif_icon) //HINT: let the user choose
                 .setAutoCancel(true).build();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, n);

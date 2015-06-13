@@ -65,7 +65,7 @@ public class AndroidActivationManager extends ActivationManager {
             public Event extractEventInfo(Context c, Intent intent) {
                 try {
                     SmsMessage[] messages = IntentUtils.getMessagesFromIntent(intent);
-                    //TODO: google why an sms intent may contain more messages
+                    //HINT: google why an sms intent may contain more messages
                     //----: and check if just the first has to be read
                     String phoneNumber = messages[0].getDisplayOriginatingAddress();
                     String message = messages[0].getDisplayMessageBody();

@@ -25,18 +25,4 @@ public interface UserSettingsFacade {
      */
     public void saveUser(UserInterface u);
 
-    /**
-     * Saved device getter. This should represent the device on
-     * which the client is running
-     *
-     * @return the device
-     */
-    public DeviceInterface getSavedDevice();
-
-    /**
-     * Saves the device on the settings file.
-     *
-     * @param d the device
-     */
-    public void saveDevice(DeviceInterface d);
 }

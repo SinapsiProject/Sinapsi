@@ -44,27 +44,4 @@ public class AndroidUserSettingsFacade implements UserSettingsFacade {
         editor.putInt("user_id", u.getId());
         editor.apply();
     }
-
-    @Override
-    public DeviceInterface getSavedDevice() {
-        int id = preferences.getInt("device_id", -1);
-        String name = preferences.getString("device_name", null);
-        String model = preferences.getString("device_model", null);
-        String type = preferences.getString("device_type", null);
-        int clVers = preferences.getInt("client_version", -1); //TODO: should this be loaded by appconsts instead?
-        if(id == -1 || name == null || model == null || type == null || clVers == -1) return null;
-        return fM.newDevice(id, name, model, type, getSavedUser(), clVers);
-    }
-
-    @Override
-    public void saveDevice(DeviceInterface d) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("device_id", d.getId())
-                .putString("device_name", d.getName())
-                .putString("device_model", d.getModel())
-                .putString("device_type", d.getType())
-                .putInt("client_version", d.getVersion());
-        editor.apply();
-        saveUser(d.getUser());
-    }
 }

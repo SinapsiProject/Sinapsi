@@ -153,7 +153,7 @@ public abstract class ArrayListAdapter<T> extends RecyclerView.Adapter<ArrayList
     @Override
     public boolean remove(Object object) {
         boolean result = arrayList.remove(object);
-        if(result) notifyDataSetChanged(); //TODO: change
+        if(result) notifyDataSetChanged();
         return result;
     }
 
