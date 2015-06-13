@@ -86,12 +86,10 @@ import retrofit.android.AndroidLog;
  * here and
  */
 public class SinapsiBackgroundService extends Service implements OnlineStatusProvider, WebSocketEventHandler, RetrofitWebServiceFacade.LoginStatusListener {
-    private WSClient wsClient;
     private RetrofitWebServiceFacade web;
     private SyncManager syncManager = new SyncManager();
     private UserSettingsFacade settings;
 
-    private WebExecutionInterface defaultWebExecutionInterface;
     private MacroEngine engine;
     private SinapsiLog sinapsiLog;
     private DeviceInterface device;
@@ -106,7 +104,6 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     private UserInterface loggedUser = logoutUser;
 
 
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -115,12 +112,31 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
         //loadSettings(settings);
 
-        if (device == null) {
-            AndroidDeviceInfo adi = new AndroidDeviceInfo(this);
-            device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
-        }
 
-        new WebExecutionInterface() {
+        // initializing sinapsi log ---------------------------------
+        sinapsiLog = new SinapsiLog();
+        sinapsiLog.addLogInterface(new SystemLogInterface() {
+            @Override
+            public void printMessage(LogMessage lm) {
+                Lol.d(lm.getTag(), lm.getMessage());
+            }
+        });
+
+
+        // web service initialization -------------------------------
+        web = new RetrofitWebServiceFacade(
+                new AndroidLog("RETROFIT"),
+                this,
+                this,
+                this,
+                new AndroidBase64EncodingMethod(),
+                new AndroidBase64DecodingMethod());
+
+    }
+
+    public void initAndStartEngine() {
+        // initializing web execution interface ---------------------
+        WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
             @Override
             public void continueExecutionOnDevice(ExecutionInterface ei, DeviceInterface di) {
                 web.continueMacroOnDevice(
@@ -144,33 +160,6 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                         });
             }
         };
-
-
-        // web service and web socket initialization ----------------
-        try{
-            wsClient = new WSClient();
-        } catch (URISyntaxException e){
-            e.printStackTrace();
-        }
-
-        web = new RetrofitWebServiceFacade(
-                new AndroidLog("RETROFIT"),
-                this,
-                this,
-                this,
-                new AndroidBase64EncodingMethod(),
-                new AndroidBase64DecodingMethod());
-
-
-        // initializing sinapsi log ---------------------------------
-        sinapsiLog = new SinapsiLog();
-        sinapsiLog.addLogInterface(new SystemLogInterface() {
-            @Override
-            public void printMessage(LogMessage lm) {
-                Lol.d(lm.getTag(), lm.getMessage());
-            }
-        });
-
 
         // here starts engine initialization    ---------------------
         SystemFacade sf = createAndroidSystemFacade();
@@ -208,13 +197,11 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         syncAndUpdateMacros();
 
 
-        if(AppConsts.DEBUG_MACROS)createLocalMacroExamples();
+        if (AppConsts.DEBUG_MACROS) createLocalMacroExamples();
 
 
         // starts the engine (and the TriggerOnEngineStart activates)
         engine.startEngine();
-
-
     }
 
     private void loadSettings(UserSettingsFacade settings) {
@@ -278,8 +265,8 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         return new SinapsiServiceBinder();
     }
 
-    public void syncAndUpdateMacros(){
-        if(isOnline()) syncManager.sync();
+    public void syncAndUpdateMacros() {
+        if (isOnline()) syncManager.sync();
         engine.addMacros(loadSavedMacros());
 
     }
@@ -349,22 +336,21 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     }
 
-    private void handleWsMessage(String message, boolean firstcall){
+    private void handleWsMessage(String message, boolean firstcall) {
         Lol.d(SinapsiBackgroundService.class, "WebSocket message received: '" + message + "'");
         Gson gson = new Gson();
         WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
-        switch (wsMsg.getMsgType()){
-            case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR:
-            {
+        switch (wsMsg.getMsgType()) {
+            case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR: {
                 RemoteExecutionDescriptor red = (RemoteExecutionDescriptor) wsMsg.getData();
                 try {
                     engine.continueMacro(red);
                 } catch (MacroEngine.MissingMacroException e) {
-                    if(firstcall){
+                    if (firstcall) {
                         //retries after a sync
                         syncManager.sync();
                         handleWsMessage(message, false);
-                    }else{
+                    } else {
                         e.printStackTrace();
                         //the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
                         //just prints the stack trace and ignores the message
@@ -373,8 +359,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 }
             }
             break;
-            case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION:
-            {
+            case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
                 //HINT: impl (after alpha)
             }
             break;
@@ -470,12 +455,21 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     }
 
     /**
+     * setter of the device on which this client is running onto.
+     *
+     * @param device the device
+     */
+    public void setDevice(DeviceInterface device) {
+        this.device = device;
+    }
+
+    /**
      * Return the WSClient object
      *
      * @return WSClient
      */
     public WSClient getWSClient() {
-        return wsClient;
+        return web.getWebSocketClient();
     }
 
     /**
@@ -620,7 +614,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         //HINT: useful toggles instead of classic content pending intent
 
         Intent i1 = new Intent(this, MainActivity.class);
-        PendingIntent maini = PendingIntent.getActivity(this,0,i1,0);
+        PendingIntent maini = PendingIntent.getActivity(this, 0, i1, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         builder.setContentTitle(getString(R.string.app_name))

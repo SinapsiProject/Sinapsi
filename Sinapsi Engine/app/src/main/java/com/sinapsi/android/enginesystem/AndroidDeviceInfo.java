@@ -3,6 +3,7 @@ package com.sinapsi.android.enginesystem;
 import android.content.Context;
 import android.os.Build;
 
+import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.engine.system.DeviceInfoAdapter;
 
 /**
@@ -22,7 +23,7 @@ public class AndroidDeviceInfo implements DeviceInfoAdapter {
      * @return
      */
     public int getVersion() {
-        return Build.VERSION.SDK_INT;
+        return AndroidAppConsts.CLIENT_VERSION;
     }
 
     /**

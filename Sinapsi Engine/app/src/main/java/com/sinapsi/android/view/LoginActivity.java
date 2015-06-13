@@ -221,7 +221,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                 adi.getDeviceName(),
                 adi.getDeviceModel(),
                 adi.getDeviceType(),
-                AndroidAppConsts.CLIENT_VERSION,
+                adi.getVersion(),
                 new SinapsiWebServiceFacade.WebServiceCallback<DeviceInterface>() {
                     @Override
                     public void success(DeviceInterface deviceInterface, Object response) {
