@@ -377,6 +377,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                             return;
                         }
 
+                        wsClient.setDeviceId(deviceInterface.getId());
                         result.success(deviceInterface,response);
                     }
 
