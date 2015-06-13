@@ -50,6 +50,8 @@ public interface RetrofitInterface {
     @POST(REQUEST_LOGIN)
     public void requestLogin(
             @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
             @Body byte[] publicKey,
             Callback<Pair<byte[], byte[]>> keys);
 
@@ -62,6 +64,8 @@ public interface RetrofitInterface {
     @POST(LOGIN)
     public void login(
             @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
             @Body Pair<byte[], String> passwordSession,
             Callback<User> user);
 
@@ -87,6 +91,8 @@ public interface RetrofitInterface {
     @GET(DEVICES + ACTION + GET)
     public void getAllDevicesByUser(
             @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
             Callback<List<DeviceInterface>> devices);
 
 
@@ -169,6 +175,8 @@ public interface RetrofitInterface {
     @POST(MACROS + ACTION + ADD)
     public void updateOrAddMacro(
             @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
             @Body MacroInterface macro,
             Callback<String> result);
 
@@ -181,6 +189,8 @@ public interface RetrofitInterface {
     @POST(MACROS + ACTION + DEL)
     public void deleteMacro(
             @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
             @Body MacroInterface macro,
             Callback<String> result);
 
@@ -207,8 +217,5 @@ public interface RetrofitInterface {
             @Query("to_device") int to_device_id,
             @Body RemoteExecutionDescriptor red,
             Callback<String> result);
-
-
-
-
+    
 }
