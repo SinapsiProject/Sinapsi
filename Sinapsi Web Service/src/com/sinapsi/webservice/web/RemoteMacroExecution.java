@@ -13,6 +13,7 @@ import org.java_websocket.WebSocket;
 import com.bgp.decryption.Decrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
@@ -64,6 +65,12 @@ public class RemoteMacroExecution extends HttpServlet {
                deviceManager.getInfoDevice(deviceTarget).getValue().equals("Sinapsi")) {
                
                 //TODO: execute macro in the web service
+            	MacroEngine cloudMacroEngine;
+            	
+            	//TODO: per farlo, devi, da qui, assegnare a cloudMacroEngine l'oggetto MacroEngine
+            	//in WebServiceEngine corrispondente all'engine dell'utente che ha mandato il red
+            	
+            	cloudMacroEngine.continueMacro(RED);
             
             } else {                
                 WebSocket clientTarget = wsserver.getClient(deviceManager.getUserEmail(deviceTarget));
