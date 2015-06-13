@@ -116,7 +116,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         //loadSettings(settings);
 
         if (device == null) {
-            AndroidDeviceInfo adi = new AndroidDeviceInfo();
+            AndroidDeviceInfo adi = new AndroidDeviceInfo(this);
             device = fm.newDevice(-1, adi.getDeviceName(), adi.getDeviceModel(), adi.getDeviceType(), null, 1); //TODO: remove this
         }
 
