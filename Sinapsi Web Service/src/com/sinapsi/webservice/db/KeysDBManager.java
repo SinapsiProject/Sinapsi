@@ -144,15 +144,17 @@ public class KeysDBManager {
 	 * @return public key object
 	 * @throws Exception
 	 */
-	public PublicKey getUserPublicKey(String email) throws Exception {
+	public PublicKey getUserPublicKey(String email, String deviceName, String deviceModel) throws Exception {
 		 Connection c = null;
 	     PreparedStatement s = null;
 	     ResultSet r = null;
 	     String publicKey = null;
 	     try {
 	    	 c = db.connect();
-	         s = c.prepareStatement("SELECT user_publickey FROM keys WHERE email = ?");
+	         s = c.prepareStatement("SELECT user_publickey FROM keys WHERE email = ? AND device_name ? AND device_model = ?");
 	         s.setString(1, email);
+	         s.setString(2, deviceName);
+	         s.setString(3, deviceModel);
 	         r = s.executeQuery();
 	         if (r.next()) {
 	            publicKey = r.getString("user_publickey");
@@ -171,15 +173,17 @@ public class KeysDBManager {
 	 * @return public key object
 	 * @throws Exception
 	 */
-	public PublicKey getServerPublicKey(String email) throws Exception {
+	public PublicKey getServerPublicKey(String email, String deviceName, String deviceModel) throws Exception {
 		 Connection c = null;
 	     PreparedStatement s = null;
 	     ResultSet r = null;
 	     String publicKey = null;
 	     try {
 	    	 c = db.connect();
-	         s = c.prepareStatement("SELECT server_publickey FROM keys WHERE email = ?");
+	         s = c.prepareStatement("SELECT server_publickey FROM keys WHERE email = ? AND device_name ? AND device_model = ?");
 	         s.setString(1, email);
+	         s.setString(2, deviceName);
+             s.setString(3, deviceModel);
 	         r = s.executeQuery();
 	         if (r.next()) {
 	            publicKey = r.getString("server_publickey");
@@ -198,15 +202,17 @@ public class KeysDBManager {
 	 * @return public key object
 	 * @throws Exception
 	 */
-	public PrivateKey getServerPrivateKey(String email) throws Exception {
+	public PrivateKey getServerPrivateKey(String email, String deviceName, String deviceModel) throws Exception {
 		 Connection c = null;
 	     PreparedStatement s = null;
 	     ResultSet r = null;
 	     String privateKey = null;
 	     try {
 	    	 c = db.connect();
-	         s = c.prepareStatement("SELECT server_privatekey FROM keys WHERE email = ?");
+	         s = c.prepareStatement("SELECT server_privatekey FROM keys WHERE email = ? AND device_name ? AND device_model = ?");
 	         s.setString(1, email);
+	         s.setString(2, deviceName);
+             s.setString(3, deviceModel);
 	         r = s.executeQuery();
 	         if (r.next()) {
 	            privateKey = r.getString("server_privatekey");
@@ -225,15 +231,17 @@ public class KeysDBManager {
 	 * @return Secret key object
 	 * @throws Exception
 	 */
-	public SecretKey getUserSessionKey(String email) throws Exception {
+	public SecretKey getUserSessionKey(String email, String deviceName, String deviceModel) throws Exception {
 		 Connection c = null;
 	     PreparedStatement s = null;
 	     ResultSet r = null;
 	     String sessionKey = null;
 	     try {
 	    	 c = db.connect();
-	         s = c.prepareStatement("SELECT user_sessionkey FROM keys WHERE email = ?");
+	         s = c.prepareStatement("SELECT user_sessionkey FROM keys WHERE email = ? AND device_name ? AND device_model = ?");
 	         s.setString(1, email);
+	         s.setString(2, deviceName);
+             s.setString(3, deviceModel);
 	         r = s.executeQuery();
 	         if (r.next()) {
 	            sessionKey = r.getString("user_sessionkey");
@@ -252,15 +260,17 @@ public class KeysDBManager {
 	 * @return Secret key object
 	 * @throws Exception
 	 */
-	public SecretKey getServerSessionKey(String email) throws Exception {
+	public SecretKey getServerSessionKey(String email, String deviceName, String deviceModel) throws Exception {
 		 Connection c = null;
 	     PreparedStatement s = null;
 	     ResultSet r = null;
 	     String sessionKey = null;
 	     try {
 	    	 c = db.connect();
-	         s = c.prepareStatement("SELECT server_sessionkey FROM keys WHERE email = ?");
+	         s = c.prepareStatement("SELECT server_sessionkey FROM keys WHERE email = ? AND device_name ? AND device_model = ?");
 	         s.setString(1, email);
+	         s.setString(2, deviceName);
+             s.setString(3, deviceModel);
 	         r = s.executeQuery();
 	         if (r.next()) {
 	            sessionKey = r.getString("server_sessionkey");
@@ -280,15 +290,17 @@ public class KeysDBManager {
 	 * @throws SQLException 
      * @throws Exception
      */
-    public SecretKey getServerUncryptedSessionKey(String email) throws SQLException {
+    public SecretKey getServerUncryptedSessionKey(String email, String deviceName, String deviceModel) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
         String sessionKey = null;
         try {
             c = db.connect();
-            s = c.prepareStatement("SELECT server_uncryptedsessionkey FROM keys WHERE email = ?");
+            s = c.prepareStatement("SELECT server_uncryptedsessionkey FROM keys WHERE email = ? AND device_name ? AND device_model = ?");
             s.setString(1, email);
+            s.setString(2, deviceName);
+            s.setString(3, deviceModel);
             r = s.executeQuery();
             if (r.next()) {
                sessionKey = r.getString("server_uncryptedsessionkey");

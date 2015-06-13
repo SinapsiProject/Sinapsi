@@ -39,10 +39,12 @@ public class MacroServlet extends HttpServlet {
         Gson gson = new Gson();
         
         String email = request.getParameter("email");
+        String deviceName = request.getParameter("name");
+        String deviceModel = request.getParameter("model");
         
         try {
             // create the encrypter
-            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
             // get the list of macro from the db
             List<MacroInterface> macros = engineManager.getUserMacro(userManager.getUserByEmail(email).getId());
             // send the encrypted data
@@ -67,6 +69,8 @@ public class MacroServlet extends HttpServlet {
         boolean success = false;
         
         String email = request.getParameter("email");
+        String deviceName = request.getParameter("name");
+        String deviceModel = request.getParameter("model");
         String action = request.getParameter("action");
         
         // read the encrypted jsoned body
@@ -74,7 +78,8 @@ public class MacroServlet extends HttpServlet {
         
         try {
             // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email), keysManager.getUserSessionKey(email));
+            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, deviceName, deviceModel),    
+                                            keysManager.getUserSessionKey(email, deviceName, deviceModel));
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             // extract the list of actions from the jsoned triggers
@@ -101,7 +106,7 @@ public class MacroServlet extends HttpServlet {
         
         try {
             if(success) {
-                Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
+                Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
                 if (success)
                     out.print(encrypter.encrypt(gson.toJson("success!")));
                 else

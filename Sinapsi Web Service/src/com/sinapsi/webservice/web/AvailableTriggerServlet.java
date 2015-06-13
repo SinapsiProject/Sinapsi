@@ -14,7 +14,9 @@ import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
+import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
@@ -37,15 +39,17 @@ public class AvailableTriggerServlet extends HttpServlet {
         EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
         
         Gson gson = new Gson();   
 
         int idDevice = Integer.parseInt(request.getParameter("device"));
 
         try {
+            DeviceInterface device = deviceManager.getDevice(idDevice);
             String email = userManager.getUserEmail(idDevice);
             // create the encrypter
-            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
             // get the available triggers from the db
             List<MacroComponent> triggers = engineManager.getAvailableTrigger(idDevice);
             // send the encrypted data
@@ -67,6 +71,7 @@ public class AvailableTriggerServlet extends HttpServlet {
         EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
         Gson gson = new Gson();
         
         int idDevice = Integer.parseInt(request.getParameter("device"));
@@ -78,9 +83,11 @@ public class AvailableTriggerServlet extends HttpServlet {
         String encryptedJsonBody = BodyReader.read(request);
 
         try {
+            DeviceInterface device = deviceManager.getDevice(idDevice);
             String email = userManager.getUserEmail(idDevice);
             // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email), keysManager.getUserSessionKey(email));
+            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, device.getName(), device.getModel()), 
+                                            keysManager.getUserSessionKey(email, device.getName(), device.getModel()));
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             // extract the list of triggers from the jsoned triggers
@@ -96,9 +103,10 @@ public class AvailableTriggerServlet extends HttpServlet {
         }
 
         try {
+            DeviceInterface device = deviceManager.getDevice(idDevice);
             String email = userManager.getUserEmail(idDevice);
             // return a crypted response to the client
-            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
             if (success)
                 out.print(encrypter.encrypt(gson.toJson("success!")));
             else

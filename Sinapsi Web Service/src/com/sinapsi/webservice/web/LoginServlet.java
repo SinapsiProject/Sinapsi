@@ -69,10 +69,12 @@ public class LoginServlet extends HttpServlet {
             keysManager.updateUserSessionKey(email, SessionKeyManager.convertToString(clientSessionKey));
             
             // Create the encrypter using the session key saved in the request login servlet
-            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email), keysManager.getServerUncryptedSessionKey(email));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel), 
+                                            keysManager.getServerUncryptedSessionKey(email, deviceName, deviceModel));
             
             // create the decrypter using local private key, and the client encrypted session key, then  decrypt the jsoned body
-            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email), keysManager.getUserSessionKey(email));
+            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, deviceName, deviceModel), 
+                                            keysManager.getUserSessionKey(email, deviceName, deviceModel));
             
             String password = decrypter.decrypt(pwdSes.getSecond());
             User user = (User) userManager.getUserByEmail(email);           

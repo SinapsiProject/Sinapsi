@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
@@ -57,9 +58,11 @@ public class RemoteMacroExecution extends HttpServlet {
         Gson gson = new Gson();
         
         try {
+            DeviceInterface device = deviceManager.getDevice(fromDevice);
+            String email = deviceManager.getUserEmail(fromDevice);
             // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(deviceManager.getUserEmail(fromDevice)), 
-                                            keysManager.getUserSessionKey((deviceManager.getUserEmail(fromDevice))));
+            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, device.getName(), device.getModel()), 
+                                            keysManager.getUserSessionKey(email, device.getName(), device.getModel()));
             //decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             RemoteExecutionDescriptor RED = gson.fromJson(jsonBody,new TypeToken<RemoteExecutionDescriptor>() {}.getType());
