@@ -33,6 +33,7 @@ import java.util.List;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.utils.DialogUtils;
+import com.sinapsi.client.AppConsts;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.engine.R;
@@ -85,6 +86,10 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
+        if(AppConsts.DEBUG_TEST_CREDENTIALS) {
+            mEmailView.setText(AppConsts.DEBUG_TEST_EMAIL);
+            mPasswordView.setText(AppConsts.DEBUG_TEST_PASSWORD);
+        }
 
     }
 

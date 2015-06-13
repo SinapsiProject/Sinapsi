@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.R;
 
 
@@ -22,17 +23,18 @@ public class WelcomeActivity extends Activity {
         // set the layout
         setContentView(R.layout.welcome_layout);
 
+        if(AppConsts.DEBUG_BYPASS_LOGIN){
+            Intent i = new Intent(WelcomeActivity.this, MainActivity.class);
+            startActivity(i);
+        }
+
         TextView signUp = (TextView) findViewById(R.id.signUp_text);
         final Intent register = new Intent(this, RegisterActivity.class);
 
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //TODO: bypasses login for test purposes
-                //startActivityForResult(register, 0);
-                Intent i = new Intent(WelcomeActivity.this, MainActivity.class);
-                startActivity(i);
+                startActivityForResult(register, 0);
             }
         });
 
