@@ -119,10 +119,6 @@ public class MainActivity extends SinapsiActionBarActivity {
         Fragment fragment = fragmentMap.get(fragmentTitles[position]);
         Lol.printNullity(this, "selected fragment with name '" + fragmentTitles[position] + "'" , fragment);
 
-        /*Bundle args = new Bundle();
-        args.putInt(..., ...);
-        fragment.setArguments(args);*/
-
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
