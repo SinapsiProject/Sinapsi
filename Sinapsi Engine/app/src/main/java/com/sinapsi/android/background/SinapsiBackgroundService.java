@@ -273,11 +273,6 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         return started;
     }
 
-    public RetrofitWebServiceFacade getWeb() {
-        return web;
-    }
-
-
     @Override
     public IBinder onBind(Intent intent) {
         return new SinapsiServiceBinder();
@@ -452,7 +447,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
      *
      * @return the web service facade
      */
-    public SinapsiWebServiceFacade getWebServiceFacade() {
+    public RetrofitWebServiceFacade getWeb() {
         return web;
     }
 

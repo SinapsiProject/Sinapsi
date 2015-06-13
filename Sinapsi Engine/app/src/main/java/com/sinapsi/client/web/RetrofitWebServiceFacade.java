@@ -321,7 +321,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                                 e.printStackTrace();
                             }
 
-                            wsClient.establishConnection();
+
                             loggedUser = user;
                             loginStatusListener.onLogIn(user);
                             result.success(user, response);

@@ -27,16 +27,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
+import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
+import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
-import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.engine.R;
+import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
 
@@ -146,7 +148,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
 
 
             // first, request login
-            service.getWebServiceFacade().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<Pair<byte[], byte[]>>() {
+            service.getWeb().requestLogin(email, new SinapsiWebServiceFacade.WebServiceCallback<Pair<byte[], byte[]>>() {
                 @Override
                 public void success(Pair<byte[], byte[]> stringStringSimpleEntry, Object response) {
                     attemptLogin();
@@ -174,7 +176,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
 
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
-        service.getWebServiceFacade().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
+        service.getWeb().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
             @Override
             public void success(User user, Object response) {
                 if (user == null) {
@@ -188,12 +190,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                 }
 
                 Lol.d(this, "Success! user id received: " + user.getId());
-                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
 
-
-                showProgress(false);
             }
 
             @Override
@@ -214,6 +211,38 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
             }
         });
 
+    }
+
+    public void registerDeviceAndComplete(UserInterface user){
+        AndroidDeviceInfo adi = new AndroidDeviceInfo(this);
+        service.getWeb().registerDevice(
+                user,
+                user.getEmail(),
+                adi.getDeviceName(),
+                adi.getDeviceModel(),
+                adi.getDeviceType(),
+                AndroidAppConsts.CLIENT_VERSION,
+                new SinapsiWebServiceFacade.WebServiceCallback<DeviceInterface>() {
+                    @Override
+                    public void success(DeviceInterface deviceInterface, Object response) {
+
+                        //TODO: 1) set device in background service
+                        //TODO: 2) start background service engine
+                        //TODO: 3) wsclient establish connection
+
+                        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
+
+                        showProgress(false);
+                    }
+
+                    @Override
+                    public void failure(Throwable error) {
+                        handleRetrofitError(error);
+                        showProgress(false);
+                    }
+                });
     }
 
     private void handleRetrofitError(Throwable t) {
