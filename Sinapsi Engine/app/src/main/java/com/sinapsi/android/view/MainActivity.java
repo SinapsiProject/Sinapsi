@@ -107,9 +107,9 @@ public class MainActivity extends SinapsiActionBarActivity {
         //TODO impl
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
