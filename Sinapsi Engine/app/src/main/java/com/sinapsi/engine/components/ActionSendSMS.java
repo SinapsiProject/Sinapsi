@@ -34,7 +34,7 @@ public class ActionSendSMS extends Action {
         sms.setAddress(pjo.getString("number"));
         sms.setMsg(pjo.getString("msg"));
 
-        sa.sendSMSMessage(sms);//TODO: check returned boolean
+        sa.sendSMSMessage(sms);//HINT: check returned boolean
     }
 
     @Override

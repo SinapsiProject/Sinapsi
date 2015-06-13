@@ -239,8 +239,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                         public void success(Pair<byte[], byte[]> keys, Response response) {
 
                             if(keys.isErrorOccured()){
-                                //TODO: check reason?
-                                keysCallback.failure(new RuntimeException("Missing user"));
+                                keysCallback.failure(new RuntimeException(keys.getErrorDescription()));
                                 return;
                             }
 

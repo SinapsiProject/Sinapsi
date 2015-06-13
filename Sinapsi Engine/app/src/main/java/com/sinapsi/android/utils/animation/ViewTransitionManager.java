@@ -92,7 +92,7 @@ public class ViewTransitionManager {
                                             Lol.d("TransitionAnimation", "visibility -> " + ((v.getVisibility() == View.VISIBLE) ? "visible" : "gone"));
                                         }
                                     }).start();
-                            //TODO: alpha animation seems not to work
+                            //FIXME: alpha animation seems not to work
                         }
                     });
         }

@@ -44,15 +44,13 @@ import retrofit.RetrofitError;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends SinapsiActionBarActivity implements LoaderCallbacks<Cursor>{
+public class LoginActivity extends SinapsiActionBarActivity implements LoaderCallbacks<Cursor> {
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-
-
 
 
     @Override
@@ -88,8 +86,6 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
         mProgressView = findViewById(R.id.login_progress);
 
 
-
-
     }
 
     private void populateAutoComplete() {
@@ -103,7 +99,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
      * errors are presented and no actual login attempt is made.
      */
     public void requestLogin() {
-        if(!isServiceConnected()) return;
+        if (!isServiceConnected()) return;
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -154,7 +150,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                 @Override
                 public void failure(Throwable t) {
                     showProgress(false);
-                    if(!(t instanceof RetrofitError)) {
+                    if (!(t instanceof RetrofitError)) {
                         Lol.d(LoginActivity.class, "User does not exist");
                         mEmailView.setError(getString(R.string.username_does_not_exist));
                         return;
@@ -169,31 +165,29 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
     }
 
     public void attemptLogin() {
-        if(!isServiceConnected()) return;
-        
+        if (!isServiceConnected()) return;
+
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         service.getWebServiceFacade().login(email, password, new SinapsiWebServiceFacade.WebServiceCallback<User>() {
             @Override
             public void success(User user, Object response) {
-                if(user ==null){
+                if (user == null) {
                     showProgress(false);
                     Lol.d("LOGIN->SUCCESS", "USER IS NULL");
                     DialogUtils.showOkDialog(
                             LoginActivity.this,
-                            "Error",
+                            "Login Error",
                             "There was an error while communicating with the server");
                     return;
                 }
-                if (user.isErrorOccured()) {
-                    Lol.d(this, "Error! Message received: " + user.getErrorDescription());
-                } else {
-                    Lol.d(this, "Success! user id received: " + user.getId());
-                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
 
-                }
+                Lol.d(this, "Success! user id received: " + user.getId());
+                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+
+
                 showProgress(false);
             }
 
@@ -201,14 +195,13 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
             public void failure(Throwable error) {
 
                 showProgress(false);
-                if(!(error instanceof RetrofitError)) {
+                if (!(error instanceof RetrofitError)) {
                     RuntimeException re = (RuntimeException) error;
                     Lol.d(LoginActivity.class, "Error! Server reason:" + re.getMessage());
                     DialogUtils.showOkDialog(
                             LoginActivity.this,
                             "Login Error",
-                            "Invalid credentials."
-                    );
+                            re.getMessage());
                     return;
                 }
 

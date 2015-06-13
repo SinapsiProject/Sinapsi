@@ -371,7 +371,8 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                         handleWsMessage(message, false);
                     }else{
                         e.printStackTrace();
-                        //TODO: the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
+                        //the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
+                        //just prints the stack trace and ignores the message
                     }
 
                 }
@@ -621,7 +622,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
 
     private void foregroundMode() {
-        //TODO: useful toggles instead of classic content pending intent
+        //HINT: useful toggles instead of classic content pending intent
 
         Intent i1 = new Intent(this, MainActivity.class);
         PendingIntent maini = PendingIntent.getActivity(this,0,i1,0);

@@ -194,7 +194,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     title.setText(elem.getName());
                 }
 
-                //TODO: set description and other data
+                //HINT: set description and other data
 
                 final SwipeLayout sl = (SwipeLayout) v.findViewById(R.id.macro_element_swipe_layout);
                 LinearLayout ll = (LinearLayout) v.findViewById(R.id.bottom_wrapper);
