@@ -223,7 +223,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * @param keysCallback public key and session key received from the server
      */
     @Override
-    public void requestLogin(String email, final WebServiceCallback<Pair<byte[], byte[]>> keysCallback) {
+    public void requestLogin(String email, String deviceName, String deviceModel, final WebServiceCallback<Pair<byte[], byte[]>> keysCallback) {
         if(!onlineStatusProvider.isOnline()) return;
 
         KeyGenerator kg = new KeyGenerator(1024, "RSA");
@@ -232,6 +232,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
         try {
             uncryptedRetrofit.requestLogin(email,
+                    deviceName,
+                    deviceModel,
                     PublicKeyManager.convertToByte(puk),
                     new Callback<Pair<byte[], byte[]>>() {
 
@@ -268,7 +270,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void login(final String email, String password, final WebServiceCallback<User> result) {
+    public void login(final String email, String password, String deviceName, String deviceModel, final WebServiceCallback<User> result) {
         checkKeys();
 
         if(!onlineStatusProvider.isOnline()) return;
@@ -280,6 +282,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
             localUncryptedSessionKey = encrypt.getSessionKey();
 
             loginRetrofit.login(email,
+                    deviceName,
+                    deviceModel,
                     new Pair<byte[], String>(SessionKeyManager.convertToByte(sk), encrypt.encrypt(password)),
                     new Callback<User>() {
 
@@ -346,10 +350,10 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void getAllDevicesByUser(UserInterface user, WebServiceCallback<List<DeviceInterface>> result) {
+    public void getAllDevicesByUser(UserInterface user, String deviceName, String deviceModel, WebServiceCallback<List<DeviceInterface>> result) {
         checkKeys();
         if(!onlineStatusProvider.isOnline()) return;
-        cryptedRetrofit.getAllDevicesByUser(user.getEmail(), convertCallback(result));
+        cryptedRetrofit.getAllDevicesByUser(user.getEmail(), deviceName, deviceModel, convertCallback(result));
     }
 
     @Override
