@@ -125,8 +125,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
     };
 
     @Override
-    public void addOrUpdateMacro(MacroInterface macro) {
-
+    public boolean addOrUpdateMacro(MacroInterface macro) {
+        return false;
     }
 
     @Override
@@ -185,13 +185,18 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     @Override
     public void removeMacro(int id) {
-
+        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
+        db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE "+ COL_MACRO_ID +" = ?", new String[]{""+id});
+        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{""+id});
+        localDBOpenHelper.close();
     }
 
     @Override
     public void clearDB() {
-        localDBOpenHelper.getWritableDatabase().rawQuery("DELETE FROM "+TABLE_MACROS, null);
-        localDBOpenHelper.getWritableDatabase().rawQuery("DELETE FROM "+TABLE_ACTION_LISTS, null);
+        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
+        db.rawQuery("DELETE FROM " + TABLE_MACROS, null);
+        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS, null);
+        localDBOpenHelper.close();
     }
 
     private List<Action> getActionListForMacro(int macroid, SQLiteDatabase db){
