@@ -138,11 +138,18 @@ public class AndroidLocalDBManager implements LocalDBManager {
             if(id != -1){
                 //TODO: proceed with inserting actions
             }else{
-                //TODO: an error has occurred, throw an exception
+                throw new RuntimeException("An error occured while inserting a new macro in the local db:"+dbname);
             }
             return true;
         }else{
-            //TODO: rewrite the old macro (and actions)
+            db.update(
+                    TABLE_MACROS,
+                    macroToContentValues(macro),
+                    COL_MACRO_ID + " = ?",
+                    new String[]{""+macro.getId()});
+
+            deleteActionsForMacro(macro.getId(), db);
+            //TODO: re-add actions
 
             return false;
         }
@@ -206,7 +213,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public void removeMacro(int id) {
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
         db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
-        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{"" + id});
+        deleteActionsForMacro(id, db);
         localDBOpenHelper.close();
     }
 
@@ -266,5 +273,9 @@ public class AndroidLocalDBManager implements LocalDBManager {
         cv.put(COL_MACRO_TRIGGER_JSON, macro.getTrigger().getActualParameters());
 
         return cv;
+    }
+
+    private void deleteActionsForMacro(int id, SQLiteDatabase db){
+        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{"" + id});
     }
 }
