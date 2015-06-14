@@ -136,10 +136,13 @@ public class AndroidLocalDBManager implements LocalDBManager {
             //so this will insert it in the db
             long id = db.insert(TABLE_MACROS, null, macroToContentValues(macro));
             if(id != -1){
-                //TODO: proceed with inserting actions
+                insertActionsForMacro(macro, db);
             }else{
+                localDBOpenHelper.close();
                 throw new RuntimeException("An error occured while inserting a new macro in the local db:"+dbname);
             }
+
+            localDBOpenHelper.close();
             return true;
         }else{
             db.update(
@@ -149,8 +152,9 @@ public class AndroidLocalDBManager implements LocalDBManager {
                     new String[]{""+macro.getId()});
 
             deleteActionsForMacro(macro.getId(), db);
-            //TODO: re-add actions
+            insertActionsForMacro(macro, db);
 
+            localDBOpenHelper.close();
             return false;
         }
     }
@@ -194,7 +198,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
                             "",
                             "",
                             null,
-                            -1)); //TODO: check if this works with only id
+                            -1));
 
             m.setTrigger(t);
 
@@ -248,7 +252,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
                             "",
                             "",
                             null,
-                            -1)); //TODO: check if this works with only id
+                            -1));
 
             result.add(ac);
         }
@@ -277,5 +281,9 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     private void deleteActionsForMacro(int id, SQLiteDatabase db){
         db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{"" + id});
+    }
+
+    private void insertActionsForMacro(MacroInterface macro, SQLiteDatabase db){
+        //TODO: impl
     }
 }
