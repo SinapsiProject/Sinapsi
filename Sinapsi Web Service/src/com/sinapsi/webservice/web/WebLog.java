@@ -45,13 +45,16 @@ public class WebLog extends HttpServlet {
                     String dayliLog = "/var/log/tomcat7/localhost_access_log." + dateFormat.format(date) + ".txt";
                     
                     // filter enabled
-                    if(dateFilter != "") {
+                    if(dateFilter != "" && dateFilter != null) {
                         // check if exist the file
                         File f = new File("/var/log/tomcat7/localhost_access_log." + dateFilter + ".txt");
                         
                         if(f.exists()) {
                             dayliLog = "/var/log/tomcat7/localhost_access_log." + dateFilter + ".txt";
-                        } 
+                        } else {
+                            dayliLog = "/var/log/sinapsi/empty_file.log";
+                        }
+                        
                     }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
@@ -116,7 +119,9 @@ public class WebLog extends HttpServlet {
                         
                         if(f.exists()) {
                             dayliLog = "/var/log/sinapsi/web_socket." + dateFilter + ".log";
-                        } 
+                        } else {
+                            dayliLog = "/var/log/sinapsi/empty_file.log";
+                        }
                     }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
@@ -147,7 +152,9 @@ public class WebLog extends HttpServlet {
                         
                         if(f.exists()) {
                             dayliLog = "/var/log/sinapsi/web_service." + dateFilter + ".log";
-                        } 
+                        } else {
+                            dayliLog = "/var/log/sinapsi/empty_file.log";
+                        }
                     }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
