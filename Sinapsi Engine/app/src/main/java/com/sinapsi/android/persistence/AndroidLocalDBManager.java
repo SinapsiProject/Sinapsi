@@ -189,7 +189,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
     }
 
     private List<Action> getActionListForMacro(int macroid, SQLiteDatabase db){
-        List<Action> result = null;
+        List<Action> result = new ArrayList<>();
 
         Cursor c = db.rawQuery("SELECT * FROM " + TABLE_ACTION_LISTS +
                 " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ? " +
@@ -198,7 +198,22 @@ public class AndroidLocalDBManager implements LocalDBManager {
         c.moveToFirst();
 
         while(!c.isAfterLast()){
-            //TODO
+            String actionName = c.getString(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_NAME));
+            int actionDeviceId = c.getInt(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_DEVICE_ID));
+            String actionParams = c.getString(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_JSON));
+
+            Action ac = componentFactory.newAction(
+                    actionName,
+                    actionParams,
+                    factoryModel.newDevice(
+                            actionDeviceId,
+                            "",
+                            "",
+                            "",
+                            null,
+                            -1)); //TODO: check if this works with only id
+
+            result.add(ac);
         }
 
         c.close();
