@@ -127,10 +127,25 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     @Override
     public boolean addOrUpdateMacro(MacroInterface macro) {
+        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
+        Cursor checkCursor = db.rawQuery("SELECT * FROM " + TABLE_MACROS +
+                                        " WHERE " + COL_MACRO_ID + " = ?", new String[]{""+macro.getId()});
 
+        if(checkCursor == null || checkCursor.getCount() == 0){
+            //there are no macros with same id as macro
+            //so this will insert it in the db
+            long id = db.insert(TABLE_MACROS, null, macroToContentValues(macro));
+            if(id != -1){
+                //TODO: proceed with inserting actions
+            }else{
+                //TODO: an error has occurred, throw an exception
+            }
+            return true;
+        }else{
+            //TODO: rewrite the old macro (and actions)
 
-
-        return false;
+            return false;
+        }
     }
 
     @Override
