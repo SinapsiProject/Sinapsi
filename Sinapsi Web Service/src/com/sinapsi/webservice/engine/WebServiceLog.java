@@ -2,7 +2,6 @@ package com.sinapsi.webservice.engine;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -26,7 +25,7 @@ public class WebServiceLog {
     public WebServiceLog() {
         try {
             logger = new BufferedWriter(openFile(STANDARD_OUT));
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -38,7 +37,7 @@ public class WebServiceLog {
     public WebServiceLog(String type) {
         try {
             logger = new BufferedWriter(openFile(type));
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -86,7 +85,7 @@ public class WebServiceLog {
         try {
             logger = null;
             logger = new BufferedWriter(openFile(type));
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -94,9 +93,9 @@ public class WebServiceLog {
      * If filename is null use standard output for log
      * @param filename output filename
      * @return
-     * @throws FileNotFoundException
+     * @throws IOException 
      */
-    private Writer openFile(String type) throws FileNotFoundException {
+    private Writer openFile(String type) throws IOException {
         switch (type) {
             case STANDARD_OUT:
                 return new OutputStreamWriter(System.out);
@@ -107,13 +106,21 @@ public class WebServiceLog {
             case FILE_OUT: {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = new Date();
-                return new PrintWriter(new File("/var/log/sinapsi/web_service." + dateFormat.format(date) + ".log"));          
+                File file = new File("/var/log/sinapsi/web_service." + dateFormat.format(date) + ".log");
+                file.createNewFile();
+                file.setWritable(true, false);
+                file.setReadable(true, false);
+                return new PrintWriter(file);          
             }
             
             case WEBSOCKET_FILE_OUT: {
                 //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 //Date date = new Date();
-                return new PrintWriter(new File("/var/log/sinapsi/web_socket.log"));          
+                File file = new File("/var/log/sinapsi/web_socket.log");
+                file.createNewFile();
+                file.setWritable(true, false);
+                file.setReadable(true, false);
+                return new PrintWriter(file);          
             }
                 
             default:
