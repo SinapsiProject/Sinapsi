@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.sinapsi.client.persistence.LocalDBManager;
 import com.sinapsi.engine.Action;
+import com.sinapsi.engine.ComponentFactory;
+import com.sinapsi.engine.Trigger;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.FactoryModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +92,13 @@ public class AndroidLocalDBManager implements LocalDBManager {
     private String dbname;
     private Context context;
 
-    public AndroidLocalDBManager(Context c, String name){
+    private ComponentFactory componentFactory;
+    private FactoryModel factoryModel = new FactoryModel();
+
+    public AndroidLocalDBManager(Context c, String name, ComponentFactory cfactory){
         this.context = c;
+        this.dbname = name;
+        this.componentFactory = cfactory;
     }
 
     public SQLiteOpenHelper localDBOpenHelper = new SQLiteOpenHelper(
@@ -130,9 +138,44 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
         while (!c.isAfterLast()){
 
-            //TODO
+            int id = c.getInt(0);
+            String name = c.getString(1);
+            String iconName = c.getString(2);
+            String iconColor = c.getString(3);
+            boolean valid = c.getInt(4) != 0;
+            String failurePolicy = c.getString(5);
+            boolean enabled = c.getInt(6) != 0;
 
+            int triggerDeviceId = c.getInt(7);
+            String triggerName = c.getString(8);
+            String triggerJSON = c.getString(9);
 
+            MacroInterface m = factoryModel.newMacro(name, id);
+            m.setIconName(iconName);
+            m.setMacroColor(iconColor);
+            m.setValid(valid);
+            m.setExecutionFailurePolicy(failurePolicy);
+            m.setEnabled(enabled);
+
+            Trigger t = componentFactory.newTrigger(
+                    triggerName,
+                    triggerJSON,
+                    m,
+                    factoryModel.newDevice(
+                            triggerDeviceId,
+                            "",
+                            "",
+                            "",
+                            null,
+                            -1)); //TODO: check if this works with only id
+
+            m.setTrigger(t);
+
+            for(Action ac: getActionListForMacro(m.getId())){
+                m.addAction(ac);
+            }
+
+            result.add(m);
         }
         c.close();
         localDBOpenHelper.close();
