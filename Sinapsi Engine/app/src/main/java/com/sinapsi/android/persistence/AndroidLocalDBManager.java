@@ -1,5 +1,6 @@
 package com.sinapsi.android.persistence;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -72,8 +73,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
             COL_MACRO_ICON_NAME + " TEXT, " +
             COL_MACRO_ICON_COLOR + " VARCHAR(8), " +
             COL_MACRO_VALID + " INTEGER, " +
-            COL_MACRO_ENABLED + " INTEGER, " +
             COL_MACRO_FAILURE_POLICY + " TEXT, " +
+            COL_MACRO_ENABLED + " INTEGER, " +
             COL_MACRO_TRIGGER_DEVICE_ID + " INTEGER, " +
             COL_MACRO_TRIGGER_NAME + " TEXT, " +
             COL_MACRO_TRIGGER_JSON + " TEXT"+
@@ -126,6 +127,9 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     @Override
     public boolean addOrUpdateMacro(MacroInterface macro) {
+
+
+
         return false;
     }
 
@@ -186,8 +190,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
     @Override
     public void removeMacro(int id) {
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
-        db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE "+ COL_MACRO_ID +" = ?", new String[]{""+id});
-        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{""+id});
+        db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
+        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{"" + id});
         localDBOpenHelper.close();
     }
 
@@ -204,7 +208,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
         Cursor c = db.rawQuery("SELECT * FROM " + TABLE_ACTION_LISTS +
                 " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ? " +
-                " ORDER BY " + COL_ACTIONLIST_ACTION_ORDER, new String[]{""+macroid});
+                " ORDER BY " + COL_ACTIONLIST_ACTION_ORDER, new String[]{"" + macroid});
 
         c.moveToFirst();
 
@@ -230,5 +234,22 @@ public class AndroidLocalDBManager implements LocalDBManager {
         c.close();
 
         return result;
+    }
+
+    private ContentValues macroToContentValues(MacroInterface macro){
+        ContentValues cv = new ContentValues();
+
+        cv.put(COL_MACRO_ID, macro.getId());
+        cv.put(COL_MACRO_NAME, macro.getName());
+        cv.put(COL_MACRO_ICON_NAME, macro.getIconName());
+        cv.put(COL_MACRO_ICON_COLOR, macro.getMacroColor());
+        cv.put(COL_MACRO_VALID, macro.isValid());
+        cv.put(COL_MACRO_FAILURE_POLICY, macro.getExecutionFailurePolicy());
+        cv.put(COL_MACRO_ENABLED, macro.isEnabled());
+        cv.put(COL_MACRO_TRIGGER_NAME, macro.getTrigger().getName());
+        cv.put(COL_MACRO_TRIGGER_DEVICE_ID, macro.getTrigger().getExecutionDevice().getId());
+        cv.put(COL_MACRO_TRIGGER_JSON, macro.getTrigger().getActualParameters());
+
+        return cv;
     }
 }
