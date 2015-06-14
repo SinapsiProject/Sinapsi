@@ -2,10 +2,12 @@ package com.sinapsi.webservice.engine;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -110,7 +112,7 @@ public class WebServiceLog {
                 file.createNewFile();
                 file.setWritable(true, false);
                 file.setReadable(true, false);
-                return new PrintWriter(file);          
+                return new PrintWriter(new FileOutputStream(file, true));          
             }
             
             case WEBSOCKET_FILE_OUT: {
@@ -120,7 +122,7 @@ public class WebServiceLog {
                 file.createNewFile();
                 file.setWritable(true, false);
                 file.setReadable(true, false);
-                return new PrintWriter(file);          
+                return new PrintWriter(new FileOutputStream(file, true));          
             }
                 
             default:
