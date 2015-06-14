@@ -134,8 +134,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
         if(checkCursor == null || checkCursor.getCount() == 0){
             //there are no macros with same id as macro
             //so this will insert it in the db
-            long id = db.insert(TABLE_MACROS, null, macroToContentValues(macro));
-            if(id != -1){
+            long rowid = db.insert(TABLE_MACROS, null, macroToContentValues(macro));
+            if(rowid != -1){
                 insertActionsForMacro(macro, db);
             }else{
                 localDBOpenHelper.close();
@@ -279,11 +279,36 @@ public class AndroidLocalDBManager implements LocalDBManager {
         return cv;
     }
 
+    private ContentValues actionToContentValues(Action a, int macroid, int actionIndex){
+        ContentValues cv = new ContentValues();
+
+        cv.put(COL_ACTIONLIST_ACTION_NAME, a.getName());
+        cv.put(COL_ACTIONLIST_ACTION_DEVICE_ID, a.getExecutionDevice().getId());
+        cv.put(COL_ACTIONLIST_ACTION_JSON, a.getActualParameters());
+        cv.put(COL_ACTIONLIST_ACTION_ORDER, actionIndex);
+        cv.put(COL_ACTIONLIST_MACRO_ID, macroid);
+
+        return cv;
+    }
+
     private void deleteActionsForMacro(int id, SQLiteDatabase db){
         db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{"" + id});
     }
 
     private void insertActionsForMacro(MacroInterface macro, SQLiteDatabase db){
-        //TODO: impl
+        List<Action> actions = macro.getActions();
+        for(int i = 0; i < actions.size(); ++i){
+            Action a = actions.get(i);
+            long rowid = db.insert(
+                    TABLE_ACTION_LISTS,
+                    null,
+                    actionToContentValues(a, macro.getId(), i));
+
+            if(rowid == -1){
+                localDBOpenHelper.close();
+                throw new RuntimeException("An error occured while inserting a new action in the local db:"+dbname);
+            }
+        }
+
     }
 }
