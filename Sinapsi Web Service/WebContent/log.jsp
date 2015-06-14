@@ -104,6 +104,9 @@
                             <li>
                                 <a href="web_log?type=ws">WebSocket</a>
                             </li>
+                            <li>
+                                <a href="web_log?type=webs">Web Service</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

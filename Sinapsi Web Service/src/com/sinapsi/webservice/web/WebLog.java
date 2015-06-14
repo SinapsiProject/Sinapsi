@@ -96,6 +96,9 @@ public class WebLog extends HttpServlet {
             case "ws":
                 request.getRequestDispatcher("log.jsp").forward(request, response);
                 break;
+            
+            case "webs":
+                
         }
 	}
 

@@ -7,12 +7,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+
 import com.google.gson.Gson;
+import com.sinapsi.webservice.engine.WebServiceLog;
 import com.sinapsi.wsproto.SinapsiMessageTypes;
 import com.sinapsi.wsproto.WebSocketMessage;
 
@@ -22,6 +25,7 @@ import com.sinapsi.wsproto.WebSocketMessage;
 public class Server extends WebSocketServer {
     private Map<String, WebSocket> clients = Collections.synchronizedMap(new HashMap<String, WebSocket>());
     private Map<WebSocket, String> clientsWS = Collections.synchronizedMap(new HashMap<WebSocket, String>());
+    private WebServiceLog wslog = new WebServiceLog(WebServiceLog.WEBSOCKET_FILE_OUT);
     
     /**
      * Default ctor
@@ -50,7 +54,7 @@ public class Server extends WebSocketServer {
         
         Gson gson = new Gson();
         broadcast(gson.toJson(new WebSocketMessage(SinapsiMessageTypes.NEW_CONNECTION, "New connection: " + handshake.getFieldValue("Username"))));
-        System.out.println(handshake.getFieldValue("Username") + " connected!");
+        wslog.log(wslog.getTime(), handshake.getFieldValue("Username") + " connected!");
     }
 
     /**
@@ -60,7 +64,7 @@ public class Server extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         Gson gson = new Gson();
         broadcast(gson.toJson((new WebSocketMessage(SinapsiMessageTypes.CONNECTION_LOST, clientsWS.get(conn) + " disconnected!"))));
-        System.out.println(clientsWS.get(conn) + " disconnected!");
+        wslog.log(wslog.getTime(), clientsWS.get(conn) + " disconnected!");
         
         clients.remove(clientsWS.get(conn));
         clientsWS.remove(conn);      
@@ -72,7 +76,7 @@ public class Server extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         this.broadcast(message);
-        System.out.println(conn + ": " + message );
+        wslog.log(wslog.getTime(), conn + ": " + message );
     }
 
     /**
@@ -80,7 +84,7 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onFragment(WebSocket conn, Framedata fragment) {
-        System.out.println("received fragment: " + fragment);
+        wslog.log(wslog.getTime(), "received fragment: " + fragment);
     }
 
     /**
@@ -93,7 +97,7 @@ public class Server extends WebSocketServer {
         WebSocketImpl.DEBUG = true;
 
         this.start();
-        System.out.println("websocket server started on port: " + getPort());
+        wslog.log(wslog.getTime(), "websocket server started on port: " + getPort());
 
        /* BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
         

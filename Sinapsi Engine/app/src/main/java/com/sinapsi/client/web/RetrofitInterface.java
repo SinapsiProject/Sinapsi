@@ -217,5 +217,5 @@ public interface RetrofitInterface {
             @Query("to_device") int to_device_id,
             @Body RemoteExecutionDescriptor red,
             Callback<String> result);
-    
+
 }
