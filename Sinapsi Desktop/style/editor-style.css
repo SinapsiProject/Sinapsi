@@ -3,6 +3,19 @@
     src: url('file:res/quicksand2.otf');
 }
 
+#search-field {
+	-fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;
+    -fx-border-color: rgba(0,0,0,0.3);
+    -fx-border-width: 1pt;
+    -fx-border-style: solid ;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: 140px;
+    -fx-background-image: url("../res/lens.png");
+    
+}
+
 #table-column {
     -fx-table-cell-border-color: #256581;
     -fx-table-header-border-color: #ffffff;

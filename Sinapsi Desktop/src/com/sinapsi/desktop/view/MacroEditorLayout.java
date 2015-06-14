@@ -64,6 +64,7 @@ public class MacroEditorLayout extends Application {
 	// Textfields
 	private TextField macroNameField;
 	
+	
 	// TableView & Columns
 	private TableView tableView;
 	private TableColumn groupColumn;
@@ -74,6 +75,7 @@ public class MacroEditorLayout extends Application {
 	private HBox macroGroupButtonBox;
 	private HBox macroButtonBox;
 	private HBox helpButtonBox;
+	private HBox macroNameFieldBox;
 	
 	
 	@Override
@@ -133,6 +135,11 @@ public class MacroEditorLayout extends Application {
 		firstButtonBar = new ButtonBar();
 		secondButtonBar = new ButtonBar();
 		
+		macroNameField = new TextField();
+			macroNameField.positionCaret(100);
+			macroNameField.setId("search-field");
+			
+		
 		groupButtonBox = new HBox(15);
 		groupButtonBox.setAlignment(Pos.CENTER_LEFT);
 		groupButtonBox.setPadding(new Insets(5, 95, 5, 5));
@@ -152,7 +159,12 @@ public class MacroEditorLayout extends Application {
 		helpButtonBox.setAlignment(Pos.CENTER_RIGHT);
 		helpButtonBox.setPadding(new Insets(5, 5, 5, 5));
 			helpButtonBox.getChildren().add(helpButton);
-		
+			
+		macroNameFieldBox = new HBox(15);
+		macroNameFieldBox.setAlignment(Pos.CENTER_LEFT);
+		macroNameFieldBox.setPadding(new Insets(10, 10, 10, 10));
+			macroNameFieldBox.getChildren().add(macroNameField);
+			
 		
 			
 		macroDescription = new Label("Macro description");
@@ -162,6 +174,7 @@ public class MacroEditorLayout extends Application {
 		splitPane.setPrefWidth(350);
 		splitPane.getItems().add(tableView);
 		
+		mainPane.setTop(macroNameFieldBox);
 		mainPane.setBottom(buttonPane);
 		mainPane.setCenter(descriptionPane);
 		mainPane.setLeft(splitPane);
