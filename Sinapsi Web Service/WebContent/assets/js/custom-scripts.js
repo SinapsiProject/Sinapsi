@@ -29,7 +29,9 @@
     // Initializing ///
     $(document).ready(function () {
         mainApp.initFunction();
+        $('#filter_text').datepicker();
         $('#tomcat_log').scrollTop($('#tomcat_log').height());
+        
     });
 
 }(jQuery));

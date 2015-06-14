@@ -1,4 +1,5 @@
 <%@page import="java.io.BufferedReader"%>
+<%@page import="com.sinapsi.utils.Pair"%>
 <%@ page 
     language="java" 
     contentType="text/html; charset=utf-8"
@@ -15,8 +16,9 @@
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
     <!-- FontAwesome Styles-->
     <link href="assets/css/font-awesome.css" rel="stylesheet" />
-    <!-- Morris Chart Styles-->
-    <link href="assets/js/morris/morris-0.4.3.min.css" rel="stylesheet" />
+	<link href="assets/css/datepicker.css" rel="stylesheet" type="text/css"/>
+    <script src="assets/js/jquery-1.7.1.min.js"></script>
+    <script src="assets/js/jquery-ui-1.8.18.custom.min.js"></script>
     <!-- Custom Styles-->
     <link href="assets/css/custom-styles.css" rel="stylesheet" />
     <!-- Google Fonts-->
@@ -40,6 +42,9 @@
        }
        if(email == null) 
            response.sendRedirect("login.html");
+ 
+       Pair<BufferedReader, String> log = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
+       session.removeAttribute("log_buffer");
     %>
     <div id="wrapper">
         <nav class="navbar navbar-default top-navbar" role="navigation">
@@ -116,13 +121,27 @@
         <div id="page-wrapper">
             <div id="page-inner">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <h1 class="page-header">
-                            <small>Log</small>
+                            <%=log.getSecond()%> <small>Log</small>
                         </h1>
                     </div>
+                    <!-- FILTER LOG  -->
+                    <form method="get" action="web_log">
+                        <div class="col-lg-6">
+                            <div class=input-group input-group-lg>                           
+                                <input name="filter_text" id="filter" type="text" class="form-control">
+                                <input name="type" value=<%=log.getSecond()%> hidden="true">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">Filter</button>
+                                </span>
+                            </div>
+                            <script>
+                                $('#filter').datepicker({ dateFormat: 'yy-mm-dd', maxDate: '0'}).val();
+                            </script>
+                        </div>
+                    </form>
                 </div>
-                <!-- /. ROW  -->
                 <!-- /. ROW  -->
                 <div class="row">
                     <div class="col-md-12" >
@@ -132,11 +151,9 @@
                                          padding-left: 4px;">
                                                    
                         <%
-                           BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
-                           session.removeAttribute("log_buffer");
-                           if(brr != null) {
+                           if(log.getFirst() != null) {
                                String line;
-                               while((line = brr.readLine()) != null) { 
+                               while((line = log.getFirst().readLine()) != null) { 
                         %>
                                    "<%=line%>"<br>   
                         <% 

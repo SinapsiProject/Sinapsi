@@ -8,13 +8,13 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import com.sinapsi.utils.Pair;
 
 /**
  * Servlet implementation class WebLog
@@ -35,14 +35,24 @@ public class WebLog extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String type = request.getParameter("type");
+		String dateFilter = request.getParameter("filter_text");
 		
 		switch (type) {
             case "tomcat": 
                 try {
-                    //TODO: read a specific file log from a time range
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     Date date = new Date();
                     String dayliLog = "/var/log/tomcat7/localhost_access_log." + dateFormat.format(date) + ".txt";
+                    
+                    // filter enabled
+                    if(dateFilter != "") {
+                        // check if exist the file
+                        File f = new File("/var/log/tomcat7/localhost_access_log." + dateFilter + ".txt");
+                        
+                        if(f.exists()) {
+                            dayliLog = "/var/log/tomcat7/localhost_access_log." + dateFilter + ".txt";
+                        } 
+                    }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
                     HttpSession session = request.getSession();
@@ -51,7 +61,7 @@ public class WebLog extends HttpServlet {
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
                     
-                    session.setAttribute("log_buffer", brr);
+                    session.setAttribute("log_buffer", new Pair<BufferedReader, String>(brr, "tomcat"));
                     request.getRequestDispatcher("log.jsp").forward(request, response);
                     
                 } catch(Exception e) {
@@ -68,7 +78,7 @@ public class WebLog extends HttpServlet {
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
                     
-                    session.setAttribute("log_buffer", brr);
+                    session.setAttribute("log_buffer", new Pair<BufferedReader, String>(brr, "catalina"));
                     request.getRequestDispatcher("log.jsp").forward(request, response);
                     
                 } catch(Exception e) {
@@ -85,7 +95,7 @@ public class WebLog extends HttpServlet {
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
                     
-                    session.setAttribute("log_buffer", brr);
+                    session.setAttribute("log_buffer", new Pair<BufferedReader, String>(brr, "db"));
                     request.getRequestDispatcher("log.jsp").forward(request, response);
                     
                 } catch(Exception e) {
@@ -95,10 +105,19 @@ public class WebLog extends HttpServlet {
                 
             case "ws":
                 try {
-                    //TODO: read a specific file log from a time range
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     Date date = new Date();
                     String dayliLog = "/var/log/sinapsi/web_socket." + dateFormat.format(date) + ".log";
+                    
+                    // filter enabled
+                    if(dateFilter != "") {
+                        // check if exist the file
+                        File f = new File("/var/log/sinapsi/web_socket." + dateFilter + ".log");
+                        
+                        if(f.exists()) {
+                            dayliLog = "/var/log/sinapsi/web_socket." + dateFilter + ".log";
+                        } 
+                    }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
                     HttpSession session = request.getSession();
@@ -107,7 +126,7 @@ public class WebLog extends HttpServlet {
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
                     
-                    session.setAttribute("log_buffer", brr);
+                    session.setAttribute("log_buffer", new Pair<BufferedReader, String>(brr, "ws"));
                     request.getRequestDispatcher("log.jsp").forward(request, response);
                     
                 } catch(Exception e) {
@@ -117,10 +136,19 @@ public class WebLog extends HttpServlet {
             
             case "webs":
                 try {
-                    //TODO: read a specific file log from a time range
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     Date date = new Date();
                     String dayliLog = "/var/log/sinapsi/web_service." + dateFormat.format(date) + ".log";
+                    
+                    // filter enabled
+                    if(dateFilter != "") {
+                        // check if exist the file
+                        File f = new File("/var/log/sinapsi/web_service." + dateFilter + ".log");
+                        
+                        if(f.exists()) {
+                            dayliLog = "/var/log/sinapsi/web_service." + dateFilter + ".log";
+                        } 
+                    }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
                     HttpSession session = request.getSession();
@@ -129,7 +157,7 @@ public class WebLog extends HttpServlet {
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
                     
-                    session.setAttribute("log_buffer", brr);
+                    session.setAttribute("log_buffer", new Pair<BufferedReader, String>(brr, "webs"));
                     request.getRequestDispatcher("log.jsp").forward(request, response);
                     
                 } catch(Exception e) {
