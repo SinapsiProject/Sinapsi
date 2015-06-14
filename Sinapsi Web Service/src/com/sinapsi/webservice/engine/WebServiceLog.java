@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -116,9 +115,9 @@ public class WebServiceLog {
             }
             
             case WEBSOCKET_FILE_OUT: {
-                //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                //Date date = new Date();
-                File file = new File("/var/log/sinapsi/web_socket.log");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                File file = new File("/var/log/sinapsi/web_socket." + dateFormat.format(date) + ".log");
                 file.createNewFile();
                 file.setWritable(true, false);
                 file.setReadable(true, false);

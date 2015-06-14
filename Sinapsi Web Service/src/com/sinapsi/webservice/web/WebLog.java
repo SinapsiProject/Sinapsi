@@ -94,10 +94,48 @@ public class WebLog extends HttpServlet {
                 break;
                 
             case "ws":
-                request.getRequestDispatcher("log.jsp").forward(request, response);
+                try {
+                    //TODO: read a specific file log from a time range
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String dayliLog = "/var/log/sinapsi/web_socket." + dateFormat.format(date) + ".log";
+                    
+                    FileInputStream fstram = new FileInputStream(new File(dayliLog));
+                    HttpSession session = request.getSession();
+                    BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
+                    
+                    if(brr == null)
+                        brr = new BufferedReader(new InputStreamReader(fstram));
+                    
+                    session.setAttribute("log_buffer", brr);
+                    request.getRequestDispatcher("log.jsp").forward(request, response);
+                    
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             
             case "webs":
+                try {
+                    //TODO: read a specific file log from a time range
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String dayliLog = "/var/log/sinapsi/web_service." + dateFormat.format(date) + ".log";
+                    
+                    FileInputStream fstram = new FileInputStream(new File(dayliLog));
+                    HttpSession session = request.getSession();
+                    BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
+                    
+                    if(brr == null)
+                        brr = new BufferedReader(new InputStreamReader(fstram));
+                    
+                    session.setAttribute("log_buffer", brr);
+                    request.getRequestDispatcher("log.jsp").forward(request, response);
+                    
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                break;
                 
         }
 	}
