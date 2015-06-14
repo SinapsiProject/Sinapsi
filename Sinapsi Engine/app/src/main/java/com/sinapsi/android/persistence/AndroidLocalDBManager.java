@@ -133,7 +133,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public List<MacroInterface> getAllMacros() {
         List<MacroInterface> result = new ArrayList<>();
 
-        Cursor c = localDBOpenHelper.getWritableDatabase().query(TABLE_MACROS,ALL_COLUMNS_MACROS,null,null,null,null,null);
+        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
+        Cursor c = db.query(TABLE_MACROS, ALL_COLUMNS_MACROS, null, null, null, null, null);
         c.moveToFirst();
 
         while (!c.isAfterLast()){
@@ -171,7 +172,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
             m.setTrigger(t);
 
-            for(Action ac: getActionListForMacro(m.getId())){
+            for(Action ac: getActionListForMacro(m.getId(), db)){
                 m.addAction(ac);
             }
 
@@ -187,8 +188,21 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     }
 
-    private List<Action> getActionListForMacro(int macroid){
+    private List<Action> getActionListForMacro(int macroid, SQLiteDatabase db){
         List<Action> result = null;
+
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_ACTION_LISTS +
+                " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ? " +
+                " ORDER BY " + COL_ACTIONLIST_ACTION_ORDER, new String[]{""+macroid});
+
+        c.moveToFirst();
+
+        while(!c.isAfterLast()){
+            //TODO
+        }
+
+        c.close();
+
         return result;
     }
 }
