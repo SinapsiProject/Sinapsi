@@ -188,6 +188,12 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     }
 
+    @Override
+    public void clearDB() {
+        localDBOpenHelper.getWritableDatabase().rawQuery("DELETE FROM "+TABLE_MACROS, null);
+        localDBOpenHelper.getWritableDatabase().rawQuery("DELETE FROM "+TABLE_ACTION_LISTS, null);
+    }
+
     private List<Action> getActionListForMacro(int macroid, SQLiteDatabase db){
         List<Action> result = new ArrayList<>();
 

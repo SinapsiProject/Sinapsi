@@ -13,4 +13,5 @@ public interface LocalDBManager {
     public void addOrUpdateMacro(MacroInterface macro);
     public List<MacroInterface> getAllMacros();
     public void removeMacro(int id);
+    public void clearDB();
 }
