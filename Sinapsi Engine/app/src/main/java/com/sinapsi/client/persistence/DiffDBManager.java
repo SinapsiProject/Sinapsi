@@ -1,6 +1,9 @@
 package com.sinapsi.client.persistence;
 
+import com.sinapsi.client.persistence.syncmodel.MacroChange;
 import com.sinapsi.model.MacroInterface;
+
+import java.util.List;
 
 /**
  * This interface contains a collection
@@ -30,6 +33,13 @@ public interface DiffDBManager {
      * @param id the id of the removed macro
      */
     void macroRemoved(int id);
+
+    /**
+     * Extracts all the changes from the related table and returns them
+     *
+     * @return a list of changes
+     */
+    public List<MacroChange> getAllChanges();
 
     /**
      * Clears all the tables in the db.

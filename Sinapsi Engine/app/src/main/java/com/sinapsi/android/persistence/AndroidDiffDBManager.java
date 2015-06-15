@@ -1,9 +1,14 @@
 package com.sinapsi.android.persistence;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import com.sinapsi.client.persistence.DiffDBManager;
+import com.sinapsi.client.persistence.syncmodel.MacroChange;
 import com.sinapsi.model.MacroInterface;
+
+import java.util.List;
 
 /**
  * DiffDBManager implementation for android
@@ -40,6 +45,29 @@ public class AndroidDiffDBManager implements DiffDBManager {
         this.dbname = dbname;
     }
 
+    public SQLiteOpenHelper diffDBOpenHelper = new SQLiteOpenHelper(
+            context,
+            dbname,
+            null,
+            DIFF_DB_VERSION
+    ) {
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            createTables(db);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHANGES);
+            createTables(db);
+        }
+
+
+        public void createTables(SQLiteDatabase db){
+            db.execSQL(SQL_STATEMENT_CREATE_TABLE_CHANGES);
+        }
+    };
+
     @Override
     public void macroAdded(MacroInterface macro) {
 
@@ -53,6 +81,11 @@ public class AndroidDiffDBManager implements DiffDBManager {
     @Override
     public void macroRemoved(int id) {
 
+    }
+
+    @Override
+    public List<MacroChange> getAllChanges() {
+        return null;
     }
 
     @Override
