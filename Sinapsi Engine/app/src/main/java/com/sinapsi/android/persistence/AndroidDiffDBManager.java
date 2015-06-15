@@ -157,4 +157,24 @@ public class AndroidDiffDBManager implements DiffDBManager {
         diffDBOpenHelper.getWritableDatabase().rawQuery("DELETE FROM " + TABLE_CHANGES, null);
         diffDBOpenHelper.close();
     }
+
+    @Override
+    public List<MacroChange> getChangesForMacro(int id) {
+        List<MacroChange> result = new ArrayList<>();
+        Cursor c = diffDBOpenHelper.getWritableDatabase().query(
+                TABLE_CHANGES,
+                ALL_COLUMNS_CHANGES,
+                COL_CHANGE_MACRO_ID+" = ?",
+                new String[]{""+id},
+                null,
+                null,
+                null);
+        c.moveToFirst();
+        while (!c.isAfterLast()){
+            result.add(cursorToMacroChange(c));
+        }
+        c.close();
+        diffDBOpenHelper.close();
+        return result;
+    }
 }

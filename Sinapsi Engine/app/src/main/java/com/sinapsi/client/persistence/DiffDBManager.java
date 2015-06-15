@@ -44,5 +44,13 @@ public interface DiffDBManager {
     /**
      * Clears all the tables in the db.
      */
-    void clearDB();
+    public void clearDB();
+
+    /**
+     * Extracts all the changes for the macro with the specified id
+     *
+     * @param id the macro id
+     * @return the list of changes
+     */
+    public List<MacroChange> getChangesForMacro(int id);
 }

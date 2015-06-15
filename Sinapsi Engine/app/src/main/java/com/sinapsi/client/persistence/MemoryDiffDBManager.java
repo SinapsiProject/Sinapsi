@@ -39,4 +39,13 @@ public class MemoryDiffDBManager implements DiffDBManager {
     public void clearDB() {
         changes.clear();
     }
+
+    @Override
+    public List<MacroChange> getChangesForMacro(int id) {
+        List<MacroChange> result = new ArrayList<>();
+        for(MacroChange mc:getAllChanges()){
+            if(mc.getMacroId() == id) result.add(mc);
+        }
+        return result;
+    }
 }
