@@ -243,7 +243,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        //TODO: delete from local db, and web service if connected
+                                        service.removeMacro(elem.getId());
                                         updateContent();
                                         dialog.dismiss();
                                     }
@@ -292,7 +292,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     public void onClick(View v) {
 
                         try {
-                            //TODO: save enabled status to db and sync
+                            service.addOrUpdateMacro(elem);
                             service.getEngine().setMacroEnabled(elem.getId(), !elem.isEnabled());
                         } catch (MacroEngine.MissingMacroException e) {
                             //just print stack trace and ignore
@@ -376,7 +376,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
-        service.syncAndUpdateMacros();
+        service.syncAndLoadMacros();
         updateMacroList(service.getMacros());
 
 
@@ -403,14 +403,6 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
     public void onOfflineMode() {
         //TODO: impl
     }
-
-    public void removeMacro(MacroInterface elem, int position){
-
-
-        //TODO: remove from db
-    }
-
-
 
     private void updateMacroList(List<MacroInterface> ml) {
         macroList.clear();

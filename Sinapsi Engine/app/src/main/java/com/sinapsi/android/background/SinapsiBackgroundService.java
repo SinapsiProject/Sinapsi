@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.gson.Gson;
-import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
 import com.sinapsi.android.persistence.AndroidLocalDBManager;
 import com.sinapsi.android.view.MainActivity;
 import com.sinapsi.android.web.AndroidBase64DecodingMethod;
@@ -70,9 +69,6 @@ import com.sinapsi.wsproto.SinapsiMessageTypes;
 import com.sinapsi.wsproto.WebSocketEventHandler;
 import com.sinapsi.wsproto.WebSocketMessage;
 
-import org.java_websocket.handshake.ServerHandshake;
-
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -202,7 +198,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         );
 
         // loads macros from local db/web service -------------------
-        syncAndUpdateMacros();
+        syncAndLoadMacros();
 
 
         if (AppConsts.DEBUG_MACROS) createLocalMacroExamples();
@@ -272,7 +268,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         return new SinapsiServiceBinder();
     }
 
-    public void syncAndUpdateMacros() {
+    public void syncAndLoadMacros() {
         if (isOnline()) syncManager.sync();
         engine.addMacros(loadSavedMacros());
 
@@ -367,7 +363,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             }
             break;
             case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
-                //HINT: impl (after alpha)
+                syncAndLoadMacros();
             }
             break;
         }
@@ -385,6 +381,16 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     @Override
     public void onLogOut() {
         this.loggedUser = logoutUser;
+    }
+
+    public void removeMacro(int id) {
+        syncManager.removeMacro(id);
+        syncAndLoadMacros();
+    }
+
+    public void addOrUpdateMacro(MacroInterface macro) {
+        syncManager.addOrUpdateMacro(macro);
+        syncAndLoadMacros();
     }
 
 
