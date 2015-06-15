@@ -1,5 +1,6 @@
 package com.sinapsi.client;
 
+import com.sinapsi.client.persistence.DiffDBManager;
 import com.sinapsi.client.persistence.LocalDBManager;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.model.MacroInterface;
@@ -7,22 +8,26 @@ import com.sinapsi.model.MacroInterface;
 import java.util.List;
 
 /**
- *
+ * Manages the sync of the data between the local database
+ * and the database in the Web Server.
  */
 public class SyncManager {
 
     private SinapsiWebServiceFacade webService;
     private LocalDBManager lastSyncDb;
     private LocalDBManager currentDb;
-    //private DiffDbManager diffDb;
+    private DiffDBManager diffDb;
 
     public SyncManager(SinapsiWebServiceFacade webService,
                        LocalDBManager lastSyncDb,
-                       LocalDBManager currentDb) {
+                       LocalDBManager currentDb,
+                       DiffDBManager diffDb) {
         this.webService = webService;
         this.lastSyncDb = lastSyncDb;
         this.currentDb = currentDb;
+        this.diffDb = diffDb;
     }
+
 
     /**
      * Adds a new macro and the related actions to the current db,
@@ -33,9 +38,9 @@ public class SyncManager {
      */
     public void addOrUpdateMacro(MacroInterface macro){
         if(currentDb.addOrUpdateMacro(macro)){
-            //diffDb.macroAdded(macro)
+            diffDb.macroAdded(macro);
         }else{
-            //diffDb.macroUpdated(macro)
+            diffDb.macroUpdated(macro);
         }
     }
 
@@ -56,7 +61,7 @@ public class SyncManager {
      */
     public void removeMacro(int id){
         currentDb.removeMacro(id);
-        //diffDb.macroRemoved(id);
+        diffDb.macroRemoved(id);
     }
 
     /**
@@ -65,11 +70,14 @@ public class SyncManager {
     public void clearAll(){
         currentDb.clearDB();
         lastSyncDb.clearDB();
-        //diffDb.clearDB();
+        diffDb.clearDB();
     }
 
     public void sync(){
         //TODO: impl
     }
 
+    public int getMinId() {
+        return currentDb.getMinMacroId();
+    }
 }

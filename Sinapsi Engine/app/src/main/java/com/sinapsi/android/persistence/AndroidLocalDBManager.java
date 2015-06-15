@@ -229,6 +229,17 @@ public class AndroidLocalDBManager implements LocalDBManager {
         localDBOpenHelper.close();
     }
 
+    @Override
+    public int getMinMacroId() {
+        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT MIN(" + COL_MACRO_ID + ") FROM " + TABLE_MACROS,null);
+        c.moveToFirst();
+        int min = c.getInt(0);
+        c.close();
+        localDBOpenHelper.close();
+        return min;
+    }
+
     private List<Action> getActionListForMacro(int macroid, SQLiteDatabase db){
         List<Action> result = new ArrayList<>();
 

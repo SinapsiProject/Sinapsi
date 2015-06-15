@@ -35,6 +35,7 @@ import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.utils.HashMapBuilder;
 
 import java.util.Arrays;
@@ -389,6 +390,10 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
     private void newMacro() {
         Lol.d(this, "newMacro called");
+
+        FactoryModel factoryModel = new FactoryModel();
+
+        MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId());
         //TODO: return temp parameter mechanism
         Intent i = generateParameterizedIntent(EditorActivity.class, "Parameter passing across activities test passed");
         startActivity(i);
