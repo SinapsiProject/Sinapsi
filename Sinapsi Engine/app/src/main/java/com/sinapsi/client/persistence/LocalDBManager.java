@@ -46,4 +46,20 @@ public interface LocalDBManager {
      */
     public int getMinMacroId();
 
+    /**
+     * Checks if the macro with the given id is in the DB
+     *
+     * @param id the macro id
+     * @return true if the macro is in the db, false otherwise
+     */
+    public boolean containsMacro(int id);
+
+    /**
+     * Returns the macro with the specified id
+     *
+     * @param id the macro id
+     * @return the macro with the specified id, if it exists in the db,
+     * or null otherwise
+     */
+    public MacroInterface getMacroWithId(int id);
 }

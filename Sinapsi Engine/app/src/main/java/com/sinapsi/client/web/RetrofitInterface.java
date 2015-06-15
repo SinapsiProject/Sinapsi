@@ -181,7 +181,7 @@ public interface RetrofitInterface {
             Callback<String> result);
 
     /**
-     * Delte a macro
+     * Delete a macro
      *
      * @param email email of the user
      * @param macro the macro

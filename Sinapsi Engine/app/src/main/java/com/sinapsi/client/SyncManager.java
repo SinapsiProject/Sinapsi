@@ -2,10 +2,15 @@ package com.sinapsi.client;
 
 import com.sinapsi.client.persistence.DiffDBManager;
 import com.sinapsi.client.persistence.LocalDBManager;
+import com.sinapsi.client.persistence.MemoryDiffDBManager;
+import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.model.MacroInterface;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit.RetrofitError;
 
 /**
  * Manages the sync of the data between the local database
@@ -74,11 +79,79 @@ public class SyncManager {
     }
 
     public void sync(){
-        List<MacroInterface> serverMacros = webService.getAllMacros();
+        webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<List<MacroInterface>>() {
+            @Override
+            public void success(List<MacroInterface> serverMacros, Object response) {
+
+                //checks all the differences between the macro collection in the server
+                //  and the macros that were in the last sync
+                MemoryDiffDBManager diffServer_OldCopy = new MemoryDiffDBManager();
+                for (MacroInterface serverMacro : serverMacros) {
+                    if (lastSyncDb.containsMacro(serverMacro.getId())) {
+
+                        MacroInterface oldCopyMacro = lastSyncDb.getMacroWithId(serverMacro.getId());
+
+                        if (!areMacrosEqual(oldCopyMacro, serverMacro)) {
+                            diffServer_OldCopy.macroUpdated(serverMacro);
+                        }
+                    } else {
+                        diffServer_OldCopy.macroAdded(serverMacro);
+                    }
+
+
+                }
+
+                for (MacroInterface oldCopyMacro : lastSyncDb.getAllMacros()) {
+                    boolean found = false;
+                    for (MacroInterface serverMacro : serverMacros) {
+                        if (oldCopyMacro.getId() == serverMacro.getId()) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        diffServer_OldCopy.macroRemoved(oldCopyMacro.getId());
+                    }
+                }
+
+                List<MacroSyncConflict> conflicts = findSyncConflicts(diffServer_OldCopy, diffDb);
+
+
+            }
+
+            @Override
+            public void failure(Throwable error) {
+                //TODO: impl
+                RetrofitError err = (RetrofitError) error;
+
+                switch (err.getKind()) {
+                    case NETWORK:
+                        break;
+                    case CONVERSION:
+                        break;
+                    case HTTP:
+                        break;
+                    case UNEXPECTED:
+                        break;
+                }
+            }
+        });
+    }
+
+    public boolean areMacrosEqual(MacroInterface m1, MacroInterface m2){
         //TODO: impl
+        return true;
     }
 
     public int getMinId() {
         return currentDb.getMinMacroId();
+    }
+
+    private List<MacroSyncConflict> findSyncConflicts(DiffDBManager serverChanges, DiffDBManager clientChanges){
+        List<MacroSyncConflict> result = new ArrayList<>();
+        //TODO: impl
+
+        return result;
+
     }
 }

@@ -129,7 +129,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public boolean addOrUpdateMacro(MacroInterface macro) {
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
         Cursor checkCursor = db.rawQuery("SELECT * FROM " + TABLE_MACROS +
-                                        " WHERE " + COL_MACRO_ID + " = ?", new String[]{""+macro.getId()});
+                " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + macro.getId()});
 
         if(checkCursor == null || checkCursor.getCount() == 0){
             //there are no macros with same id as macro
@@ -232,12 +232,29 @@ public class AndroidLocalDBManager implements LocalDBManager {
     @Override
     public int getMinMacroId() {
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT MIN(" + COL_MACRO_ID + ") FROM " + TABLE_MACROS,null);
+        Cursor c = db.rawQuery("SELECT MIN(" + COL_MACRO_ID + ") FROM " + TABLE_MACROS, null);
         c.moveToFirst();
         int min = c.getInt(0);
         c.close();
         localDBOpenHelper.close();
         return min;
+    }
+
+    @Override
+    public boolean containsMacro(int id) {
+        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
+        Cursor checkCursor = db.rawQuery("SELECT * FROM " + TABLE_MACROS +
+                " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
+        boolean result = !(checkCursor == null || checkCursor.getCount() == 0);
+        if (checkCursor != null) checkCursor.close();
+        localDBOpenHelper.close();
+        return result;
+    }
+
+    @Override
+    public MacroInterface getMacroWithId(int id) {
+        //TODO: impl
+        return null;
     }
 
     private List<Action> getActionListForMacro(int macroid, SQLiteDatabase db){
