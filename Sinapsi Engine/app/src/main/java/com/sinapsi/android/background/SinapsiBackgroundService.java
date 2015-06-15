@@ -14,6 +14,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.google.gson.Gson;
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
+import com.sinapsi.android.persistence.AndroidLocalDBManager;
 import com.sinapsi.android.view.MainActivity;
 import com.sinapsi.android.web.AndroidBase64DecodingMethod;
 import com.sinapsi.android.web.AndroidBase64EncodingMethod;
@@ -87,7 +88,7 @@ import retrofit.android.AndroidLog;
  */
 public class SinapsiBackgroundService extends Service implements OnlineStatusProvider, WebSocketEventHandler, RetrofitWebServiceFacade.LoginStatusListener {
     private RetrofitWebServiceFacade web;
-    private SyncManager syncManager = new SyncManager();
+    private SyncManager syncManager;
     private UserSettingsFacade settings;
 
     private MacroEngine engine;
@@ -193,6 +194,13 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 ActionStringInputDialog.class);
         // here ends engine initialization      ---------------------
 
+        // sync manager initialization ------------------------------
+        syncManager = new SyncManager(
+                web,
+                new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '-')+"_lastSync", engine.getComponentFactory()),
+                new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '-')+"_current", engine.getComponentFactory())
+        );
+
         // loads macros from local db/web service -------------------
         syncAndUpdateMacros();
 
@@ -240,14 +248,12 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     }
 
     /**
-     * Loads all saved macros from a local db and/or from the web service
+     * Loads all saved macros from a local db.
      *
      * @return the saved macros
      */
     public List<MacroInterface> loadSavedMacros() {
-        //TODO: implement
-
-        return new ArrayList<>();
+        return syncManager.getAllMacros();
     }
 
     @Override
