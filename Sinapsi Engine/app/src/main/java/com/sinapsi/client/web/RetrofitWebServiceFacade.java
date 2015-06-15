@@ -14,6 +14,7 @@ import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
@@ -390,6 +391,15 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                         result.failure(error);
                     }
                 });
+    }
+
+    @Override
+    public void getAllMacros(WebServiceCallback<List<MacroInterface>> result) {
+        checkKeys();
+        if(!onlineStatusProvider.isOnline()) return;
+        cryptedRetrofit.getAllMacros(
+                loggedUser.getEmail(),
+                convertCallback(result));
     }
 
     @Override

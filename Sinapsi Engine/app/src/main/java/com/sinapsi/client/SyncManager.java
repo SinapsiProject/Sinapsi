@@ -74,6 +74,7 @@ public class SyncManager {
     }
 
     public void sync(){
+        List<MacroInterface> serverMacros = webService.getAllMacros();
         //TODO: impl
     }
 

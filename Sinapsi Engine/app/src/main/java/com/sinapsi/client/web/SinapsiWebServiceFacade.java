@@ -3,6 +3,7 @@ package com.sinapsi.client.web;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
@@ -16,6 +17,10 @@ import java.util.List;
  * Platform independent interface, containing a collection of web methods.
  */
 public interface SinapsiWebServiceFacade {
+
+
+
+
 
     /**
      * Platform independent version of Retrofit's Callback
@@ -92,6 +97,13 @@ public interface SinapsiWebServiceFacade {
                                String deviceType,
                                int deviceClientVersion,
                                WebServiceCallback<Device> result);
+
+    /**
+     * Gets all the macros saved in the web service
+     *
+     * @param result the macros result
+     */
+    public void getAllMacros(WebServiceCallback<List<MacroInterface>> result);
 
     /**
      * Gets the availability of actions on the specified device
