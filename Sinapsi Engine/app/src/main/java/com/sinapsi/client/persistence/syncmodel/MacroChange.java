@@ -4,7 +4,9 @@ package com.sinapsi.client.persistence.syncmodel;
  * Utility model class representing a change in the set
  * of macros.
  */
-public class MacroChange {
+public class MacroChange implements Comparable<MacroChange>{
+
+
 
     public enum ChangeTypes{
         ADDED,
@@ -50,5 +52,10 @@ public class MacroChange {
 
     public void setMacroId(int macroId) {
         this.macroId = macroId;
+    }
+
+    @Override
+    public int compareTo(MacroChange another) {
+        return this.getId() - another.getId();
     }
 }
