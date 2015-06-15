@@ -139,7 +139,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
                 insertActionsForMacro(macro, db);
             }else{
                 localDBOpenHelper.close();
-                throw new RuntimeException("An error occured while inserting a new macro in the local db:"+dbname);
+                throw new RuntimeException("An error occured while inserting a new macro in the local db: "+dbname);
             }
 
             localDBOpenHelper.close();
@@ -317,7 +317,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
             if(rowid == -1){
                 localDBOpenHelper.close();
-                throw new RuntimeException("An error occured while inserting a new action in the local db:"+dbname);
+                throw new RuntimeException("An error occured while inserting a new action in the local db: "+dbname);
             }
         }
 

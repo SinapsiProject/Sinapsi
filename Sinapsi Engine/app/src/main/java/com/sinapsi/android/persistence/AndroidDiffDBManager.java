@@ -1,6 +1,8 @@
 package com.sinapsi.android.persistence;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -70,17 +72,61 @@ public class AndroidDiffDBManager implements DiffDBManager {
 
     @Override
     public void macroAdded(MacroInterface macro) {
+        SQLiteDatabase db = diffDBOpenHelper.getWritableDatabase();
+        long rowid = db.insert(
+                TABLE_CHANGES,
+                null,
+                changeToContentValues(
+                        new MacroChange(
+                                MacroChange.ChangeTypes.ADDED,
+                                macro.getId())));
+        if(rowid == -1){
+            diffDBOpenHelper.close();
+            throw new RuntimeException("An error occured while inserting a macro change in the diff db: "+dbname);
+        }
+        db.close();
+    }
 
+    private ContentValues changeToContentValues(MacroChange macroChange) {
+        return null;
+    }
+
+    private MacroChange cursorToMacroChange(Cursor c){
+        return null;
     }
 
     @Override
     public void macroUpdated(MacroInterface macro) {
-
+        SQLiteDatabase db = diffDBOpenHelper.getWritableDatabase();
+        long rowid = db.insert(
+                TABLE_CHANGES,
+                null,
+                changeToContentValues(
+                        new MacroChange(
+                                MacroChange.ChangeTypes.EDITED,
+                                macro.getId())));
+        if(rowid == -1){
+            diffDBOpenHelper.close();
+            throw new RuntimeException("An error occured while inserting a macro change in the diff db: "+dbname);
+        }
+        db.close();
     }
 
     @Override
     public void macroRemoved(int id) {
-
+        SQLiteDatabase db = diffDBOpenHelper.getWritableDatabase();
+        long rowid = db.insert(
+                TABLE_CHANGES,
+                null,
+                changeToContentValues(
+                        new MacroChange(
+                                MacroChange.ChangeTypes.REMOVED,
+                                id)));
+        if(rowid == -1){
+            diffDBOpenHelper.close();
+            throw new RuntimeException("An error occured while inserting a macro change in the diff db: "+dbname);
+        }
+        db.close();
     }
 
     @Override
@@ -90,6 +136,7 @@ public class AndroidDiffDBManager implements DiffDBManager {
 
     @Override
     public void clearDB() {
-
+        diffDBOpenHelper.getWritableDatabase().rawQuery("DELETE FROM " + TABLE_CHANGES, null);
+        diffDBOpenHelper.close();
     }
 }
