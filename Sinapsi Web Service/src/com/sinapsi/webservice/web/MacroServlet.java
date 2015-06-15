@@ -2,6 +2,7 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -55,7 +56,7 @@ public class MacroServlet extends HttpServlet {
             // sync macro for the current device
             deviceManager.macroNotSynced(deviceName, deviceModel, false);
             // send the encrypted data
-            out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, List<MacroInterface>>(true, macros))));
+            out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, List<MacroInterface>>(false, macros))));
             out.flush();
             
         } catch(Exception ex) {
@@ -75,13 +76,12 @@ public class MacroServlet extends HttpServlet {
         DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
         
         Gson gson = new Gson();
-        boolean success = false;
         
         String email = request.getParameter("email");
         String deviceName = request.getParameter("name");
         String deviceModel = request.getParameter("model");
         String action = request.getParameter("action");
-        int idMacro = 0;
+        
         // read the encrypted jsoned body
         String encryptedJsonBody = BodyReader.read(request);
         
@@ -92,41 +92,53 @@ public class MacroServlet extends HttpServlet {
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             
-            // extract the list of actions from the jsoned triggers
-            MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
-            idMacro = macro.getId();
+           
         
             switch (action) {
                 case "add": {
-                    engineManager.addUserMacro(userManager.getUserByEmail(email).getId(), macro);
+                    // extract the list of actions from the jsoned triggers
+                    MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
+                    
+                    // add macro and return the id if macro already exist, update 
+                    int idMacro = engineManager.addUserMacro(userManager.getUserByEmail(email).getId(), macro);
+                    List<Integer> ids = new ArrayList<Integer>();
+                    ids.add(idMacro);
+                    
+                    // async macro on all devices of current user
+                    deviceManager.macroNotSynced(email, true);
+                    
+                    // send the macro id
+                    Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
+                    
+                    out.print(encrypter.encrypt(gson.toJson(ids)));
+                    out.flush();
+                    
+                } break;
+                
+                case "add_macros": {
+                    // extract the list of actions from the jsoned triggers
+                    List<MacroInterface> macros = gson.fromJson(jsonBody, new TypeToken<List<MacroInterface>>() {}.getType());
+                    
+                    List<Integer> ids= engineManager.addUserMacros(userManager.getUserByEmail(email).getId(), macros);
+                    
+                    // send the macro id
+                    Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
+                    out.print(encrypter.encrypt(gson.toJson(ids)));
+                    out.flush();
+                    
                 } break;
                 
                 case "delete": {
+                    // extract the list of actions from the jsoned triggers
+                    MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
+                    
+                    // delete macro
                     engineManager.deleteUserMacro(macro.getId());
                     
                 } break;
         
             }
-            success = true;
-            
-        } catch(Exception ex) {
-            success = false;
-            ex.printStackTrace();
-        }
-        
-        try {
-            if(success) {
-                // async macro on all devices of current user
-                deviceManager.macroNotSynced(email, true);
-                
-                Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
-                if (success)
-                    out.print(encrypter.encrypt(gson.toJson(new Pair<Integer, String>(idMacro,"success"))));
-                else
-                    out.print(encrypter.encrypt(gson.toJson("fail")));
-    
-                out.flush();
-            }
+      
         } catch(Exception ex) {
             ex.printStackTrace();
         }

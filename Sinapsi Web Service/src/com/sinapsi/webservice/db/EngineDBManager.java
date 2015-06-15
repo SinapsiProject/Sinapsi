@@ -509,17 +509,20 @@ public class EngineDBManager {
      * @param macros list of macro
      * @throws SQLException
      */
-    public void addUserMacros(int idUser, List<MacroInterface> macros) throws SQLException {
+    public List<Integer> addUserMacros(int idUser, List<MacroInterface> macros) throws SQLException {
+        List<Integer> ids = new ArrayList<Integer>();
         
         for (MacroInterface macro : macros) {
-            addUserMacro(idUser, macro);
+            ids.add(addUserMacro(idUser, macro));
         }
+        return ids;
     }
     
     /**
      * Add to the db a macro, if already exist, updated
      * @param idUser id of the user
      * @param macro macro interface
+     * @return id of the macro
      * @throws SQLException
      */
     public int addUserMacro(int idUser, MacroInterface macro) throws SQLException {
@@ -527,11 +530,11 @@ public class EngineDBManager {
         PreparedStatement s = null;
         ResultSet r = null;
         int idMacro = -1;
+        
         // macro already exist
-        if(checkMacro(macro.getId())) {
-            updateMacro(idUser, macro);
-            return idMacro;
-        }
+        if(checkMacro(macro.getId())) 
+            return updateMacro(idUser, macro);
+        
         
         try {
             c = db.connect();
