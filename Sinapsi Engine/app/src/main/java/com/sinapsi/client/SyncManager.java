@@ -92,9 +92,9 @@ public class SyncManager {
         webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<Pair<Boolean, List<MacroInterface>>>() {
             @Override
             public void success(Pair<Boolean, List<MacroInterface>> result, Object response) {
-
+                List<MacroInterface> serverMacros = result.getSecond();
                 if(result.getFirst()){
-                    List<MacroInterface> serverMacros = result.getSecond();
+
                     //checks all the differences between the macro collection in the server
                     //  and the macros that were in the last sync
                     MemoryDiffDBManager diffServer_OldCopy = new MemoryDiffDBManager();
@@ -132,11 +132,21 @@ public class SyncManager {
                         //TODO: do final changes, save data from the server in the db, push changes from the client to the server
                     }else{
                         callback.onConflicts(conflicts);
-                        //TODO: wait for conflict resolution
+                        //TODO: wait for user hand-made conflict resolution
                     }
                 } else {
-                    //TODO: just push changes
-
+                    if(diffDb.getAllChanges().isEmpty()){
+                        //server and client probably have same data, but let's do
+                        //another check on the number of macros to see if this is true
+                        if(currentDb.getAllMacros().size() == serverMacros.size()){
+                            //no changes.
+                        }else{
+                            //something in the change tracking system has gone wrong
+                        }
+                    } else {
+                        //only the client has updated data
+                        //TODO: just push changes
+                    }
                 }
             }
 
@@ -178,20 +188,44 @@ public class SyncManager {
         List<MacroSyncConflict> result = new ArrayList<>();
         List<Integer> allInterestedMacroIDs = new ArrayList<>();
 
+        //get all the IDs of the interested macros, both on server and client
         for(MacroInterface m: localDBMacros){
             allInterestedMacroIDs.add(m.getId());
         }
-
         for(MacroInterface m: serverMacros){
             if(!allInterestedMacroIDs.contains(m.getId()))
                 allInterestedMacroIDs.add(m.getId());
         }
 
+        //now extract eventual changes for every macro
         for(Integer i: allInterestedMacroIDs){
             List<MacroChange> serverMacroChanges = serverChanges.getChangesForMacro(i);
             List<MacroChange> localMacroChanges = clientChanges.getChangesForMacro(i);
 
-            //TODO: optimize local changes
+            boolean localCheck;
+            if(!localMacroChanges.isEmpty()) {
+                if (localMacroChanges.get(0).getChangeType() == MacroChange.ChangeTypes.ADDED &&
+                        localMacroChanges.get(localMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.REMOVED) {
+                    //if a macro has been added and at the end deleted, ignore
+                    localCheck = false;
+                } else {
+                    localCheck = true;
+                }
+            }else{
+                localCheck = false;
+            }
+
+            boolean serverCheck = !serverMacroChanges.isEmpty();
+
+            if(serverCheck && !localCheck){
+                //the interested macro has relevant changes only on the server (= no conflicts)
+            } else if (!serverCheck && localCheck){
+                //the interested macro has relevant changes only on the client (= no conflicts)
+            } else if (serverCheck && localCheck){
+                //the interested macro has relevant changes both on the server and the client
+            } else {
+                //no changes on this macro (= no conflicts)
+            }
 
             //TODO: compare changes
         }
