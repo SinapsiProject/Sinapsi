@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.gson.Gson;
+import com.sinapsi.android.persistence.AndroidDiffDBManager;
 import com.sinapsi.android.persistence.AndroidLocalDBManager;
 import com.sinapsi.android.view.MainActivity;
 import com.sinapsi.android.web.AndroidBase64DecodingMethod;
@@ -193,8 +194,9 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         // sync manager initialization ------------------------------
         syncManager = new SyncManager(
                 web,
-                new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '-')+"_lastSync", engine.getComponentFactory()),
-                new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '-')+"_current", engine.getComponentFactory())
+                new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '_').replace('.','_')+"-lastSync", engine.getComponentFactory()),
+                new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '_').replace('.','_')+"-current", engine.getComponentFactory()),
+                new AndroidDiffDBManager(this, loggedUser.getEmail().replace('@', '_').replace('.','_')+"-diff");
         );
 
         // loads macros from local db/web service -------------------
