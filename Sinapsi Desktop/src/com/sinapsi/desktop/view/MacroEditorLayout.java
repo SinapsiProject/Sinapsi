@@ -1,27 +1,30 @@
 package com.sinapsi.desktop.view;
 
+import java.io.*;
+
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.Border;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
 public class MacroEditorLayout extends Application {
@@ -32,10 +35,14 @@ public class MacroEditorLayout extends Application {
 	// Scenes
 	private Scene mainScene;
 	
+	// File
+	private File groupDir;
+	
 	// Panes
 	private BorderPane mainPane;
 	private SplitPane splitPane;
 	private GridPane descriptionPane;
+	private GridPane groupDialogPane;
 	private FlowPane buttonPane;
 	
 	// Buttons
@@ -51,6 +58,9 @@ public class MacroEditorLayout extends Application {
 	private Button deleteAction;
 	private Button helpButton;	
 	
+	private ButtonType buttonTypeOk;
+	private ButtonType buttonTypeCancel;
+	
 	// ButtonBar
 	private ButtonBar firstButtonBar;
 	private ButtonBar secondButtonBar;
@@ -58,11 +68,14 @@ public class MacroEditorLayout extends Application {
 	// Labels
 	private Label macroDescription;
 	private Label macroName;
+	private Label groupDialogLabel;
 	private Label actionName;
 	
 	
 	// Textfields
 	private TextField macroNameField;
+	private TextField newMacroField;
+	private TextField groupNameField;
 	
 	
 	// TableView & Columns
@@ -77,6 +90,8 @@ public class MacroEditorLayout extends Application {
 	private HBox helpButtonBox;
 	private HBox macroNameFieldBox;
 	
+	// Input Dialogs
+	private Dialog<String> groupDialog; 
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -165,9 +180,38 @@ public class MacroEditorLayout extends Application {
 		macroNameFieldBox.setPadding(new Insets(10, 10, 10, 10));
 			macroNameFieldBox.getChildren().add(macroNameField);
 			
-		
-			
 		macroDescription = new Label("Macro description");
+			
+		newGroup.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				
+				groupDialog = new Dialog<>();
+				groupDialog.setTitle("New group");
+				groupDialog.setResizable(false);
+				
+				groupDialogLabel = new Label("Name: ");
+				groupNameField = new TextField();
+				
+				groupDialogPane = new GridPane();
+				groupDialogPane.add(groupDialogLabel, 1, 1);
+				groupDialogPane.add(groupNameField, 2, 1);
+				
+				groupDialog.getDialogPane().setContent(groupDialogPane);
+				
+				buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+				buttonTypeOk = new ButtonType("Done",ButtonData.OK_DONE);
+				
+				groupDialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+				groupDialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+				 
+				groupDir = new File(groupNameField.getText());
+			
+				groupDialog.showAndWait();
+				
+				
+			}
+		});
 		
 		buttonPane.getChildren().addAll(groupButtonBox, macroGroupButtonBox, macroButtonBox, helpButtonBox);
 		

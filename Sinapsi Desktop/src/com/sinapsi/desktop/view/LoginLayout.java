@@ -205,7 +205,6 @@ public class LoginLayout extends Application {
 		signIn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				
 				controller = new LayoutController(LoginLayout.this.signIn);
 				controller.login(emailField.getText(), passwordField.getText());
 			}
