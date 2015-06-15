@@ -274,7 +274,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     public void syncAndLoadMacros() {
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(int pushed, int pulled, int noChanged) {
                 engine.addMacros(loadSavedMacros());
             }
 

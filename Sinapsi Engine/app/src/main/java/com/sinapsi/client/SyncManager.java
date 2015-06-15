@@ -9,12 +9,10 @@ import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.utils.Pair;
+import com.sinapsi.utils.Triplet;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import retrofit.RetrofitError;
 
 /**
  * Manages the sync of the data between the local database
@@ -23,7 +21,7 @@ import retrofit.RetrofitError;
 public class SyncManager {
 
     public interface MacroSyncCallback{
-        public void onSuccess();
+        public void onSuccess(int pushed, int pulled, int noChanged);
         public void onConflicts(List<MacroSyncConflict> conflicts);
         public void onFailure(Throwable error);
     }
@@ -126,13 +124,29 @@ public class SyncManager {
                         }
                     }
 
-                    List<MacroSyncConflict> conflicts = findSyncConflicts(currentDb.getAllMacros(), serverMacros, diffServer_OldCopy, diffDb);
+                    Triplet<Pair<List<MacroChange>,List<MacroChange>>,List<MacroSyncConflict>,Integer> diffsAnalysisResults;
+                    diffsAnalysisResults = analyzeDiffs(currentDb.getAllMacros(), serverMacros, diffServer_OldCopy, diffDb);
+                    List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
+                    int pulledCount = 0;
+                    for(MacroChange macroChange: toBePulled){
+                        //TODO: save data from the server in the db
+                        //TODO: increment pulledCount on success
+                    }
+
+                    List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
+                    int pushedCount = 0;
+                    for(MacroChange macroChange: toBePushed){
+                        //TODO: push changes from the client to the server
+                        //TODO: increment pushedCount on success
+                    }
+
+                    List<MacroSyncConflict> conflicts = diffsAnalysisResults.getSecond();
+                    Integer noChangesCount = diffsAnalysisResults.getThird();
                     if(conflicts.isEmpty()){
-                        callback.onSuccess();
-                        //TODO: do final changes, save data from the server in the db, push changes from the client to the server
+                        callback.onSuccess(pushedCount, pulledCount, noChangesCount);
                     }else{
                         callback.onConflicts(conflicts);
-                        //TODO: wait for user hand-made conflict resolution
+                        //TODO: wait somehow for user hand-made conflict resolution
                     }
                 } else {
                     if(diffDb.getAllChanges().isEmpty()){
@@ -181,14 +195,18 @@ public class SyncManager {
         return currentDb.getMinMacroId();
     }
 
-    private List<MacroSyncConflict> findSyncConflicts(List<MacroInterface> localDBMacros,
-                                                      List<MacroInterface> serverMacros,
-                                                      DiffDBManager serverChanges,
-                                                      DiffDBManager clientChanges){
-        List<MacroSyncConflict> result = new ArrayList<>();
+    private Triplet<Pair<List<MacroChange>,List<MacroChange>>,List<MacroSyncConflict>, Integer>
+    analyzeDiffs(List<MacroInterface> localDBMacros,
+                 List<MacroInterface> serverMacros,
+                 DiffDBManager serverChanges,
+                 DiffDBManager clientChanges){
+        List<MacroSyncConflict> conflicts = new ArrayList<>();
+        List<MacroChange> toBePulled = new ArrayList<>();
+        List<MacroChange> toBePushed = new ArrayList<>();
         List<Integer> allInterestedMacroIDs = new ArrayList<>();
 
-        //get all the IDs of the interested macros, both on server and client
+        //get all the IDs of the interested macros, both on server and client,
+        // and add them in a no-duplicate list
         for(MacroInterface m: localDBMacros){
             allInterestedMacroIDs.add(m.getId());
         }
@@ -196,7 +214,7 @@ public class SyncManager {
             if(!allInterestedMacroIDs.contains(m.getId()))
                 allInterestedMacroIDs.add(m.getId());
         }
-
+        int noChangesCount = 0;
         //now extract eventual changes for every macro
         for(Integer i: allInterestedMacroIDs){
             List<MacroChange> serverMacroChanges = serverChanges.getChangesForMacro(i);
@@ -219,19 +237,24 @@ public class SyncManager {
 
             if(serverCheck && !localCheck){
                 //the interested macro has relevant changes only on the server (= no conflicts)
+                //changes to be pulled
+                toBePulled.addAll(serverMacroChanges);
             } else if (!serverCheck && localCheck){
                 //the interested macro has relevant changes only on the client (= no conflicts)
+                //changes to be pushed
+                toBePushed.addAll(localMacroChanges);
             } else if (serverCheck && localCheck){
                 //the interested macro has relevant changes both on the server and the client
+                //conflict in changes
+                //TODO: create conflict object and add to conflicts
             } else {
                 //no changes on this macro (= no conflicts)
+                ++noChangesCount;
             }
 
-            //TODO: compare changes
         }
-        //TODO: impl
 
-        return result;
+        return new Triplet<>(new Pair<>(toBePulled, toBePushed), conflicts, noChangesCount);
 
     }
 }
