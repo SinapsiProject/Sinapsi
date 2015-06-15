@@ -91,6 +91,7 @@ public class MacroServlet extends HttpServlet {
                                             keysManager.getUserSessionKey(email, deviceName, deviceModel));
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
+            
             // extract the list of actions from the jsoned triggers
             MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
             
