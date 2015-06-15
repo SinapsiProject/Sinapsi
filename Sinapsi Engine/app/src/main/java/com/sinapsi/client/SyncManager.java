@@ -7,6 +7,7 @@ import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,48 +87,54 @@ public class SyncManager {
     }
 
     public void sync(final MacroSyncCallback callback){
-        webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<List<MacroInterface>>() {
+        webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<Pair<Boolean, List<MacroInterface>>>() {
             @Override
-            public void success(List<MacroInterface> serverMacros, Object response) {
+            public void success(Pair<Boolean, List<MacroInterface>> result, Object response) {
 
-                //checks all the differences between the macro collection in the server
-                //  and the macros that were in the last sync
-                MemoryDiffDBManager diffServer_OldCopy = new MemoryDiffDBManager();
-                for (MacroInterface serverMacro : serverMacros) {
-                    if (lastSyncDb.containsMacro(serverMacro.getId())) {
-
-                        MacroInterface oldCopyMacro = lastSyncDb.getMacroWithId(serverMacro.getId());
-
-                        if (!areMacrosEqual(oldCopyMacro, serverMacro)) {
-                            diffServer_OldCopy.macroUpdated(serverMacro);
-                        }
-                    } else {
-                        diffServer_OldCopy.macroAdded(serverMacro);
-                    }
-
-
-                }
-
-                for (MacroInterface oldCopyMacro : lastSyncDb.getAllMacros()) {
-                    boolean found = false;
+                if(result.getFirst()){
+                    List<MacroInterface> serverMacros = result.getSecond();
+                    //checks all the differences between the macro collection in the server
+                    //  and the macros that were in the last sync
+                    MemoryDiffDBManager diffServer_OldCopy = new MemoryDiffDBManager();
                     for (MacroInterface serverMacro : serverMacros) {
-                        if (oldCopyMacro.getId() == serverMacro.getId()) {
-                            found = true;
-                            break;
+                        if (lastSyncDb.containsMacro(serverMacro.getId())) {
+
+                            MacroInterface oldCopyMacro = lastSyncDb.getMacroWithId(serverMacro.getId());
+
+                            if (!areMacrosEqual(oldCopyMacro, serverMacro)) {
+                                diffServer_OldCopy.macroUpdated(serverMacro);
+                            }
+                        } else {
+                            diffServer_OldCopy.macroAdded(serverMacro);
+                        }
+
+
+                    }
+
+                    for (MacroInterface oldCopyMacro : lastSyncDb.getAllMacros()) {
+                        boolean found = false;
+                        for (MacroInterface serverMacro : serverMacros) {
+                            if (oldCopyMacro.getId() == serverMacro.getId()) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            diffServer_OldCopy.macroRemoved(oldCopyMacro.getId());
                         }
                     }
-                    if (!found) {
-                        diffServer_OldCopy.macroRemoved(oldCopyMacro.getId());
-                    }
-                }
 
-                List<MacroSyncConflict> conflicts = findSyncConflicts(diffServer_OldCopy, diffDb);
-                if(conflicts.isEmpty()){
-                    callback.onSuccess();
-                    //TODO: do final changes, save data from the server in the db, push changes from the client to the server
-                }else{
-                    callback.onConflicts(conflicts);
-                    //TODO: wait for conflict resolution
+                    List<MacroSyncConflict> conflicts = findSyncConflicts(diffServer_OldCopy, diffDb);
+                    if(conflicts.isEmpty()){
+                        callback.onSuccess();
+                        //TODO: do final changes, save data from the server in the db, push changes from the client to the server
+                    }else{
+                        callback.onConflicts(conflicts);
+                        //TODO: wait for conflict resolution
+                    }
+                } else {
+                    //TODO: just push changes
+
                 }
             }
 

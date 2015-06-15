@@ -103,7 +103,7 @@ public interface SinapsiWebServiceFacade {
      *
      * @param result the macros result
      */
-    public void getAllMacros(WebServiceCallback<List<MacroInterface>> result);
+    public void getAllMacros(WebServiceCallback<Pair<Boolean, List<MacroInterface>>> result);
 
     /**
      * Gets the availability of actions on the specified device

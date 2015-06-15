@@ -202,7 +202,7 @@ public interface RetrofitInterface {
     @GET(MACROS + ACTION + GET)
     public void getAllMacros(
             @Query("email") String email,
-            Callback<List<MacroInterface>> result);
+            Callback<Pair<Boolean, List<MacroInterface>>> result);
 
     /**
      * Call this method to continue the execution of a macro on another device.

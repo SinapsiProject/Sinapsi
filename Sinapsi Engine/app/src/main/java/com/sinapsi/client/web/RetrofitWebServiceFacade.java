@@ -394,7 +394,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void getAllMacros(WebServiceCallback<List<MacroInterface>> result) {
+    public void getAllMacros(WebServiceCallback<Pair<Boolean, List<MacroInterface>>> result) {
         checkKeys();
         if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAllMacros(
