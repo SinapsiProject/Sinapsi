@@ -1,3 +1,5 @@
+<%@ page import="java.util.Vector"%>
+<%@ page import="com.sinapsi.utils.Pair"%>
 <%@ page 
     language="java" 
     contentType="text/html; charset=utf-8"
@@ -20,9 +22,53 @@
     <link href="assets/css/custom-styles.css" rel="stylesheet" />
     <!-- Google Fonts-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <script src="assets/js/angular.js"></script>
+    <script src="assets/js/d3.js"></script>
+    <script src="assets/js/nv.d3.js"></script>
+    <script src="assets/js/moment.js"></script>
+    <script src="assets/js/angularjs-nvd3-directives.js"></script>
+    <link rel="stylesheet" href="assets/css/nv.d3.css"/>
+    <%
+       Vector<Pair<String, Integer>> load = (Vector<Pair<String, Integer>>) session.getAttribute("log_buffer");
+    %>
+    <script>
+        var app = angular.module("nvd3TestApp", ['nvd3ChartDirectives']);
+
+        function ExampleCtrl($scope){
+            $scope.exampleData = [
+                {
+                    "key": "Server Load",
+                    "values": [
+                    	<%
+                    	   for(int i = 0; i < load.size(); ++i) {
+                    	%>
+                    	   <% if(i +1 == load.size()) %>
+                                  [<%=load.get(i).getFirst()%>, <%=load.get(i).getSecond()%>]
+                           <% else %>
+                    	          [<%=load.get(i).getFirst()%>, <%=load.get(i).getSecond()%>],
+                    	<%
+                    	   }
+                        %>
+                    	]
+                }];
+            
+            $scope.colorFunction = function() {
+                return function(d, i) {
+                    return '#E01B5D'
+                };
+            } 
+            
+            $scope.toolTipContentFunction = function(){
+                return function(key, x, y, e, graph) {
+                    return  '<p>' +  y + ' at ' + x + '</p>'
+                    }
+            }
+      
+        }
+    </script>
 </head>
 
-<body>
+<body ng-app='nvd3TestApp'>
     <%
             String email = null;
             Cookie[] cookies = request.getCookies();
@@ -112,16 +158,42 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-header">
-                            Sinapsi <small>Summary</small>
+                            Sinapsi <small>charts</small>
                         </h1>
-                        <h2>Work in progress</h2>
+                    </div>
+                </div>
+                
+                <!-- /. ROW  -->
+                <div class="row" >                     
+                     <div class="col-md-12 col-sm-12 col-xs-12" ng-app='nvd3TestApp'>                     
+                         <div class="col-md-12 col-sm-12 col-xs-12">                     
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    Server Load
+                                </div>
+                                <div class="panel-body">
+                                    <div ng-controller="ExampleCtrl" >
+                                        <nvd3-line-chart
+                                            data="exampleData"
+                                            id="exampleId"
+                                            width="800"
+                                            height="400"
+                                            showXAxis="true"
+                                            showYAxis="true"
+                                            tooltips="true"
+                                            tooltipcontent="toolTipContentFunction()"
+                                            interactive="true"
+                                            color="colorFunction()"
+                                            >
+                                            <svg></svg>
+                                        </nvd3-line-chart>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- /. ROW  -->
-
-               
-                <!-- /. ROW  -->
-				
             </div>
             <!-- /. PAGE INNER  -->
              pre-alpha 1.0 version © 2015 Sinapsi

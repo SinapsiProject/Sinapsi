@@ -166,7 +166,6 @@ public class WebLog extends HttpServlet {
                     
                     session.setAttribute("log_buffer", new Pair<BufferedReader, String>(brr, "webs"));
                     request.getRequestDispatcher("log.jsp").forward(request, response);
-                    
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
