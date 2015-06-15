@@ -24,6 +24,7 @@ import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
 import com.sinapsi.android.enginesystem.AndroidNotificationAdapter;
 import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.persistence.UserSettingsFacade;
+import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.OnlineStatusProvider;
 import com.sinapsi.client.web.RetrofitWebServiceFacade;
 import com.sinapsi.android.enginesystem.AndroidActivationManager;
@@ -271,8 +272,23 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     }
 
     public void syncAndLoadMacros() {
-        if (isOnline()) syncManager.sync();
-        engine.addMacros(loadSavedMacros());
+        if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
+            @Override
+            public void onSuccess() {
+                engine.addMacros(loadSavedMacros());
+            }
+
+            @Override
+            public void onConflicts(List<MacroSyncConflict> conflicts) {
+                //TODO (show them to the user)
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                //TODO this could be a retrofit error
+            }
+        });
+
 
     }
 
@@ -354,7 +370,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 } catch (MacroEngine.MissingMacroException e) {
                     if (firstcall) {
                         //retries after a sync
-                        syncManager.sync();
+                        syncAndLoadMacros();
                         handleWsMessage(message, false);
                     } else {
                         e.printStackTrace();

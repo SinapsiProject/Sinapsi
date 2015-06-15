@@ -18,6 +18,12 @@ import retrofit.RetrofitError;
  */
 public class SyncManager {
 
+    public interface MacroSyncCallback{
+        public void onSuccess();
+        public void onConflicts(List<MacroSyncConflict> conflicts);
+        public void onFailure(Throwable error);
+    }
+
     private SinapsiWebServiceFacade webService;
     private LocalDBManager lastSyncDb;
     private LocalDBManager currentDb;
@@ -78,7 +84,7 @@ public class SyncManager {
         diffDb.clearDB();
     }
 
-    public void sync(){
+    public void sync(final MacroSyncCallback callback){
         webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<List<MacroInterface>>() {
             @Override
             public void success(List<MacroInterface> serverMacros, Object response) {
@@ -115,25 +121,17 @@ public class SyncManager {
                 }
 
                 List<MacroSyncConflict> conflicts = findSyncConflicts(diffServer_OldCopy, diffDb);
-
-
+                if(conflicts.isEmpty()){
+                    callback.onSuccess();
+                    //TODO: do final changes, save data from the server in the db, push changes from the client to the server
+                }else{
+                    callback.onConflicts(conflicts);
+                }
             }
 
             @Override
             public void failure(Throwable error) {
-                //TODO: impl
-                RetrofitError err = (RetrofitError) error;
-
-                switch (err.getKind()) {
-                    case NETWORK:
-                        break;
-                    case CONVERSION:
-                        break;
-                    case HTTP:
-                        break;
-                    case UNEXPECTED:
-                        break;
-                }
+                callback.onFailure(error);
             }
         });
     }
