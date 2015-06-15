@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -34,7 +36,7 @@ public class WebCharts extends HttpServlet {
 	    File folder = new File("/var/log/tomcat7");
 	    File[] listOfFiles = folder.listFiles();
 	    HttpSession session = request.getSession();
-	    Vector<Pair<Long, Integer>> files = new Vector<Pair<Long, Integer>>();
+	    Vector<Pair<String, String>> files = new Vector<Pair<String, String>>();
 	    
 	    for(int i = 0; i < listOfFiles.length; ++i) {
 	        if(listOfFiles[i].isFile()) { 
@@ -71,7 +73,9 @@ public class WebCharts extends HttpServlet {
 
                         try {
                             d =  dateFormat.parse(date);
-                            files.add(new Pair<Long, Integer>(d.getTime(), count));  
+                            Long dateM = d.getTime();
+                            
+                            files.add(new Pair<String, String>(dateM.toString(), Integer.toString(count)));  
                         } catch (ParseException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -81,6 +85,14 @@ public class WebCharts extends HttpServlet {
 	            }    	            
 	        }
 	    }
+	    
+	    // order data
+	    Collections.sort(files, new Comparator<Pair<String, String>>() {
+	        public int compare(Pair<String, String> result1, Pair<String, String> result2) {
+	            return result1.getFirst().compareTo(result2.getFirst());
+	        }
+	    });
+	    
 	    session.setAttribute("server_load", files);
         request.getRequestDispatcher("charts.jsp").forward(request, response);
 	}

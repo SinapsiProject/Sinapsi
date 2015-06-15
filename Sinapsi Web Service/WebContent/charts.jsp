@@ -29,7 +29,8 @@
     <script src="assets/js/angularjs-nvd3-directives.js"></script>
     <link rel="stylesheet" href="assets/css/nv.d3.css"/>
     <%
-       Vector<Pair<String, Integer>> load = (Vector<Pair<String, Integer>>) session.getAttribute("log_buffer");
+       Vector<Pair<String, String>> load = (Vector<Pair<String, String>>) session.getAttribute("server_load");
+       session.removeAttribute("server_load");
     %>
     <script>
         var app = angular.module("nvd3TestApp", ['nvd3ChartDirectives']);
@@ -42,11 +43,16 @@
                     	<%
                     	   for(int i = 0; i < load.size(); ++i) {
                     	%>
-                    	   <% if(i +1 == load.size()) %>
-                                  [<%=load.get(i).getFirst()%>, <%=load.get(i).getSecond()%>]
-                           <% else %>
-                    	          [<%=load.get(i).getFirst()%>, <%=load.get(i).getSecond()%>],
-                    	<%
+                    	   <% 
+                    	      if(i +1 == load.size()) {  
+                    	   %>
+                                  [<%=load.get(i).getFirst() %>, <%=load.get(i).getSecond() %>.0]
+                           <% 
+                              } else { 
+                           %>
+                    	          [<%=load.get(i).getFirst() %>, <%=load.get(i).getSecond() %>.0],
+                    	   <%
+                              }
                     	   }
                         %>
                     	]
@@ -62,6 +68,13 @@
                 return function(key, x, y, e, graph) {
                     return  '<p>' +  y + ' at ' + x + '</p>'
                     }
+            }
+            
+            $scope.xAxisTickFormat = function(){
+                return function(d){
+//                    return d3.time.format('%X')(new Date(d));  //uncomment for time format
+                    return d3.time.format('%x')(new Date(d));  //uncomment for date format
+                }
             }
       
         }
@@ -184,6 +197,7 @@
                                             tooltipcontent="toolTipContentFunction()"
                                             interactive="true"
                                             color="colorFunction()"
+                                            xAxisTickFormat="xAxisTickFormat()"
                                             >
                                             <svg></svg>
                                         </nvd3-line-chart>
