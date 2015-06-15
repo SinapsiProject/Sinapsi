@@ -3,6 +3,7 @@ package com.sinapsi.client.persistence;
 import com.sinapsi.model.MacroInterface;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +16,21 @@ public class MemoryLocalDBManager implements LocalDBManager{
 
     Map<Integer, MacroInterface> macros;
 
-    //TODO: create from another localdbmanager
-    //TODO: save to another localdbmanager
+    public MemoryLocalDBManager(){
+        macros = new HashMap<>();
+    }
+
+    /**
+     * Creates this instance loading data from the db
+     *
+     * @param source the source db
+     */
+    public MemoryLocalDBManager(LocalDBManager source){
+        macros = new HashMap<>();
+        for(MacroInterface m: source.getAllMacros())
+            addOrUpdateMacro(m);
+    }
+
 
     @Override
     public boolean addOrUpdateMacro(MacroInterface macro) {
@@ -64,5 +78,11 @@ public class MemoryLocalDBManager implements LocalDBManager{
     @Override
     public MacroInterface getMacroWithId(int id) {
         return macros.get(id);
+    }
+
+    public void saveToDb(LocalDBManager db, boolean clear){
+        if(clear) db.clearDB();
+        for (MacroInterface m :macros.values())
+            db.addOrUpdateMacro(m);
     }
 }
