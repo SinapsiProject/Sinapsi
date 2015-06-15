@@ -38,4 +38,12 @@ public interface LocalDBManager {
      * Deletes all the rows from all the tables in the db.
      */
     public void clearDB();
+
+    /**
+     * Gets the minimum of the macro's ids.
+     *
+     * @return the minimum id
+     */
+    public int getMinMacroId();
+
 }

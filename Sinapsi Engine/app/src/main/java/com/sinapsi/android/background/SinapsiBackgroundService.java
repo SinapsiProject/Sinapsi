@@ -196,7 +196,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 web,
                 new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '_').replace('.','_')+"-lastSync", engine.getComponentFactory()),
                 new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '_').replace('.','_')+"-current", engine.getComponentFactory()),
-                new AndroidDiffDBManager(this, loggedUser.getEmail().replace('@', '_').replace('.','_')+"-diff");
+                new AndroidDiffDBManager(this, loggedUser.getEmail().replace('@', '_').replace('.','_')+"-diff")
         );
 
         // loads macros from local db/web service -------------------
