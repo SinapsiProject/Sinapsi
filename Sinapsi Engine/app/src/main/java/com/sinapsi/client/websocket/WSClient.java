@@ -91,4 +91,9 @@ public class WSClient extends WebSocketClient {
     public String getusername() {
         return this.username;
     }
+
+    @Override
+    public void setDeviceId(int id) {
+        super.setDeviceId(id);
+    }
 }
