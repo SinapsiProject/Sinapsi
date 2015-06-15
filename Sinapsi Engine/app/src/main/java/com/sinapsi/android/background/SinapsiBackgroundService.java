@@ -323,26 +323,27 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     @Override
     public void onWebSocketOpen() {
-
+        Lol.d("WEB_SOCKET", "WebSocket Open");
     }
 
     @Override
     public void onWebSocketMessage(String message) {
+        Lol.d("WEB_SOCKET", "WebSocket message received: '" + message + "'");
         handleWsMessage(message, true);
     }
 
     @Override
     public void onWebSocketError(Exception ex) {
-
+        Lol.d("WEB_SOCKET", "WebSocket Error: "+ex.getMessage());
     }
 
     @Override
     public void onWebSocketClose(int code, String reason, boolean remote) {
-
+        Lol.d("WEB_SOCKET", "WebSocket Close: " + code + ":"+reason);
     }
 
     private void handleWsMessage(String message, boolean firstcall) {
-        Lol.d(SinapsiBackgroundService.class, "WebSocket message received: '" + message + "'");
+
         Gson gson = new Gson();
         WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
         switch (wsMsg.getMsgType()) {
