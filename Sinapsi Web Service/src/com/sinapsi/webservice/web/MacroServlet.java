@@ -81,7 +81,7 @@ public class MacroServlet extends HttpServlet {
         String deviceName = request.getParameter("name");
         String deviceModel = request.getParameter("model");
         String action = request.getParameter("action");
-        
+        int idMacro = 0;
         // read the encrypted jsoned body
         String encryptedJsonBody = BodyReader.read(request);
         
@@ -94,7 +94,7 @@ public class MacroServlet extends HttpServlet {
             
             // extract the list of actions from the jsoned triggers
             MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
-            
+            idMacro = macro.getId();
         
             switch (action) {
                 case "add": {
@@ -121,7 +121,7 @@ public class MacroServlet extends HttpServlet {
                 
                 Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
                 if (success)
-                    out.print(encrypter.encrypt(gson.toJson("success")));
+                    out.print(encrypter.encrypt(gson.toJson(new Pair<Integer, String>(idMacro,"success"))));
                 else
                     out.print(encrypter.encrypt(gson.toJson("fail")));
     
