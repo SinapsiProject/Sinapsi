@@ -5,6 +5,7 @@ import com.sinapsi.client.persistence.LocalDBManager;
 import com.sinapsi.client.persistence.MemoryDiffDBManager;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
 
 import java.util.ArrayList;
@@ -126,6 +127,7 @@ public class SyncManager {
                     //TODO: do final changes, save data from the server in the db, push changes from the client to the server
                 }else{
                     callback.onConflicts(conflicts);
+                    //TODO: wait for conflict resolution
                 }
             }
 
@@ -137,7 +139,22 @@ public class SyncManager {
     }
 
     public boolean areMacrosEqual(MacroInterface m1, MacroInterface m2){
-        //TODO: impl
+        if(m1.getId() != m2.getId()) return false;
+        if(!m1.getName().equals(m2.getName())) return false;
+        if(!m1.getIconName().equals(m2.getIconName())) return false;
+        if(!m1.getMacroColor().equals(m2.getMacroColor())) return false;
+        if(!m1.getExecutionFailurePolicy().equals(m2.getExecutionFailurePolicy())) return false;
+        if(!m1.getTrigger().getName().equals(m2.getTrigger().getName())) return false;
+        if(!m1.getTrigger().getActualParameters().equals(m2.getTrigger().getActualParameters())) return false;
+        if(m1.getTrigger().getExecutionDevice().getId() != m2.getTrigger().getExecutionDevice().getId()) return false;
+        if(m1.getActions().size() != m2.getActions().size()) return false;
+        for(int i=0; i < m1.getActions().size(); i++){
+            Action a1 = m1.getActions().get(i);
+            Action a2 = m2.getActions().get(i);
+            if(a1.getExecutionDevice() != a2.getExecutionDevice()) return false;
+            if(!a1.getActualParameters().equals(a2.getActualParameters())) return false;
+            if(!a1.getName().equals(a2.getName())) return false;
+        }
         return true;
     }
 
