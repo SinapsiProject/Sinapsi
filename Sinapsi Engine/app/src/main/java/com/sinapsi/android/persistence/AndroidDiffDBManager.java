@@ -89,11 +89,20 @@ public class AndroidDiffDBManager implements DiffDBManager {
     }
 
     private ContentValues changeToContentValues(MacroChange macroChange) {
-        return null;
+        ContentValues cv = new ContentValues();
+
+        cv.put(COL_CHANGE_MACRO_ID, macroChange.getMacroId());
+        cv.put(COL_CHANGE_TYPE, macroChange.getChangeType().name());
+
+        return cv;
     }
 
     private MacroChange cursorToMacroChange(Cursor c){
-        return null;
+        int id = c.getInt(0);
+        int macroid = c.getInt(1);
+        String changetype = c.getString(2);
+
+        return new MacroChange(id, MacroChange.ChangeTypes.valueOf(changetype), macroid);
     }
 
     @Override
