@@ -1,15 +1,14 @@
 package com.sinapsi.client.persistence;
 
-import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
-import com.sinapsi.model.impl.Device;
-import com.sinapsi.model.impl.User;
 
 /**
  * UserSettingsFacade interface. This interface contains a collection
  * of methods useful to interact with persistent user settings.
  */
 public interface UserSettingsFacade {
+
+    //TODO: key saving and management for auto login
 
     /**
      * This method will return the saved user.
