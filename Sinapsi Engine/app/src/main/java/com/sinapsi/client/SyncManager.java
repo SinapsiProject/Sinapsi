@@ -77,4 +77,7 @@ public class SyncManager {
         //TODO: impl
     }
 
+    public int getMinId() {
+        return currentDb.getMinMacroId();
+    }
 }

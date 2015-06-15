@@ -230,7 +230,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
         PackageManager pm = getPackageManager();
 
-        sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_LUA, true);
+        sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_LUA, true);//todo remove
         sf.setRequirementSpec(DialogAdapter.REQUIREMENT_SIMPLE_DIALOGS, true);
         sf.setRequirementSpec(NotificationAdapter.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
         sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_INTERCEPT_SCREEN_POWER, true);
@@ -393,6 +393,10 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     public void addOrUpdateMacro(MacroInterface macro) {
         syncManager.addOrUpdateMacro(macro);
         syncAndLoadMacros();
+    }
+
+    public SyncManager getSyncManager() {
+        return syncManager;
     }
 
 
