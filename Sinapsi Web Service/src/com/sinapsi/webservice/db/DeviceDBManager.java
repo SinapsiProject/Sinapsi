@@ -317,4 +317,22 @@ public class DeviceDBManager extends UserDBManager {
         db.disconnect(c, s, r);
         return idDevice;
     }
+    
+    /**
+     * Update the value of macro sync for the current device
+     * @param b
+     */
+    public void macroSynced(String name, String model, boolean b) {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    /**
+     * Update the value of macro sync for all devices of current user
+     * @param email
+     * @param b
+     */
+    public void macroSynced(String email, boolean b) {
+        
+    }
 }

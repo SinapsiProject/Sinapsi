@@ -15,6 +15,8 @@ import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.utils.Pair;
+import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
@@ -36,6 +38,8 @@ public class MacroServlet extends HttpServlet {
         EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
+        
         Gson gson = new Gson();
         
         String email = request.getParameter("email");
@@ -47,8 +51,11 @@ public class MacroServlet extends HttpServlet {
             Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
             // get the list of macro from the db
             List<MacroInterface> macros = engineManager.getUserMacro(userManager.getUserByEmail(email).getId());
+            
+            // macro synced
+            deviceManager.macroSynced(deviceName, deviceModel, true);
             // send the encrypted data
-            out.print(encrypter.encrypt(gson.toJson(macros)));
+            out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, List<MacroInterface>>(true, macros))));
             out.flush();
             
         } catch(Exception ex) {
@@ -65,6 +72,8 @@ public class MacroServlet extends HttpServlet {
         EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
+        
         Gson gson = new Gson();
         boolean success = false;
         
@@ -106,11 +115,14 @@ public class MacroServlet extends HttpServlet {
         
         try {
             if(success) {
+                // macro not synced
+                deviceManager.macroSynced(email, false);
+                
                 Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
                 if (success)
-                    out.print(encrypter.encrypt(gson.toJson("success!")));
+                    out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, String>(false, "success"))));
                 else
-                    out.print(encrypter.encrypt(gson.toJson("Fail!")));
+                    out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, String>(false, "fail"))));
     
                 out.flush();
             }

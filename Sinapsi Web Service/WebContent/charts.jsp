@@ -44,38 +44,40 @@
                     	   for(int i = 0; i < load.size(); ++i) {
                     	%>
                     	   <% 
-                    	      if(i +1 == load.size()) {  
+                    	      if(i + 1 == load.size()) {  
                     	   %>
-                                  [<%=load.get(i).getFirst() %>, <%=load.get(i).getSecond() %>.0]
+                                  [<%=load.get(i).getFirst() %>.0, <%=load.get(i).getSecond() %>.0]
                            <% 
                               } else { 
                            %>
-                    	          [<%=load.get(i).getFirst() %>, <%=load.get(i).getSecond() %>.0],
+                    	          [<%=load.get(i).getFirst() %>.0, <%=load.get(i).getSecond() %>.0],
                     	   <%
                               }
                     	   }
                         %>
-                    	]
-                }];
+                    ]
+                } 
+            ];
+            
             
             $scope.colorFunction = function() {
                 return function(d, i) {
-                    return '#E01B5D'
-                };
-            } 
+                    return '#E01B5D';
+                }
+            };
             
-            $scope.toolTipContentFunction = function(){
+            $scope.toolTipContentFunction = function() {
                 return function(key, x, y, e, graph) {
-                    return  '<p>' +  y + ' at ' + x + '</p>'
-                    }
-            }
+                    return  '<p>' +  y + ' at ' + x + '</p>';
+                }
+            };
             
             $scope.xAxisTickFormat = function(){
-                return function(d){
+                return function(d) {
 //                    return d3.time.format('%X')(new Date(d));  //uncomment for time format
                     return d3.time.format('%x')(new Date(d));  //uncomment for date format
                 }
-            }
+            };
       
         }
     </script>
@@ -198,6 +200,7 @@
                                             interactive="true"
                                             color="colorFunction()"
                                             xAxisTickFormat="xAxisTickFormat()"
+                                            interpolate="monotone"
                                             >
                                             <svg></svg>
                                         </nvd3-line-chart>
