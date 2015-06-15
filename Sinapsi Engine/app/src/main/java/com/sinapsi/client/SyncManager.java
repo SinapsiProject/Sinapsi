@@ -3,6 +3,7 @@ package com.sinapsi.client;
 import com.sinapsi.client.persistence.DiffDBManager;
 import com.sinapsi.client.persistence.LocalDBManager;
 import com.sinapsi.client.persistence.MemoryDiffDBManager;
+import com.sinapsi.client.persistence.MemoryLocalDBManager;
 import com.sinapsi.client.persistence.syncmodel.MacroChange;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
@@ -94,7 +95,13 @@ public class SyncManager {
                 List<MacroInterface> serverMacros = result.getSecond();
                 if (result.getFirst()) {
                     if(diffDb.getAllChanges().isEmpty()){
-                        //TODO: just download changes
+                        clearAll();
+                        for(MacroInterface mi :serverMacros){
+                            currentDb.addOrUpdateMacro(mi);
+                            lastSyncDb.addOrUpdateMacro(mi);
+                            callback.onSuccess(0, 0, 0); //TODO: real counters
+                            return;
+                        }
                     }else{
                         //checks all the differences between the macro collection in the server
                         //  and the macros that were in the last sync
@@ -134,9 +141,20 @@ public class SyncManager {
                         int pushedCount = 0;
                         Collections.sort(toBePushed);
                         for (MacroChange macroChange : toBePushed) {
-                            //TODO: push changes from the client to the server
+                            switch (macroChange.getChangeType()){
+                                case ADDED:
+                                case EDITED:
+                                    //TODO: push
+                                    break;
+                                case REMOVED:
+                                    //TODO: push
+                                    break;
+                            }
+                            //TODO: push changes all together
                             //TODO: increment pushedCount on success
                         }
+
+                        MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
 
                         List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
                         int pulledCount = 0;
@@ -146,11 +164,10 @@ public class SyncManager {
                             switch (macroChange.getChangeType()) {
                                 case ADDED:
                                 case EDITED:
-                                    //TODO: actual changes in localdb need to be enqueued, and only at the end saved
-                                    currentDb.addOrUpdateMacro(getMacroFromList(serverMacros, macroChange.getId()));
+                                    tempDB.addOrUpdateMacro(getMacroFromList(serverMacros, macroChange.getId()));
                                     break;
                                 case REMOVED:
-                                    currentDb.removeMacro(macroChange.getId());
+                                    tempDB.removeMacro(macroChange.getId());
                                     break;
                             }
                             ++pulledCount;
@@ -174,6 +191,7 @@ public class SyncManager {
                             //no changes.
                         } else {
                             //something in the change tracking system has gone wrong
+                            throw new RuntimeException("The change tracking mechanism failed");
                         }
                     } else {
                         //only the client has updated data
