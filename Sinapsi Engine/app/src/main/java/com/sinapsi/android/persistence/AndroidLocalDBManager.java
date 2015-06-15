@@ -233,7 +233,11 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public int getMinMacroId() {
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT MIN(" + COL_MACRO_ID + ") FROM " + TABLE_MACROS, null);
+        if(c == null || c.getCount() == 0)
+            return 0;
         c.moveToFirst();
+        if(c.isNull(0))
+            return 0;
         int min = c.getInt(0);
         c.close();
         localDBOpenHelper.close();

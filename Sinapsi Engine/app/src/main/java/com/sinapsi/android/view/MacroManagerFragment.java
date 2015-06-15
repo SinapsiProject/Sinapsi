@@ -393,9 +393,9 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
         FactoryModel factoryModel = new FactoryModel();
 
-        MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId());
+        MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId()-1);
         //TODO: return temp parameter mechanism
-        Intent i = generateParameterizedIntent(EditorActivity.class, "Parameter passing across activities test passed");
+        Intent i = generateParameterizedIntent(EditorActivity.class, m);
         startActivity(i);
     }
 

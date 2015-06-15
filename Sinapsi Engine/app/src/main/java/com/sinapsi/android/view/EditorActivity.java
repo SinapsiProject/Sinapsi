@@ -8,6 +8,8 @@ import android.widget.TextView;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.engine.R;
+import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.Macro;
 
 public class EditorActivity extends SinapsiActionBarActivity {
 
@@ -20,9 +22,9 @@ public class EditorActivity extends SinapsiActionBarActivity {
         Lol.printNullity(this, "params", params);
         Lol.d(this, "params size: " + params.length);
 
-        String test = (String) params[0];
+        MacroInterface input = (MacroInterface) params[0];
 
-        ((TextView) findViewById(R.id.test_text)).setText(test);
+        //((TextView) findViewById(R.id.test_text)).setText(test);
 
     }
 

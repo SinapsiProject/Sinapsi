@@ -237,16 +237,24 @@ public class SyncManager {
 
             if(serverCheck && !localCheck){
                 //the interested macro has relevant changes only on the server (= no conflicts)
-                //changes to be pulled
+                //there are changes to be pulled
                 toBePulled.addAll(serverMacroChanges);
             } else if (!serverCheck && localCheck){
                 //the interested macro has relevant changes only on the client (= no conflicts)
-                //changes to be pushed
+                //there are changes to be pushed
                 toBePushed.addAll(localMacroChanges);
-            } else if (serverCheck && localCheck){
+            } else //noinspection ConstantConditions
+                if (serverCheck && localCheck){
                 //the interested macro has relevant changes both on the server and the client
-                //conflict in changes
-                //TODO: create conflict object and add to conflicts
+                //there are conflicts in changes
+                MacroInterface serverMacro = serverMacros.get(i);
+                MacroInterface localMacro = localDBMacros.get(i);
+
+                conflicts.add(new MacroSyncConflict(
+                        serverMacro,
+                        localMacro,
+                        serverMacroChanges,
+                        localMacroChanges));
             } else {
                 //no changes on this macro (= no conflicts)
                 ++noChangesCount;
