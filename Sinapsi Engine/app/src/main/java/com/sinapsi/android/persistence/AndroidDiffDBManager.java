@@ -10,6 +10,7 @@ import com.sinapsi.client.persistence.DiffDBManager;
 import com.sinapsi.client.persistence.syncmodel.MacroChange;
 import com.sinapsi.model.MacroInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -131,7 +132,15 @@ public class AndroidDiffDBManager implements DiffDBManager {
 
     @Override
     public List<MacroChange> getAllChanges() {
-        return null;
+        List<MacroChange> result = new ArrayList<>();
+        Cursor c = diffDBOpenHelper.getWritableDatabase().query(TABLE_CHANGES,ALL_COLUMNS_CHANGES,null,null,null,null, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()){
+            result.add(cursorToMacroChange(c));
+        }
+        c.close();
+        diffDBOpenHelper.close();
+        return result;
     }
 
     @Override
