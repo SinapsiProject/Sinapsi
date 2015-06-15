@@ -14,20 +14,21 @@ import java.util.List;
 public class MemoryDiffDBManager implements DiffDBManager {
 
     List<MacroChange> changes = new ArrayList<>();
+    static int idCount = 0;
 
     @Override
     public void macroAdded(MacroInterface macro) {
-        changes.add(new MacroChange(MacroChange.ChangeTypes.ADDED, macro.getId()));
+        changes.add(new MacroChange(idCount++, MacroChange.ChangeTypes.ADDED, macro.getId()));
     }
 
     @Override
     public void macroUpdated(MacroInterface macro) {
-        changes.add(new MacroChange(MacroChange.ChangeTypes.EDITED, macro.getId()));
+        changes.add(new MacroChange(idCount++, MacroChange.ChangeTypes.EDITED, macro.getId()));
     }
 
     @Override
     public void macroRemoved(int id) {
-        changes.add(new MacroChange(MacroChange.ChangeTypes.REMOVED, id));
+        changes.add(new MacroChange(idCount++, MacroChange.ChangeTypes.REMOVED, id));
     }
 
     @Override
