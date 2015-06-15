@@ -53,7 +53,7 @@ public class MacroServlet extends HttpServlet {
             List<MacroInterface> macros = engineManager.getUserMacro(userManager.getUserByEmail(email).getId());
             
             // macro synced
-            deviceManager.macroSynced(deviceName, deviceModel, true);
+            deviceManager.macroNotSynced(deviceName, deviceModel, false);
             // send the encrypted data
             out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, List<MacroInterface>>(true, macros))));
             out.flush();
@@ -116,13 +116,13 @@ public class MacroServlet extends HttpServlet {
         try {
             if(success) {
                 // macro not synced
-                deviceManager.macroSynced(email, false);
+                deviceManager.macroNotSynced(email, true);
                 
                 Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
                 if (success)
-                    out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, String>(false, "success"))));
+                    out.print(encrypter.encrypt(gson.toJson("success")));
                 else
-                    out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, String>(false, "fail"))));
+                    out.print(encrypter.encrypt(gson.toJson("fail")));
     
                 out.flush();
             }

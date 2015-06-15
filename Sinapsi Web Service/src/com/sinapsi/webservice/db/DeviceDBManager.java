@@ -178,6 +178,42 @@ public class DeviceDBManager extends UserDBManager {
     }
     
     /**
+     * Return the device with name and model
+     * @param name
+     * @param model
+     * @return
+     * @throws SQLException
+     */
+    public DeviceInterface getDevice(String name, String model) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        DeviceInterface device = null;
+
+        try {
+            c = db.connect();
+            String query = "SELECT * FROM device WHERE lower(name) = lower(?) AND lower(model)";
+            s = c.prepareStatement(query);
+            s.setString(1, name);
+            s.setString(2, model);
+            r = s.executeQuery();
+            if (r.next())
+                device = db.factory.newDevice(r.getInt("id"), 
+                                              name, 
+                                              model, 
+                                              r.getString("type"), 
+                                              getUserById(Integer.parseInt(r.getString("iduser"))), 
+                                              r.getInt("version"));
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return device;
+    }
+    
+    /**
      * Return the device with id
      * @param idUser id of the user
      * @return device interface
@@ -321,18 +357,55 @@ public class DeviceDBManager extends UserDBManager {
     /**
      * Update the value of macro sync for the current device
      * @param b
+     * @throws SQLException 
      */
-    public void macroSynced(String name, String model, boolean b) {
-        // TODO Auto-generated method stub
-        
+    public void macroNotSynced(String name, String model, boolean b) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+           
+        try {
+            c = db.connect();
+            String query = "UPDATE device SET not_synced = ? WHERE name = ? AND model = ?";
+            s = c.prepareStatement(query);
+            s.setBoolean(1, b);
+            s.setString(2, name);
+            s.setString(3, model);
+            s.execute();
+               
+        } catch(Exception e) {
+            db.disconnect(c, s);
+            throw e;
+        }
+        db.disconnect(c, s);
     }
     
     /**
      * Update the value of macro sync for all devices of current user
      * @param email
      * @param b
+     * @throws SQLException 
      */
-    public void macroSynced(String email, boolean b) {
-        
+    public void macroNotSynced(String email, boolean b) throws SQLException {
+        List<DeviceInterface> devices = getUserDevices(email);
+        Connection c = null;
+        PreparedStatement s = null;
+           
+        try {
+            c = db.connect();
+            
+            for(DeviceInterface device : devices) {
+                s = null;
+                String query = "UPDATE device SET not_synced = ? WHERE name = ? AND model = ?";
+                s = c.prepareStatement(query);
+                s.setBoolean(1, b);
+                s.setString(2, device.getName());
+                s.setString(3, device.getModel());
+                s.execute();
+            }
+        } catch(Exception e) {
+            db.disconnect(c, s);
+            throw e;
+        }
+        db.disconnect(c, s);
     }
 }
