@@ -176,17 +176,20 @@ public class SyncManager {
                                             pushtmp,
                                             new SinapsiWebServiceFacade.WebServiceCallback<List<Pair<SyncOperation, Integer>>>() {
                                                 @Override
-                                                public void success(List<Pair<SyncOperation, Integer>> pairs, Object response) {
-                                                    if (pairs == null || (pairs.size() == 1 && pairs.get(0).isErrorOccured())) {
-                                                        System.out.println("SYNC: Error occurred during sync: " + pairs.get(0).getErrorDescription());
-                                                        //TODO: rollback
-                                                        callback.onFailure(new SyncServerException(pairs.get(0).getErrorDescription()));
+                                                public void success(List<Pair<SyncOperation, Integer>> pushResult, Object response) {
+                                                    if (pushResult == null || (pushResult.size() == 1 && pushResult.get(0).isErrorOccured())) {
+                                                        System.out.println("SYNC: Error occurred during sync: " + pushResult.get(0).getErrorDescription());
+                                                        callback.onFailure(new SyncServerException(pushResult.get(0).getErrorDescription()));
+                                                        //rollback (no changes on both client and server)
+                                                        return;
+
                                                     } else {
+                                                        //TODO: use returned ids by server
                                                         //HINT: take advantage of parallelism (move the pull just after the push call)
                                                         MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
                                                         List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
                                                         int pulledCount = 0;
-                                                        //TODO: use returned ids by server
+
                                                         Collections.sort(toBePulled);
                                                         for (MacroChange macroChange : toBePulled) {
                                                             //saves data from the server in the db
@@ -201,12 +204,14 @@ public class SyncManager {
                                                             }
                                                             ++pulledCount;
                                                         }
-                                                        //TODO: commit changes on client
+
+                                                        commit(tempDB);
+
                                                         callback.onSuccess(
                                                                 pushedCount,
                                                                 pulledCount,
                                                                 noChangesCount,
-                                                                toBePushedConflict.size()+toBePulledConflict.size());
+                                                                toBePushedConflict.size() + toBePulledConflict.size());
 
                                                     }
 
@@ -214,8 +219,12 @@ public class SyncManager {
 
                                                 @Override
                                                 public void failure(Throwable error) {
-                                                    //TODO: rollback
                                                     callback.onFailure(error);
+                                                    //rollback (no changes on client,
+                                                    // server may have received data but
+                                                    // maybe the only the response caused
+                                                    // the error) todo: handle this case
+                                                    return;
                                                 }
                                             }
                                     );
@@ -223,7 +232,8 @@ public class SyncManager {
 
                                 @Override
                                 public void onAbort() {
-                                    //TODO: rollback
+                                    //rollback by user (no changes on both client and server)
+                                    return;
                                 }
                             });
                         }
@@ -373,6 +383,7 @@ public class SyncManager {
 
                     //----: Conflicts that can't be solved: 1) edit on A and delete on B
                     //----:    2) edit on A and edit on B but macros are not longer the same
+                    //----:         ---> ask the user what to do
 
                     MacroInterface serverMacro = serverMacros.get(i);
                     MacroInterface localMacro = localDBMacros.get(i);
@@ -394,6 +405,12 @@ public class SyncManager {
 
     }
 
+    public void commit(MemoryLocalDBManager tempDB){
+        clearAll();
+        tempDB.saveToDb(currentDb,false);
+        tempDB.saveToDb(lastSyncDb,false);
+    }
+
     private static MacroInterface getMacroFromList(List<MacroInterface> list, int id) {
         for (MacroInterface m : list) {
             if (m.getId() == id) return m;
@@ -410,5 +427,7 @@ public class SyncManager {
             super(message);
         }
     }
+
+
 
 }
