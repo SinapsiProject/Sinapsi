@@ -70,6 +70,11 @@ public class Macro extends ComunicationInfo implements MacroInterface {
         name = nm;
     }
 
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
+
     /**
      * Macro's action list getter
      * @return the macro's action list

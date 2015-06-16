@@ -160,17 +160,19 @@ public class SyncManager {
                         final Integer noChangesCount = diffsAnalysisResults.getThird();
                         if (conflicts.isEmpty()) {
                             //there are no conflicts,
-                            //proceed directly with push and pull
+                            //TODO: proceed directly with push and pull
                         } else {
                             callback.onConflicts(conflicts, new ConflictResolutionCallback() {
                                 @Override
                                 public void onConflictsResolved(final List<MacroChange> toBePushedConflict, final List<MacroChange> toBePulledConflict) {
 
+                                    //TODO: add conflict resolution results to toBePushed and toBePulled
+
                                     List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
                                     final int pushedCount = 0;
                                     Collections.sort(toBePushed);
 
-                                    List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
+                                    final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
                                     webService.pushChanges(
                                             null, //TODO: set device
                                             pushtmp,
@@ -184,9 +186,18 @@ public class SyncManager {
                                                         return;
 
                                                     } else {
-                                                        //TODO: use returned ids by server
-                                                        //HINT: take advantage of parallelism (move the pull just after the push call)
                                                         MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
+                                                        //TODO: delete all macros with negative id fromTempDB
+                                                        for (int i = 0; i < pushResult.size(); ++i) {
+                                                            if (pushResult.get(i).getFirst() == SyncOperation.ADD) {
+                                                                int newId = pushResult.get(i).getSecond();
+                                                                MacroInterface mi = pushtmp.get(i).getSecond();
+                                                                mi.setId(newId);
+                                                                tempDB.addOrUpdateMacro(mi);
+                                                            }
+                                                        }
+                                                        //HINT: take advantage of parallelism (move the pull just after the push call)
+
                                                         List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
                                                         int pulledCount = 0;
 

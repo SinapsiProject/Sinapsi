@@ -15,6 +15,7 @@ public interface MacroInterface {
     public String getName();
     public int getId();
     public void setName(String name);
+    public void setId(int id);
 
     public List<Action> getActions();
     public void addAction(Action a);
