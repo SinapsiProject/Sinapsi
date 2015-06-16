@@ -164,14 +164,16 @@ public class SyncManager {
                         } else {
                             callback.onConflicts(conflicts, new ConflictResolutionCallback() {
                                 @Override
-                                public void onConflictsResolved(final List<MacroChange> toBePushedConflict, final List<MacroChange> toBePulledConflict) {
-
-                                    //TODO: add conflict resolution results to toBePushed and toBePulled
-
+                                public void onConflictsResolved(final List<MacroChange> toBePushedConflicts, final List<MacroChange> toBePulledConflicts) {
+                                    
                                     List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
-                                    final int pushedCount = 0;
-                                    Collections.sort(toBePushed);
+                                    final List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
+                                    final int[] pushedAndPulledCounters = new int[]{0, 0};
 
+                                    toBePushed.addAll(toBePushedConflicts);
+                                    toBePulled.addAll(toBePulledConflicts);
+
+                                        Collections.sort(toBePushed);
                                     final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
                                     webService.pushChanges(
                                             null, //TODO: set device
@@ -195,12 +197,10 @@ public class SyncManager {
                                                                 mi.setId(newId);
                                                                 tempDB.addOrUpdateMacro(mi);
                                                             }
+                                                            ++pushedAndPulledCounters[0];
                                                         }
+
                                                         //HINT: take advantage of parallelism (move the pull just after the push call)
-
-                                                        List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
-                                                        int pulledCount = 0;
-
                                                         Collections.sort(toBePulled);
                                                         for (MacroChange macroChange : toBePulled) {
                                                             //saves data from the server in the db
@@ -213,16 +213,17 @@ public class SyncManager {
                                                                     tempDB.removeMacro(macroChange.getId());
                                                                     break;
                                                             }
-                                                            ++pulledCount;
+                                                            //increments pull counter
+                                                            ++pushedAndPulledCounters[1];
                                                         }
 
                                                         commit(tempDB);
 
                                                         callback.onSuccess(
-                                                                pushedCount,
-                                                                pulledCount,
+                                                                pushedAndPulledCounters[0],
+                                                                pushedAndPulledCounters[1],
                                                                 noChangesCount,
-                                                                toBePushedConflict.size() + toBePulledConflict.size());
+                                                                toBePushedConflicts.size() + toBePulledConflicts.size());
 
                                                     }
 
