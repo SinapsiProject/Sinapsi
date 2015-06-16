@@ -244,8 +244,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        service.removeMacro(elem.getId());
-                                        updateContent();
+                                        service.removeMacro(elem.getId(), true);
+                                        updateContent(true);
                                         dialog.dismiss();
                                     }
                                 },
@@ -293,13 +293,13 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     public void onClick(View v) {
 
                         try {
-                            service.addOrUpdateMacro(elem);
+                            service.addOrUpdateMacro(elem, true);
                             service.getEngine().setMacroEnabled(elem.getId(), !elem.isEnabled());
                         } catch (MacroEngine.MissingMacroException e) {
                             //just print stack trace and ignore
                             e.printStackTrace();
                         }
-                        updateContent();
+                        updateContent(true);
                     }
                 });
 
@@ -353,31 +353,31 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateContent();
+                updateContent(true);
             }
         });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateContent();
+                updateContent(true);
             }
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.sinapsi_blue);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
-        updateContent();
+        updateContent(true);
         created = true;
         return rootView;
     }
 
-    private void updateContent() {
+    private void updateContent(boolean userIntent) {
         Lol.d(this, "Update content started");
         if(!isServiceConnected()) return;
         swipeRefreshLayout.setRefreshing(true);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
-        service.syncAndLoadMacros();
+        service.syncAndLoadMacros(userIntent);
         updateMacroList(service.getMacros());
 
 
@@ -425,7 +425,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         service.addWebServiceConnectionListener(this);
 
         //updates on service connected only if this is visible to the user
-        if(created)updateContent();
+        if(created)updateContent(true);
     }
 
     public void setIsListOnTop(boolean b){

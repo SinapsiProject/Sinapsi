@@ -202,7 +202,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         );
 
         // loads macros from local db/web service -------------------
-        syncAndLoadMacros();
+        syncAndLoadMacros(false);
 
 
         if (AppConsts.DEBUG_MACROS) createLocalMacroExamples();
@@ -232,7 +232,6 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
         PackageManager pm = getPackageManager();
 
-        sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_LUA, true);//todo remove
         sf.setRequirementSpec(DialogAdapter.REQUIREMENT_SIMPLE_DIALOGS, true);
         sf.setRequirementSpec(NotificationAdapter.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
         sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_INTERCEPT_SCREEN_POWER, true);
@@ -272,21 +271,31 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         return new SinapsiServiceBinder();
     }
 
-    public void syncAndLoadMacros() {
+    public void syncAndLoadMacros(boolean explicit) {
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
-            public void onSuccess(Integer pushed, Integer pulled, Integer noChanged) {
+            public void onSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
                 engine.addMacros(loadSavedMacros());
             }
 
             @Override
-            public void onConflicts(List<MacroSyncConflict> conflicts) {
-                //TODO (show them to the user)
+            public void onConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
+
+                //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification and pause engine)
+                //if(sinapsiGuiIsOpen){
+                for(MacroSyncConflict conflict: conflicts){
+
+                }
+                //}else{
+                //showConflictNotification(conflicts.size());
+                //engine.pause();
+                //setResolveConflictsOnNextGuiOpen(true, conflictCallback);
+                //}
             }
 
             @Override
             public void onFailure(Throwable error) {
-                //TODO this could be a retrofit error
+                //TODO this could be a retrofit error: show to the user only if explicit
             }
         });
 
@@ -371,7 +380,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 } catch (MacroEngine.MissingMacroException e) {
                     if (firstcall) {
                         //retries after a sync
-                        syncAndLoadMacros();
+                        syncAndLoadMacros(false);
                         handleWsMessage(message, false);
                     } else {
                         e.printStackTrace();
@@ -383,7 +392,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             }
             break;
             case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
-                syncAndLoadMacros();
+                syncAndLoadMacros(false);
             }
             break;
             case SinapsiMessageTypes.NEW_CONNECTION:{
@@ -410,14 +419,14 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         this.loggedUser = logoutUser;
     }
 
-    public void removeMacro(int id) {
+    public void removeMacro(int id, boolean userIntention) {
         syncManager.removeMacro(id);
-        syncAndLoadMacros();
+        syncAndLoadMacros(userIntention);
     }
 
-    public void addOrUpdateMacro(MacroInterface macro) {
+    public void addOrUpdateMacro(MacroInterface macro, boolean userIntention) {
         syncManager.addOrUpdateMacro(macro);
-        syncAndLoadMacros();
+        syncAndLoadMacros(userIntention);
     }
 
     public SyncManager getSyncManager() {

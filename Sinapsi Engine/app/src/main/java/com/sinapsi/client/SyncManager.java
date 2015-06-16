@@ -9,12 +9,13 @@ import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.utils.Triplet;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.List;
 
 /**
@@ -23,12 +24,24 @@ import java.util.List;
  */
 public class SyncManager {
 
-    public interface MacroSyncCallback {
-        public void onSuccess(Integer pushed, Integer pulled, Integer noChanged);
+    private static FactoryModel fm = new FactoryModel();
 
-        public void onConflicts(List<MacroSyncConflict> conflicts);
+    /**
+     * Interface exposed from the sync manager in order to manage
+     * the async nature of the sync() method.
+     */
+    public interface MacroSyncCallback {
+        public void onSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts);
+
+        public void onConflicts(List<MacroSyncConflict> conflicts, ConflictResolutionCallback conflictCallback);
 
         public void onFailure(Throwable error);
+    }
+
+
+    public interface ConflictResolutionCallback {
+        public void onConflictsResolved(List<MacroChange> toBePushedConflict, List<MacroChange> toBePulledConflict);
+        public void onAbort();
     }
 
     private SinapsiWebServiceFacade webService;
@@ -40,6 +53,7 @@ public class SyncManager {
                        LocalDBManager lastSyncDb,
                        LocalDBManager currentDb,
                        DiffDBManager diffDb) {
+
         this.webService = webService;
         this.lastSyncDb = lastSyncDb;
         this.currentDb = currentDb;
@@ -92,17 +106,18 @@ public class SyncManager {
     }
 
     public void sync(final MacroSyncCallback callback) {
+
         webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<Pair<Boolean, List<MacroInterface>>>() {
             @Override
             public void success(Pair<Boolean, List<MacroInterface>> result, Object response) {
-                List<MacroInterface> serverMacros = result.getSecond();
+                final List<MacroInterface> serverMacros = result.getSecond();
                 if (result.getFirst()) {
                     if (diffDb.getAllChanges().isEmpty()) {
                         clearAll();
                         for (MacroInterface mi : serverMacros) {
                             currentDb.addOrUpdateMacro(mi);
                             lastSyncDb.addOrUpdateMacro(mi);
-                            callback.onSuccess(null,null,null);
+                            callback.onSuccess(0, null, null, null);
                             return;
                         }
                     } else {
@@ -137,45 +152,80 @@ public class SyncManager {
                             }
                         }
 
-                        Triplet<Pair<List<MacroChange>, List<MacroChange>>, List<MacroSyncConflict>, Integer> diffsAnalysisResults;
+                        final Triplet<Pair<List<MacroChange>, List<MacroChange>>, List<MacroSyncConflict>, Integer> diffsAnalysisResults;
                         diffsAnalysisResults = analyzeDiffs(currentDb.getAllMacros(), serverMacros, diffServer_OldCopy, diffDb);
 
-                        List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
-                        int pushedCount = 0;
-                        Collections.sort(toBePushed);
-
-
-                        //TODO: push changes all together
-                        //TODO: increment pushedCount on success
-
-
-
-                        MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
-
-                        List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
-                        int pulledCount = 0;
-                        Collections.sort(toBePulled);
-                        for (MacroChange macroChange : toBePulled) {
-                            //saves data from the server in the db
-                            switch (macroChange.getChangeType()) {
-                                case ADDED:
-                                case EDITED:
-                                    tempDB.addOrUpdateMacro(getMacroFromList(serverMacros, macroChange.getId()));
-                                    break;
-                                case REMOVED:
-                                    tempDB.removeMacro(macroChange.getId());
-                                    break;
-                            }
-                            ++pulledCount;
-                        }
 
                         List<MacroSyncConflict> conflicts = diffsAnalysisResults.getSecond();
-                        Integer noChangesCount = diffsAnalysisResults.getThird();
+                        final Integer noChangesCount = diffsAnalysisResults.getThird();
                         if (conflicts.isEmpty()) {
-                            callback.onSuccess(pushedCount, pulledCount, noChangesCount);
+                            //there are no conflicts,
+                            //proceed directly with push and pull
                         } else {
-                            callback.onConflicts(conflicts);
-                            //TODO: wait somehow for user hand-made conflict resolution
+                            callback.onConflicts(conflicts, new ConflictResolutionCallback() {
+                                @Override
+                                public void onConflictsResolved(final List<MacroChange> toBePushedConflict, final List<MacroChange> toBePulledConflict) {
+
+                                    List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
+                                    final int pushedCount = 0;
+                                    Collections.sort(toBePushed);
+
+                                    List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
+                                    webService.pushChanges(
+                                            null, //TODO: set device
+                                            pushtmp,
+                                            new SinapsiWebServiceFacade.WebServiceCallback<List<Pair<SyncOperation, Integer>>>() {
+                                                @Override
+                                                public void success(List<Pair<SyncOperation, Integer>> pairs, Object response) {
+                                                    if (pairs == null || (pairs.size() == 1 && pairs.get(0).isErrorOccured())) {
+                                                        System.out.println("SYNC: Error occurred during sync: " + pairs.get(0).getErrorDescription());
+                                                        //TODO: rollback
+                                                        callback.onFailure(new SyncServerException(pairs.get(0).getErrorDescription()));
+                                                    } else {
+                                                        //HINT: take advantage of parallelism (move the pull just after the push call)
+                                                        MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
+                                                        List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
+                                                        int pulledCount = 0;
+                                                        //TODO: use returned ids by server
+                                                        Collections.sort(toBePulled);
+                                                        for (MacroChange macroChange : toBePulled) {
+                                                            //saves data from the server in the db
+                                                            switch (macroChange.getChangeType()) {
+                                                                case ADDED:
+                                                                case EDITED:
+                                                                    tempDB.addOrUpdateMacro(getMacroFromList(serverMacros, macroChange.getId()));
+                                                                    break;
+                                                                case REMOVED:
+                                                                    tempDB.removeMacro(macroChange.getId());
+                                                                    break;
+                                                            }
+                                                            ++pulledCount;
+                                                        }
+                                                        //TODO: commit changes on client
+                                                        callback.onSuccess(
+                                                                pushedCount,
+                                                                pulledCount,
+                                                                noChangesCount,
+                                                                toBePushedConflict.size()+toBePulledConflict.size());
+
+                                                    }
+
+                                                }
+
+                                                @Override
+                                                public void failure(Throwable error) {
+                                                    //TODO: rollback
+                                                    callback.onFailure(error);
+                                                }
+                                            }
+                                    );
+                                }
+
+                                @Override
+                                public void onAbort() {
+                                    //TODO: rollback
+                                }
+                            });
                         }
                     }
 
@@ -187,7 +237,7 @@ public class SyncManager {
                             //no changes.
                         } else {
                             //something in the change tracking system has gone wrong
-                            throw new RuntimeException("The change tracking mechanism failed");
+                            throw new SyncServerException("The change tracking mechanism failed");
                         }
                     } else {
                         //only the client has updated data
@@ -201,6 +251,27 @@ public class SyncManager {
                 callback.onFailure(error);
             }
         });
+    }
+
+    private List<Pair<SyncOperation, MacroInterface>> convertChangesToPushSyncOps(List<MacroChange> toBePushed, LocalDBManager db) {
+        List<Pair<SyncOperation, MacroInterface>> result = new ArrayList<>();
+
+        for(MacroChange mc:toBePushed){
+            switch (mc.getChangeType()){
+
+                case ADDED:
+                    result.add(new Pair<>(SyncOperation.ADD, db.getMacroWithId(mc.getId())));
+                    break;
+                case EDITED:
+                    result.add(new Pair<>(SyncOperation.ADD, db.getMacroWithId(mc.getId())));
+                    break;
+                case REMOVED:
+                    result.add(new Pair<>(SyncOperation.ADD, fm.newMacro("", mc.getId())));
+                    break;
+            }
+        }
+
+        return result;
     }
 
     public boolean areMacrosEqual(MacroInterface m1, MacroInterface m2) {
@@ -328,6 +399,16 @@ public class SyncManager {
             if (m.getId() == id) return m;
         }
         return null;
+    }
+
+    public class SyncServerException extends RuntimeException{
+        public SyncServerException(){
+            super();
+        }
+
+        public SyncServerException(String message){
+            super(message);
+        }
     }
 
 }
