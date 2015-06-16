@@ -198,7 +198,9 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 web,
                 new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '_').replace('.','_')+"-lastSync", engine.getComponentFactory()),
                 new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '_').replace('.','_')+"-current", engine.getComponentFactory()),
-                new AndroidDiffDBManager(this, loggedUser.getEmail().replace('@', '_').replace('.','_')+"-diff")
+                new AndroidDiffDBManager(this, loggedUser.getEmail().replace('@', '_').replace('.','_')+"-diff"),
+                device
+
         );
 
         // loads macros from local db/web service -------------------
@@ -284,12 +286,12 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification and pause engine)
                 //if(sinapsiGuiIsOpen){
                 for(MacroSyncConflict conflict: conflicts){
-
+                    //TODO: show dialog to the user
                 }
                 //}else{
-                //showConflictNotification(conflicts.size());
-                //engine.pause();
-                //setResolveConflictsOnNextGuiOpen(true, conflictCallback);
+                //  showConflictNotification(conflicts.size());
+                //  engine.pause();
+                //  setResolveConflictsOnNextGuiOpen(true, conflictCallback);
                 //}
             }
 

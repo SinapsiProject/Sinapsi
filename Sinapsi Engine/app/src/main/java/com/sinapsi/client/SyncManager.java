@@ -8,6 +8,7 @@ import com.sinapsi.client.persistence.syncmodel.MacroChange;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.Action;
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.SyncOperation;
@@ -48,16 +49,19 @@ public class SyncManager {
     private LocalDBManager lastSyncDb;
     private LocalDBManager currentDb;
     private DiffDBManager diffDb;
+    private DeviceInterface device;
 
     public SyncManager(SinapsiWebServiceFacade webService,
                        LocalDBManager lastSyncDb,
                        LocalDBManager currentDb,
-                       DiffDBManager diffDb) {
+                       DiffDBManager diffDb,
+                       DeviceInterface device) {
 
         this.webService = webService;
         this.lastSyncDb = lastSyncDb;
         this.currentDb = currentDb;
         this.diffDb = diffDb;
+        this.device = device;
     }
 
 
@@ -173,10 +177,10 @@ public class SyncManager {
                                     toBePushed.addAll(toBePushedConflicts);
                                     toBePulled.addAll(toBePulledConflicts);
 
-                                        Collections.sort(toBePushed);
+                                    Collections.sort(toBePushed);
                                     final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
                                     webService.pushChanges(
-                                            null, //TODO: set device
+                                            device,
                                             pushtmp,
                                             new SinapsiWebServiceFacade.WebServiceCallback<List<Pair<SyncOperation, Integer>>>() {
                                                 @Override
