@@ -108,9 +108,9 @@ public class AvailableTriggerServlet extends HttpServlet {
             // return a crypted response to the client
             Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
             if (success)
-                out.print(encrypter.encrypt(gson.toJson("success!")));
+                out.print(encrypter.encrypt(gson.toJson("success")));
             else
-                out.print(encrypter.encrypt(gson.toJson("Fail!")));
+                out.print(encrypter.encrypt(gson.toJson("fail")));
 
             out.flush();
 

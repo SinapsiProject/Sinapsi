@@ -330,6 +330,7 @@ public class EngineDBManager {
 
         try {
             c = db.connect();
+            c.setAutoCommit(false);
 
             for (int i = 0; i < triggers.size(); ++i) {
                 s = null;
@@ -347,9 +348,11 @@ public class EngineDBManager {
             }
 
         } catch (SQLException e) {
+            c.rollback();
             db.disconnect(c, s, r);
             throw e;
         }
+        c.commit();
         db.disconnect(c, s);
     }
 
@@ -367,7 +370,8 @@ public class EngineDBManager {
 
         try {
             c = db.connect();
-
+            c.setAutoCommit(false);
+            
             for (int i = 0; i < actions.size(); ++i) {
                 s = null;
                 r = null;
@@ -384,9 +388,11 @@ public class EngineDBManager {
             }
 
         } catch (SQLException e) {
+            c.rollback();
             db.disconnect(c, s, r);
             throw e;
         }
+        c.commit();
         db.disconnect(c, s);
     }
 
@@ -538,7 +544,7 @@ public class EngineDBManager {
         
         try {
             c = db.connect();
-            
+            c.setAutoCommit(false);
             List<Action> actions = macro.getActions();
             int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion());   
             int idDevice =  macro.getTrigger().getExecutionDevice().getId();
@@ -580,9 +586,11 @@ public class EngineDBManager {
             } 
                        
         } catch(SQLException ex) {
+            c.rollback();
             db.disconnect(c, s, r);
         }
         
+        c.commit();
         db.disconnect(c, s, r);
         return idMacro;
     }
@@ -599,6 +607,8 @@ public class EngineDBManager {
         
         try {
             c = db.connect();
+            c.setAutoCommit(false);
+            
             List<Action> actions = macro.getActions();
             int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion()); 
             
@@ -633,9 +643,13 @@ public class EngineDBManager {
             }
                
         } catch(Exception e) {
+            // in case of error, rollback the changes and disconnect
+            c.rollback();
             db.disconnect(c, s);
             throw e;
         }
+        // in case of success, commit all changes in the db and disconnect
+        c.commit();
         db.disconnect(c, s);   
         return macro.getId();
     }   

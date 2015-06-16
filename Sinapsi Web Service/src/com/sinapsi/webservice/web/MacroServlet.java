@@ -32,6 +32,7 @@ import com.sinapsi.webservice.utility.BodyReader;
 public class MacroServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;   
 	private  Gson gson = new Gson();
+	
 	private KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
 	private EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
     private UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
@@ -39,11 +40,14 @@ public class MacroServlet extends HttpServlet {
     PrintWriter out; 
 
 	/**
+	 * Get the list of macro from the server and return a list of macro and a boolean that tell the client 
+	 * that the current device is synced with the last changes
+	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    response.setContentType("application/json");
-	    PrintWriter out = response.getWriter();
+	    out = response.getWriter();
                     
         String email = request.getParameter("email");
         String deviceName = request.getParameter("name");
@@ -57,6 +61,7 @@ public class MacroServlet extends HttpServlet {
             
             // sync macro for the current device
             deviceManager.macroNotSynced(deviceName, deviceModel, false);
+            
             // send the encrypted data
             out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, List<MacroInterface>>(false, macros))));
             out.flush();
@@ -67,6 +72,9 @@ public class MacroServlet extends HttpServlet {
 	}
 
 	/**
+	 * Push the last macro changes in the db. Client tell the server what kind of change to do.
+	 * Changes can be a push of changes to do, add/update a macro and delete a macro
+	 * 
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -90,25 +98,29 @@ public class MacroServlet extends HttpServlet {
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             
-            // switch the action to do 
+            // action to do: push a batch of changes, add a macro, update a macro and delete a macro
             switch (action) {
+                
                 //  push a list of changes (adds/updates/deletes) to do 
                 case "push": {
                     
-                   // extract the list of actions from the jsoned triggers
+                    // extract the list of cahnges to do from the json
                     List<Pair<SyncOperation, MacroInterface>> changes = gson.fromJson(jsonBody, new TypeToken<List<Pair<SyncOperation, MacroInterface>>>() {}.getType());
+                    // the result of computation is a list of pairs containing the sync operation and the id of macro
                     List<Pair<SyncOperation, Integer>> result = new ArrayList<Pair<SyncOperation,Integer>>();
                     
-                    // iterate the stack of operation to do 
+                    // iterate the list of operation to do 
                     for(Pair<SyncOperation, MacroInterface> change : changes) {
                         // operations
                         switch(change.getFirst()) {
-                            case UPDATE:
+                            case UPDATE: // update is do it by the add in case the id of macro already exixst in the db
                             case ADD:
+                                // add the macro in the db and add the returned id (of the macro) to the list result
                                 result.add(new Pair<SyncOperation, Integer>(SyncOperation.ADD, add(jsonBody, email)));
                                 break;
                                 
                             case DELETE:
+                                // delete macro from the db and add a -1 id to the list of result
                                 deleteMacro(jsonBody);
                                 result.add(new Pair<SyncOperation, Integer>(SyncOperation.DELETE, -1));
                                 break;                                 
@@ -121,20 +133,14 @@ public class MacroServlet extends HttpServlet {
                 } break;
                 
                 case "add": {
-                    // add macro
-                    int idMacro = add(jsonBody, email);
-                    
-                    // send idMacro
-                    out.print(encrypter.encrypt(gson.toJson(idMacro)));
+                    // add macro and send the id of the macro
+                    out.print(encrypter.encrypt(gson.toJson(add(jsonBody, email))));
                     out.flush();                
                 } break;
                 
                 case "add_macros": {
-                    // add a list of macro
-                    List<Integer> ids = addMacros(jsonBody, email);
-                    
-                    // send the macro id
-                    out.print(encrypter.encrypt(gson.toJson(ids)));
+                    // add a list of macro and send the macro ids
+                    out.print(encrypter.encrypt(gson.toJson(addMacros(jsonBody, email))));
                     out.flush();                   
                 } break;
                 
@@ -150,13 +156,10 @@ public class MacroServlet extends HttpServlet {
             }
       
             // async macro on all devices of current user 
-            // TODO: async all devices except current device
-            deviceManager.macroNotSynced(email, true);
+            deviceManager.macroNotSynced(email, deviceName, deviceModel, true);
         } catch(Exception ex) {
             ex.printStackTrace();
-        }
-        
-        
+        }  
 	}
 	
 	/**
