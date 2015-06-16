@@ -14,6 +14,7 @@ import com.sinapsi.utils.Triplet;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ import java.util.List;
 public class SyncManager {
 
     public interface MacroSyncCallback {
-        public void onSuccess(int pushed, int pulled, int noChanged);
+        public void onSuccess(Integer pushed, Integer pulled, Integer noChanged);
 
         public void onConflicts(List<MacroSyncConflict> conflicts);
 
@@ -101,7 +102,7 @@ public class SyncManager {
                         for (MacroInterface mi : serverMacros) {
                             currentDb.addOrUpdateMacro(mi);
                             lastSyncDb.addOrUpdateMacro(mi);
-                            callback.onSuccess(0, 0, 0); //TODO: real counters
+                            callback.onSuccess(null,null,null);
                             return;
                         }
                     } else {
@@ -154,6 +155,7 @@ public class SyncManager {
                             }
                             //TODO: push changes all together
                             //TODO: increment pushedCount on success
+
                         }
 
                         MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
