@@ -19,6 +19,7 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.wsproto.WebSocketEventHandler;
@@ -382,7 +383,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                             result.failure(new RuntimeException(deviceInterface.getErrorDescription()));
                             return;
                         }
-
                         wsClient.setDeviceId(deviceInterface.getId());
                         result.success(deviceInterface, response);
                     }
@@ -469,6 +469,15 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         serverPublicKey = null;
         loggedUser = null;
         loginStatusListener.onLogOut();
+    }
+
+    public void pushChanges(DeviceInterface device, List<Pair<SyncOperation, MacroInterface>> changes, WebServiceCallback<List<Pair<SyncOperation, Integer>>> callback){
+        cryptedRetrofit.pushChanges(
+                loggedUser.getEmail(),
+                device.getName(),
+                device.getModel(),
+                changes,
+                convertCallback(callback));
     }
 
     public UserInterface getLoggedUser() {
