@@ -122,13 +122,14 @@ public class DeviceDBManager extends UserDBManager {
         
         try {
             c = db.connect();
-            String query = "INSERT INTO device(name, model, type, iduser, version) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO device(name, model, type, iduser, version, not_synced) VALUES (?, ?, ?, ?, ?, ?)";
             s = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             s.setString(1, name);
             s.setString(2, model);
             s.setString(3, type);
             s.setInt(4, idUser);
             s.setInt(5, clientVersion);
+            s.setBoolean(6, true);
             s.execute();
             r = s.getGeneratedKeys();
             r.next();

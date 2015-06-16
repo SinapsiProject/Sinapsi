@@ -2,6 +2,7 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
@@ -28,7 +30,13 @@ import com.sinapsi.webservice.utility.BodyReader;
  */
 @WebServlet("/macro")
 public class MacroServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;     
+	private static final long serialVersionUID = 1L;   
+	private  Gson gson = new Gson();
+	private KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+	private EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
+    private UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+    private DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");  
+    PrintWriter out; 
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,13 +44,7 @@ public class MacroServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    response.setContentType("application/json");
 	    PrintWriter out = response.getWriter();
-        EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
-        KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
-        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
-        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
-        
-        Gson gson = new Gson();
-        
+                    
         String email = request.getParameter("email");
         String deviceName = request.getParameter("name");
         String deviceModel = request.getParameter("model");
@@ -69,14 +71,9 @@ public class MacroServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
-        KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
-        UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
-        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
+	    out = response.getWriter();
         
-        Gson gson = new Gson();
-        
+               
         String email = request.getParameter("email");
         String deviceName = request.getParameter("name");
         String deviceModel = request.getParameter("model");
@@ -86,61 +83,140 @@ public class MacroServlet extends HttpServlet {
         String encryptedJsonBody = BodyReader.read(request);
         
         try {
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
             // create the decrypter
             Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, deviceName, deviceModel),    
                                             keysManager.getUserSessionKey(email, deviceName, deviceModel));
             // decrypt the jsoned body
             String jsonBody = decrypter.decrypt(encryptedJsonBody);
             
-           
-        
+            // switch the action to do 
             switch (action) {
-                case "add": {
-                    // extract the list of actions from the jsoned triggers
-                    MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
+                //  push a list of changes (adds/updates/deletes) to do 
+                case "push": {
                     
-                    // add macro and return the id if macro already exist, update 
-                    int idMacro = engineManager.addUserMacro(userManager.getUserByEmail(email).getId(), macro);
-                    List<Integer> ids = new ArrayList<Integer>();
-                    ids.add(idMacro);
+                   // extract the list of actions from the jsoned triggers
+                    List<Pair<SyncOperation, MacroInterface>> changes = gson.fromJson(jsonBody, new TypeToken<List<Pair<SyncOperation, MacroInterface>>>() {}.getType());
+                    List<Pair<SyncOperation, Integer>> result = new ArrayList<Pair<SyncOperation,Integer>>();
                     
-                    // async macro on all devices of current user
-                    deviceManager.macroNotSynced(email, true);
+                    // iterate the stack of operation to do 
+                    for(Pair<SyncOperation, MacroInterface> change : changes) {
+                        // operations
+                        switch(change.getFirst()) {
+                            case UPDATE:
+                            case ADD:
+                                result.add(new Pair<SyncOperation, Integer>(SyncOperation.ADD, add(jsonBody, email)));
+                                break;
+                                
+                            case DELETE:
+                                deleteMacro(jsonBody);
+                                result.add(new Pair<SyncOperation, Integer>(SyncOperation.DELETE, -1));
+                                break;                                 
+                        }
+                    }
                     
-                    // send the macro id
-                    Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
-                    
-                    out.print(encrypter.encrypt(gson.toJson(ids)));
+                    // return the result
+                    out.print(encrypter.encrypt(gson.toJson(result)));
                     out.flush();
+                } break;
+                
+                case "add": {
+                    // add macro
+                    int idMacro = add(jsonBody, email);
                     
+                    // send idMacro
+                    out.print(encrypter.encrypt(gson.toJson(idMacro)));
+                    out.flush();                
                 } break;
                 
                 case "add_macros": {
-                    // extract the list of actions from the jsoned triggers
-                    List<MacroInterface> macros = gson.fromJson(jsonBody, new TypeToken<List<MacroInterface>>() {}.getType());
-                    
-                    List<Integer> ids= engineManager.addUserMacros(userManager.getUserByEmail(email).getId(), macros);
+                    // add a list of macro
+                    List<Integer> ids = addMacros(jsonBody, email);
                     
                     // send the macro id
-                    Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
                     out.print(encrypter.encrypt(gson.toJson(ids)));
-                    out.flush();
-                    
+                    out.flush();                   
                 } break;
                 
                 case "delete": {
-                    // extract the list of actions from the jsoned triggers
-                    MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
-                    
                     // delete macro
-                    engineManager.deleteUserMacro(macro.getId());
+                    deleteMacro(jsonBody);
                     
+                    //send -1 id
+                    out.print(encrypter.encrypt(gson.toJson(-1)));
+                    out.flush();
                 } break;
         
             }
       
+            // async macro on all devices of current user 
+            // TODO: async all devices except current device
+            deviceManager.macroNotSynced(email, true);
         } catch(Exception ex) {
             ex.printStackTrace();
         }
+        
+        
+	}
+	
+	/**
+	 * Add a macro to the db
+	 * @param jsonBody json body containing macro interface
+	 * @param email email of the user
+	 * @param deviceName device name of the user
+	 * @param deviceModel device model of the user
+	 */
+	private int add(String jsonBody, String email) {
+	    // extract the list of actions from the jsoned triggers
+        MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
+        
+        // add macro and return the id if macro already exist, update 
+        try {
+            int idMacro = engineManager.addUserMacro(userManager.getUserByEmail(email).getId(), macro);
+   
+            // save the macro id
+            return idMacro;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }     
+        return -1;
+	}
+	
+	/**
+	 * Add a list of macro
+	 * @param jsonBody json body containing macro interfaces
+	 * @param email email of the user
+	 * @param deviceName device name of the user
+	 * @param deviceModel device model of the user
+	 */
+	private List<Integer> addMacros(String jsonBody, String email) {
+	    // extract the list of actions from the jsoned triggers
+        List<MacroInterface> macros = gson.fromJson(jsonBody, new TypeToken<List<MacroInterface>>() {}.getType());
+        
+        try {
+            return engineManager.addUserMacros(userManager.getUserByEmail(email).getId(), macros);
+   
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+        return new ArrayList<Integer>();
+	}
+	
+	/**
+	 * Delete macro
+	 * @param jsonBody json body
+	 */
+	private void deleteMacro(String jsonBody) {
+	    // extract the list of actions from the jsoned triggers
+        MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
+        
+        // delete macro
+        try {
+            engineManager.deleteUserMacro(macro.getId());
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
 	}
 }
