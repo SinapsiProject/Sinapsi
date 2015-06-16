@@ -65,6 +65,7 @@ import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.wsproto.SinapsiMessageTypes;
@@ -145,11 +146,11 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                                 ei.getMacro().getId(),
                                 ei.getLocalVars(),
                                 ei.getExecutionStackIndexes()),
-                        new SinapsiWebServiceFacade.WebServiceCallback<String>() {
+                        new SinapsiWebServiceFacade.WebServiceCallback<ComunicationInfo>() {
 
                             @Override
-                            public void success(String s, Object response) {
-                                sinapsiLog.log("EXECUTION_CONTINUE", s);
+                            public void success(ComunicationInfo s, Object response) {
+                                sinapsiLog.log("EXECUTION_CONTINUE", s.getAdditionalInfo());
                             }
 
                             @Override
@@ -274,7 +275,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     public void syncAndLoadMacros() {
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
-            public void onSuccess(int pushed, int pulled, int noChanged) {
+            public void onSuccess(Integer pushed, Integer pulled, Integer noChanged) {
                 engine.addMacros(loadSavedMacros());
             }
 

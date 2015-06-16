@@ -1,7 +1,11 @@
 package com.sinapsi.model.impl;
 
 /**
- * Created by Giuseppe on 16/06/15.
+ * Contains a list of constant values to identify a sync operation
+ * command when pushing macro changes
  */
-public class SyncOperation {
+public enum SyncOperation {
+    ADD,
+    UPDATE,
+    DELETE
 }

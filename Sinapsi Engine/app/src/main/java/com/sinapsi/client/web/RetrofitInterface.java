@@ -4,7 +4,9 @@ import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.model.impl.Device;
+import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
 
@@ -40,6 +42,7 @@ public interface RetrofitInterface {
     public static final String ADD = "add";
     public static final String GET = "get";
     public static final String DEL = "del";
+    public static final String PUSH = "push";
 
 
     /**
@@ -58,7 +61,7 @@ public interface RetrofitInterface {
     /**
      * Login request
      *
-     * @param email    email of the user
+     * @param email           email of the user
      * @param passwordSession session key pf the user and password
      */
     @POST(LOGIN)
@@ -98,7 +101,8 @@ public interface RetrofitInterface {
 
     /**
      * Device registration request
-     *  @param name    name of the device
+     *
+     * @param name    name of the device
      * @param model   model of the device
      * @param type    type of the device (mobile/desktop)
      * @param version version of the device
@@ -137,7 +141,7 @@ public interface RetrofitInterface {
     public void setAvailableActions(
             @Query("device") int idDevice,
             @Body List<MacroComponent> actions,
-            Callback<String> result);
+            Callback<ComunicationInfo> result);
 
 
     /**
@@ -161,7 +165,7 @@ public interface RetrofitInterface {
     public void setAvailableTriggers(
             @Query("device") int idDevice,
             @Body List<MacroComponent> triggers,
-            Callback<String> result);
+            Callback<ComunicationInfo> result);
 
 
     /**
@@ -171,6 +175,8 @@ public interface RetrofitInterface {
      *
      * @param email the user's email
      * @param macro the macro
+     * @param result a callback with an integer containing the id of the macro
+     *               added or updated, or -1 if there was an error
      */
     @POST(MACROS + ACTION + ADD)
     public void updateOrAddMacro(
@@ -178,7 +184,7 @@ public interface RetrofitInterface {
             @Query("name") String deviceName,
             @Query("model") String deviceModel,
             @Body MacroInterface macro,
-            Callback<String> result);
+            Callback<Integer> result);
 
     /**
      * Delete a macro
@@ -192,7 +198,7 @@ public interface RetrofitInterface {
             @Query("name") String deviceName,
             @Query("model") String deviceModel,
             @Body MacroInterface macro,
-            Callback<String> result);
+            Callback<ComunicationInfo> result);
 
     /**
      * Gets all the macros from the server
@@ -208,14 +214,33 @@ public interface RetrofitInterface {
      * Call this method to continue the execution of a macro on another device.
      *
      * @param from_device_id the device id
-     * @param to_device_id the destination device id
-     * @param red the remote execution descriptor
+     * @param to_device_id   the destination device id
+     * @param red            the remote execution descriptor
      */
     @POST(REMOTE_MACRO)
     public void continueMacroOnDevice(
             @Query("from_device") int from_device_id,
             @Query("to_device") int to_device_id,
             @Body RemoteExecutionDescriptor red,
-            Callback<String> result);
+            Callback<ComunicationInfo> result);
+
+
+    /**
+     * Sends a list of operation of changes to be pushed to the server
+     *
+     * @param email       the user email
+     * @param deviceName  the device name
+     * @param deviceModel the device model
+     * @param changes     the changes to be pushed
+     * @param result      the result
+     */
+    @POST(MACROS + ACTION + PUSH)
+    public void pushChanges(
+            @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
+            @Body List<Pair<SyncOperation, MacroInterface>> changes,
+            Callback<List<Pair<SyncOperation, Integer>>> result
+    );
 
 }

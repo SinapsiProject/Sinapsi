@@ -16,6 +16,7 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.User;
@@ -105,7 +106,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         final BGPGsonConverter cryptInOutGsonConverter = new BGPGsonConverter(gson, this, this.encodingMethod, this.decodingMethod);
 
         //This converter only decrypts data from server
-        final GsonConverter loginGsonConverter = new BGPGsonConverter(gson, this, this.encodingMethod, this.decodingMethod){
+        final GsonConverter loginGsonConverter = new BGPGsonConverter(gson, this, this.encodingMethod, this.decodingMethod) {
             @Override
             public TypedOutput toBody(Object object) {
                 return defaultGsonConverter.toBody(object);
@@ -156,7 +157,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
                                     OnlineStatusProvider onlineStatusProvider,
                                     WebSocketEventHandler wsEventHandler,
-                                    LoginStatusListener loginStatusListener){
+                                    LoginStatusListener loginStatusListener) {
         this(retrofitLog, onlineStatusProvider, wsEventHandler, loginStatusListener, null, null);
         //using null as methods here is safe because will force bgp library to use
         //default apache common codec methods
@@ -186,7 +187,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public SecretKey getLocalUncryptedSessionKey() {
         return localUncryptedSessionKey;
     }
-
 
 
     /**
@@ -220,12 +220,13 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     /**
      * Request login
-     * @param email email of the user
+     *
+     * @param email        email of the user
      * @param keysCallback public key and session key received from the server
      */
     @Override
     public void requestLogin(String email, String deviceName, String deviceModel, final WebServiceCallback<Pair<byte[], byte[]>> keysCallback) {
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
 
         KeyGenerator kg = new KeyGenerator(1024, "RSA");
         final PrivateKey prk = kg.getPrivateKey();
@@ -241,7 +242,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                         @Override
                         public void success(Pair<byte[], byte[]> keys, Response response) {
 
-                            if(keys.isErrorOccured()){
+                            if (keys.isErrorOccured()) {
                                 keysCallback.failure(new RuntimeException(keys.getErrorDescription()));
                                 return;
                             }
@@ -274,7 +275,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public void login(final String email, String password, String deviceName, String deviceModel, final WebServiceCallback<User> result) {
         checkKeys();
 
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
 
         try {
             Encrypt encrypt = new Encrypt(getServerPublicKey());
@@ -291,13 +292,13 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                         @Override
                         public void success(User user, Response response) {
 
-                            if(user.isErrorOccured()){
+                            if (user.isErrorOccured()) {
                                 result.failure(new RuntimeException(user.getErrorDescription()));
                                 return;
                             }
 
-                            try{
-                                wsClient = new WSClient(email){
+                            try {
+                                wsClient = new WSClient(email) {
                                     @Override
                                     public void onOpen(ServerHandshake handshakedata) {
                                         super.onOpen(handshakedata);
@@ -322,7 +323,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                                         webSocketEventHandler.onWebSocketError(ex);
                                     }
                                 };
-                            } catch (URISyntaxException e){
+                            } catch (URISyntaxException e) {
                                 e.printStackTrace();
                             }
 
@@ -345,7 +346,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     @Override
     public void register(String email, String password, WebServiceCallback<User> result) {
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         uncryptedRetrofit.register(email, password, convertCallback(result));
 
     }
@@ -353,7 +354,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void getAllDevicesByUser(UserInterface user, String deviceName, String deviceModel, WebServiceCallback<List<DeviceInterface>> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAllDevicesByUser(user.getEmail(), deviceName, deviceModel, convertCallback(result));
     }
 
@@ -366,7 +367,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                                int deviceClientVersion,
                                final WebServiceCallback<Device> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.registerDevice(
                 emailUser,
                 deviceName,
@@ -377,13 +378,13 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 new Callback<Device>() {
                     @Override
                     public void success(Device deviceInterface, Response response) {
-                        if(deviceInterface.isErrorOccured()){
+                        if (deviceInterface.isErrorOccured()) {
                             result.failure(new RuntimeException(deviceInterface.getErrorDescription()));
                             return;
                         }
 
                         wsClient.setDeviceId(deviceInterface.getId());
-                        result.success(deviceInterface,response);
+                        result.success(deviceInterface, response);
                     }
 
                     @Override
@@ -396,7 +397,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void getAllMacros(WebServiceCallback<Pair<Boolean, List<MacroInterface>>> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAllMacros(
                 loggedUser.getEmail(),
                 convertCallback(result));
@@ -405,16 +406,16 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void getAvailableActions(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAvailableActions(
                 device.getId(),
                 convertCallback(result));
     }
 
     @Override
-    public void setAvailableActions(DeviceInterface device, List<MacroComponent> actions, WebServiceCallback<String> result) {
+    public void setAvailableActions(DeviceInterface device, List<MacroComponent> actions, WebServiceCallback<ComunicationInfo> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.setAvailableActions(
                 device.getId(),
                 actions,
@@ -424,16 +425,16 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     @Override
     public void getAvailableTriggers(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAvailableTriggers(
                 device.getId(),
                 convertCallback(result));
     }
 
     @Override
-    public void setAvailableTriggers(DeviceInterface device, List<MacroComponent> triggers, WebServiceCallback<String> result) {
+    public void setAvailableTriggers(DeviceInterface device, List<MacroComponent> triggers, WebServiceCallback<ComunicationInfo> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.setAvailableTriggers(
                 device.getId(),
                 triggers,
@@ -441,9 +442,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void continueMacroOnDevice(DeviceInterface fromDevice, DeviceInterface toDevice, RemoteExecutionDescriptor red, WebServiceCallback<String> result) {
+    public void continueMacroOnDevice(DeviceInterface fromDevice, DeviceInterface toDevice, RemoteExecutionDescriptor red, WebServiceCallback<ComunicationInfo> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.continueMacroOnDevice(
                 fromDevice.getId(),
                 toDevice.getId(),
@@ -457,9 +458,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void logout(){
-        if(wsClient == null) return;
-        if(wsClient.isOpen())
+    public void logout() {
+        if (wsClient == null) return;
+        if (wsClient.isOpen())
             wsClient.closeConnection();
         publicKey = null;
         privateKey = null;
@@ -476,6 +477,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     public interface LoginStatusListener {
         public void onLogIn(UserInterface user);
+
         public void onLogOut();
     }
 }

@@ -5,6 +5,7 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
@@ -123,7 +124,7 @@ public interface SinapsiWebServiceFacade {
      */
     public void setAvailableActions(DeviceInterface device,
                                     List<MacroComponent> actions,
-                                    WebServiceCallback<String> result);
+                                    WebServiceCallback<ComunicationInfo> result);
 
     /**
      * Gets the availability of triggers on the specified device
@@ -144,7 +145,7 @@ public interface SinapsiWebServiceFacade {
      */
     public void setAvailableTriggers(DeviceInterface device,
                                      List<MacroComponent> triggers,
-                                     WebServiceCallback<String> result);
+                                     WebServiceCallback<ComunicationInfo> result);
 
     /**
      * Asks the server to continued the specified macro on a remote device
@@ -158,7 +159,7 @@ public interface SinapsiWebServiceFacade {
     public void continueMacroOnDevice(DeviceInterface fromDevice,
                                       DeviceInterface toDevice,
                                       RemoteExecutionDescriptor red,
-                                      WebServiceCallback<String> result);
+                                      WebServiceCallback<ComunicationInfo> result);
 
 
     /**
