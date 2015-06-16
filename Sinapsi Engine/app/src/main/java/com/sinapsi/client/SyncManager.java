@@ -22,9 +22,11 @@ import java.util.List;
  */
 public class SyncManager {
 
-    public interface MacroSyncCallback{
+    public interface MacroSyncCallback {
         public void onSuccess(int pushed, int pulled, int noChanged);
+
         public void onConflicts(List<MacroSyncConflict> conflicts);
+
         public void onFailure(Throwable error);
     }
 
@@ -51,10 +53,10 @@ public class SyncManager {
      *
      * @param macro the macro to be inserted/updated
      */
-    public void addOrUpdateMacro(MacroInterface macro){
-        if(currentDb.addOrUpdateMacro(macro)){
+    public void addOrUpdateMacro(MacroInterface macro) {
+        if (currentDb.addOrUpdateMacro(macro)) {
             diffDb.macroAdded(macro);
-        }else{
+        } else {
             diffDb.macroUpdated(macro);
         }
     }
@@ -65,7 +67,7 @@ public class SyncManager {
      *
      * @return a list of macros
      */
-    public List<MacroInterface> getAllMacros(){
+    public List<MacroInterface> getAllMacros() {
         return currentDb.getAllMacros();
     }
 
@@ -74,7 +76,7 @@ public class SyncManager {
      *
      * @param id the macro id
      */
-    public void removeMacro(int id){
+    public void removeMacro(int id) {
         currentDb.removeMacro(id);
         diffDb.macroRemoved(id);
     }
@@ -82,27 +84,27 @@ public class SyncManager {
     /**
      * Deletes all the rows from all the tables in the DBs.
      */
-    public void clearAll(){
+    public void clearAll() {
         currentDb.clearDB();
         lastSyncDb.clearDB();
         diffDb.clearDB();
     }
 
-    public void sync(final MacroSyncCallback callback){
+    public void sync(final MacroSyncCallback callback) {
         webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<Pair<Boolean, List<MacroInterface>>>() {
             @Override
             public void success(Pair<Boolean, List<MacroInterface>> result, Object response) {
                 List<MacroInterface> serverMacros = result.getSecond();
                 if (result.getFirst()) {
-                    if(diffDb.getAllChanges().isEmpty()){
+                    if (diffDb.getAllChanges().isEmpty()) {
                         clearAll();
-                        for(MacroInterface mi :serverMacros){
+                        for (MacroInterface mi : serverMacros) {
                             currentDb.addOrUpdateMacro(mi);
                             lastSyncDb.addOrUpdateMacro(mi);
                             callback.onSuccess(0, 0, 0); //TODO: real counters
                             return;
                         }
-                    }else{
+                    } else {
                         //checks all the differences between the macro collection in the server
                         //  and the macros that were in the last sync
                         MemoryDiffDBManager diffServer_OldCopy = new MemoryDiffDBManager();
@@ -141,7 +143,7 @@ public class SyncManager {
                         int pushedCount = 0;
                         Collections.sort(toBePushed);
                         for (MacroChange macroChange : toBePushed) {
-                            switch (macroChange.getChangeType()){
+                            switch (macroChange.getChangeType()) {
                                 case ADDED:
                                 case EDITED:
                                     //TODO: push
@@ -207,22 +209,24 @@ public class SyncManager {
         });
     }
 
-    public boolean areMacrosEqual(MacroInterface m1, MacroInterface m2){
-        if(m1.getId() != m2.getId()) return false;
-        if(!m1.getName().equals(m2.getName())) return false;
-        if(!m1.getIconName().equals(m2.getIconName())) return false;
-        if(!m1.getMacroColor().equals(m2.getMacroColor())) return false;
-        if(!m1.getExecutionFailurePolicy().equals(m2.getExecutionFailurePolicy())) return false;
-        if(!m1.getTrigger().getName().equals(m2.getTrigger().getName())) return false;
-        if(!m1.getTrigger().getActualParameters().equals(m2.getTrigger().getActualParameters())) return false;
-        if(m1.getTrigger().getExecutionDevice().getId() != m2.getTrigger().getExecutionDevice().getId()) return false;
-        if(m1.getActions().size() != m2.getActions().size()) return false;
-        for(int i=0; i < m1.getActions().size(); i++){
+    public boolean areMacrosEqual(MacroInterface m1, MacroInterface m2) {
+        if (m1.getId() != m2.getId()) return false;
+        if (!m1.getName().equals(m2.getName())) return false;
+        if (!m1.getIconName().equals(m2.getIconName())) return false;
+        if (!m1.getMacroColor().equals(m2.getMacroColor())) return false;
+        if (!m1.getExecutionFailurePolicy().equals(m2.getExecutionFailurePolicy())) return false;
+        if (!m1.getTrigger().getName().equals(m2.getTrigger().getName())) return false;
+        if (!m1.getTrigger().getActualParameters().equals(m2.getTrigger().getActualParameters()))
+            return false;
+        if (m1.getTrigger().getExecutionDevice().getId() != m2.getTrigger().getExecutionDevice().getId())
+            return false;
+        if (m1.getActions().size() != m2.getActions().size()) return false;
+        for (int i = 0; i < m1.getActions().size(); i++) {
             Action a1 = m1.getActions().get(i);
             Action a2 = m2.getActions().get(i);
-            if(a1.getExecutionDevice() != a2.getExecutionDevice()) return false;
-            if(!a1.getActualParameters().equals(a2.getActualParameters())) return false;
-            if(!a1.getName().equals(a2.getName())) return false;
+            if (a1.getExecutionDevice() != a2.getExecutionDevice()) return false;
+            if (!a1.getActualParameters().equals(a2.getActualParameters())) return false;
+            if (!a1.getName().equals(a2.getName())) return false;
         }
         return true;
     }
@@ -231,11 +235,11 @@ public class SyncManager {
         return currentDb.getMinMacroId();
     }
 
-    private Triplet<Pair<List<MacroChange>,List<MacroChange>>,List<MacroSyncConflict>, Integer>
+    private Triplet<Pair<List<MacroChange>, List<MacroChange>>, List<MacroSyncConflict>, Integer>
     analyzeDiffs(List<MacroInterface> localDBMacros,
                  List<MacroInterface> serverMacros,
                  DiffDBManager serverChanges,
-                 DiffDBManager clientChanges){
+                 DiffDBManager clientChanges) {
         List<MacroSyncConflict> conflicts = new ArrayList<>();
         List<MacroChange> toBePulled = new ArrayList<>();
         List<MacroChange> toBePushed = new ArrayList<>();
@@ -243,21 +247,21 @@ public class SyncManager {
 
         //get all the IDs of the interested macros, both on server and client,
         // and add them in a no-duplicate list
-        for(MacroInterface m: localDBMacros){
+        for (MacroInterface m : localDBMacros) {
             allInterestedMacroIDs.add(m.getId());
         }
-        for(MacroInterface m: serverMacros){
-            if(!allInterestedMacroIDs.contains(m.getId()))
+        for (MacroInterface m : serverMacros) {
+            if (!allInterestedMacroIDs.contains(m.getId()))
                 allInterestedMacroIDs.add(m.getId());
         }
         int noChangesCount = 0;
         //now extract eventual changes for every macro
-        for(Integer i: allInterestedMacroIDs){
+        for (Integer i : allInterestedMacroIDs) {
             List<MacroChange> serverMacroChanges = serverChanges.getChangesForMacro(i);
             List<MacroChange> localMacroChanges = clientChanges.getChangesForMacro(i);
 
             boolean localCheck;
-            if(!localMacroChanges.isEmpty()) {
+            if (!localMacroChanges.isEmpty()) {
                 if (localMacroChanges.get(0).getChangeType() == MacroChange.ChangeTypes.ADDED &&
                         localMacroChanges.get(localMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.REMOVED) {
                     //if a macro has been added and at the end deleted, ignore
@@ -265,36 +269,59 @@ public class SyncManager {
                 } else {
                     localCheck = true;
                 }
-            }else{
+            } else {
                 localCheck = false;
             }
 
             boolean serverCheck = !serverMacroChanges.isEmpty();
 
-            if(serverCheck && !localCheck){
+            if (serverCheck && !localCheck) {
                 //the interested macro has relevant changes only on the server (= no conflicts)
                 //there are changes to be pulled
                 toBePulled.addAll(serverMacroChanges);
-            } else if (!serverCheck && localCheck){
+            } else if (!serverCheck && localCheck) {
                 //the interested macro has relevant changes only on the client (= no conflicts)
                 //there are changes to be pushed
                 toBePushed.addAll(localMacroChanges);
             } else //noinspection ConstantConditions
-                if (serverCheck && localCheck){
-                //the interested macro has relevant changes both on the server and the client
-                //there are conflicts in changes
-                MacroInterface serverMacro = serverMacros.get(i);
-                MacroInterface localMacro = localDBMacros.get(i);
+                if (serverCheck && localCheck) {
+                    //the interested macro has relevant changes both on the server and the client
+                    //there are conflicts in changes
 
-                conflicts.add(new MacroSyncConflict(
-                        serverMacro,
-                        localMacro,
-                        serverMacroChanges,
-                        localMacroChanges));
-            } else {
-                //no changes on this macro (= no conflicts)
-                ++noChangesCount;
-            }
+                    //some conflicts are solved automatically
+                    if (serverMacroChanges.get(serverMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.REMOVED &&
+                            localMacroChanges.get(localMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.REMOVED) {
+                        // if the macro has been deleted both on client and server, ignore.
+                        ++noChangesCount;
+                        continue;
+                    } else if (serverMacroChanges.get(serverMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.EDITED &&
+                            localMacroChanges.get(localMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.EDITED) {
+                        if (areMacrosEqual(getMacroFromList(serverMacros, i), getMacroFromList(localDBMacros, i))) {
+                            /* if the macro has been edited both on client and server, and
+                           the two copies of the macro are equal, ignore*/
+                            ++noChangesCount;
+                            continue;
+                        }
+
+                    }
+
+
+                    //----: Conflicts that can't be solved: 1) edit on A and delete on B
+                    //----:    2) edit on A and edit on B but macros are not longer the same
+
+                    MacroInterface serverMacro = serverMacros.get(i);
+                    MacroInterface localMacro = localDBMacros.get(i);
+
+                    conflicts.add(new MacroSyncConflict(
+                            serverMacro,
+                            localMacro,
+                            serverMacroChanges,
+                            localMacroChanges));
+
+                } else {
+                    //no changes on this macro (= no conflicts)
+                    ++noChangesCount;
+                }
 
         }
 
@@ -302,9 +329,9 @@ public class SyncManager {
 
     }
 
-    private static MacroInterface getMacroFromList(List<MacroInterface> list, int id){
-        for(MacroInterface m: list){
-            if(m.getId() == id) return m;
+    private static MacroInterface getMacroFromList(List<MacroInterface> list, int id) {
+        for (MacroInterface m : list) {
+            if (m.getId() == id) return m;
         }
         return null;
     }

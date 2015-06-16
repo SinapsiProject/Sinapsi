@@ -16,6 +16,7 @@ import com.sinapsi.model.impl.FactoryModel;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * LocalDBManager implementation for Android
  */
