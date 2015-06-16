@@ -386,6 +386,13 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 syncAndLoadMacros();
             }
             break;
+            case SinapsiMessageTypes.NEW_CONNECTION:{
+
+            }
+            break;
+            case SinapsiMessageTypes.CONNECTION_LOST:{
+
+            }
         }
     }
 

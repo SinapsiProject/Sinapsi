@@ -7,6 +7,7 @@ import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.model.impl.Device;
+import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
 
@@ -18,9 +19,6 @@ import java.util.List;
  * Platform independent interface, containing a collection of web methods.
  */
 public interface SinapsiWebServiceFacade {
-
-
-
 
 
     /**
@@ -154,13 +152,24 @@ public interface SinapsiWebServiceFacade {
      * @param toDevice   the device on which the macro will continue
      * @param red        a descriptor containing infos about the execution that needs
      *                   to be continued
-     * @param result     a string containing infos on the operation result
+     * @param result     call Bach
      */
     public void continueMacroOnDevice(DeviceInterface fromDevice,
                                       DeviceInterface toDevice,
                                       RemoteExecutionDescriptor red,
                                       WebServiceCallback<ComunicationInfo> result);
 
+
+    /**
+     * Sends a list of operation of changes to be pushed to the server
+     *
+     * @param device   this device
+     * @param changes  the list of changes
+     * @param callback a list of pairs of SyncOperation done by the server and the ids of the macro
+     */
+    public void pushChanges(DeviceInterface device,
+                            List<Pair<SyncOperation, MacroInterface>> changes,
+                            WebServiceCallback<List<Pair<SyncOperation, Integer>>> callback);
 
     /**
      * Makes a logout from the server. The client should delete

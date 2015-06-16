@@ -143,20 +143,12 @@ public class SyncManager {
                         List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
                         int pushedCount = 0;
                         Collections.sort(toBePushed);
-                        for (MacroChange macroChange : toBePushed) {
-                            switch (macroChange.getChangeType()) {
-                                case ADDED:
-                                case EDITED:
-                                    //TODO: push
-                                    break;
-                                case REMOVED:
-                                    //TODO: push
-                                    break;
-                            }
-                            //TODO: push changes all together
-                            //TODO: increment pushedCount on success
 
-                        }
+
+                        //TODO: push changes all together
+                        //TODO: increment pushedCount on success
+
+
 
                         MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
 
