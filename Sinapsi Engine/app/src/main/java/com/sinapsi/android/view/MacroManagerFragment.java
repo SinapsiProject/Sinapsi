@@ -268,7 +268,10 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                         getResources().getColor(R.color.sinapsi_blue_dark)) {
                     @Override
                     public void onDo(View v, Object o) {
-                        //TODO: start editor passing the macro
+                        Lol.d(this, "edit macro clicked");
+                        //TODO: return temp parameter mechanism
+                        Intent i = generateParameterizedIntent(EditorActivity.class, elem);
+                        startActivity(i);
                         sl.close();
                     }
                 });

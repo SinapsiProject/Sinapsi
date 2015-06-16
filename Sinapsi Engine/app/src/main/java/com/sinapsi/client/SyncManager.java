@@ -165,7 +165,7 @@ public class SyncManager {
                             callback.onConflicts(conflicts, new ConflictResolutionCallback() {
                                 @Override
                                 public void onConflictsResolved(final List<MacroChange> toBePushedConflicts, final List<MacroChange> toBePulledConflicts) {
-                                    
+
                                     List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
                                     final List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
                                     final int[] pushedAndPulledCounters = new int[]{0, 0};
