@@ -73,16 +73,7 @@ public class WebServiceContexListener implements ServletContextListener {
         deviceDbManager = new DeviceDBManager(db);
         engine = new WebServiceEngine();
                 
-        // add object to the contex 
-        context.setAttribute("engine", engine);
-        context.setAttribute("db", db);
-        context.setAttribute("users_db", userDbManager);
-        context.setAttribute("keys_db", keysDbManager);
-        context.setAttribute("engines_db", engineDbManager);
-        context.setAttribute("devices_db", deviceDbManager);  
-        context.setAttribute("wsserver", wsserver);      
-        
-        // start  web socket server thread
+       // start  web socket server thread
         try {
             wsserver = new Server(8887);
             
@@ -102,6 +93,15 @@ public class WebServiceContexListener implements ServletContextListener {
             engine.initEngines(userDbManager.getUsers());
         } catch (SQLException e1) {
             e1.printStackTrace();
-        }          
+        }  
+        
+        // add object to the contex 
+        context.setAttribute("engine", engine);
+        context.setAttribute("db", db);
+        context.setAttribute("users_db", userDbManager);
+        context.setAttribute("keys_db", keysDbManager);
+        context.setAttribute("engines_db", engineDbManager);
+        context.setAttribute("devices_db", deviceDbManager);  
+        context.setAttribute("wsserver", wsserver);  
     }
 }
