@@ -1,5 +1,7 @@
 package com.sinapsi.client;
 
+import android.support.annotation.Nullable;
+
 import com.sinapsi.client.persistence.DiffDBManager;
 import com.sinapsi.client.persistence.LocalDBManager;
 import com.sinapsi.client.persistence.MemoryDiffDBManager;
@@ -117,6 +119,7 @@ public class SyncManager {
                 final List<MacroInterface> serverMacros = result.getSecond();
                 if (result.getFirst()) {
                     if (diffDb.getAllChanges().isEmpty()) {
+                        //only the server have new data, so just clear local db and pull everything
                         clearAll();
                         for (MacroInterface mi : serverMacros) {
                             currentDb.addOrUpdateMacro(mi);
@@ -228,7 +231,12 @@ public class SyncManager {
                         }
                     } else {
                         //only the client has updated data
-                        //TODO: just push changes
+                        List<MacroChange> toBePushed = diffDb.getAllChanges();
+                        final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
+                        webService.pushChanges(
+                                device,
+                                convertChangesToPushSyncOps(diffDb.getAllChanges(),currentDb),
+                                new PushAndPullWebServiceCallBack(callback, pushtmp, null, null, new int[]{0,0}, null, 0));
                     }
                 }
             }
@@ -419,8 +427,8 @@ public class SyncManager {
         public PushAndPullWebServiceCallBack(
                 MacroSyncCallback callback,
                 List<Pair<SyncOperation, MacroInterface>> pushtmp,
-                List<MacroChange> toBePulled,
-                List<MacroInterface> serverMacros,
+                @Nullable List<MacroChange> toBePulled,
+                @Nullable List<MacroInterface> serverMacros,
                 int[] pushedAndPulledCounters,
                 Integer noChangesCount,
                 Integer conflictsCount) {
@@ -432,6 +440,8 @@ public class SyncManager {
             this.noChangesCount = noChangesCount;
             this.conflictsCount = conflictsCount;
         }
+
+        //TODO: optimize toBePushed, in order to send max 1 change for every macro
 
         @Override
         public void success(List<Pair<SyncOperation, Integer>> pushResult, Object response) {
@@ -454,22 +464,24 @@ public class SyncManager {
                     ++pushedAndPulledCounters[0];
                 }
 
-                //HINT: take advantage of parallelism (move the pull just after the push call),
-                // so the service and the client can work at the same time
-                Collections.sort(toBePulled);
-                for (MacroChange macroChange : toBePulled) {
-                    //saves data from the server in the db
-                    switch (macroChange.getChangeType()) {
-                        case ADDED:
-                        case EDITED:
-                            tempDB.addOrUpdateMacro(getMacroFromList(serverMacros, macroChange.getId()));
-                            break;
-                        case REMOVED:
-                            tempDB.removeMacro(macroChange.getId());
-                            break;
+                if(toBePulled != null) {
+                    //HINT: take advantage of parallelism (move the pull just after the push call),
+                    // so the service and the client can work at the same time
+                    Collections.sort(toBePulled);
+                    for (MacroChange macroChange : toBePulled) {
+                        //saves data from the server in the db
+                        switch (macroChange.getChangeType()) {
+                            case ADDED:
+                            case EDITED:
+                                tempDB.addOrUpdateMacro(getMacroFromList(serverMacros, macroChange.getId()));
+                                break;
+                            case REMOVED:
+                                tempDB.removeMacro(macroChange.getId());
+                                break;
+                        }
+                        //increments pull counter
+                        ++pushedAndPulledCounters[1];
                     }
-                    //increments pull counter
-                    ++pushedAndPulledCounters[1];
                 }
 
                 commit(tempDB);
