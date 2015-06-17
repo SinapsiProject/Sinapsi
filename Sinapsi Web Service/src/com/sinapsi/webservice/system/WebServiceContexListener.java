@@ -2,13 +2,14 @@ package com.sinapsi.webservice.system;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.SQLException;
-
+import java.util.Enumeration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-
 import com.sinapsi.webservice.db.DatabaseController;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
@@ -35,7 +36,19 @@ public class WebServiceContexListener implements ServletContextListener {
    
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
-        // TODO Auto-generated method stub
+
+        
+        // This manually deregisters JDBC driver, which prevents Tomcat 7 from complaining about memory leaks wrto this class
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            Driver driver = drivers.nextElement();
+            try {
+                DriverManager.deregisterDriver(driver);
+                System.out.println(String.format("deregistering jdbc driver: %s", driver));
+            } catch (SQLException e) {
+                System.out.println(String.format("Error deregistering driver %s", driver));
+            }
+        }
     }
 
     @Override
