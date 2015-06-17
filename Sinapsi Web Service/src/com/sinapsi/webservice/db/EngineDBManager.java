@@ -330,7 +330,7 @@ public class EngineDBManager {
 
         try {
             c = db.connect();
-            c.setAutoCommit(false);
+           // c.setAutoCommit(false);
 
             for (int i = 0; i < triggers.size(); ++i) {
                 s = null;
@@ -348,11 +348,11 @@ public class EngineDBManager {
             }
 
         } catch (SQLException e) {
-            c.rollback();
+           // c.rollback();
             db.disconnect(c, s, r);
             throw e;
         }
-        c.commit();
+       // c.commit();
         db.disconnect(c, s);
     }
 
@@ -370,7 +370,7 @@ public class EngineDBManager {
 
         try {
             c = db.connect();
-            c.setAutoCommit(false);
+           // c.setAutoCommit(false);
             
             for (int i = 0; i < actions.size(); ++i) {
                 s = null;
@@ -388,11 +388,11 @@ public class EngineDBManager {
             }
 
         } catch (SQLException e) {
-            c.rollback();
+           // c.rollback();
             db.disconnect(c, s, r);
             throw e;
         }
-        c.commit();
+       // c.commit();
         db.disconnect(c, s);
     }
 
@@ -408,7 +408,7 @@ public class EngineDBManager {
         ResultSet r = null;
         List<MacroInterface> macros = new ArrayList<MacroInterface>();
         DeviceDBManager deviceDb = new DeviceDBManager();
-
+        
         try {
             c = db.connect();
             s = c.prepareStatement("SELECT * FROM macro WHERE macro.iduser = ?");
@@ -421,8 +421,60 @@ public class EngineDBManager {
                 
                 // get the engine from the contex listener
                 WebServiceEngine engine = (WebServiceEngine) http.getServletContext().getAttribute("engine");
+                
+               
                 // get the component factory of the user
                 ComponentFactory componentFactory = engine.getComponentFactoryForUser(id);
+                // create a trigger from the information saved in the db
+                Trigger trigger = componentFactory.newTrigger(getTrigger(r.getInt("idtrigger")), 
+                                                              r.getString("triggerjson"), 
+                                                              macro, 
+                                                              deviceDb.getDevice(r.getInt("iddevice")));
+                // set the trigger
+                macro.setTrigger(trigger);
+                
+                // create a action/actions (of macro:id) from the information saved in the db
+                for(Action actionI :  getActions(r.getInt("id"))) 
+                    macro.addAction(actionI);                  
+                
+                macro.setIconName(r.getString("icon"));
+                macro.setValid(r.getInt("incomplete") == 0 ? true : false);
+                macro.setMacroColor(r.getString("color"));
+                macro.setExecutionFailurePolicy(r.getString("errorpolicy"));
+                macros.add(macro);
+            }
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return macros;
+    }
+    
+    /**
+     * Return all macro of the user id
+     * @param id id of the user
+     * @return
+     * @throws SQLException 
+     */
+    public List<MacroInterface> getUserMacro(int id, ComponentFactory componentFactory) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<MacroInterface> macros = new ArrayList<MacroInterface>();
+        DeviceDBManager deviceDb = new DeviceDBManager();
+        
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT * FROM macro WHERE macro.iduser = ?");
+            s.setInt(1, id);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                // create a new macro from the information saved in the db
+                MacroInterface macro = db.factory.newMacro(r.getString("name"), r.getInt("id"));
+                          
                 // create a trigger from the information saved in the db
                 Trigger trigger = componentFactory.newTrigger(getTrigger(r.getInt("idtrigger")), 
                                                               r.getString("triggerjson"), 
@@ -544,7 +596,7 @@ public class EngineDBManager {
         
         try {
             c = db.connect();
-            c.setAutoCommit(false);
+           // c.setAutoCommit(false);
             List<Action> actions = macro.getActions();
             int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion());   
             int idDevice =  macro.getTrigger().getExecutionDevice().getId();
@@ -586,11 +638,11 @@ public class EngineDBManager {
             } 
                        
         } catch(SQLException ex) {
-            c.rollback();
+           // c.rollback();
             db.disconnect(c, s, r);
         }
         
-        c.commit();
+       // c.commit();
         db.disconnect(c, s, r);
         return idMacro;
     }
@@ -607,7 +659,7 @@ public class EngineDBManager {
         
         try {
             c = db.connect();
-            c.setAutoCommit(false);
+         //   c.setAutoCommit(false);
             
             List<Action> actions = macro.getActions();
             int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion()); 
@@ -644,12 +696,12 @@ public class EngineDBManager {
                
         } catch(Exception e) {
             // in case of error, rollback the changes and disconnect
-            c.rollback();
+           // c.rollback();
             db.disconnect(c, s);
             throw e;
         }
         // in case of success, commit all changes in the db and disconnect
-        c.commit();
+      //  c.commit();
         db.disconnect(c, s);   
         return macro.getId();
     }   

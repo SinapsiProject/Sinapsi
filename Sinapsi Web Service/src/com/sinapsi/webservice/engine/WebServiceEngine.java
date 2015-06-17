@@ -60,6 +60,7 @@ public class WebServiceEngine {
             }
         });
     }
+    
 
     /**
      * Init engines map
@@ -68,10 +69,10 @@ public class WebServiceEngine {
     public void initEngines(List<UserInterface> users){
         for(UserInterface user: users) {
             MacroEngine macroEngine = loadEngine(user);
-            macroEngine.addMacros(loadSavedMacrosForUser(user));
-            macroEngine.startEngine();
             // add to the list of engines, the id of the current user, and a macroEngine
             engines.put(user.getId(), macroEngine);
+            macroEngine.addMacros(loadSavedMacrosForUser(user));
+            macroEngine.startEngine();  
         }
     }
     
@@ -164,7 +165,7 @@ public class WebServiceEngine {
     public List<MacroInterface> loadSavedMacrosForUser(UserInterface u) {
         List<MacroInterface> macrosOfuser = null;
         try {
-            macrosOfuser =  engineDb.getUserMacro(u.getId());
+            macrosOfuser =  engineDb.getUserMacro(u.getId(), getComponentFactoryForUser(u.getId()));
         } catch (SQLException e) {
             e.printStackTrace();
         }

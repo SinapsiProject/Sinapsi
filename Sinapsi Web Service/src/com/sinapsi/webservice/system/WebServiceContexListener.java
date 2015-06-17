@@ -1,16 +1,14 @@
 package com.sinapsi.webservice.system;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-
 import com.sinapsi.webservice.db.DatabaseController;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
@@ -18,7 +16,7 @@ import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.engine.WebServiceEngine;
 import com.sinapsi.webservice.engine.WebServiceLog;
-import com.sinapsi.webservice.websocket.WSServerThread;
+import com.sinapsi.webservice.websocket.Server;
 
 /**
  * Context Listener class.
@@ -34,8 +32,7 @@ public class WebServiceContexListener implements ServletContextListener {
     private KeysDBManager keysDbManager;
     private EngineDBManager engineDbManager;
     private DeviceDBManager deviceDbManager;
-    private Thread wsserverThread = null;
-    private WSServerThread wsserverRunnable = null;
+    private Server wsserver;
     private WebServiceLog sclog = new WebServiceLog(WebServiceLog.SERVLET_CONTEXT_FILE_OUT);
    
     @Override
@@ -43,13 +40,11 @@ public class WebServiceContexListener implements ServletContextListener {
         // stop the web socket thread
         try {
             sclog.log(sclog.getTime(), "Stopping web socket thread");
-            if (wsserverThread != null) {
-                wsserverRunnable.terminate();
-                wsserverThread.join();
-               
-                sclog.log(sclog.getTime(), "Thread successfully stopped.");
-            }
-        } catch (InterruptedException e) {
+            wsserver.stop();
+           
+            sclog.log(sclog.getTime(), "Thread successfully stopped.");
+            
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         
@@ -59,9 +54,9 @@ public class WebServiceContexListener implements ServletContextListener {
             Driver driver = drivers.nextElement();
             try {
                 DriverManager.deregisterDriver(driver);
-                sclog.log(sclog.getTime(),"Deregistering jdbc driver");
+                sclog.log(sclog.getTime(), "Deregistering jdbc driver");
             } catch (SQLException e) {
-                sclog.log(sclog.getTime(),"Error deregistering driver");
+                sclog.log(sclog.getTime(), "Error deregistering driver");
             }
         }
     }
@@ -72,42 +67,41 @@ public class WebServiceContexListener implements ServletContextListener {
         
         // create objects
         db = new DatabaseController();
-        engine = new WebServiceEngine();
         userDbManager = new UserDBManager(db);
         keysDbManager = new KeysDBManager(db);
         engineDbManager = new EngineDBManager(db);
         deviceDbManager = new DeviceDBManager(db);
+        engine = new WebServiceEngine();
                 
+        // add object to the contex 
+        context.setAttribute("engine", engine);
+        context.setAttribute("db", db);
+        context.setAttribute("users_db", userDbManager);
+        context.setAttribute("keys_db", keysDbManager);
+        context.setAttribute("engines_db", engineDbManager);
+        context.setAttribute("devices_db", deviceDbManager);  
+        context.setAttribute("wsserver", wsserver);      
+        
         // start  web socket server thread
         try {
-            wsserverRunnable = new WSServerThread(8887);
-            wsserverThread = new Thread(wsserverRunnable);
+            wsserver = new Server(8887);
             
             sclog.log(sclog.getTime(), "Starting websocket server thread");
-            wsserverThread.start();
+            wsserver.init();
             
             sclog.log(sclog.getTime(), "Background process successfully started.");
             
-        } catch (UnknownHostException e2) {
+        } catch (IOException | InterruptedException e2) {
             e2.printStackTrace();
         }
        
         
         // initialize Sinapsi engine
         try {
-            engine.addWSServer(wsserverRunnable.getServer());
+            engine.addWSServer(wsserver);
             engine.initEngines(userDbManager.getUsers());
         } catch (SQLException e1) {
             e1.printStackTrace();
-        }
-        
-        // add object to the contex 
-        context.setAttribute("db", db);
-        context.setAttribute("engine", engine); 
-        context.setAttribute("users_db", userDbManager);
-        context.setAttribute("keys_db", keysDbManager);
-        context.setAttribute("engines_db", engineDbManager);
-        context.setAttribute("devices_db", deviceDbManager);  
-        context.setAttribute("wsserver", wsserverRunnable.getServer());         
+        }          
     }
 }
