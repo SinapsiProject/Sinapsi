@@ -277,6 +277,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
             public void onSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
+                //TODO: delete all macros before adding all together again
                 engine.addMacros(loadSavedMacros());
             }
 
@@ -297,7 +298,9 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
             @Override
             public void onFailure(Throwable error) {
-                //TODO this could be a retrofit error: show to the user only if explicit
+                Lol.d(SinapsiBackgroundService.class, "Sync failed: " + error.getMessage());
+                error.printStackTrace();
+                //TODO: this could be a retrofit error: show to the user only if explicit
             }
         });
 

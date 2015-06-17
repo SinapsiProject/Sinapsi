@@ -3,18 +3,22 @@ package com.sinapsi.android.background;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.sinapsi.android.SinapsiAndroidApplication;
 import com.sinapsi.android.utils.TempParameterManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Activity extension to identify ActionBarActivities binded with SinapsiBackgroundService
  */
-public class SinapsiActionBarActivity extends ActionBarActivity implements ServiceConnectionListener {
+public class SinapsiActionBarActivity extends AppCompatActivity implements ServiceConnectionListener {
+
+
 
     private ServiceConnectionBridge bridge = new ServiceConnectionBridge(this);
 
@@ -27,10 +31,12 @@ public class SinapsiActionBarActivity extends ActionBarActivity implements Servi
 
     private TempParameterManager tempParameterManager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tempParameterManager = ((SinapsiAndroidApplication)getApplication()).getParameterManager();
+        //TODO: pull eventual caller tempParameters
     }
 
 
@@ -93,4 +99,34 @@ public class SinapsiActionBarActivity extends ActionBarActivity implements Servi
     public Object[] pullTempParameters(){
         return tempParameterManager.pullTempParameters(getIntent());
     }
+
+
+
+    public void returnActivity(Object... params){
+        setResult(0, tempParameterManager.newIntentForTempParameters(params));
+        finish();
+    }
+
+    public void startActivity(Class<?> target, Object... parameters){
+        startActivity(generateParameterizedIntent(target, parameters));
+    }
+
+    public void startActivity(Class<?> target, ActivityReturnCallback callback, Object... parameters){
+        startActivityForResult(
+                generateParameterizedIntent(target, parameters),
+                tempParameterManager.addReturnCallback(callback));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ActivityReturnCallback callback = tempParameterManager.pullReturnCallback(requestCode);
+        callback.onActivityReturn(tempParameterManager.pullTempParameters(data));
+
+    }
+
+    public interface ActivityReturnCallback{
+        public void onActivityReturn(Object... returnValues);
+    }
+
 }

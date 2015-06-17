@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.sinapsi.android.Lol;
+import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.WebServiceConnectionListener;
@@ -269,9 +270,18 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     @Override
                     public void onDo(View v, Object o) {
                         Lol.d(this, "edit macro clicked");
-                        //TODO: return temp parameter mechanism
-                        Intent i = generateParameterizedIntent(EditorActivity.class, elem);
-                        startActivity(i);
+                        startActivity(EditorActivity.class,
+                                new SinapsiActionBarActivity.ActivityReturnCallback() {
+                                    @Override
+                                    public void onActivityReturn(Object... returnValues) {
+                                       if(returnValues == null || !(returnValues[0] instanceof MacroInterface)){
+                                           //there is an error in return value mechanism: for now, let's crash
+                                           throw new RuntimeException("OnActivityReturn failed");
+                                       } else {
+                                           service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
+                                       }
+                                    }
+                                }, elem);
                         sl.close();
                     }
                 });
@@ -397,9 +407,19 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         FactoryModel factoryModel = new FactoryModel();
 
         MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId()-1);
-        //TODO: return temp parameter mechanism
-        Intent i = generateParameterizedIntent(EditorActivity.class, m);
-        startActivity(i);
+        startActivity(
+                EditorActivity.class,
+                new SinapsiActionBarActivity.ActivityReturnCallback() {
+                    @Override
+                    public void onActivityReturn(Object... returnValues) {
+                        if(returnValues == null || !(returnValues[0] instanceof MacroInterface)){
+                            //there is an error in return value mechanism: for now, let's crash
+                            throw new RuntimeException("OnActivityReturn failed");
+                        }else{
+                            service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
+                        }
+                    }
+                }, m);
     }
 
     @Override
