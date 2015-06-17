@@ -62,4 +62,10 @@ public interface LocalDBManager {
      * or null otherwise
      */
     public MacroInterface getMacroWithId(int id);
+
+    /**
+     * Deletes all the macros with negative id, which usually are new macros
+     * that are not synced with the server yet.
+     */
+    public void deleteMacrosWithNegativeId();
 }

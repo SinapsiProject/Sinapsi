@@ -193,7 +193,7 @@ public class SyncManager {
 
                                                     } else {
                                                         MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
-                                                        //TODO: delete all macros with negative id fromTempDB
+                                                        tempDB.deleteMacrosWithNegativeId();
                                                         for (int i = 0; i < pushResult.size(); ++i) {
                                                             if (pushResult.get(i).getFirst() == SyncOperation.ADD) {
                                                                 int newId = pushResult.get(i).getSecond();
@@ -204,7 +204,8 @@ public class SyncManager {
                                                             ++pushedAndPulledCounters[0];
                                                         }
 
-                                                        //HINT: take advantage of parallelism (move the pull just after the push call)
+                                                        //HINT: take advantage of parallelism (move the pull just after the push call),
+                                                        // so the service and the client can work at the same time
                                                         Collections.sort(toBePulled);
                                                         for (MacroChange macroChange : toBePulled) {
                                                             //saves data from the server in the db
@@ -236,10 +237,12 @@ public class SyncManager {
                                                 @Override
                                                 public void failure(Throwable error) {
                                                     callback.onFailure(error);
-                                                    //rollback (no changes on client,
-                                                    // server may have received data but
-                                                    // maybe the only the response caused
-                                                    // the error) todo: handle this case
+                                                    //rollback (no changes on client, and
+                                                    // very probably on server too, but
+                                                    // server may have received data and
+                                                    // updated its DB correctly, and
+                                                    // only the response caused the
+                                                    // error) todo: handle this case
                                                     return;
                                                 }
                                             }

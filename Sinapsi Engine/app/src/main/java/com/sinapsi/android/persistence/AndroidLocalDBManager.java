@@ -170,48 +170,54 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
         while (!c.isAfterLast()){
 
-            int id = c.getInt(0);
-            String name = c.getString(1);
-            String iconName = c.getString(2);
-            String iconColor = c.getString(3);
-            boolean valid = c.getInt(4) != 0;
-            String failurePolicy = c.getString(5);
-            boolean enabled = c.getInt(6) != 0;
-
-            int triggerDeviceId = c.getInt(7);
-            String triggerName = c.getString(8);
-            String triggerJSON = c.getString(9);
-
-            MacroInterface m = factoryModel.newMacro(name, id);
-            m.setIconName(iconName);
-            m.setMacroColor(iconColor);
-            m.setValid(valid);
-            m.setExecutionFailurePolicy(failurePolicy);
-            m.setEnabled(enabled);
-
-            Trigger t = componentFactory.newTrigger(
-                    triggerName,
-                    triggerJSON,
-                    m,
-                    factoryModel.newDevice(
-                            triggerDeviceId,
-                            "",
-                            "",
-                            "",
-                            null,
-                            -1));
-
-            m.setTrigger(t);
-
-            for(Action ac: getActionListForMacro(m.getId(), db)){
-                m.addAction(ac);
-            }
+            MacroInterface m = cursorToMacro(c, db);
 
             result.add(m);
         }
         c.close();
         localDBOpenHelper.close();
         return result;
+    }
+
+    private MacroInterface cursorToMacro(Cursor c, SQLiteDatabase db) {
+        int id = c.getInt(0);
+        String name = c.getString(1);
+        String iconName = c.getString(2);
+        String iconColor = c.getString(3);
+        boolean valid = c.getInt(4) != 0;
+        String failurePolicy = c.getString(5);
+        boolean enabled = c.getInt(6) != 0;
+
+        int triggerDeviceId = c.getInt(7);
+        String triggerName = c.getString(8);
+        String triggerJSON = c.getString(9);
+
+        MacroInterface m = factoryModel.newMacro(name, id);
+        m.setIconName(iconName);
+        m.setMacroColor(iconColor);
+        m.setValid(valid);
+        m.setExecutionFailurePolicy(failurePolicy);
+        m.setEnabled(enabled);
+
+        Trigger t = componentFactory.newTrigger(
+                triggerName,
+                triggerJSON,
+                m,
+                factoryModel.newDevice(
+                        triggerDeviceId,
+                        "",
+                        "",
+                        "",
+                        null,
+                        -1));
+
+        m.setTrigger(t);
+
+        for(Action ac: getActionListForMacro(m.getId(), db)){
+            m.addAction(ac);
+        }
+
+        return m;
     }
 
     @Override
@@ -258,8 +264,24 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     @Override
     public MacroInterface getMacroWithId(int id) {
-        //TODO: impl
-        return null;
+        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_MACROS +
+                " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
+        if(c == null || c.getCount() == 0)return null;
+        c.moveToFirst();
+        MacroInterface result = cursorToMacro(c,db);
+        localDBOpenHelper.close();
+        return result;
+    }
+
+    @Override
+    public void deleteMacrosWithNegativeId() {
+        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
+
+        db.rawQuery("DELETE FROM "+TABLE_MACROS+" WHERE "+COL_MACRO_ID+" < 0",null);
+        db.rawQuery("DELETE FROM "+TABLE_ACTION_LISTS+" WHERE "+COL_ACTIONLIST_MACRO_ID+" < 0",null);
+
+        localDBOpenHelper.close();
     }
 
     private List<Action> getActionListForMacro(int macroid, SQLiteDatabase db){

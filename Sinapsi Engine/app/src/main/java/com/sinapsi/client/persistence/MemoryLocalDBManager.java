@@ -80,6 +80,13 @@ public class MemoryLocalDBManager implements LocalDBManager{
         return macros.get(id);
     }
 
+    @Override
+    public void deleteMacrosWithNegativeId() {
+        for(Integer i:macros.keySet()){
+            if(i<0) macros.remove(i);
+        }
+    }
+
     public void saveToDb(LocalDBManager db, boolean clear){
         if(clear) db.clearDB();
         for (MacroInterface m :macros.values())
