@@ -167,7 +167,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                         return;
                     }
 
-                    handleRetrofitError(t);
+                    DialogUtils.handleRetrofitError(t, LoginActivity.this, false);
 
                 }
             });
@@ -189,7 +189,8 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                     DialogUtils.showOkDialog(
                             LoginActivity.this,
                             "Login Error",
-                            "There was an error while communicating with the server");
+                            "There was an error while communicating with the server",
+                            false);
                     return;
                 }
 
@@ -207,11 +208,12 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                     DialogUtils.showOkDialog(
                             LoginActivity.this,
                             "Login Error",
-                            re.getMessage());
+                            re.getMessage(),
+                            false);
                     return;
                 }
 
-                handleRetrofitError(error);
+                DialogUtils.handleRetrofitError(error, LoginActivity.this, false);
             }
         });
 
@@ -249,48 +251,17 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                             DialogUtils.showOkDialog(
                                     LoginActivity.this,
                                     "Device login error",
-                                    re.getMessage());
+                                    re.getMessage(),
+                                    false);
                             return;
                         }
-                        handleRetrofitError(error);
+                        DialogUtils.handleRetrofitError(error, LoginActivity.this, false);
                         showProgress(false);
                     }
                 });
     }
 
-    private void handleRetrofitError(Throwable t) {
-        RetrofitError error = (RetrofitError) t;
-        error.printStackTrace();
-        String errstring = "An error occurred while communicating with the server.\n";
 
-        String errtitle = "Error: " + error.getKind().toString();
-
-        ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-
-        switch (error.getKind()) {
-            case NETWORK:
-                errstring += "Network error";
-                break;
-            case CONVERSION:
-                errstring += "Conversion error";
-
-                break;
-            case HTTP:
-                errstring += "HTTP Error " + error.getResponse().getStatus();
-                break;
-            case UNEXPECTED:
-                errstring += "An unexpected error occurred";
-                break;
-        }
-
-        if (ni == null || !ni.isConnected())
-            errstring += "\nMissing internet connection.";
-        DialogUtils.showOkDialog(
-                LoginActivity.this,
-                errtitle,
-                errstring);
-    }
 
     private boolean isEmailValid(String email) {
         return email.contains("@");

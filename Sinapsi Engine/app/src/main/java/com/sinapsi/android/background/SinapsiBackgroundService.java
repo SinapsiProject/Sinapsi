@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import com.google.gson.Gson;
 import com.sinapsi.android.persistence.AndroidDiffDBManager;
 import com.sinapsi.android.persistence.AndroidLocalDBManager;
+import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.view.MainActivity;
 import com.sinapsi.android.web.AndroidBase64DecodingMethod;
 import com.sinapsi.android.web.AndroidBase64EncodingMethod;
@@ -77,6 +78,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit.RetrofitError;
 import retrofit.android.AndroidLog;
 
 /**
@@ -273,7 +275,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         return new SinapsiServiceBinder();
     }
 
-    public void syncAndLoadMacros(boolean explicit) {
+    public void syncAndLoadMacros(final boolean explicit) {
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
             public void onSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
@@ -300,7 +302,13 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             public void onFailure(Throwable error) {
                 Lol.d(SinapsiBackgroundService.class, "Sync failed: " + error.getMessage());
                 error.printStackTrace();
-                //TODO: this could be a retrofit error: show to the user only if explicit
+                if(explicit){
+                    if(!(error instanceof RetrofitError)){
+
+                    }else{
+                        DialogUtils.handleRetrofitError(error, SinapsiBackgroundService.this, true);
+                    }
+                }
             }
         });
 

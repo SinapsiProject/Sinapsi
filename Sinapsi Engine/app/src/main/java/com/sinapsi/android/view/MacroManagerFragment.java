@@ -242,6 +242,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                 getActivity(),
                                 context.getString(R.string.delete),
                                 String.format(context.getString(R.string.are_you_sure_delete_macro), elem.getName()),
+                                false,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
