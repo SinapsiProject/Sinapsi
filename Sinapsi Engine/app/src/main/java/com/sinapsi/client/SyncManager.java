@@ -159,20 +159,34 @@ public class SyncManager {
                         final Triplet<Pair<List<MacroChange>, List<MacroChange>>, List<MacroSyncConflict>, Integer> diffsAnalysisResults;
                         diffsAnalysisResults = analyzeDiffs(currentDb.getAllMacros(), serverMacros, diffServer_OldCopy, diffDb);
 
+                        final List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
+                        final List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
+                        final int[] pushedAndPulledCounters = new int[]{0, 0};
 
                         List<MacroSyncConflict> conflicts = diffsAnalysisResults.getSecond();
                         final Integer noChangesCount = diffsAnalysisResults.getThird();
                         if (conflicts.isEmpty()) {
                             //there are no conflicts,
-                            //TODO: proceed directly with push and pull
+                            //proceeds directly with push and pull
+                            Collections.sort(toBePushed);
+                            final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
+                            webService.pushChanges(
+                                    device,
+                                    pushtmp,
+                                    new PushAndPullWebServiceCallBack(
+                                            callback,
+                                            pushtmp,
+                                            toBePulled,
+                                            serverMacros,
+                                            pushedAndPulledCounters,
+                                            noChangesCount,
+                                            0)
+                            );
                         } else {
                             callback.onConflicts(conflicts, new ConflictResolutionCallback() {
                                 @Override
                                 public void onConflictsResolved(final List<MacroChange> toBePushedConflicts, final List<MacroChange> toBePulledConflicts) {
 
-                                    List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
-                                    final List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
-                                    final int[] pushedAndPulledCounters = new int[]{0, 0};
 
                                     toBePushed.addAll(toBePushedConflicts);
                                     toBePulled.addAll(toBePulledConflicts);
@@ -182,70 +196,14 @@ public class SyncManager {
                                     webService.pushChanges(
                                             device,
                                             pushtmp,
-                                            new SinapsiWebServiceFacade.WebServiceCallback<List<Pair<SyncOperation, Integer>>>() {
-                                                @Override
-                                                public void success(List<Pair<SyncOperation, Integer>> pushResult, Object response) {
-                                                    if (pushResult == null || (pushResult.size() == 1 && pushResult.get(0).isErrorOccured())) {
-                                                        System.out.println("SYNC: Error occurred during sync: " + pushResult.get(0).getErrorDescription());
-                                                        callback.onFailure(new SyncServerException(pushResult.get(0).getErrorDescription()));
-                                                        //rollback (no changes on both client and server)
-                                                        return;
-
-                                                    } else {
-                                                        MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
-                                                        tempDB.deleteMacrosWithNegativeId();
-                                                        for (int i = 0; i < pushResult.size(); ++i) {
-                                                            if (pushResult.get(i).getFirst() == SyncOperation.ADD) {
-                                                                int newId = pushResult.get(i).getSecond();
-                                                                MacroInterface mi = pushtmp.get(i).getSecond();
-                                                                mi.setId(newId);
-                                                                tempDB.addOrUpdateMacro(mi);
-                                                            }
-                                                            ++pushedAndPulledCounters[0];
-                                                        }
-
-                                                        //HINT: take advantage of parallelism (move the pull just after the push call),
-                                                        // so the service and the client can work at the same time
-                                                        Collections.sort(toBePulled);
-                                                        for (MacroChange macroChange : toBePulled) {
-                                                            //saves data from the server in the db
-                                                            switch (macroChange.getChangeType()) {
-                                                                case ADDED:
-                                                                case EDITED:
-                                                                    tempDB.addOrUpdateMacro(getMacroFromList(serverMacros, macroChange.getId()));
-                                                                    break;
-                                                                case REMOVED:
-                                                                    tempDB.removeMacro(macroChange.getId());
-                                                                    break;
-                                                            }
-                                                            //increments pull counter
-                                                            ++pushedAndPulledCounters[1];
-                                                        }
-
-                                                        commit(tempDB);
-
-                                                        callback.onSuccess(
-                                                                pushedAndPulledCounters[0],
-                                                                pushedAndPulledCounters[1],
-                                                                noChangesCount,
-                                                                toBePushedConflicts.size() + toBePulledConflicts.size());
-
-                                                    }
-
-                                                }
-
-                                                @Override
-                                                public void failure(Throwable error) {
-                                                    callback.onFailure(error);
-                                                    //rollback (no changes on client, and
-                                                    // very probably on server too, but
-                                                    // server may have received data and
-                                                    // updated its DB correctly, and
-                                                    // only the response caused the
-                                                    // error) todo: handle this case
-                                                    return;
-                                                }
-                                            }
+                                            new PushAndPullWebServiceCallBack(
+                                                    callback,
+                                                    pushtmp,
+                                                    toBePulled,
+                                                    serverMacros,
+                                                    pushedAndPulledCounters,
+                                                    noChangesCount,
+                                                    toBePushedConflicts.size() + toBePulledConflicts.size())
                                     );
                                 }
 
@@ -448,5 +406,94 @@ public class SyncManager {
     }
 
 
+    private class PushAndPullWebServiceCallBack implements SinapsiWebServiceFacade.WebServiceCallback<List<Pair<SyncOperation, Integer>>> {
+        private final MacroSyncCallback callback;
+        private final List<Pair<SyncOperation, MacroInterface>> pushtmp;
+        private final List<MacroChange> toBePulled;
+        private final List<MacroInterface> serverMacros;
+        private final int[] pushedAndPulledCounters;
+        private final Integer noChangesCount;
+        private final Integer conflictsCount;
 
+
+        public PushAndPullWebServiceCallBack(
+                MacroSyncCallback callback,
+                List<Pair<SyncOperation, MacroInterface>> pushtmp,
+                List<MacroChange> toBePulled,
+                List<MacroInterface> serverMacros,
+                int[] pushedAndPulledCounters,
+                Integer noChangesCount,
+                Integer conflictsCount) {
+            this.callback = callback;
+            this.pushtmp = pushtmp;
+            this.pushedAndPulledCounters = pushedAndPulledCounters;
+            this.toBePulled = toBePulled;
+            this.serverMacros = serverMacros;
+            this.noChangesCount = noChangesCount;
+            this.conflictsCount = conflictsCount;
+        }
+
+        @Override
+        public void success(List<Pair<SyncOperation, Integer>> pushResult, Object response) {
+            if (pushResult == null || (pushResult.size() == 1 && pushResult.get(0).isErrorOccured())) {
+                System.out.println("SYNC: Error occurred during sync: " + pushResult.get(0).getErrorDescription());
+                callback.onFailure(new SyncServerException(pushResult.get(0).getErrorDescription()));
+                //rollback (no changes on both client and server)
+                return;
+
+            } else {
+                MemoryLocalDBManager tempDB = new MemoryLocalDBManager(currentDb);
+                tempDB.deleteMacrosWithNegativeId();
+                for (int i = 0; i < pushResult.size(); ++i) {
+                    if (pushResult.get(i).getFirst() == SyncOperation.ADD) {
+                        int newId = pushResult.get(i).getSecond();
+                        MacroInterface mi = pushtmp.get(i).getSecond();
+                        mi.setId(newId);
+                        tempDB.addOrUpdateMacro(mi);
+                    }
+                    ++pushedAndPulledCounters[0];
+                }
+
+                //HINT: take advantage of parallelism (move the pull just after the push call),
+                // so the service and the client can work at the same time
+                Collections.sort(toBePulled);
+                for (MacroChange macroChange : toBePulled) {
+                    //saves data from the server in the db
+                    switch (macroChange.getChangeType()) {
+                        case ADDED:
+                        case EDITED:
+                            tempDB.addOrUpdateMacro(getMacroFromList(serverMacros, macroChange.getId()));
+                            break;
+                        case REMOVED:
+                            tempDB.removeMacro(macroChange.getId());
+                            break;
+                    }
+                    //increments pull counter
+                    ++pushedAndPulledCounters[1];
+                }
+
+                commit(tempDB);
+
+                callback.onSuccess(
+                        pushedAndPulledCounters[0],
+                        pushedAndPulledCounters[1],
+                        noChangesCount,
+                        conflictsCount);
+
+            }
+
+        }
+
+        @Override
+        public void failure(Throwable error) {
+            callback.onFailure(error);
+            //rollback (no changes on client, and
+            // very probably on server too, but
+            // server may have received data and
+            // updated its DB correctly, and
+            // only the response caused the
+            // error) todo: handle this case
+            return;
+        }
+    }
 }
