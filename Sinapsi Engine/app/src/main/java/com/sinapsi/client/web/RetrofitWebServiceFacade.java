@@ -1,5 +1,7 @@
 package com.sinapsi.client.web;
 
+import android.util.Base64;
+
 import com.bgp.codec.DecodingMethod;
 import com.bgp.codec.EncodingMethod;
 import com.bgp.encryption.Encrypt;
@@ -8,6 +10,9 @@ import com.bgp.keymanager.PublicKeyManager;
 import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.sinapsi.android.Lol;
+import com.sinapsi.android.web.AndroidBase64DecodingMethod;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.client.web.gson.DeviceInterfaceInstanceCreator;
 import com.sinapsi.client.websocket.WSClient;
@@ -26,6 +31,7 @@ import com.sinapsi.wsproto.WebSocketEventHandler;
 
 import org.java_websocket.handshake.ServerHandshake;
 
+import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -100,6 +106,15 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 .registerTypeAdapter(
                         DeviceInterface.class,
                         new DeviceInterfaceInstanceCreator(factoryModel))
+                .registerTypeAdapter(
+                        UserInterface.class,
+                        new InstanceCreator<UserInterface>() {
+                            @Override
+                            public UserInterface createInstance(Type type) {
+                                return factoryModel.newUser(-1, null, null);
+                            }
+                        }
+                )
                 .create();
 
 
@@ -142,9 +157,12 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
             loginRestAdapter.setLogLevel(RestAdapter.LogLevel.NONE);
         }
 
-        cryptedRetrofit = cryptedRestAdapter.create(RetrofitInterface.class);
-
         uncryptedRetrofit = uncryptedRestAdapter.create(RetrofitInterface.class);
+
+        if(AppConsts.DEBUG_ENCRYPTED_RETROFIT)
+            cryptedRetrofit = cryptedRestAdapter.create(RetrofitInterface.class);
+        else
+            cryptedRetrofit = uncryptedRetrofit;
 
         loginRetrofit = loginRestAdapter.create(RetrofitInterface.class);
     }
@@ -281,6 +299,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         try {
             Encrypt encrypt = new Encrypt(getServerPublicKey());
             encrypt.setCustomEncoding(encodingMethod);
+
             SecretKey sk = encrypt.getEncryptedSessionKey();
             localUncryptedSessionKey = encrypt.getSessionKey();
 

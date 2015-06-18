@@ -2,14 +2,12 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import javax.crypto.SecretKey;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.bgp.keymanager.SessionKeyManager;
@@ -64,9 +62,10 @@ public class LoginServlet extends HttpServlet {
                                           new TypeToken<Pair<byte[], String>>() {}.getType());
             
             SecretKey clientSessionKey = SessionKeyManager.convertToKey(pwdSes.getFirst());
+
             
             // update session key of the client 
-            keysManager.updateUserSessionKey(email, SessionKeyManager.convertToString(clientSessionKey));
+            keysManager.updateUserSessionKey(email, deviceName, deviceModel, SessionKeyManager.convertToString(clientSessionKey));
             
             // Create the encrypter using the session key saved in the request login servlet
             Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel), 

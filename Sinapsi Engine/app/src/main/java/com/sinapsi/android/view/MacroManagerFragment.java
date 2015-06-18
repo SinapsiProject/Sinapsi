@@ -2,7 +2,6 @@ package com.sinapsi.android.view;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -247,7 +246,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         service.removeMacro(elem.getId(), true);
-                                        updateContent(true);
+                                        updateContent(true, false);
                                         dialog.dismiss();
                                     }
                                 },
@@ -313,7 +312,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                             //just print stack trace and ignore
                             e.printStackTrace();
                         }
-                        updateContent(true);
+                        updateContent(true, false);
                     }
                 });
 
@@ -367,31 +366,31 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateContent(true);
+                updateContent(true, false);
             }
         });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateContent(true);
+                updateContent(true, false);
             }
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.sinapsi_blue);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
-        updateContent(true);
+        updateContent(true, false);
         created = true;
         return rootView;
     }
 
-    private void updateContent(boolean userIntent) {
+    private void updateContent(boolean userIntent, boolean doSync) {
         Lol.d(this, "Update content started");
         if(!isServiceConnected()) return;
         swipeRefreshLayout.setRefreshing(true);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
-        service.syncAndLoadMacros(userIntent);
+        if(doSync)service.syncAndLoadMacros(userIntent);
         updateMacroList(service.getMacros());
 
 
@@ -449,7 +448,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         service.addWebServiceConnectionListener(this);
 
         //updates on service connected only if this is visible to the user
-        if(created)updateContent(true);
+        if(created)updateContent(true, false);
     }
 
     public void setIsListOnTop(boolean b){

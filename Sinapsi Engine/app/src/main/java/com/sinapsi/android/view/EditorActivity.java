@@ -3,6 +3,8 @@ package com.sinapsi.android.view;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.sinapsi.android.Lol;
@@ -13,6 +15,8 @@ import com.sinapsi.model.impl.Macro;
 
 public class EditorActivity extends SinapsiActionBarActivity {
 
+    static int macroNameCounter = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,9 +26,20 @@ public class EditorActivity extends SinapsiActionBarActivity {
         Lol.printNullity(this, "params", params);
         Lol.d(this, "params size: " + params.length);
 
-        MacroInterface input = (MacroInterface) params[0];
+        final MacroInterface input = (MacroInterface) params[0];
 
-        //((TextView) findViewById(R.id.test_text)).setText(test);
+        final TextView tv = ((TextView) findViewById(R.id.test_text));
+        tv.setText(input.getName());
+
+        Button returnButton = (Button) findViewById(R.id.return_macro_button);
+        returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                input.setName(tv.getText().toString());
+                returnActivity(input);
+                //TODO: check if macro is effectively changed
+            }
+        });
 
     }
 

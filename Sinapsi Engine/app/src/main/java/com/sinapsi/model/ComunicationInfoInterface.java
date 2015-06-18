@@ -6,10 +6,14 @@ package com.sinapsi.model;
  *
  */
 public interface ComunicationInfoInterface {
+
+    public static final String ERROR_INVALID_CREDENTIALS = "ERROR_INVALID_CREDENTIALS";
+
     public boolean isErrorOccured();
     public String getErrorDescription();
     public String getAdditionalInfo();
     public void setErrorDescription(String description);
     public void setAdditionalInfo(String info);
     public void errorOccured(boolean error);
+
 }

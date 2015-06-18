@@ -20,6 +20,7 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.engine.WebServiceEngine;
+import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 import com.sinapsi.webservice.websocket.Server;
 import com.sinapsi.wsproto.SinapsiMessageTypes;
@@ -64,7 +65,12 @@ public class RemoteMacroExecution extends HttpServlet {
             Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, device.getName(), device.getModel()), 
                                             keysManager.getUserSessionKey(email, device.getName(), device.getModel()));
             //decrypt the jsoned body
-            String jsonBody = decrypter.decrypt(encryptedJsonBody);
+            String jsonBody;
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            	jsonBody = decrypter.decrypt(encryptedJsonBody);
+            else
+            	jsonBody = encryptedJsonBody;
+            
             RemoteExecutionDescriptor RED = gson.fromJson(jsonBody,new TypeToken<RemoteExecutionDescriptor>() {}.getType());
             
             if(deviceManager.getInfoDevice(deviceTarget).getKey().equals("Cloud") &&

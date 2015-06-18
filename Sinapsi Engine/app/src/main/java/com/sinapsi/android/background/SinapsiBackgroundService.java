@@ -278,13 +278,13 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     public void syncAndLoadMacros(final boolean explicit) {
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
-            public void onSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
+            public void onSyncSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
                 //TODO: delete all macros before adding all together again
                 engine.addMacros(loadSavedMacros());
             }
 
             @Override
-            public void onConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
+            public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
 
                 //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification and pause engine)
                 //if(sinapsiGuiIsOpen){
@@ -299,7 +299,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             }
 
             @Override
-            public void onFailure(Throwable error) {
+            public void onSyncFailure(Throwable error) {
                 Lol.d(SinapsiBackgroundService.class, "Sync failed: " + error.getMessage());
                 error.printStackTrace();
                 if(explicit){

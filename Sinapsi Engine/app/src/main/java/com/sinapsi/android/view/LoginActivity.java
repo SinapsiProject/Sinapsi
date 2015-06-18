@@ -195,6 +195,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                 }
 
                 Lol.d(this, "Success! user id received: " + user.getId());
+                registerDeviceAndComplete(user);
 
             }
 
@@ -253,6 +254,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                                     "Device login error",
                                     re.getMessage(),
                                     false);
+                            showProgress(false);
                             return;
                         }
                         DialogUtils.handleRetrofitError(error, LoginActivity.this, false);
