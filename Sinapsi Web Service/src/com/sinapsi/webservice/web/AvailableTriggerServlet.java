@@ -20,6 +20,7 @@ import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
+import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -53,7 +54,11 @@ public class AvailableTriggerServlet extends HttpServlet {
             // get the available triggers from the db
             List<MacroComponent> triggers = engineManager.getAvailableTrigger(idDevice);
             // send the encrypted data
-            out.print(encrypter.encrypt(gson.toJson(triggers)));
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            	out.print(encrypter.encrypt(gson.toJson(triggers)));
+            else
+            	out.print(gson.toJson(triggers));
+            
             out.flush();
             
         } catch (Exception ex) {
@@ -89,7 +94,12 @@ public class AvailableTriggerServlet extends HttpServlet {
             Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, device.getName(), device.getModel()), 
                                             keysManager.getUserSessionKey(email, device.getName(), device.getModel()));
             // decrypt the jsoned body
-            String jsonBody = decrypter.decrypt(encryptedJsonBody);
+            String jsonBody;
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            	jsonBody = decrypter.decrypt(encryptedJsonBody);
+            else
+            	jsonBody = encryptedJsonBody;
+            
             // extract the list of triggers from the jsoned triggers
             List<MacroComponent> triggers = gson.fromJson(jsonBody,new TypeToken<List<MacroComponent>>() {}.getType());
             // add the list of trigger in the db
@@ -108,9 +118,15 @@ public class AvailableTriggerServlet extends HttpServlet {
             // return a crypted response to the client
             Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
             if (success)
-                out.print(encrypter.encrypt(gson.toJson("success")));
+            	if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            		out.print(encrypter.encrypt(gson.toJson("success")));
+            	else
+            		out.print(gson.toJson("success"));
             else
-                out.print(encrypter.encrypt(gson.toJson("fail")));
+            	if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            		out.print(encrypter.encrypt(gson.toJson("fail")));
+            	else
+            		out.print(gson.toJson("fail"));
 
             out.flush();
 

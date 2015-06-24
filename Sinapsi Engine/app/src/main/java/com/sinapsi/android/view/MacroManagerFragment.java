@@ -2,7 +2,6 @@ package com.sinapsi.android.view;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,6 +22,7 @@ import android.widget.TextView;
 import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.sinapsi.android.Lol;
+import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.WebServiceConnectionListener;
@@ -241,11 +241,12 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                 getActivity(),
                                 context.getString(R.string.delete),
                                 String.format(context.getString(R.string.are_you_sure_delete_macro), elem.getName()),
+                                false,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         service.removeMacro(elem.getId(), true);
-                                        updateContent(true);
+                                        updateContent(true, false);
                                         dialog.dismiss();
                                     }
                                 },
@@ -269,9 +270,18 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     @Override
                     public void onDo(View v, Object o) {
                         Lol.d(this, "edit macro clicked");
-                        //TODO: return temp parameter mechanism
-                        Intent i = generateParameterizedIntent(EditorActivity.class, elem);
-                        startActivity(i);
+                        startActivity(EditorActivity.class,
+                                new SinapsiActionBarActivity.ActivityReturnCallback() {
+                                    @Override
+                                    public void onActivityReturn(Object... returnValues) {
+                                       if(returnValues == null || !(returnValues[0] instanceof MacroInterface)){
+                                           //there is an error in return value mechanism: for now, let's crash
+                                           throw new RuntimeException("OnActivityReturn failed");
+                                       } else {
+                                           service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
+                                       }
+                                    }
+                                }, elem);
                         sl.close();
                     }
                 });
@@ -302,7 +312,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                             //just print stack trace and ignore
                             e.printStackTrace();
                         }
-                        updateContent(true);
+                        updateContent(true, false);
                     }
                 });
 
@@ -356,31 +366,31 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateContent(true);
+                updateContent(true, false);
             }
         });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateContent(true);
+                updateContent(true, false);
             }
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.sinapsi_blue);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
-        updateContent(true);
+        updateContent(true, false);
         created = true;
         return rootView;
     }
 
-    private void updateContent(boolean userIntent) {
+    private void updateContent(boolean userIntent, boolean doSync) {
         Lol.d(this, "Update content started");
         if(!isServiceConnected()) return;
         swipeRefreshLayout.setRefreshing(true);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
-        service.syncAndLoadMacros(userIntent);
+        if(doSync)service.syncAndLoadMacros(userIntent);
         updateMacroList(service.getMacros());
 
 
@@ -397,9 +407,19 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         FactoryModel factoryModel = new FactoryModel();
 
         MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId()-1);
-        //TODO: return temp parameter mechanism
-        Intent i = generateParameterizedIntent(EditorActivity.class, m);
-        startActivity(i);
+        startActivity(
+                EditorActivity.class,
+                new SinapsiActionBarActivity.ActivityReturnCallback() {
+                    @Override
+                    public void onActivityReturn(Object... returnValues) {
+                        if(returnValues == null || !(returnValues[0] instanceof MacroInterface)){
+                            //there is an error in return value mechanism: for now, let's crash
+                            throw new RuntimeException("OnActivityReturn failed");
+                        }else{
+                            service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
+                        }
+                    }
+                }, m);
     }
 
     @Override
@@ -428,7 +448,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         service.addWebServiceConnectionListener(this);
 
         //updates on service connected only if this is visible to the user
-        if(created)updateContent(true);
+        if(created)updateContent(true, false);
     }
 
     public void setIsListOnTop(boolean b){

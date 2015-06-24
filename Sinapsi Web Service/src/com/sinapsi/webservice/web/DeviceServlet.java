@@ -20,6 +20,7 @@ import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
+import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -56,13 +57,20 @@ public class DeviceServlet extends HttpServlet {
 
                 if (user != null) {
                     devices = deviceManager.getUserDevices(email);
-                    out.print(encrypter.encrypt(gson.toJson(devices)));
+                    if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                    	out.print(encrypter.encrypt(gson.toJson(devices)));
+                    else
+                    	out.print(gson.toJson(devices));
                     out.flush();
                 
                 // user doesn't exist, return empty array of json
                 } else {
                     devices = new ArrayList<DeviceInterface>();
-                    out.print(encrypter.encrypt(gson.toJson(devices)));
+                    if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                    	out.print(encrypter.encrypt(gson.toJson(devices)));
+                    else
+                    	out.print(gson.toJson(devices));
+                    
                     out.flush();
                 }
 
@@ -98,30 +106,45 @@ public class DeviceServlet extends HttpServlet {
 
             try {
                 // create the encrypter
-                Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model));
+            	Encrypt encrypter;
+            	if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            		encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model),
+                							keysManager.getServerUncryptedSessionKey(email, name, model));
                 // create the decrypter
-                Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, name, model), 
-                                                keysManager.getUserSessionKey(email, name, model));
+            	Decrypt decrypter;
+            	if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            		decrypter = new Decrypt(keysManager.getServerPrivateKey(email, name, model), 
+                                            keysManager.getUserSessionKey(email, name, model));
                 // decrypt the jsoned body
-                String jsonBody = decrypter.decrypt(encryptedJsonbody);
+                //String jsonBody = decrypter.decrypt(encryptedJsonbody);
+                String jsonBody;
+                if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                	 jsonBody = decrypter.decrypt(encryptedJsonbody);
+                else
+                	 jsonBody = encryptedJsonbody;
+                
                 // get the id string from the decrypter jsoned body
                 String id = gson.fromJson(jsonBody, new TypeToken<String>() {}.getType());
                 int idUser = Integer.parseInt(id);
 
                 // if the device is new then added to the db
                 if (!deviceManager.checkDevice(name, model, idUser)) {
-                    Device device = (Device) deviceManager.newDevice(name, model, type, idUser, version);
-                    out.print(encrypter.encrypt(gson.toJson(device)));
+                    Device device = (Device) deviceManager.newDevice(name,model, type, idUser, version);
+                    if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                    	out.print(encrypter.encrypt(gson.toJson(device)));
+                    else 
+                    	out.print(gson.toJson(device));
+
                     out.flush();
                     deviceManager.macroNotSynced(email, name, model, true);
 
                 // device already exist, return it
                 } else {
-                    Device device = (Device) deviceManager.getDevice(name, model, idUser);
-                    // and set error description
-                    device.errorOccured(true);
-                    device.setErrorDescription("device already exist");
-                    out.print(encrypter.encrypt(gson.toJson(device)));
+                    DeviceInterface device = deviceManager.getDevice(name, model, idUser);
+                    if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                    	out.print(encrypter.encrypt(gson.toJson(device)));
+                    else
+                    	out.print(gson.toJson(device));
                     out.flush();
                 }
 

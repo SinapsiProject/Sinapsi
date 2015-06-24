@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import com.google.gson.Gson;
 import com.sinapsi.android.persistence.AndroidDiffDBManager;
 import com.sinapsi.android.persistence.AndroidLocalDBManager;
+import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.view.MainActivity;
 import com.sinapsi.android.web.AndroidBase64DecodingMethod;
 import com.sinapsi.android.web.AndroidBase64EncodingMethod;
@@ -77,6 +78,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit.RetrofitError;
 import retrofit.android.AndroidLog;
 
 /**
@@ -273,15 +275,16 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         return new SinapsiServiceBinder();
     }
 
-    public void syncAndLoadMacros(boolean explicit) {
+    public void syncAndLoadMacros(final boolean explicit) {
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
-            public void onSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
+            public void onSyncSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
+                //TODO: delete all macros before adding all together again
                 engine.addMacros(loadSavedMacros());
             }
 
             @Override
-            public void onConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
+            public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
 
                 //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification and pause engine)
                 //if(sinapsiGuiIsOpen){
@@ -296,8 +299,16 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                //TODO this could be a retrofit error: show to the user only if explicit
+            public void onSyncFailure(Throwable error) {
+                Lol.d(SinapsiBackgroundService.class, "Sync failed: " + error.getMessage());
+                error.printStackTrace();
+                if(explicit){
+                    if(!(error instanceof RetrofitError)){
+
+                    }else{
+                        DialogUtils.handleRetrofitError(error, SinapsiBackgroundService.this, true);
+                    }
+                }
             }
         });
 

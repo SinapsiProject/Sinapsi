@@ -35,9 +35,44 @@ public abstract class SinapsiFragment extends Fragment {
         Activity a = getActivity();
         if(a instanceof SinapsiActionBarActivity){
             return ((SinapsiActionBarActivity) a).generateParameterizedIntent(target, params);
-        }else if(a instanceof SinapsiActivity) {
-            return ((SinapsiActivity) a).generateParameterizedIntent(target, params);
         }else {
+            throw new RuntimeException("Sinapsi Fragment can be child only of a SinapsiActivity or SinapsiActionBarActivity");
+        }
+    }
+
+    public void startActivity(Class<?> target, Object... parameters){
+        Activity a = getActivity();
+        if(a instanceof SinapsiActionBarActivity){
+            ((SinapsiActionBarActivity) a).startActivity(target, parameters);
+        }else {
+            throw new RuntimeException("Sinapsi Fragment can be child only of a SinapsiActivity or SinapsiActionBarActivity");
+        }
+    }
+
+    public void startActivity(Class<?> target, SinapsiActionBarActivity.ActivityReturnCallback callback, Object... parameters){
+        Activity a = getActivity();
+        if(a instanceof SinapsiActionBarActivity){
+            ((SinapsiActionBarActivity) a).startActivity(target, callback, parameters);
+        }else {
+            throw new RuntimeException("Sinapsi Fragment can be child only of a SinapsiActivity or SinapsiActionBarActivity");
+        }
+    }
+
+    public void returnActivity(Object... params){
+        Activity a = getActivity();
+        if(a instanceof SinapsiActionBarActivity){
+            ((SinapsiActionBarActivity) a).returnActivity(params);
+        }else {
+            throw new RuntimeException("Sinapsi Fragment can be child only of a SinapsiActivity or SinapsiActionBarActivity");
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if(activity instanceof SinapsiActionBarActivity){
+            // todo: get temp parameters
+        }else{
             throw new RuntimeException("Sinapsi Fragment can be child only of a SinapsiActivity or SinapsiActionBarActivity");
         }
     }

@@ -6,6 +6,7 @@ import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.client.AppConsts;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -49,7 +50,10 @@ public class BGPGsonConverter extends GsonConverter {
     /// Converts from body to object
     @Override
     public Object fromBody(final TypedInput body, Type type) throws ConversionException {
+
         String cryptedString = null;
+
+
         try {
             cryptedString = fromStream(body.in());
 
@@ -107,6 +111,7 @@ public class BGPGsonConverter extends GsonConverter {
 
     public static String fromStream(InputStream in) throws IOException
     {
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder out = new StringBuilder();
         String newLine = System.getProperty("line.separator");

@@ -23,6 +23,8 @@ import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
+import com.sinapsi.webservice.engine.WebServiceLog;
+import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -32,11 +34,6 @@ import com.sinapsi.webservice.utility.BodyReader;
 public class MacroServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;   
 	private  Gson gson = new Gson();
-	
-	private KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
-	private EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
-    private UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
-    private DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");  
     PrintWriter out; 
 
 	/**
@@ -46,6 +43,11 @@ public class MacroServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
+	    UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+	    DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");  
+	    
 	    response.setContentType("application/json");
 	    out = response.getWriter();
                     
@@ -55,15 +57,25 @@ public class MacroServlet extends HttpServlet {
         
         try {
             // create the encrypter
-            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
+        	Encrypt encrypter;
+        	if(WebServiceConsts.ENCRYPTED_CONNECTION)
+        		encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
             // get the list of macro from the db
             List<MacroInterface> macros = engineManager.getUserMacro(userManager.getUserByEmail(email).getId());
+            
+            WebServiceLog log = new WebServiceLog(WebServiceLog.FILE_OUT);
+            log.log("user id : " + userManager.getUserByEmail(email).getId());
+            log.log(macros == null ? "macros null" : "macros not null");
+            
             
             // sync macro for the current device
             deviceManager.macroNotSynced(deviceName, deviceModel, false);
             
             // send the encrypted data
-            out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, List<MacroInterface>>(false, macros))));
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            	out.print(encrypter.encrypt(gson.toJson(new Pair<Boolean, List<MacroInterface>>(false, macros))));
+            else
+            	out.print(gson.toJson(new Pair<Boolean, List<MacroInterface>>(false, macros)));
             out.flush();
             
         } catch(Exception ex) {
@@ -78,6 +90,9 @@ public class MacroServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+		DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");  
+	    
 	    response.setContentType("application/json");
 	    out = response.getWriter();
         
@@ -96,7 +111,11 @@ public class MacroServlet extends HttpServlet {
             Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, deviceName, deviceModel),    
                                             keysManager.getUserSessionKey(email, deviceName, deviceModel));
             // decrypt the jsoned body
-            String jsonBody = decrypter.decrypt(encryptedJsonBody);
+            String jsonBody;
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+            	jsonBody = decrypter.decrypt(encryptedJsonBody);
+            else
+            	jsonBody = encryptedJsonBody;
             
             // action to do: push a batch of changes, add a macro, update a macro and delete a macro
             switch (action) {
@@ -128,19 +147,28 @@ public class MacroServlet extends HttpServlet {
                     }
                     
                     // return the result
-                    out.print(encrypter.encrypt(gson.toJson(result)));
+                    if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                    	out.print(encrypter.encrypt(gson.toJson(result)));
+                    else
+                    	out.print(gson.toJson(result));
                     out.flush();
                 } break;
                 
                 case "add": {
                     // add macro and send the id of the macro
-                    out.print(encrypter.encrypt(gson.toJson(add(jsonBody, email))));
+                	if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                		out.print(encrypter.encrypt(gson.toJson(add(jsonBody, email))));
+                	else
+                		out.print(gson.toJson(add(jsonBody, email)));
                     out.flush();                
                 } break;
                 
                 case "add_macros": {
                     // add a list of macro and send the macro ids
-                    out.print(encrypter.encrypt(gson.toJson(addMacros(jsonBody, email))));
+                	if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                		out.print(encrypter.encrypt(gson.toJson(addMacros(jsonBody, email))));
+                	else
+                		out.print(gson.toJson(addMacros(jsonBody, email)));
                     out.flush();                   
                 } break;
                 
@@ -149,7 +177,10 @@ public class MacroServlet extends HttpServlet {
                     deleteMacro(jsonBody);
                     
                     //send -1 id
-                    out.print(encrypter.encrypt(gson.toJson(-1)));
+                    if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                    	out.print(encrypter.encrypt(gson.toJson(-1)));
+                    else
+                    	out.print(gson.toJson(-1));
                     out.flush();
                 } break;
         
@@ -170,6 +201,8 @@ public class MacroServlet extends HttpServlet {
 	 * @param deviceModel device model of the user
 	 */
 	private int add(String jsonBody, String email) {
+		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
+	    UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
 	    // extract the list of actions from the jsoned triggers
         MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
         
@@ -194,6 +227,9 @@ public class MacroServlet extends HttpServlet {
 	 * @param deviceModel device model of the user
 	 */
 	private List<Integer> addMacros(String jsonBody, String email) {
+		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
+	    UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db"); 
+	    
 	    // extract the list of actions from the jsoned triggers
         List<MacroInterface> macros = gson.fromJson(jsonBody, new TypeToken<List<MacroInterface>>() {}.getType());
         
@@ -211,6 +247,7 @@ public class MacroServlet extends HttpServlet {
 	 * @param jsonBody json body
 	 */
 	private void deleteMacro(String jsonBody) {
+		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");   
 	    // extract the list of actions from the jsoned triggers
         MacroInterface macro = gson.fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
         

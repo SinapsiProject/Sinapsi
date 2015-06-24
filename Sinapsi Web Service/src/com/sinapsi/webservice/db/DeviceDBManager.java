@@ -193,7 +193,7 @@ public class DeviceDBManager extends UserDBManager {
 
         try {
             c = db.connect();
-            String query = "SELECT * FROM device WHERE lower(name) = lower(?) AND lower(model)";
+            String query = "SELECT * FROM device WHERE lower(name) = lower(?) AND lower(model) = lower(?)";
             s = c.prepareStatement(query);
             s.setString(1, name);
             s.setString(2, model);

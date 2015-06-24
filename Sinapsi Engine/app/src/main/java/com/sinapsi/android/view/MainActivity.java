@@ -185,6 +185,7 @@ public class MainActivity extends SinapsiActionBarActivity {
                         MainActivity.this,
                         getString(R.string.log_out),
                         getString(R.string.are_you_sure_log_out),
+                        false,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
