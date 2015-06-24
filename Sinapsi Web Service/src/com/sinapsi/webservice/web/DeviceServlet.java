@@ -110,9 +110,10 @@ public class DeviceServlet extends HttpServlet {
 
                 // if the device is new then added to the db
                 if (!deviceManager.checkDevice(name, model, idUser)) {
-                    Device device = (Device) deviceManager.newDevice(name,model, type, idUser, version);
+                    Device device = (Device) deviceManager.newDevice(name, model, type, idUser, version);
                     out.print(encrypter.encrypt(gson.toJson(device)));
                     out.flush();
+                    deviceManager.macroNotSynced(email, name, model, true);
 
                 // device already exist, return it
                 } else {
