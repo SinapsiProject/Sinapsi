@@ -18,7 +18,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
     public static final String NO_CHANGES_BOOLEAN = "NO_CHANGES_BOOLEAN";
 
     static int macroNameCounter = 0;
-    private boolean no_changes = true;
+    private Boolean no_changes = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +43,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
             @Override
             public void onClick(View v) {
                 input.setName(tv.getText().toString());
-                returnActivity(input);
-                //TODO: check if macro is effectively changed
+                returnActivity(input, no_changes);
             }
         });
 

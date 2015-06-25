@@ -286,7 +286,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             @Override
             public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
 
-                //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification and pause engine)
+                //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification and disable macros)
                 //if(sinapsiGuiIsOpen){
                 for(MacroSyncConflict conflict: conflicts){
                     //TODO: show dialog to the user
@@ -304,7 +304,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 error.printStackTrace();
                 if(explicit){
                     if(!(error instanceof RetrofitError)){
-
+                        DialogUtils.showOkDialog(SinapsiBackgroundService.this, "Sync failed", error.getMessage(), true);
                     }else{
                         DialogUtils.handleRetrofitError(error, SinapsiBackgroundService.this, true);
                     }

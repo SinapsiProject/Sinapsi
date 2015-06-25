@@ -270,8 +270,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     @Override
                     public void onDo(View v, Object o) {
                         Lol.d(this, "edit macro clicked");
-                        startActivity(EditorActivity.class,
-                                new SinapsiActionBarActivity.ActivityReturnCallback() {
+                        startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
                                     @Override
                                     public void onActivityReturn(Object... returnValues) {
                                        if(returnValues == null || !(returnValues[0] instanceof MacroInterface)){
@@ -281,7 +280,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                            service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
                                        }
                                     }
-                                }, elem);
+                                }, EditorActivity.class, elem);
                         sl.close();
                     }
                 });
@@ -407,19 +406,19 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         FactoryModel factoryModel = new FactoryModel();
 
         MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId()-1);
-        startActivity(
-                EditorActivity.class,
-                new SinapsiActionBarActivity.ActivityReturnCallback() {
+        startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
                     @Override
                     public void onActivityReturn(Object... returnValues) {
-                        if(returnValues == null || !(returnValues[0] instanceof MacroInterface)){
+                        if(returnValues == null || !((returnValues[0] instanceof MacroInterface) && (returnValues[1] instanceof Boolean))){
                             //there is an error in return value mechanism: for now, let's crash
                             throw new RuntimeException("OnActivityReturn failed");
                         }else{
-                            service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
+                            if((Boolean) returnValues[1])
+                                service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
+
                         }
                     }
-                }, m);
+                }, EditorActivity.class, m);
     }
 
     @Override

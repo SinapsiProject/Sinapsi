@@ -49,7 +49,7 @@ public abstract class SinapsiFragment extends Fragment {
         }
     }
 
-    public void startActivity(Class<?> target, SinapsiActionBarActivity.ActivityReturnCallback callback, Object... parameters){
+    public void startActivity(SinapsiActionBarActivity.ActivityReturnCallback callback, Class<?> target, Object... parameters){
         Activity a = getActivity();
         if(a instanceof SinapsiActionBarActivity){
             ((SinapsiActionBarActivity) a).startActivity(target, callback, parameters);
