@@ -6,6 +6,7 @@ import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.Macro;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class MacroEngine {
     private ComponentFactory factory;
     private SinapsiLog log;
 
-    private HashMap<String,MacroInterface> macros = new HashMap<>();
+    private HashMap<Integer,MacroInterface> macros = new HashMap<>();
 
     /**
      * Creates a new MacroEngine instance with a custom component
@@ -63,10 +64,9 @@ public class MacroEngine {
      */
     public void addMacro(MacroInterface m){
         if(m.getTrigger().getExecutionDevice().getId() == device.getId())
-            if(m.isEnabled())
-                m.getTrigger().register(activator);
+            m.getTrigger().register(activator);
 
-        macros.put(m.getName(), m);
+        macros.put(m.getId(), m);
         log.log("MACROENGINE", "Added macro " + m.getId() + ":'" + m.getName()+"' to the engine");
     }
 
@@ -89,11 +89,7 @@ public class MacroEngine {
     }
 
     private MacroInterface getMacroById(int idMacro){
-        for(MacroInterface m: macros.values()){
-            if(m.getId() == idMacro)
-                return m;
-        }
-        return null;
+        return macros.get(idMacro);
     }
 
     public void continueMacro(RemoteExecutionDescriptor red) throws MissingMacroException{
@@ -116,7 +112,7 @@ public class MacroEngine {
         activator.setEnabled(true);
     }
 
-    public HashMap<String, MacroInterface> getMacros() {
+    public HashMap<Integer, MacroInterface> getMacros() {
         return macros;
     }
 
@@ -125,6 +121,24 @@ public class MacroEngine {
         if(m == null) throw new MissingMacroException();
         m.setEnabled(enabled);
 
+    }
+
+    public void removeMacro(int id) throws MissingMacroException {
+        MacroInterface m = getMacroById(id);
+        if(m == null) throw new MissingMacroException();
+        if(m.getTrigger().getExecutionDevice().getId() == device.getId()){
+            m.getTrigger().unregister(activator);
+        }
+        macros.remove(id);
+    }
+
+    public void clearMacros() {
+        for(MacroInterface m: macros.values()){
+            if(m.getTrigger().getExecutionDevice().getId() == device.getId()){
+                m.getTrigger().unregister(activator);
+            }
+        }
+        macros.clear();
     }
 
     public class MissingMacroException extends Exception {

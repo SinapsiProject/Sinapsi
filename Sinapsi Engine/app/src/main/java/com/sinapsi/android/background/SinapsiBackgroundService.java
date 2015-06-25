@@ -279,7 +279,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
             public void onSyncSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
-                //TODO: delete all macros before adding all together again
+                engine.clearMacros();
                 engine.addMacros(loadSavedMacros());
             }
 

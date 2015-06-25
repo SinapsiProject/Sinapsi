@@ -338,8 +338,10 @@ public class SyncManager {
             // only the response caused the
             // error) todo: handle this case
             /*
+            Possibile modo di risolvere:
                 1) il client fa commit
-                2) avvia un timer, lo stesso che c'è sul server
+                2) avvia un timer (massimo 15 secondi), lo stesso che
+                    c'è sul server
                 3) tenta di fare la conferma
                 4.a) se ha successo, ok
                 4.b) se fallisce, riprova a fare la conferma
