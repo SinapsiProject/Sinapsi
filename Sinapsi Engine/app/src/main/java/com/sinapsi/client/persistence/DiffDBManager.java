@@ -52,6 +52,6 @@ public interface DiffDBManager {
      * @param id the macro id
      * @return the list of changes
      */
-    public List<MacroChange> getChangesForMacro(int id);
+    public MacroChange getChangeForMacro(int id); //TODO: let this return only a macro change
 
 }

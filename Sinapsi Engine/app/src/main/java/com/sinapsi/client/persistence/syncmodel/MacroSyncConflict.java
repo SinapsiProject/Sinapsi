@@ -12,17 +12,17 @@ import java.util.List;
 public class MacroSyncConflict {
     private MacroInterface serverMacro;
     private MacroInterface localMacro;
-    private List<MacroChange> serverChanges;
-    private List<MacroChange> clientChanges;
+    private MacroChange serverChange;
+    private MacroChange clientChange;
 
     public MacroSyncConflict(MacroInterface serverMacro,
                              MacroInterface localMacro,
-                             List<MacroChange> serverChanges,
-                             List<MacroChange> clientChanges) {
+                             MacroChange serverChange,
+                             MacroChange clientChange) {
         this.serverMacro = serverMacro;
         this.localMacro = localMacro;
-        this.serverChanges = serverChanges;
-        this.clientChanges = clientChanges;
+        this.serverChange = serverChange;
+        this.clientChange = clientChange;
     }
 
     public MacroInterface getServerMacro() {
@@ -33,11 +33,11 @@ public class MacroSyncConflict {
         return localMacro;
     }
 
-    public List<MacroChange> getServerChanges() {
-        return serverChanges;
+    public MacroChange getServerChanges() {
+        return serverChange;
     }
 
-    public List<MacroChange> getClientChanges() {
-        return clientChanges;
+    public MacroChange getClientChanges() {
+        return clientChange;
     }
 }

@@ -19,8 +19,10 @@ import com.sinapsi.utils.Pair;
 import com.sinapsi.utils.Triplet;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Manages the sync of the data between the local database
@@ -177,11 +179,11 @@ public class SyncManager {
                             }
                         }
 
-                        final Triplet<Pair<List<MacroChange>, List<MacroChange>>, List<MacroSyncConflict>, Integer> diffsAnalysisResults;
+                        final Triplet<Pair<Map<Integer, MacroChange>, Map<Integer, MacroChange>>, List<MacroSyncConflict>, Integer> diffsAnalysisResults; //TODO: define specific class for this
                         diffsAnalysisResults = analyzeDiffs(currentDb.getAllMacros(), serverMacros, diffServer_OldCopy, diffDb);
 
-                        final List<MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
-                        final List<MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
+                        final Map<Integer, MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
+                        final Map<Integer, MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
                         final int[] pushedAndPulledCounters = new int[]{0, 0};
 
                         List<MacroSyncConflict> conflicts = diffsAnalysisResults.getSecond();
@@ -189,8 +191,7 @@ public class SyncManager {
                         if (conflicts.isEmpty()) {
                             //there are no conflicts,
                             //proceeds directly with push and pull
-                            Collections.sort(toBePushed);
-                            final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
+                            final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed.values(), currentDb);
                             webService.pushChanges(
                                     device,
                                     pushtmp,
@@ -209,11 +210,14 @@ public class SyncManager {
                                 public void onConflictsResolved(final List<MacroChange> toBePushedConflicts, final List<MacroChange> toBePulledConflicts) {
 
 
-                                    toBePushed.addAll(toBePushedConflicts);
-                                    toBePulled.addAll(toBePulledConflicts);
+                                    for (MacroChange conflictChange : toBePushedConflicts) {
+                                        toBePushed.put(conflictChange.getMacroId(), conflictChange);
+                                    }
+                                    for (MacroChange conflictChange : toBePulledConflicts) {
+                                        toBePulled.put(conflictChange.getMacroId(), conflictChange);
+                                    }
 
-                                    Collections.sort(toBePushed);
-                                    final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
+                                    final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed.values(), currentDb);
                                     webService.pushChanges(
                                             device,
                                             pushtmp,
@@ -230,7 +234,7 @@ public class SyncManager {
 
                                 @Override
                                 public void onAbort() {
-                                    //rollback by user (no changes on both client and server)
+                                    //abort by user (no changes on both client and server)
                                     return;
                                 }
                             });
@@ -253,8 +257,8 @@ public class SyncManager {
                         final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed, currentDb);
                         webService.pushChanges(
                                 device,
-                                convertChangesToPushSyncOps(diffDb.getAllChanges(),currentDb),
-                                new PushAndPullWebServiceCallBack(callback, pushtmp, null, null, new int[]{0,0}, null, 0));
+                                convertChangesToPushSyncOps(diffDb.getAllChanges(), currentDb),
+                                new PushAndPullWebServiceCallBack(callback, pushtmp, null, null, new int[]{0, 0}, null, 0));
                     }
                 }
             }
@@ -269,7 +273,7 @@ public class SyncManager {
     private class PushAndPullWebServiceCallBack implements SinapsiWebServiceFacade.WebServiceCallback<List<Pair<SyncOperation, Integer>>> {
         private final MacroSyncCallback callback;
         private final List<Pair<SyncOperation, MacroInterface>> pushtmp;
-        private final List<MacroChange> toBePulled;
+        private final Map<Integer, MacroChange> toBePulled;
         private final List<MacroInterface> serverMacros;
         private final int[] pushedAndPulledCounters;
         private final Integer noChangesCount;
@@ -279,7 +283,7 @@ public class SyncManager {
         public PushAndPullWebServiceCallBack(
                 MacroSyncCallback callback,
                 List<Pair<SyncOperation, MacroInterface>> pushtmp,
-                @Nullable List<MacroChange> toBePulled,
+                @Nullable Map<Integer, MacroChange> toBePulled,
                 @Nullable List<MacroInterface> serverMacros,
                 int[] pushedAndPulledCounters,
                 Integer noChangesCount,
@@ -293,14 +297,12 @@ public class SyncManager {
             this.conflictsCount = conflictsCount;
         }
 
-        //TODO: optimize toBePushed, in order to send max 1 change for every macro
-
         @Override
         public void success(List<Pair<SyncOperation, Integer>> pushResult, Object response) {
             if (pushResult == null || (pushResult.size() == 1 && pushResult.get(0).isErrorOccured())) {
                 System.out.println("SYNC: Error occurred during sync: " + pushResult.get(0).getErrorDescription());
                 callback.onSyncFailure(new SyncServerException(pushResult.get(0).getErrorDescription()));
-                //rollback (no changes on both client and server)
+                //abort (no changes on both client and server)
                 return;
 
             } else {
@@ -319,8 +321,7 @@ public class SyncManager {
                 if(toBePulled != null) {
                     //HINT: take advantage of parallelism (move the pull just after the push call),
                     // so the service and the client can work at the same time
-                    Collections.sort(toBePulled);
-                    for (MacroChange macroChange : toBePulled) {
+                    for (MacroChange macroChange : toBePulled.values()) {
                         //saves data from the server in the db
                         switch (macroChange.getChangeType()) {
                             case ADDED:
@@ -351,7 +352,7 @@ public class SyncManager {
         @Override
         public void failure(Throwable error) {
             callback.onSyncFailure(error);
-            //rollback (no changes on client, and
+            //abort (no changes on client, and
             // very probably on server too, but
             // server may have received data and
             // updated its DB correctly, and
@@ -372,7 +373,7 @@ public class SyncManager {
         }
     }
 
-    private List<Pair<SyncOperation, MacroInterface>> convertChangesToPushSyncOps(List<MacroChange> toBePushed, LocalDBManager db) {
+    private List<Pair<SyncOperation, MacroInterface>> convertChangesToPushSyncOps(Collection<MacroChange> toBePushed, LocalDBManager db) {
         List<Pair<SyncOperation, MacroInterface>> result = new ArrayList<>();
 
         for(MacroChange mc:toBePushed){
@@ -419,18 +420,18 @@ public class SyncManager {
         return currentDb.getMinMacroId();
     }
 
-    private Triplet<Pair<List<MacroChange>, List<MacroChange>>, List<MacroSyncConflict>, Integer>
+    private Triplet<Pair<Map<Integer, MacroChange>, Map<Integer, MacroChange>>, List<MacroSyncConflict>, Integer>
     analyzeDiffs(List<MacroInterface> localDBMacros,
                  List<MacroInterface> serverMacros,
                  DiffDBManager serverChanges,
                  DiffDBManager clientChanges) {
         List<MacroSyncConflict> conflicts = new ArrayList<>();
-        List<MacroChange> toBePulled = new ArrayList<>();
-        List<MacroChange> toBePushed = new ArrayList<>();
+        Map<Integer, MacroChange> toBePulled = new HashMap<>();
+        Map<Integer, MacroChange> toBePushed = new HashMap<>();
         List<Integer> allInterestedMacroIDs = new ArrayList<>();
 
         //get all the IDs of the interested macros, both on server and client,
-        // and add them in a no-duplicate list
+        // and add them in a list, with no duplicates
         for (MacroInterface m : localDBMacros) {
             allInterestedMacroIDs.add(m.getId());
         }
@@ -441,45 +442,35 @@ public class SyncManager {
         int noChangesCount = 0;
         //now extract eventual changes for every macro
         for (Integer i : allInterestedMacroIDs) {
-            List<MacroChange> serverMacroChanges = serverChanges.getChangesForMacro(i);
-            List<MacroChange> localMacroChanges = clientChanges.getChangesForMacro(i);
+            MacroChange serverMacroChange = serverChanges.getChangeForMacro(i);
+            MacroChange localMacroChange = clientChanges.getChangeForMacro(i);
 
-            boolean localCheck;
-            if (!localMacroChanges.isEmpty()) {
-                if (localMacroChanges.get(0).getChangeType() == MacroChange.ChangeTypes.ADDED &&
-                        localMacroChanges.get(localMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.REMOVED) {
-                    //if a macro has been added and at the end deleted, ignore
-                    localCheck = false;
-                } else {
-                    localCheck = true;
-                }
-            } else {
-                localCheck = false;
-            }
-
-            boolean serverCheck = !serverMacroChanges.isEmpty();
+            boolean localCheck = localMacroChange != null;
+            boolean serverCheck = serverMacroChange != null;
 
             if (serverCheck && !localCheck) {
                 //the interested macro has relevant changes only on the server (= no conflicts)
                 //there are changes to be pulled
-                toBePulled.addAll(serverMacroChanges);
+                toBePulled.put(serverMacroChange.getMacroId(), serverMacroChange);
+
             } else if (!serverCheck && localCheck) {
                 //the interested macro has relevant changes only on the client (= no conflicts)
                 //there are changes to be pushed
-                toBePushed.addAll(localMacroChanges);
+                toBePushed.put(localMacroChange.getMacroId(), localMacroChange);
+
             } else //noinspection ConstantConditions
                 if (serverCheck && localCheck) {
                     //the interested macro has relevant changes both on the server and the client
                     //there are conflicts in changes
 
                     //some conflicts are solved automatically
-                    if (serverMacroChanges.get(serverMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.REMOVED &&
-                            localMacroChanges.get(localMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.REMOVED) {
+                    if (serverMacroChange.getChangeType() == MacroChange.ChangeTypes.REMOVED &&
+                            localMacroChange.getChangeType() == MacroChange.ChangeTypes.REMOVED) {
                         // if the macro has been deleted both on client and server, ignore.
                         ++noChangesCount;
                         continue;
-                    } else if (serverMacroChanges.get(serverMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.EDITED &&
-                            localMacroChanges.get(localMacroChanges.size() - 1).getChangeType() == MacroChange.ChangeTypes.EDITED) {
+                    } else if (serverMacroChange.getChangeType() == MacroChange.ChangeTypes.EDITED &&
+                            localMacroChange.getChangeType() == MacroChange.ChangeTypes.EDITED) {
                         if (areMacrosEqual(getMacroFromList(serverMacros, i), getMacroFromList(localDBMacros, i))) {
                             /* if the macro has been edited both on client and server, and
                            the two copies of the macro are equal, ignore*/
@@ -500,8 +491,8 @@ public class SyncManager {
                     conflicts.add(new MacroSyncConflict(
                             serverMacro,
                             localMacro,
-                            serverMacroChanges,
-                            localMacroChanges));
+                            serverMacroChange,
+                            localMacroChange));
 
                 } else {
                     //no changes on this macro (= no conflicts)

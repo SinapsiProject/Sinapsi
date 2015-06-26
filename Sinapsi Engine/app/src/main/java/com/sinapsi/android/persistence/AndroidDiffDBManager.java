@@ -232,8 +232,8 @@ public class AndroidDiffDBManager implements DiffDBManager {
     }
 
     @Override
-    public List<MacroChange> getChangesForMacro(int id) {
-        List<MacroChange> result = new ArrayList<>();
+    public MacroChange getChangeForMacro(int id) {
+        MacroChange result = null;
         Cursor c = diffDBOpenHelper.getWritableDatabase().query(
                 TABLE_CHANGES,
                 ALL_COLUMNS_CHANGES,
@@ -242,10 +242,9 @@ public class AndroidDiffDBManager implements DiffDBManager {
                 null,
                 null,
                 null);
+        if(c == null || c.getCount() == 0) return null;
         c.moveToFirst();
-        while (!c.isAfterLast()){
-            result.add(cursorToMacroChange(c));
-        }
+        result = cursorToMacroChange(c);
         c.close();
         diffDBOpenHelper.close();
         return result;
