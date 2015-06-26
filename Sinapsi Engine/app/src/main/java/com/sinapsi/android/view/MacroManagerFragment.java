@@ -273,11 +273,12 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                         startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
                                     @Override
                                     public void onActivityReturn(Object... returnValues) {
-                                       if(returnValues == null || !(returnValues[0] instanceof MacroInterface)){
+                                       if(returnValues == null || !((returnValues[0] instanceof MacroInterface) && (returnValues[1] instanceof Boolean))){
                                            //there is an error in return value mechanism: for now, let's crash
                                            throw new RuntimeException("OnActivityReturn failed");
                                        } else {
-                                           service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
+                                           if((Boolean) returnValues[1]) //updates the macro only if there was at least a change in the editor
+                                               service.updateMacro((MacroInterface) returnValues[0], true);
                                        }
                                     }
                                 }, EditorActivity.class, elem);
@@ -305,8 +306,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     public void onClick(View v) {
 
                         try {
-                            service.addOrUpdateMacro(elem, true);
                             service.getEngine().setMacroEnabled(elem.getId(), !elem.isEnabled());
+                            service.updateMacro(elem, true);
                         } catch (MacroEngine.MissingMacroException e) {
                             //just print stack trace and ignore
                             e.printStackTrace();
@@ -413,8 +414,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                             //there is an error in return value mechanism: for now, let's crash
                             throw new RuntimeException("OnActivityReturn failed");
                         }else{
-                            if((Boolean) returnValues[1])
-                                service.addOrUpdateMacro((MacroInterface) returnValues[0], true);
+                            service.addMacro((MacroInterface) returnValues[0], true);
 
                         }
                     }

@@ -24,6 +24,7 @@ import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
 import com.sinapsi.android.enginesystem.AndroidNotificationAdapter;
 import com.sinapsi.client.SyncManager;
+import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.OnlineStatusProvider;
@@ -373,7 +374,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     @Override
     public void onWebSocketError(Exception ex) {
-        Lol.d("WEB_SOCKET", "WebSocket Error: "+ex.getMessage());
+        Lol.d("WEB_SOCKET", "WebSocket Error: " + ex.getMessage());
     }
 
     @Override
@@ -433,14 +434,42 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     }
 
     public void removeMacro(int id, boolean userIntention) {
-        syncManager.removeMacro(id);
-        syncAndLoadMacros(userIntention);
+        try {
+            syncManager.removeMacro(id);
+            syncAndLoadMacros(userIntention);
+        } catch (InconsistentMacroChangeException e) {
+            e.printStackTrace();
+            if(userIntention){
+                //todo: show error to the user
+            }
+        }
     }
 
-    public void addOrUpdateMacro(MacroInterface macro, boolean userIntention) {
-        syncManager.addOrUpdateMacro(macro);
-        syncAndLoadMacros(userIntention);
+    public void updateMacro(MacroInterface macro, boolean userIntention) {
+        try {
+            syncManager.updateMacro(macro);
+            syncAndLoadMacros(userIntention);
+        } catch (InconsistentMacroChangeException e) {
+            e.printStackTrace();
+            if(userIntention){
+                //todo: show error to the user
+            }
+        }
     }
+
+    public void addMacro(MacroInterface macro, boolean userIntention){
+        try {
+            syncManager.addMacro(macro);
+            syncAndLoadMacros(userIntention);
+        } catch (InconsistentMacroChangeException e) {
+            e.printStackTrace();
+            if(userIntention){
+                //todo: show error to the user
+            }
+        }
+    }
+
+
 
     public SyncManager getSyncManager() {
         return syncManager;

@@ -3,6 +3,7 @@ package com.sinapsi.client;
 import android.support.annotation.Nullable;
 
 import com.sinapsi.client.persistence.DiffDBManager;
+import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.LocalDBManager;
 import com.sinapsi.client.persistence.MemoryDiffDBManager;
 import com.sinapsi.client.persistence.MemoryLocalDBManager;
@@ -66,18 +67,24 @@ public class SyncManager {
 
 
     /**
-     * Adds a new macro and the related actions to the current db,
-     * or updates them if the macro's id is equal to another macro
-     * already in the db.
-     *
-     * @param macro the macro to be inserted/updated
+     * Adds a new macro and the related actions to the current db
+     * @param macro the macro to be inserted
+     * @throws InconsistentMacroChangeException todo doku
      */
-    public void addOrUpdateMacro(MacroInterface macro) {
-        if (currentDb.addOrUpdateMacro(macro)) {
-            diffDb.macroAdded(macro);
-        } else {
-            diffDb.macroUpdated(macro);
-        }
+    public void addMacro(MacroInterface macro) throws InconsistentMacroChangeException {
+        diffDb.macroAdded(macro);
+        currentDb.addOrUpdateMacro(macro);  //Hint: check consistency from the returned boolean
+    }
+
+    /**
+     * Updates a macro if its id is equal to another macro's id
+     * already in the db.
+     * @param macro the macro to be updated
+     * @throws InconsistentMacroChangeException todo doku
+     */
+    public void updateMacro(MacroInterface macro) throws InconsistentMacroChangeException {
+        diffDb.macroUpdated(macro);
+        currentDb.addOrUpdateMacro(macro);  //Hint: check consistency from the returned boolean
     }
 
     /**
@@ -94,8 +101,9 @@ public class SyncManager {
      * Removes the macro with the specified id from the current db.
      *
      * @param id the macro id
+     * @throws InconsistentMacroChangeException todo doku
      */
-    public void removeMacro(int id) {
+    public void removeMacro(int id) throws InconsistentMacroChangeException {
         currentDb.removeMacro(id);
         diffDb.macroRemoved(id);
     }
@@ -135,10 +143,18 @@ public class SyncManager {
                                 MacroInterface oldCopyMacro = lastSyncDb.getMacroWithId(serverMacro.getId());
 
                                 if (!areMacrosEqual(oldCopyMacro, serverMacro)) {
-                                    diffServer_OldCopy.macroUpdated(serverMacro);
+                                    try {
+                                        diffServer_OldCopy.macroUpdated(serverMacro);
+                                    } catch (InconsistentMacroChangeException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             } else {
-                                diffServer_OldCopy.macroAdded(serverMacro);
+                                try {
+                                    diffServer_OldCopy.macroAdded(serverMacro);
+                                } catch (InconsistentMacroChangeException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
 
@@ -153,7 +169,11 @@ public class SyncManager {
                                 }
                             }
                             if (!found) {
-                                diffServer_OldCopy.macroRemoved(oldCopyMacro.getId());
+                                try {
+                                    diffServer_OldCopy.macroRemoved(oldCopyMacro.getId());
+                                } catch (InconsistentMacroChangeException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
 

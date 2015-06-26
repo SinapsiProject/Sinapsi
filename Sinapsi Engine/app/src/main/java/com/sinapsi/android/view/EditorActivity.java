@@ -18,14 +18,14 @@ public class EditorActivity extends SinapsiActionBarActivity {
     public static final String NO_CHANGES_BOOLEAN = "NO_CHANGES_BOOLEAN";
 
     static int macroNameCounter = 0;
-    private Boolean no_changes = true;
+    private Boolean changed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(savedInstanceState!=null){
             if(savedInstanceState.containsKey(NO_CHANGES_BOOLEAN)){
-                no_changes = savedInstanceState.getBoolean(NO_CHANGES_BOOLEAN);
+                changed = savedInstanceState.getBoolean(NO_CHANGES_BOOLEAN);
             }
         }
         setContentView(R.layout.activity_editor);
@@ -43,7 +43,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
             @Override
             public void onClick(View v) {
                 input.setName(tv.getText().toString());
-                returnActivity(input, no_changes);
+                returnActivity(input, changed);
             }
         });
 
@@ -74,6 +74,6 @@ public class EditorActivity extends SinapsiActionBarActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(NO_CHANGES_BOOLEAN, no_changes);
+        outState.putBoolean(NO_CHANGES_BOOLEAN, changed);
     }
 }
