@@ -112,6 +112,10 @@ public class MacroEngine {
         activator.setEnabled(true);
     }
 
+    public boolean isPaused(){
+        return activator.isEnabled();
+    }
+
     public HashMap<Integer, MacroInterface> getMacros() {
         return macros;
     }

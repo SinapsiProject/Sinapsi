@@ -215,6 +215,8 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
         // starts the engine (and the TriggerOnEngineStart activates)
         engine.startEngine();
+
+        startForegroundMode();
     }
 
     private void loadSettings(UserSettingsFacade settings) {
@@ -262,7 +264,6 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        foregroundMode();
         started = true;
         return super.onStartCommand(intent, flags, startId);
     }
@@ -287,7 +288,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
             @Override
             public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
 
-                //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification and disable macros)
+                //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification, duplicate and disable macros)
                 //if(sinapsiGuiIsOpen){
                 for(MacroSyncConflict conflict: conflicts){
                     //TODO: show dialog to the user
@@ -704,8 +705,18 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         //engine.addMacro(myMacro3);
     }
 
+    public void pauseEngine(){
+        engine.pauseEngine();
+        stopForegroundMode();
+    }
 
-    private void foregroundMode() {
+    public void resumeEngine(){
+        engine.resumeEngine();
+        startForegroundMode();
+    }
+
+
+    private void startForegroundMode() {
         //HINT: useful toggles instead of classic content pending intent
 
         Intent i1 = new Intent(this, MainActivity.class);
@@ -718,6 +729,10 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 .setContentIntent(maini);
         Notification forenotif = builder.build();
         startForeground(1, forenotif);
+    }
+
+    private void stopForegroundMode() {
+        stopForeground(true);
     }
 
 
