@@ -8,14 +8,14 @@
 
     <EditText
         android:id="@+id/test_text"
-        android:hint="fuck you"
+        android:hint="banana"
         android:text="" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/test_text"
+        android:layout_alignParentBottom="true"
         android:id="@+id/return_macro_button"/>
 
 

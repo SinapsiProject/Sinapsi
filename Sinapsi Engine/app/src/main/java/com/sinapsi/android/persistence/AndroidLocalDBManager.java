@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.sinapsi.android.Lol;
 import com.sinapsi.client.persistence.LocalDBManager;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.ComponentFactory;
@@ -92,39 +93,17 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
 
     private String dbname;
-    private Context context;
+    public AndroidLocalDBOpenHelper localDBOpenHelper;
 
     private ComponentFactory componentFactory;
     private FactoryModel factoryModel = new FactoryModel();
 
     public AndroidLocalDBManager(Context c, String name, ComponentFactory cfactory){
-        this.context = c;
         this.dbname = name;
         this.componentFactory = cfactory;
+        this.localDBOpenHelper = new AndroidLocalDBOpenHelper(c, dbname, null, LOCAL_DB_VERSION);
     }
 
-    public SQLiteOpenHelper localDBOpenHelper = new SQLiteOpenHelper(
-            context,
-            dbname,
-            null,
-            LOCAL_DB_VERSION) {
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            createTables(db);
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_MACROS);
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTION_LISTS);
-            createTables(db);
-        }
-
-        public void createTables(SQLiteDatabase db){
-            db.execSQL(SQL_STATEMENT_CREATE_TABLE_MACROS);
-            db.execSQL(SQL_STATEMENT_CREATE_TABLE_ACTION_LISTS);
-        }
-    };
 
     @Override
     public boolean addOrUpdateMacro(MacroInterface macro) {
@@ -133,28 +112,31 @@ public class AndroidLocalDBManager implements LocalDBManager {
                 " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + macro.getId()});
 
         if(checkCursor == null || checkCursor.getCount() == 0){
+            Lol.d(this, "addOrUpdateMacro() called: macro does not exist, inserting new one '"+macro.getId()+":"+macro.getName()+"'");
             //there are no macros with same id as macro
             //so this will insert it in the db
-            long rowid = db.insert(TABLE_MACROS, null, macroToContentValues(macro));
+            long rowid = db.insertOrThrow(TABLE_MACROS, null, macroToContentValues(macro));
             if(rowid != -1){
+                Lol.d(this, "addOrUpdateMacro() called: "+ rowid +" macro inserted, proceeding with actions...");
                 insertActionsForMacro(macro, db);
             }else{
                 localDBOpenHelper.close();
                 throw new RuntimeException("An error occured while inserting a new macro in the local db: "+dbname);
             }
-
+            db.close();
             localDBOpenHelper.close();
             return true;
         }else{
+            Lol.d(this, "addOrUpdateMacro() called: macro exists, updating '"+macro.getId()+":"+macro.getName()+"'");
             db.update(
                     TABLE_MACROS,
                     macroToContentValues(macro),
                     COL_MACRO_ID + " = ?",
-                    new String[]{""+macro.getId()});
+                    new String[]{"" + macro.getId()});
 
             deleteActionsForMacro(macro.getId(), db);
             insertActionsForMacro(macro, db);
-
+            db.close();
             localDBOpenHelper.close();
             return false;
         }
@@ -163,18 +145,20 @@ public class AndroidLocalDBManager implements LocalDBManager {
     @Override
     public List<MacroInterface> getAllMacros() {
         List<MacroInterface> result = new ArrayList<>();
+        SQLiteDatabase db = localDBOpenHelper.getReadableDatabase();
 
-        SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
         Cursor c = db.query(TABLE_MACROS, ALL_COLUMNS_MACROS, null, null, null, null, null);
+        //Cursor c = db.rawQuery("SELECT * FROM " + TABLE_MACROS, null);
+        Lol.d(this, "getAllMacros() called: cursor count: " + c.getCount());
         c.moveToFirst();
 
         while (!c.isAfterLast()){
-
             MacroInterface m = cursorToMacro(c, db);
-
             result.add(m);
+            c.moveToNext();
         }
         c.close();
+        db.close();
         localDBOpenHelper.close();
         return result;
     }
@@ -197,7 +181,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
         m.setMacroColor(iconColor);
         m.setValid(valid);
         m.setExecutionFailurePolicy(failurePolicy);
-        m.setEnabled(enabled);
+
 
         Trigger t = componentFactory.newTrigger(
                 triggerName,
@@ -213,6 +197,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
         m.setTrigger(t);
 
+        m.setEnabled(enabled);
+
         for(Action ac: getActionListForMacro(m.getId(), db)){
             m.addAction(ac);
         }
@@ -222,17 +208,21 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     @Override
     public void removeMacro(int id) {
+        Lol.d(this, "removeMacro() called on macro with id: "+id);
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
         db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
         deleteActionsForMacro(id, db);
+        db.close();
         localDBOpenHelper.close();
     }
 
     @Override
     public void clearDB() {
+        Lol.d(this, "clearDB() called");
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
         db.rawQuery("DELETE FROM " + TABLE_MACROS, null);
         db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS, null);
+        db.close();
         localDBOpenHelper.close();
     }
 
@@ -247,6 +237,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
             return 0;
         int min = c.getInt(0);
         c.close();
+        db.close();
         localDBOpenHelper.close();
         return min;
     }
@@ -258,6 +249,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
                 " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
         boolean result = !(checkCursor == null || checkCursor.getCount() == 0);
         if (checkCursor != null) checkCursor.close();
+        db.close();
         localDBOpenHelper.close();
         return result;
     }
@@ -270,6 +262,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
         if(c == null || c.getCount() == 0)return null;
         c.moveToFirst();
         MacroInterface result = cursorToMacro(c,db);
+        db.close();
         localDBOpenHelper.close();
         return result;
     }
@@ -281,6 +274,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
         db.rawQuery("DELETE FROM "+TABLE_MACROS+" WHERE "+COL_MACRO_ID+" < 0",null);
         db.rawQuery("DELETE FROM "+TABLE_ACTION_LISTS+" WHERE "+COL_ACTIONLIST_MACRO_ID+" < 0",null);
 
+        db.close();
         localDBOpenHelper.close();
     }
 
@@ -310,6 +304,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
                             -1));
 
             result.add(ac);
+            c.moveToNext();
         }
 
         c.close();

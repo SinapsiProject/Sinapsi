@@ -11,8 +11,10 @@ import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.gson.Gson;
+import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.android.persistence.AndroidDiffDBManager;
 import com.sinapsi.android.persistence.AndroidLocalDBManager;
 import com.sinapsi.android.utils.DialogUtils;
@@ -135,6 +137,9 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 new AndroidBase64EncodingMethod(),
                 new AndroidBase64DecodingMethod());
 
+        // inits the engine with mock data for debug
+        if(AppConsts.DEBUG_BYPASS_LOGIN) mockLogin();
+
     }
 
     public void initAndStartEngine() {
@@ -197,11 +202,33 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         // here ends engine initialization      ---------------------
 
         // sync manager initialization ------------------------------
+
+        AndroidLocalDBManager aldbm_old;
+        AndroidLocalDBManager aldbm_curr;
+        AndroidDiffDBManager addbm;
+
+        if(loggedUser.getId() == logoutUser.getId()){
+            aldbm_old = new AndroidLocalDBManager(getApplicationContext(), "logout_user-lastSync.db", engine.getComponentFactory());
+            aldbm_curr = new AndroidLocalDBManager(getApplicationContext(), "logout_user-current.db", engine.getComponentFactory());
+            addbm = new AndroidDiffDBManager(getApplicationContext(), "logout_user-diff.db");
+            Log.d("DBLOCATION", getApplicationContext().getDatabasePath("logout_user-lastSync.db").getAbsolutePath());
+            Log.d("DBLOCATION", getApplicationContext().getDatabasePath("logout_user-lastSync.db").getAbsolutePath());
+            Log.d("DBLOCATION", getApplicationContext().getDatabasePath("logout_user-lastSync.db").getAbsolutePath());
+            Log.d("DBLOCATION", getApplicationContext().getDatabasePath("logout_user-lastSync.db").getAbsolutePath());
+            Log.d("DBLOCATION", getApplicationContext().getDatabasePath("logout_user-lastSync.db").getAbsolutePath());
+        }else{
+            aldbm_old = new AndroidLocalDBManager(getApplicationContext(),loggedUser.getEmail().replace('@', '_').replace('.','_')+"-lastSync.db", engine.getComponentFactory());
+            aldbm_curr = new AndroidLocalDBManager(getApplicationContext(),loggedUser.getEmail().replace('@', '_').replace('.','_')+"-current.db", engine.getComponentFactory());
+            addbm = new AndroidDiffDBManager(getApplicationContext(), loggedUser.getEmail().replace('@', '_').replace('.','_')+"-diff.db");
+        }
+
+
+
         syncManager = new SyncManager(
                 web,
-                new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '_').replace('.','_')+"-lastSync", engine.getComponentFactory()),
-                new AndroidLocalDBManager(this,loggedUser.getEmail().replace('@', '_').replace('.','_')+"-current", engine.getComponentFactory()),
-                new AndroidDiffDBManager(this, loggedUser.getEmail().replace('@', '_').replace('.','_')+"-diff"),
+                aldbm_old,
+                aldbm_curr,
+                addbm,
                 device
 
         );
@@ -278,46 +305,54 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     }
 
     public void syncAndLoadMacros(final boolean explicit) {
-        if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
-            @Override
-            public void onSyncSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
-                engine.clearMacros();
-                engine.addMacros(loadSavedMacros());
-            }
-
-            @Override
-            public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
-
-                //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification, duplicate and disable macros)
-                //if(sinapsiGuiIsOpen){
-                for(MacroSyncConflict conflict: conflicts){
-                    //TODO: show dialog to the user
+        Lol.d(this, "Network is " + (isOnline()?"online":"offline"));
+        if (isOnline()){
+            syncManager.sync(new SyncManager.MacroSyncCallback() {
+                @Override
+                public void onSyncSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
+                    //hint: optimize by updating engine's macro list with actual changes (and not by clearing and reloading everithing)
+                    engine.clearMacros();
+                    engine.addMacros(loadSavedMacros());
                 }
-                //}else{
-                //  showConflictNotification(conflicts.size());
-                //  engine.pause();
-                //  setResolveConflictsOnNextGuiOpen(true, conflictCallback);
-                //}
-            }
 
-            @Override
-            public void onSyncFailure(Throwable error) {
-                Lol.d(SinapsiBackgroundService.class, "Sync failed: " + error.getMessage());
-                error.printStackTrace();
-                if(explicit){
-                    if(!(error instanceof RetrofitError)){
-                        DialogUtils.showOkDialog(SinapsiBackgroundService.this, "Sync failed", error.getMessage(), true);
-                    }else{
-                        DialogUtils.handleRetrofitError(error, SinapsiBackgroundService.this, true);
+                @Override
+                public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
+
+                    //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification, duplicate and disable macros)
+                    //if(sinapsiGuiIsOpen){
+                    for(MacroSyncConflict conflict: conflicts){
+                        //TODO: show dialog to the user
+                    }
+                    //}else{
+                    //  showConflictNotification(conflicts.size());
+                    //  engine.pause();
+                    //  setResolveConflictsOnNextGuiOpen(true, conflictCallback);
+                    //}
+                }
+
+                @Override
+                public void onSyncFailure(Throwable error) {
+                    Lol.d(SinapsiBackgroundService.class, "Sync failed: " + error.getMessage());
+                    error.printStackTrace();
+                    if(explicit){
+                        if(!(error instanceof RetrofitError)){
+                            DialogUtils.showOkDialog(SinapsiBackgroundService.this, "Sync failed", error.getMessage(), true);
+                        }else{
+                            DialogUtils.handleRetrofitError(error, SinapsiBackgroundService.this, true);
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            engine.clearMacros();
+            engine.addMacros(loadSavedMacros());
+        }
 
 
     }
 
     public List<MacroInterface> getMacros() {
+
         return new ArrayList<>(engine.getMacros().values());
     }
 
@@ -460,6 +495,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     public void addMacro(MacroInterface macro, boolean userIntention){
         try {
+            Lol.d(this, "Calling syncManager.addMacro() passing macro '" + macro.getId() + ":"+macro.getName()+"'");
             syncManager.addMacro(macro);
             syncAndLoadMacros(userIntention);
         } catch (InconsistentMacroChangeException e) {
@@ -470,10 +506,14 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         }
     }
 
-
-
     public SyncManager getSyncManager() {
         return syncManager;
+    }
+
+    public void mockLogin() {
+        onLogIn(logoutUser);
+        setDevice(new FactoryModel().newDevice(-1, "Test device", "Sinapsi debug", "AndroidSmartphone", loggedUser, AndroidAppConsts.CLIENT_VERSION));
+        initAndStartEngine();
     }
 
 

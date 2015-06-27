@@ -233,7 +233,8 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
      * Check to ensure the keys are not null. Throws a runtime exception
      */
     private void checkKeys() {
-        if (publicKey == null || privateKey == null || serverPublicKey == null || serverSessionKey == null)
+        //noinspection ConstantConditions
+        if (!AppConsts.DEBUG_BYPASS_LOGIN && (publicKey == null || privateKey == null || serverPublicKey == null || serverSessionKey == null))
             throw new RuntimeException("Missing key. Did you log in?");
     }
 

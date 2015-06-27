@@ -34,7 +34,9 @@ public class WelcomeActivity extends Activity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(register, 0);
+                if (AppConsts.DEBUG_BYPASS_LOGIN) {
+                    startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+                } else startActivityForResult(register, 0);
             }
         });
 

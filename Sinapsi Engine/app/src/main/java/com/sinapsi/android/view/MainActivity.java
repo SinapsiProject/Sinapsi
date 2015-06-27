@@ -21,6 +21,7 @@ import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.utils.DialogUtils;
+import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.R;
 
 import java.util.ArrayList;
@@ -177,6 +178,7 @@ public class MainActivity extends SinapsiActionBarActivity {
     @Override
     public void onServiceConnected(ComponentName name) {
         super.onServiceConnected(name);
+
         TextView userText = (TextView) findViewById(R.id.user_info_text_view);
         userText.setText(service.getLoggedUser().getEmail());
         userText.setOnClickListener(new View.OnClickListener() {
@@ -194,7 +196,7 @@ public class MainActivity extends SinapsiActionBarActivity {
                                 service.getWeb().logout();
                                 MainActivity.this.finish();
                             }
-                        }, new DialogInterface.OnClickListener(){
+                        }, new DialogInterface.OnClickListener() {
 
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

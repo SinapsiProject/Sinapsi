@@ -10,6 +10,9 @@ import android.widget.TextView;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.engine.R;
+import com.sinapsi.engine.components.TriggerACPower;
+import com.sinapsi.engine.components.TriggerScreenPower;
+import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.Macro;
 
@@ -43,6 +46,13 @@ public class EditorActivity extends SinapsiActionBarActivity {
             @Override
             public void onClick(View v) {
                 input.setName(tv.getText().toString());
+                input.setTrigger(service.getComponentFactory().newTrigger(
+                        TriggerScreenPower.TRIGGER_SCREEN_POWER,
+                        new ActualParamBuilder()
+                                    .put("screen_power", true)
+                                    .create().toString(),
+                        input,
+                        service.getDevice()));
                 returnActivity(input, changed);
             }
         });

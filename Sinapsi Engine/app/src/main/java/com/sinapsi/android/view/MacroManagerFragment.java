@@ -414,6 +414,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                             //there is an error in return value mechanism: for now, let's crash
                             throw new RuntimeException("OnActivityReturn failed");
                         }else{
+                            Lol.printNullity(this, "returnValues[0]", returnValues[0]);
                             service.addMacro((MacroInterface) returnValues[0], true);
 
                         }

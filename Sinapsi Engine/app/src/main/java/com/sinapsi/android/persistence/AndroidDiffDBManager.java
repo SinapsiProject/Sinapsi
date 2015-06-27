@@ -43,34 +43,14 @@ public class AndroidDiffDBManager implements DiffDBManager {
 
     Context context;
     String dbname;
+    public AndroidDiffDBOpenHelper diffDBOpenHelper;
 
     public AndroidDiffDBManager(Context context, String dbname) {
         this.context = context;
         this.dbname = dbname;
+        diffDBOpenHelper = new AndroidDiffDBOpenHelper(context, dbname, null, DIFF_DB_VERSION);
     }
 
-    public SQLiteOpenHelper diffDBOpenHelper = new SQLiteOpenHelper(
-            context,
-            dbname,
-            null,
-            DIFF_DB_VERSION
-    ) {
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            createTables(db);
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHANGES);
-            createTables(db);
-        }
-
-
-        public void createTables(SQLiteDatabase db){
-            db.execSQL(SQL_STATEMENT_CREATE_TABLE_CHANGES);
-        }
-    };
 
     @Override
     public void macroAdded(MacroInterface macro) throws InconsistentMacroChangeException {
@@ -219,6 +199,7 @@ public class AndroidDiffDBManager implements DiffDBManager {
         c.moveToFirst();
         while (!c.isAfterLast()){
             result.add(cursorToMacroChange(c));
+            c.moveToNext();
         }
         c.close();
         diffDBOpenHelper.close();

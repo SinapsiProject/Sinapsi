@@ -120,7 +120,10 @@ public class SyncManager {
     }
 
     public void sync(final MacroSyncCallback callback) {
-
+        if(AppConsts.DEBUG_DISABLE_SYNC){
+            callback.onSyncSuccess(-1,-1,-1,-1);
+            return;
+        }
         webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<Pair<Boolean, List<MacroInterface>>>() {
             @Override
             public void success(Pair<Boolean, List<MacroInterface>> result, Object response) {
