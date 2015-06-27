@@ -1,4 +1,4 @@
-package com.sinapsi.wsproto;
+package com.sinapsi.webshared.wsproto;
 
 /**
  * Created by Giuseppe on 11/06/15.

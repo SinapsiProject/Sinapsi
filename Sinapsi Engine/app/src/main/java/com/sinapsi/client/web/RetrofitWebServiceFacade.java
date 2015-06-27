@@ -1,7 +1,5 @@
 package com.sinapsi.client.web;
 
-import android.util.Base64;
-
 import com.bgp.codec.DecodingMethod;
 import com.bgp.codec.EncodingMethod;
 import com.bgp.encryption.Encrypt;
@@ -12,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.sinapsi.android.Lol;
-import com.sinapsi.android.web.AndroidBase64DecodingMethod;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.client.web.gson.DeviceInterfaceInstanceCreator;
 import com.sinapsi.client.websocket.WSClient;
@@ -27,7 +24,7 @@ import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
-import com.sinapsi.wsproto.WebSocketEventHandler;
+import com.sinapsi.webshared.wsproto.WebSocketEventHandler;
 
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -37,7 +34,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.crypto.SecretKey;

@@ -1,4 +1,4 @@
-package com.sinapsi.wsproto;
+package com.sinapsi.webshared.wsproto;
 
 /**
  * Class used to wrap data into a message containing other metadata (like the type of message),

@@ -72,9 +72,9 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
-import com.sinapsi.wsproto.SinapsiMessageTypes;
-import com.sinapsi.wsproto.WebSocketEventHandler;
-import com.sinapsi.wsproto.WebSocketMessage;
+import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
+import com.sinapsi.webshared.wsproto.WebSocketEventHandler;
+import com.sinapsi.webshared.wsproto.WebSocketMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.sinapsi.wsproto;
+package com.sinapsi.webshared.wsproto;
 
 /**
  * A collection of possible web socket message types in the Sinapsi context.
