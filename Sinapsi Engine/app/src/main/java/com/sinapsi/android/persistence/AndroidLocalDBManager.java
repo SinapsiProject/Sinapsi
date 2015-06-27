@@ -187,13 +187,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
                 triggerName,
                 triggerJSON,
                 m,
-                factoryModel.newDevice(
-                        triggerDeviceId,
-                        "",
-                        "",
-                        "",
-                        null,
-                        -1));
+                triggerDeviceId);
 
         m.setTrigger(t);
 
@@ -295,13 +289,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
             Action ac = componentFactory.newAction(
                     actionName,
                     actionParams,
-                    factoryModel.newDevice(
-                            actionDeviceId,
-                            "",
-                            "",
-                            "",
-                            null,
-                            -1));
+                    actionDeviceId);
 
             result.add(ac);
             c.moveToNext();

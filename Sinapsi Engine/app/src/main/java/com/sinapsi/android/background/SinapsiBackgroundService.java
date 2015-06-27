@@ -628,14 +628,14 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                         .put("wifi_connection_status", ConnectionStatusChoices.CONNECTED.toString())
                         .create().toString(),
                 myMacro,
-                device));
+                device.getId()));
 
         myMacro.addAction(getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
                         .put("log_message", "Wifi enabled")
                         .create().toString(),
-                device
+                device.getId()
         ));
 
         myMacro.addAction(getComponentFactory().newAction(
@@ -644,7 +644,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                         .put("notification_title", "Yeah!")
                         .put("notification_message", "Connected to @{wifi_ssid}.")
                         .create().toString(),
-                device
+                device.getId()
         ));
         myMacro.setMacroColor("#3333AA");
         myMacro.setIconName("ic_macro_default");
@@ -657,7 +657,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 TriggerScreenPower.TRIGGER_SCREEN_POWER,
                 null,
                 myMacro2,
-                device
+                device.getId()
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
@@ -665,7 +665,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 new ActualParamBuilder()
                         .put("log_message", "Lo schermo e' @{screen_power}")
                         .create().toString(),
-                device
+                device.getId()
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
@@ -676,7 +676,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                         .put("var_type", VariableManager.Types.STRING.toString())
                         .put("var_value", "@{screen_power} @{screen_power}")
                         .create().toString(),
-                device
+                device.getId()
         ));
 
         myMacro2.addAction(getComponentFactory().newAction(
@@ -684,7 +684,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 new ActualParamBuilder()
                         .put("log_message", "Lo schermo e' @{screen_power}")
                         .create().toString(),
-                device
+                device.getId()
         ));
 
         myMacro2.setMacroColor("#33AA33");
@@ -713,7 +713,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                         .put("wifi_connection_status", ConnectionStatusChoices.CONNECTED.toString())
                         .create().toString(),
                 myMacro3,
-                device));
+                device.getId()));
 
         myMacro3.addAction(getComponentFactory().newAction(
                 ActionContinueConfirmDialog.ACTION_CONTINUE_CONFIRM_DIALOG,
@@ -721,7 +721,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                         .put("dialog_title", "Continuare?")
                         .put("dialog_message", "Sicuro di voler disattivare il wifi?")
                         .create().toString(),
-                device
+                device.getId()
         ));
 
         myMacro3.addAction(getComponentFactory().newAction(
@@ -729,7 +729,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 new ActualParamBuilder()
                         .put("wifi_switch", false)
                         .create().toString(),
-                device
+                device.getId()
         ));
 
         myMacro3.addAction(getComponentFactory().newAction(
@@ -737,7 +737,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 new ActualParamBuilder()
                         .put("log_message", "Il wifi e' disattivato")
                         .create().toString(),
-                device
+                device.getId()
         ));
 
         myMacro3.setMacroColor("#AA3333");

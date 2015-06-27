@@ -163,15 +163,7 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
                     triggerName,
                     triggerJson,
                     result,
-                    factoryModel.newDevice( //TODO: find a way to not insert a device here, but only the device id
-                            triggerDeviceId,
-                            "",
-                            "",
-                            "",
-                            null,
-                            -1
-                    )
-            );
+                    triggerDeviceId);
         }
 
         result.setTrigger(trigger);
@@ -191,15 +183,7 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
             Action action = componentFactory.newAction(
                     actionName,
                     actionJson,
-                    factoryModel.newDevice(
-                            actionDeviceId,
-                            "",
-                            "",
-                            "",
-                            null,
-                            -1
-                    )
-            );
+                    actionDeviceId);
 
             result.addAction(action);
 

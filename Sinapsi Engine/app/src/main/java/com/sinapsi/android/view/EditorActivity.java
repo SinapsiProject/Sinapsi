@@ -52,7 +52,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
                                     .put("screen_power", true)
                                     .create().toString(),
                         input,
-                        service.getDevice()));
+                        service.getDevice().getId()));
                 returnActivity(input, changed);
             }
         });

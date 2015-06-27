@@ -6,6 +6,7 @@ import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.FactoryModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +25,7 @@ public class ComponentFactory {
     private ComponentLoader loader;
     private DeviceInterface device;
     private SinapsiLog log;
+    private FactoryModel fm = new FactoryModel();
 
     public static final String TRIGGER_EMPTY = "TRIGGER_EMPTY";
 
@@ -49,15 +51,16 @@ public class ComponentFactory {
      * @param macro the macro that will be started by this trigger
      * @return a new trigger instance
      */
-    public Trigger newTrigger(String triggerName, String parameters, MacroInterface macro, DeviceInterface executionDevice){
-        Trigger t = (Trigger) loader.newComponentInstance(MacroComponent.ComponentTypes.TRIGGER, triggerName);
-        if (t == null) {
-            if(device.getId() == executionDevice.getId())
+    public Trigger newTrigger(String triggerName, String parameters, MacroInterface macro, int executionDeviceId){
+        if(device.getId() == executionDeviceId){
+            Trigger t = (Trigger) loader.newComponentInstance(MacroComponent.ComponentTypes.TRIGGER, triggerName);
+            if (t == null) {
                 throw new ComponentNotFoundException(triggerName, MacroComponent.ComponentTypes.TRIGGER);
-            else return newRemoteTrigger(triggerName, parameters, macro, executionDevice);
+            }
+            t.init(device, parameters, macro);
+            return t;
         }
-        t.init(executionDevice, parameters, macro);
-        return t;
+            else return newRemoteTrigger(triggerName, parameters, macro, executionDeviceId);
     }
 
     /**
@@ -66,15 +69,17 @@ public class ComponentFactory {
      * @param parameters the actual parameters JSON string (use ActualParamBuilder)
      * @return a new action instance
      */
-    public Action newAction(String actionName, String parameters, DeviceInterface executionDevice){
-        Action a = (Action) loader.newComponentInstance(MacroComponent.ComponentTypes.ACTION, actionName);
-        if(a == null){
-            if(device.getId() == executionDevice.getId())
+    public Action newAction(String actionName, String parameters, int executionDeviceId){
+        if(device.getId() == executionDeviceId){
+            Action a = (Action) loader.newComponentInstance(MacroComponent.ComponentTypes.ACTION, actionName);
+            if(a == null){
                 throw new ComponentNotFoundException(actionName, MacroComponent.ComponentTypes.ACTION);
-            else return newRemoteAction(actionName, parameters, executionDevice);
+            }
+            a.init(device, parameters);
+            return a;
+
         }
-        a.init(executionDevice, parameters);
-        return a;
+        else return newRemoteAction(actionName, parameters, executionDeviceId);
     }
 
     /**
@@ -152,7 +157,7 @@ public class ComponentFactory {
         return t;
     }
 
-    private Trigger newRemoteTrigger(final String componentName, String parameters, MacroInterface macro, DeviceInterface executionDevice){
+    private Trigger newRemoteTrigger(final String componentName, String parameters, MacroInterface macro, int executionDevice){
         Trigger t = new Trigger() {
             @Override
             protected JSONObject getFormalParametersJSON() throws JSONException {
@@ -180,12 +185,18 @@ public class ComponentFactory {
             }
         };
 
-        t.init(executionDevice, parameters, macro);
+        t.init(fm.newDevice(
+                executionDevice,
+                "",
+                "",
+                "",
+                device.getUser(),//HINT: manage better this when social aspects will be implemented
+                -1), parameters, macro);
         return t;
 
     }
 
-    private Action newRemoteAction(final String componentName, String parameters, DeviceInterface executionDevice){
+    private Action newRemoteAction(final String componentName, String parameters, int executionDevice){
         Action a = new Action() {
             @Override
             protected void onActivate(ExecutionInterface ei) throws JSONException {
@@ -213,7 +224,14 @@ public class ComponentFactory {
             }
         };
 
-        a.init(executionDevice,parameters);
+        a.init(fm.newDevice(
+                executionDevice,
+                "",
+                "",
+                "",
+                device.getUser(),//HINT: manage better this when social aspects will be implemented
+                -1),
+                parameters);
 
         return a;
     }
