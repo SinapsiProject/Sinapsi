@@ -1,4 +1,4 @@
-package com.sinapsi.client.web;
+package com.sinapsi.webshared;
 
 import com.sinapsi.engine.ComponentFactory;
 

@@ -4,7 +4,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import com.sinapsi.client.web.ComponentFactoryProvider;
+import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.model.MacroInterface;

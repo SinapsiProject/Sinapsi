@@ -29,7 +29,7 @@ import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
-import com.sinapsi.client.web.ComponentFactoryProvider;
+import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.client.web.OnlineStatusProvider;
 import com.sinapsi.client.web.RetrofitWebServiceFacade;
 import com.sinapsi.android.enginesystem.AndroidActivationManager;

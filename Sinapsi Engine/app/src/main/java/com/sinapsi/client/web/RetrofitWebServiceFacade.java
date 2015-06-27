@@ -24,6 +24,7 @@ import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
+import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.webshared.gson.MacroTypeAdapter;
 import com.sinapsi.webshared.wsproto.WebSocketEventHandler;
 
