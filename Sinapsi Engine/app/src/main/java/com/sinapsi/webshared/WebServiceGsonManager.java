@@ -3,7 +3,6 @@ package com.sinapsi.webshared;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
-import com.sinapsi.client.web.gson.DeviceInterfaceInstanceCreator;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
