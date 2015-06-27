@@ -47,10 +47,11 @@ import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedOutput;
 
 /**
- * WebService draft class.
- * This is now a class containing some example functions
- * to understand how RetroFit initializes a RetrofitInterface
- * variable.
+ * The current main client-side multiplatform Sinapsi web service interfacing class.
+ * This facade handles Retrofit and Gson libraries initialization,
+ * http requests, serialization/deserialization and encryption/decryption of model objects,
+ * key management, WebSocket connection, user login status.
+ * All http requests to sinapsi web server should be done by calling methods in this class.
  */
 public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKeysProvider {
 
@@ -76,27 +77,24 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     private OnlineStatusProvider onlineStatusProvider;
     private WSClient wsClient = null;
     private WebSocketEventHandler webSocketEventHandler;
-    private LoginStatusListener loginStatusListener;
+    private UserLoginStatusListener userLoginStatusListener;
 
     private UserInterface loggedUser = null;
 
     /**
      * Default ctor
-     *
-     * @param retrofitLog
-     * @param onlineStatusProvider
      */
     public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
                                     OnlineStatusProvider onlineStatusProvider,
                                     WebSocketEventHandler wsEventHandler,
-                                    LoginStatusListener loginStatusListener,
+                                    UserLoginStatusListener userLoginStatusListener,
                                     ComponentFactoryProvider componentFactoryProvider,
                                     EncodingMethod encodingMethod,
                                     DecodingMethod decodingMethod) {
 
         this.webSocketEventHandler = wsEventHandler;
         this.onlineStatusProvider = onlineStatusProvider;
-        this.loginStatusListener = loginStatusListener;
+        this.userLoginStatusListener = userLoginStatusListener;
         this.encodingMethod = encodingMethod;
         this.decodingMethod = decodingMethod;
 
@@ -169,16 +167,13 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     /**
      * Ctor with default encoding/decoding methods
-     *
-     * @param retrofitLog
-     * @param onlineStatusProvider
      */
     public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
                                     OnlineStatusProvider onlineStatusProvider,
                                     WebSocketEventHandler wsEventHandler,
-                                    LoginStatusListener loginStatusListener,
+                                    UserLoginStatusListener userLoginStatusListener,
                                     ComponentFactoryProvider componentFactoryProvider) {
-        this(retrofitLog, onlineStatusProvider, wsEventHandler, loginStatusListener, componentFactoryProvider, null, null);
+        this(retrofitLog, onlineStatusProvider, wsEventHandler, userLoginStatusListener, componentFactoryProvider, null, null);
         //using null as methods here is safe because will force bgp library to use
         //default apache common codec methods
     }
@@ -350,7 +345,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
 
                             loggedUser = user;
-                            loginStatusListener.onLogIn(user);
+                            userLoginStatusListener.onUserLogIn(user);
                             result.success(user, response);
                         }
 
@@ -414,7 +409,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 });
     }
 
-    //Don't call this before login or NullPointerException occurs
+    //Don't force call this before login or NullPointerException occurs
     @Override
     public void getAllMacros(WebServiceCallback<Pair<Boolean, List<MacroInterface>>> result) {
         checkKeys();
@@ -489,7 +484,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         serverSessionKey = null;
         serverPublicKey = null;
         loggedUser = null;
-        loginStatusListener.onLogOut();
+        userLoginStatusListener.onUserLogOut();
     }
 
     @Override
@@ -519,7 +514,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         );
     }
 
-    //Don't call this before login or NullPointerException occurs
     public void pushChanges(DeviceInterface device, List<Pair<SyncOperation, MacroInterface>> changes, WebServiceCallback<List<Pair<SyncOperation, Integer>>> callback){
         cryptedRetrofit.pushChanges(
                 loggedUser.getEmail(),
@@ -533,9 +527,4 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         return loggedUser;
     }
 
-    public interface LoginStatusListener {
-        public void onLogIn(UserInterface user);
-
-        public void onLogOut();
-    }
 }

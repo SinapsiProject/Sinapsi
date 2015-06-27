@@ -37,6 +37,7 @@ import com.sinapsi.android.enginesystem.AndroidDialogAdapter;
 import com.sinapsi.android.enginesystem.AndroidSMSAdapter;
 import com.sinapsi.android.enginesystem.AndroidWifiAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
+import com.sinapsi.client.web.UserLoginStatusListener;
 import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
@@ -95,7 +96,7 @@ public class SinapsiBackgroundService extends Service
         implements
         OnlineStatusProvider,
         WebSocketEventHandler,
-        RetrofitWebServiceFacade.LoginStatusListener,
+        UserLoginStatusListener,
         ComponentFactoryProvider {
 
     private RetrofitWebServiceFacade web;
@@ -468,12 +469,12 @@ public class SinapsiBackgroundService extends Service
     }
 
     @Override
-    public void onLogIn(UserInterface user) {
+    public void onUserLogIn(UserInterface user) {
         this.loggedUser = user;
     }
 
     @Override
-    public void onLogOut() {
+    public void onUserLogOut() {
         this.loggedUser = logoutUser;
     }
 
@@ -484,7 +485,12 @@ public class SinapsiBackgroundService extends Service
         } catch (InconsistentMacroChangeException e) {
             e.printStackTrace();
             if(userIntention){
-                //todo: show error to the user
+                DialogUtils.showOkDialog(this,
+                        "Error",
+                        "A data consistency error occurred while deleting the macro.\n" +
+                                "Retry. If this fails again, contact developers of Sinapsi\n" +
+                                "Error description:" + e.getMessage(),
+                        true);
             }
         }
     }
@@ -496,7 +502,12 @@ public class SinapsiBackgroundService extends Service
         } catch (InconsistentMacroChangeException e) {
             e.printStackTrace();
             if(userIntention){
-                //todo: show error to the user
+                DialogUtils.showOkDialog(this,
+                        "Error",
+                        "A data consistency error occurred while updating the macro.\n" +
+                                "Retry. If this fails again, contact developers of Sinapsi\n" +
+                                "Error description:" + e.getMessage(),
+                        true);
             }
         }
     }
@@ -509,7 +520,12 @@ public class SinapsiBackgroundService extends Service
         } catch (InconsistentMacroChangeException e) {
             e.printStackTrace();
             if(userIntention){
-                //todo: show error to the user
+                DialogUtils.showOkDialog(this,
+                        "Error",
+                        "A data consistency error occurred while adding the macro.\n" +
+                                "Retry. If this fails again, contact developers of Sinapsi.\n" +
+                                "Error description:" + e.getMessage(),
+                        true);
             }
         }
     }
@@ -519,7 +535,7 @@ public class SinapsiBackgroundService extends Service
     }
 
     public void mockLogin() {
-        onLogIn(logoutUser);
+        onUserLogIn(logoutUser);
         setDevice(new FactoryModel().newDevice(-1, "Test device", "Sinapsi debug", "AndroidSmartphone", loggedUser, AndroidAppConsts.CLIENT_VERSION));
         initAndStartEngine();
     }

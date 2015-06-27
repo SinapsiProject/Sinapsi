@@ -13,7 +13,7 @@ import com.sinapsi.model.impl.FactoryModel;
 import java.io.IOException;
 
 /**
- * Default Gson's type adapter for Macro objects.
+ * Default Gson's type adapter used to serialize Macro objects.
  */
 public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
 
