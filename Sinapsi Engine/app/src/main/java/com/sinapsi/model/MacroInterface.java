@@ -11,7 +11,7 @@ import java.util.List;
  * Pure model support interface for the Macro class.
  *
  */
-public interface MacroInterface {
+public interface MacroInterface extends ComunicationInfoInterface{
     public String getName();
     public int getId();
     public void setName(String name);

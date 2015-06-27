@@ -25,6 +25,8 @@ public class ComponentFactory {
     private DeviceInterface device;
     private SinapsiLog log;
 
+    public static final String TRIGGER_EMPTY = "TRIGGER_EMPTY";
+
     /**
      * Creates a new component factory.
      * @param device the device
@@ -118,6 +120,38 @@ public class ComponentFactory {
         return result;
     }
 
+    public Trigger newEmptyTrigger(MacroInterface macro){
+        Trigger t = new Trigger() {
+            @Override
+            protected JSONObject getFormalParametersJSON() throws JSONException {
+                return null;
+            }
+
+            @Override
+            protected JSONObject extractParameterValues(Event e, ExecutionInterface di) throws JSONException {
+                return null;
+            }
+
+            @Override
+            public String getName() {
+                return TRIGGER_EMPTY;
+            }
+
+            @Override
+            public int getMinVersion() {
+                return 0;
+            }
+
+            @Override
+            public HashMap<String, Integer> getSystemRequirementKeys() {
+                return null;
+            }
+        };
+
+        t.init(device, "", macro);
+        return t;
+    }
+
     private Trigger newRemoteTrigger(final String componentName, String parameters, MacroInterface macro, DeviceInterface executionDevice){
         Trigger t = new Trigger() {
             @Override
@@ -183,6 +217,8 @@ public class ComponentFactory {
 
         return a;
     }
+
+
 
 
 
