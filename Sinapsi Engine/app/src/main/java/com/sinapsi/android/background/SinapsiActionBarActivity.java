@@ -31,12 +31,16 @@ public class SinapsiActionBarActivity extends AppCompatActivity implements Servi
 
     private TempParameterManager tempParameterManager;
 
+    protected Object[] params;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tempParameterManager = ((SinapsiAndroidApplication)getApplication()).getParameterManager();
-        //TODO: pull eventual caller tempParameters
+        if(getIntent().hasExtra(TempParameterManager.EXTRA_PARAM_KEY))
+            params = pullTempParameters();
+
     }
 
 

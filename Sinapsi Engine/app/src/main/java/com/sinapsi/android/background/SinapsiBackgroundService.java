@@ -24,6 +24,7 @@ import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
 import com.sinapsi.android.enginesystem.AndroidNotificationAdapter;
 import com.sinapsi.client.SyncManager;
+import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.client.web.OnlineStatusProvider;
@@ -214,6 +215,8 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
         // starts the engine (and the TriggerOnEngineStart activates)
         engine.startEngine();
+
+        startForegroundMode();
     }
 
     private void loadSettings(UserSettingsFacade settings) {
@@ -261,7 +264,6 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        foregroundMode();
         started = true;
         return super.onStartCommand(intent, flags, startId);
     }
@@ -279,14 +281,14 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         if (isOnline()) syncManager.sync(new SyncManager.MacroSyncCallback() {
             @Override
             public void onSyncSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
-                //TODO: delete all macros before adding all together again
+                engine.clearMacros();
                 engine.addMacros(loadSavedMacros());
             }
 
             @Override
             public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
 
-                //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification and pause engine)
+                //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification, duplicate and disable macros)
                 //if(sinapsiGuiIsOpen){
                 for(MacroSyncConflict conflict: conflicts){
                     //TODO: show dialog to the user
@@ -304,7 +306,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 error.printStackTrace();
                 if(explicit){
                     if(!(error instanceof RetrofitError)){
-
+                        DialogUtils.showOkDialog(SinapsiBackgroundService.this, "Sync failed", error.getMessage(), true);
                     }else{
                         DialogUtils.handleRetrofitError(error, SinapsiBackgroundService.this, true);
                     }
@@ -373,7 +375,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
 
     @Override
     public void onWebSocketError(Exception ex) {
-        Lol.d("WEB_SOCKET", "WebSocket Error: "+ex.getMessage());
+        Lol.d("WEB_SOCKET", "WebSocket Error: " + ex.getMessage());
     }
 
     @Override
@@ -433,14 +435,42 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
     }
 
     public void removeMacro(int id, boolean userIntention) {
-        syncManager.removeMacro(id);
-        syncAndLoadMacros(userIntention);
+        try {
+            syncManager.removeMacro(id);
+            syncAndLoadMacros(userIntention);
+        } catch (InconsistentMacroChangeException e) {
+            e.printStackTrace();
+            if(userIntention){
+                //todo: show error to the user
+            }
+        }
     }
 
-    public void addOrUpdateMacro(MacroInterface macro, boolean userIntention) {
-        syncManager.addOrUpdateMacro(macro);
-        syncAndLoadMacros(userIntention);
+    public void updateMacro(MacroInterface macro, boolean userIntention) {
+        try {
+            syncManager.updateMacro(macro);
+            syncAndLoadMacros(userIntention);
+        } catch (InconsistentMacroChangeException e) {
+            e.printStackTrace();
+            if(userIntention){
+                //todo: show error to the user
+            }
+        }
     }
+
+    public void addMacro(MacroInterface macro, boolean userIntention){
+        try {
+            syncManager.addMacro(macro);
+            syncAndLoadMacros(userIntention);
+        } catch (InconsistentMacroChangeException e) {
+            e.printStackTrace();
+            if(userIntention){
+                //todo: show error to the user
+            }
+        }
+    }
+
+
 
     public SyncManager getSyncManager() {
         return syncManager;
@@ -675,8 +705,18 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         //engine.addMacro(myMacro3);
     }
 
+    public void pauseEngine(){
+        engine.pauseEngine();
+        stopForegroundMode();
+    }
 
-    private void foregroundMode() {
+    public void resumeEngine(){
+        engine.resumeEngine();
+        startForegroundMode();
+    }
+
+
+    private void startForegroundMode() {
         //HINT: useful toggles instead of classic content pending intent
 
         Intent i1 = new Intent(this, MainActivity.class);
@@ -689,6 +729,10 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
                 .setContentIntent(maini);
         Notification forenotif = builder.build();
         startForeground(1, forenotif);
+    }
+
+    private void stopForegroundMode() {
+        stopForeground(true);
     }
 
 

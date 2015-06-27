@@ -18,21 +18,21 @@ public interface DiffDBManager {
      *
      * @param macro the added macro
      */
-    void macroAdded(MacroInterface macro);
+    void macroAdded(MacroInterface macro) throws InconsistentMacroChangeException;
 
     /**
      * Updates the db to keep track of the update of a macro
      *
      * @param macro the updated macro
      */
-    void macroUpdated(MacroInterface macro);
+    void macroUpdated(MacroInterface macro) throws InconsistentMacroChangeException;
 
     /**
      * Updates the db to keep track of the removal of a macro
      *
      * @param id the id of the removed macro
      */
-    void macroRemoved(int id);
+    void macroRemoved(int id) throws InconsistentMacroChangeException;
 
     /**
      * Extracts all the changes from the related table and returns them
@@ -52,5 +52,6 @@ public interface DiffDBManager {
      * @param id the macro id
      * @return the list of changes
      */
-    public List<MacroChange> getChangesForMacro(int id);
+    public MacroChange getChangeForMacro(int id); //TODO: let this return only a macro change
+
 }

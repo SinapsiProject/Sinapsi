@@ -71,6 +71,7 @@ public class MainActivity extends SinapsiActionBarActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         setupDrawerToggle();
 
+        //TODO: play/pause engine button
 
         currentTitle = fragmentTitles[0];
         selectItem(0);
