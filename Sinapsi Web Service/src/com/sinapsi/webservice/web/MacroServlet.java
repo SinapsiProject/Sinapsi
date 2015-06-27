@@ -255,7 +255,6 @@ public class MacroServlet extends HttpServlet {
         try {
             engineManager.deleteUserMacro(macro.getId());
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } 
 	}
