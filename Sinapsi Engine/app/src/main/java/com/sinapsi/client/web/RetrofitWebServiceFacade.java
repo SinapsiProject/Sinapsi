@@ -302,7 +302,6 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
             SecretKey sk = encrypt.getEncryptedSessionKey();
             localUncryptedSessionKey = encrypt.getSessionKey();
-
             loginRetrofit.login(email,
                     deviceName,
                     deviceModel,
@@ -488,6 +487,33 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         serverPublicKey = null;
         loggedUser = null;
         loginStatusListener.onLogOut();
+    }
+
+    @Override
+    public void encryptionTest(String email, String deviceName, String deviceModel, final WebServiceCallback<Object> callback) {
+        checkKeys();
+
+        if (!onlineStatusProvider.isOnline()) return;
+
+        // TEST 1: test crypted Retrofit
+        String test = "test1";
+        cryptedRetrofit.encryptionTest(
+                email,
+                deviceName,
+                deviceModel,
+                test,
+                new Callback<Object>() {
+                    @Override
+                    public void success(Object o, Response response) {
+                        Lol.d("success encryption test");
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        callback.failure(error);
+                    }
+                }
+        );
     }
 
     public void pushChanges(DeviceInterface device, List<Pair<SyncOperation, MacroInterface>> changes, WebServiceCallback<List<Pair<SyncOperation, Integer>>> callback){

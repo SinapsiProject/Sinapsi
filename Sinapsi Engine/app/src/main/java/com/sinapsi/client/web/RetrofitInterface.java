@@ -243,4 +243,19 @@ public interface RetrofitInterface {
             Callback<List<Pair<SyncOperation, Integer>>> result
     );
 
+    /**
+     * Calls for encryption test
+     * @param email
+     * @param object
+     * @param result
+     */
+    @POST("/encryption_test")
+    public void encryptionTest(
+           @Query("email") String email,
+           @Query("name") String deviceName,
+           @Query("model") String deviceModel,
+           @Body Object object,
+           Callback<Object> result
+   );
+
 }

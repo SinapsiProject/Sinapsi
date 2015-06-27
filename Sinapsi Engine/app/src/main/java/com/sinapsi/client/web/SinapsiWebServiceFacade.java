@@ -10,9 +10,6 @@ import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
-
-import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -177,5 +174,11 @@ public interface SinapsiWebServiceFacade {
      */
     public void logout();
 
-
+    /**
+     * Encrytion test
+     *
+     * @param email
+     * @param callback
+     */
+    public void encryptionTest(String email, String deviceName, String deviceModel,WebServiceCallback<Object> callback);
 }
