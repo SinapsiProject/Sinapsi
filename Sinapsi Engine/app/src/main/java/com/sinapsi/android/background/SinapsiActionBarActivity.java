@@ -125,12 +125,14 @@ public class SinapsiActionBarActivity extends AppCompatActivity implements Servi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ActivityReturnCallback callback = tempParameterManager.pullReturnCallback(requestCode);
-        callback.onActivityReturn(tempParameterManager.pullTempParameters(data));
+        if(resultCode == RESULT_CANCELED) callback.onActivityCancel();
+        else callback.onActivityReturn(tempParameterManager.pullTempParameters(data));
 
     }
 
     public interface ActivityReturnCallback{
         public void onActivityReturn(Object... returnValues);
+        public void onActivityCancel();
     }
 
 }

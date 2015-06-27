@@ -48,7 +48,6 @@ import java.util.List;
 public class MacroManagerFragment extends SinapsiFragment implements WebServiceConnectionListener {
 
 
-
     private ViewTransitionManager transitionManager;
 
     private ArrayListAdapter<MacroInterface> macroList;
@@ -74,8 +73,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         View rootView = inflater.inflate(R.layout.fragment_macro_manager, container, false);
 
 
-
-        FloatingActionButton fab =(FloatingActionButton) rootView.findViewById(R.id.new_macro_button);
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.new_macro_button);
         macroListRecycler = (RecyclerView) rootView.findViewById(R.id.macro_list_recycler);
 
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
@@ -114,16 +112,16 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 View.OnClickListener openCloseListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(sl.getOpenStatus() == SwipeLayout.Status.Open)
+                        if (sl.getOpenStatus() == SwipeLayout.Status.Open)
                             sl.close(true);
-                        else if(sl.getOpenStatus() == SwipeLayout.Status.Close)
+                        else if (sl.getOpenStatus() == SwipeLayout.Status.Close)
                             sl.open(true);
                     }
                 };
 
                 button.setOnClickListener(openCloseListener);
 
-                LinearLayout bottomWrapper = (LinearLayout)v.findViewById(R.id.bottom_wrapper);
+                LinearLayout bottomWrapper = (LinearLayout) v.findViewById(R.id.bottom_wrapper);
                 sl.setShowMode(SwipeLayout.ShowMode.PullOut);
                 final SwipeActionLayoutManager salm = new SwipeActionLayoutManager(
                         getActivity(), bottomWrapper);
@@ -181,7 +179,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
             @Override
             public int getItemViewType(int position) {
-                if(get(position).isEnabled()){
+                if (get(position).isEnabled()) {
                     return 0;
                 } else {
                     return 1;
@@ -202,24 +200,23 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 TextView title = ((TextView) v.findViewById(R.id.macro_element_title));
 
 
-
-                if(!elem.isValid()) {
-                    String text = "<font color=" + GraphicsUtils.getStringHexOfColor(getResources().getColor(R.color.error_red)) +">";
+                if (!elem.isValid()) {
+                    String text = "<font color=" + GraphicsUtils.getStringHexOfColor(getResources().getColor(R.color.error_red)) + ">";
                     text += elem.getName() + "</font>";
                     title.setText(Html.fromHtml(text));
-                }else if(!elem.isEnabled()){
-                    String text = "<font color=" + GraphicsUtils.getStringHexOfColor(getResources().getColor(R.color.grey_500)) +">";
+                } else if (!elem.isEnabled()) {
+                    String text = "<font color=" + GraphicsUtils.getStringHexOfColor(getResources().getColor(R.color.grey_500)) + ">";
                     text += elem.getName() + "</font>";
                     title.setText(Html.fromHtml(text));
-                }else{
+                } else {
                     title.setText(elem.getName());
                 }
 
-                Lol.d(this, "macro with name " + elem.getName() + " is " + (elem.isEnabled()?"enabled":"disabled"));
+                Lol.d(this, "macro with name " + elem.getName() + " is " + (elem.isEnabled() ? "enabled" : "disabled"));
 
-                if(!elem.isEnabled()){
+                if (!elem.isEnabled()) {
                     ((TextView) v.findViewById(R.id.macro_element_info)).setText("Disabled");
-                }else {
+                } else {
                     ((TextView) v.findViewById(R.id.macro_element_info)).setText("Enabled");
                 }
 
@@ -271,21 +268,25 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     public void onDo(View v, Object o) {
                         Lol.d(this, "edit macro clicked");
                         startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
-                                    @Override
-                                    public void onActivityReturn(Object... returnValues) {
-                                       if(returnValues == null || !((returnValues[0] instanceof MacroInterface) && (returnValues[1] instanceof Boolean))){
-                                           //there is an error in return value mechanism: for now, let's crash
-                                           throw new RuntimeException("OnActivityReturn failed");
-                                       } else {
-                                           if((Boolean) returnValues[1]) //updates the macro only if there was at least a change in the editor
-                                               service.updateMacro((MacroInterface) returnValues[0], true);
-                                       }
-                                    }
-                                }, EditorActivity.class, elem);
+                            @Override
+                            public void onActivityReturn(Object... returnValues) {
+                                if (returnValues == null || !((returnValues[0] instanceof MacroInterface) && (returnValues[1] instanceof Boolean))) {
+                                    //there is an error in return value mechanism: for now, let's crash
+                                    throw new RuntimeException("OnActivityReturn failed");
+                                } else {
+                                    if ((Boolean) returnValues[1]) //updates the macro only if there was at least a change in the editor
+                                        service.updateMacro((MacroInterface) returnValues[0], true);
+                                }
+                            }
+
+                            @Override
+                            public void onActivityCancel() {
+                                //does nothing
+                            }
+                        }, EditorActivity.class, elem);
                         sl.close();
                     }
                 });
-
 
 
                 ImageButton closeContextImageButton = new ImageButton(getActivity());
@@ -385,12 +386,12 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
     private void updateContent(boolean userIntent, boolean doSync) {
         Lol.d(this, "Update content started");
-        if(!isServiceConnected()) return;
+        if (!isServiceConnected()) return;
         swipeRefreshLayout.setRefreshing(true);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
-        if(doSync)service.syncAndLoadMacros(userIntent);
+        if (doSync) service.syncAndLoadMacros(userIntent);
         updateMacroList(service.getMacros());
 
 
@@ -406,20 +407,25 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
         FactoryModel factoryModel = new FactoryModel();
 
-        MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId()-1);
+        MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId() - 1);
         startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
-                    @Override
-                    public void onActivityReturn(Object... returnValues) {
-                        if(returnValues == null || !((returnValues[0] instanceof MacroInterface) && (returnValues[1] instanceof Boolean))){
-                            //there is an error in return value mechanism: for now, let's crash
-                            throw new RuntimeException("OnActivityReturn failed");
-                        }else{
-                            Lol.printNullity(this, "returnValues[0]", returnValues[0]);
-                            service.addMacro((MacroInterface) returnValues[0], true);
+            @Override
+            public void onActivityReturn(Object... returnValues) {
+                if (returnValues == null || !((returnValues[0] instanceof MacroInterface) && (returnValues[1] instanceof Boolean))) {
+                    //there is an error in return value mechanism: for now, let's crash
+                    throw new RuntimeException("OnActivityReturn failed");
+                } else {
+                    Lol.printNullity(this, "returnValues[0]", returnValues[0]);
+                    service.addMacro((MacroInterface) returnValues[0], true);
 
-                        }
-                    }
-                }, EditorActivity.class, m);
+                }
+            }
+
+            @Override
+            public void onActivityCancel() {
+                //do nothing
+            }
+        }, EditorActivity.class, m);
     }
 
     @Override
@@ -448,15 +454,15 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         service.addWebServiceConnectionListener(this);
 
         //updates on service connected only if this is visible to the user
-        if(created)updateContent(true, false);
+        if (created) updateContent(true, false);
     }
 
-    public void setIsListOnTop(boolean b){
+    public void setIsListOnTop(boolean b) {
         isListOnTop = b;
         swipeRefreshLayout.setEnabled(isListOnTop && !isElementSwipingHorizontally);
     }
 
-    public void setIsElementSwipingHorizontally(boolean b){
+    public void setIsElementSwipingHorizontally(boolean b) {
         isElementSwipingHorizontally = b;
         swipeRefreshLayout.setEnabled(isListOnTop && !isElementSwipingHorizontally);
     }
