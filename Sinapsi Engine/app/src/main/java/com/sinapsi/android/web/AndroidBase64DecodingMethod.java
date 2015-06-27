@@ -5,7 +5,7 @@ import android.util.Base64;
 import com.bgp.codec.DecodingMethod;
 
 /**
- * Created by Giuseppe on 20/05/15.
+ * Method to decode from Base64 using Android implementations
  */
 public class AndroidBase64DecodingMethod implements DecodingMethod {
     @Override

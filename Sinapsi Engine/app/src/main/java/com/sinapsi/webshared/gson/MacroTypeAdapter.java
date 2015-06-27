@@ -4,8 +4,8 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.sinapsi.client.web.ComponentFactoryProvider;
 import com.sinapsi.engine.Action;
-import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
@@ -39,11 +39,11 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
     public static final String COMMINFO_ERROR_DESC = "comminfo_error_desc";
     public static final String COMMINFO_ADDITIONAL = "comminfo_additional";
 
-    private final ComponentFactory componentFactory;
+    private final ComponentFactoryProvider componentFactoryProvider;
     private final FactoryModel factoryModel = new FactoryModel();
 
-    public MacroTypeAdapter(ComponentFactory componentFactory){
-        this.componentFactory = componentFactory;
+    public MacroTypeAdapter(ComponentFactoryProvider componentFactoryProvider){
+        this.componentFactoryProvider = componentFactoryProvider;
     }
 
     @Override
@@ -157,9 +157,9 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
 
         Trigger trigger = null;
         if(triggerName == null){
-            trigger = componentFactory.newEmptyTrigger(result);
+            trigger = componentFactoryProvider.getComponentFactory().newEmptyTrigger(result);
         }else{
-            trigger = componentFactory.newTrigger(
+            trigger = componentFactoryProvider.getComponentFactory().newTrigger(
                     triggerName,
                     triggerJson,
                     result,
@@ -180,7 +180,7 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
             in.nextName();//ACTION_JSON
             String actionJson = in.nextString();
 
-            Action action = componentFactory.newAction(
+            Action action = componentFactoryProvider.getComponentFactory().newAction(
                     actionName,
                     actionJson,
                     actionDeviceId);

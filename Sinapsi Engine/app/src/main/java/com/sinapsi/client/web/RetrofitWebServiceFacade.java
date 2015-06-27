@@ -24,6 +24,7 @@ import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
+import com.sinapsi.webshared.gson.MacroTypeAdapter;
 import com.sinapsi.webshared.wsproto.WebSocketEventHandler;
 
 import org.java_websocket.handshake.ServerHandshake;
@@ -89,6 +90,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                                     OnlineStatusProvider onlineStatusProvider,
                                     WebSocketEventHandler wsEventHandler,
                                     LoginStatusListener loginStatusListener,
+                                    ComponentFactoryProvider componentFactoryProvider,
                                     EncodingMethod encodingMethod,
                                     DecodingMethod decodingMethod) {
 
@@ -109,8 +111,10 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                             public UserInterface createInstance(Type type) {
                                 return factoryModel.newUser(-1, null, null);
                             }
-                        }
-                )
+                        })
+                .registerTypeAdapter(
+                        MacroInterface.class,
+                        new MacroTypeAdapter(componentFactoryProvider))
                 .create();
 
 
@@ -172,8 +176,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     public RetrofitWebServiceFacade(RestAdapter.Log retrofitLog,
                                     OnlineStatusProvider onlineStatusProvider,
                                     WebSocketEventHandler wsEventHandler,
-                                    LoginStatusListener loginStatusListener) {
-        this(retrofitLog, onlineStatusProvider, wsEventHandler, loginStatusListener, null, null);
+                                    LoginStatusListener loginStatusListener,
+                                    ComponentFactoryProvider componentFactoryProvider) {
+        this(retrofitLog, onlineStatusProvider, wsEventHandler, loginStatusListener, componentFactoryProvider, null, null);
         //using null as methods here is safe because will force bgp library to use
         //default apache common codec methods
     }
@@ -409,6 +414,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 });
     }
 
+    //Don't call this before login or NullPointerException occurs
     @Override
     public void getAllMacros(WebServiceCallback<Pair<Boolean, List<MacroInterface>>> result) {
         checkKeys();
@@ -513,6 +519,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         );
     }
 
+    //Don't call this before login or NullPointerException occurs
     public void pushChanges(DeviceInterface device, List<Pair<SyncOperation, MacroInterface>> changes, WebServiceCallback<List<Pair<SyncOperation, Integer>>> callback){
         cryptedRetrofit.pushChanges(
                 loggedUser.getEmail(),

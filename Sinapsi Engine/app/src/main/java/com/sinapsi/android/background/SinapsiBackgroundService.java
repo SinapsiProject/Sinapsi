@@ -29,6 +29,7 @@ import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
+import com.sinapsi.client.web.ComponentFactoryProvider;
 import com.sinapsi.client.web.OnlineStatusProvider;
 import com.sinapsi.client.web.RetrofitWebServiceFacade;
 import com.sinapsi.android.enginesystem.AndroidActivationManager;
@@ -90,7 +91,13 @@ import retrofit.android.AndroidLog;
  * in order to remain running on the system. The engine is initialized
  * here and
  */
-public class SinapsiBackgroundService extends Service implements OnlineStatusProvider, WebSocketEventHandler, RetrofitWebServiceFacade.LoginStatusListener {
+public class SinapsiBackgroundService extends Service
+        implements
+        OnlineStatusProvider,
+        WebSocketEventHandler,
+        RetrofitWebServiceFacade.LoginStatusListener,
+        ComponentFactoryProvider {
+
     private RetrofitWebServiceFacade web;
     private SyncManager syncManager;
     private UserSettingsFacade settings;
@@ -131,6 +138,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
         // web service initialization -------------------------------
         web = new RetrofitWebServiceFacade(
                 new AndroidLog("RETROFIT"),
+                this,
                 this,
                 this,
                 this,
@@ -550,6 +558,7 @@ public class SinapsiBackgroundService extends Service implements OnlineStatusPro
      *
      * @return the component factory
      */
+    @Override
     public ComponentFactory getComponentFactory() {
         return engine.getComponentFactory();
     }
