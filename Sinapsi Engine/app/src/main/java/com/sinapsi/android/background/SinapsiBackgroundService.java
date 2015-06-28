@@ -242,6 +242,8 @@ public class SinapsiBackgroundService extends Service
 
         );
 
+        if(AppConsts.DEBUG_CLEAR_DB_ON_START) syncManager.clearAll();
+
         // loads macros from local db/web service -------------------
         syncAndLoadMacros(false);
 

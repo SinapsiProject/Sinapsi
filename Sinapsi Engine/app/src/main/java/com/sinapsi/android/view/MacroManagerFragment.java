@@ -36,7 +36,6 @@ import com.sinapsi.android.view.editor.EditorActivity;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.utils.HashMapBuilder;
 
 import java.util.Arrays;

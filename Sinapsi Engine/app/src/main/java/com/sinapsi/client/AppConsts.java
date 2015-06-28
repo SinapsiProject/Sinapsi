@@ -11,7 +11,7 @@ public class AppConsts {
     public static final boolean DEBUG_TEST_CREDENTIALS = true;
     public static final String DEBUG_TEST_EMAIL = "a@bf";
     public static final String DEBUG_TEST_PASSWORD = "1234567890";
-    public static final boolean DEBUG_CLEAR_DB_ON_START = true; //TODO: use
+    public static final boolean DEBUG_CLEAR_DB_ON_START = true;
     public static final boolean DEBUG_ENCRYPTED_RETROFIT = false;
     public static final boolean DEBUG_DISABLE_SYNC = true;
 
