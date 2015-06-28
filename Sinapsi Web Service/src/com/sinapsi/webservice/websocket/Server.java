@@ -16,8 +16,8 @@ import org.java_websocket.server.WebSocketServer;
 
 import com.google.gson.Gson;
 import com.sinapsi.webservice.engine.WebServiceLog;
-import com.sinapsi.wsproto.SinapsiMessageTypes;
-import com.sinapsi.wsproto.WebSocketMessage;
+import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
+import com.sinapsi.webshared.wsproto.WebSocketMessage;
 
 /**
  * WebSocketServer implementation

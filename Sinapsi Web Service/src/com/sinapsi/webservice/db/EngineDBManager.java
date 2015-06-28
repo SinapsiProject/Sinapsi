@@ -148,7 +148,7 @@ public class EngineDBManager {
             while(r.next()) {
                 ComponentFactory componentFactory = engine.getComponentFactoryForUser(r.getInt("iduser"));
                 DeviceInterface device = deviceDBManager.getDevice(r.getInt("iddevice"));
-                Action action = componentFactory.newAction(r.getString("name"), r.getString("actionjson"), device);
+                Action action = componentFactory.newAction(r.getString("name"), r.getString("actionjson"), device.getId());
                 actions.add(action);
             }
             
@@ -191,7 +191,7 @@ public class EngineDBManager {
             while(r.next()) {
                 ComponentFactory componentFactory = engine.getComponentFactoryForUser(r.getInt("iduser"));
                 DeviceInterface device = deviceDBManager.getDevice(r.getInt("iddevice"));
-                Action action = componentFactory.newAction(r.getString("name"), r.getString("actionjson"), device);
+                Action action = componentFactory.newAction(r.getString("name"), r.getString("actionjson"), device.getId());
                 actions.add(action);
             }
             
@@ -429,7 +429,7 @@ public class EngineDBManager {
                 Trigger trigger = componentFactory.newTrigger(getTrigger(r.getInt("idtrigger")), 
                                                               r.getString("triggerjson"), 
                                                               macro, 
-                                                              deviceDb.getDevice(r.getInt("iddevice")));
+                                                              deviceDb.getDevice(r.getInt("iddevice")).getId());
                 // set the trigger
                 macro.setTrigger(trigger);
                 
@@ -479,7 +479,7 @@ public class EngineDBManager {
                 Trigger trigger = componentFactory.newTrigger(getTrigger(r.getInt("idtrigger")), 
                                                               r.getString("triggerjson"), 
                                                               macro, 
-                                                              deviceDb.getDevice(r.getInt("iddevice")));
+                                                              deviceDb.getDevice(r.getInt("iddevice")).getId());
                 // set the trigger
                 macro.setTrigger(trigger);
                 

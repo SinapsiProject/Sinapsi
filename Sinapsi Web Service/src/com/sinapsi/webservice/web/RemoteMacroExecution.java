@@ -23,8 +23,8 @@ import com.sinapsi.webservice.engine.WebServiceEngine;
 import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 import com.sinapsi.webservice.websocket.Server;
-import com.sinapsi.wsproto.SinapsiMessageTypes;
-import com.sinapsi.wsproto.WebSocketMessage;
+import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
+import com.sinapsi.webshared.wsproto.WebSocketMessage;
 
 /**
  * Servlet implementation class RemoteMacroExecutionServlet
