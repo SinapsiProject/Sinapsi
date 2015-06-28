@@ -32,6 +32,7 @@ import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.android.utils.swipeaction.SmartSwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
+import com.sinapsi.android.view.editor.EditorActivity;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.R;
 import com.sinapsi.model.MacroInterface;

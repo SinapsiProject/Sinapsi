@@ -1,4 +1,4 @@
-package com.sinapsi.android.view;
+package com.sinapsi.android.view.editor;
 
 import android.os.Bundle;
 import android.view.Menu;

@@ -48,7 +48,7 @@
         </service>
 
         <activity
-            android:name="com.sinapsi.android.view.EditorActivity"
+            android:name="com.sinapsi.android.view.editor.EditorActivity"
             android:label="@string/title_activity_editor"
             android:parentActivityName="com.sinapsi.android.view.MainActivity" >
             <meta-data
