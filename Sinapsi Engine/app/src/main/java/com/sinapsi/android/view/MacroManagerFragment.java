@@ -226,6 +226,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 SwipeActionLayoutManager salm = new SwipeActionLayoutManager(getActivity(), ll);
                 salm.clear();
 
+                //delete macro button
                 salm.addSwipeAction(new SmartSwipeActionButton(
                         elem,
                         getActivity(),
@@ -258,6 +259,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     }
                 });
 
+                //edit macro button
                 salm.addSwipeAction(new SmartSwipeActionButton(
                         elem,
                         getActivity(),
@@ -424,6 +426,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
             @Override
             public void onActivityCancel() {
+                Lol.d(MacroManagerFragment.this, "Editor Activity returned 0");
                 //do nothing
             }
         }, EditorActivity.class, m);

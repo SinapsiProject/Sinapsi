@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class AndroidDiffDBManager implements DiffDBManager {
 
-    public static final int DIFF_DB_VERSION = 1;
+    public static final int DIFF_DB_VERSION = 2;
 
     public static final String TABLE_CHANGES = "macro";
 

@@ -4,8 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
+import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.client.persistence.LocalDBManager;
 import com.sinapsi.engine.Action;
@@ -24,7 +24,7 @@ import java.util.List;
 public class AndroidLocalDBManager implements LocalDBManager {
 
 
-    public static final int LOCAL_DB_VERSION = 1;
+    public static final int LOCAL_DB_VERSION = 2;
 
     public static final String TABLE_MACROS = "macro";
     public static final String TABLE_ACTION_LISTS = "action_list";
@@ -163,18 +163,43 @@ public class AndroidLocalDBManager implements LocalDBManager {
         return result;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private MacroInterface cursorToMacro(Cursor c, SQLiteDatabase db) {
+        boolean p = AndroidAppConsts.DEBUG_LOG_MACRO_CURSORS;
+
+        if(p) Lol.d(this, "====== MACRO DB CURSOR CONTENT ======");
+
+
         int id = c.getInt(0);
         String name = c.getString(1);
+
+        if(p) Lol.d(this, "MACRO: '"+id+":"+name+"'");
+
         String iconName = c.getString(2);
         String iconColor = c.getString(3);
+
+        if(p) Lol.d(this, "--ICON: "+iconName+" COLOR: "+iconColor);
+
         boolean valid = c.getInt(4) != 0;
         String failurePolicy = c.getString(5);
         boolean enabled = c.getInt(6) != 0;
 
+        if(p) {
+            Lol.d(this, "--ENABLED: "+enabled+" VALID: "+valid);
+            Lol.d(this, "--FAILURE_POLICY: "+failurePolicy);
+        }
+
+
         int triggerDeviceId = c.getInt(7);
         String triggerName = c.getString(8);
         String triggerJSON = c.getString(9);
+
+        if(p){
+            Lol.d(this, "--TRIGGER:");
+            Lol.d(this, "----TRIGGER NAME: "+triggerName+" EXECUTION DEVICE: "+triggerDeviceId);
+            Lol.d(this, "----TRIGGER PARAMS: "+triggerJSON);
+            Lol.d(this, "--END TRIGGER.");
+        }
 
         MacroInterface m = factoryModel.newMacro(name, id);
         m.setIconName(iconName);
@@ -193,18 +218,21 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
         m.setEnabled(enabled);
 
+        if(p) Lol.d(this, "--ACTIONS:");
         for(Action ac: getActionListForMacro(m.getId(), db)){
             m.addAction(ac);
         }
-
+        if(p) Lol.d(this, "--END ACTIONS.");
+        if(p) Lol.d(this, "END MACRO (with id: "+ id + ")");
         return m;
     }
 
     @Override
     public void removeMacro(int id) {
-        Lol.d(this, "removeMacro() called on macro with id: "+id);
+        Lol.d(this, "removeMacro() called on macro with id: " + id);
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
-        db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
+        db.delete(TABLE_MACROS, COL_MACRO_ID + " = ?", new String[]{"" + id});
+        //db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
         deleteActionsForMacro(id, db);
         db.close();
         localDBOpenHelper.close();
@@ -265,8 +293,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public void deleteMacrosWithNegativeId() {
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
 
-        db.rawQuery("DELETE FROM "+TABLE_MACROS+" WHERE "+COL_MACRO_ID+" < 0",null);
-        db.rawQuery("DELETE FROM "+TABLE_ACTION_LISTS+" WHERE "+COL_ACTIONLIST_MACRO_ID+" < 0",null);
+        db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE " + COL_MACRO_ID + " < 0", null);
+        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " < 0", null);
 
         db.close();
         localDBOpenHelper.close();
@@ -282,22 +310,33 @@ public class AndroidLocalDBManager implements LocalDBManager {
         c.moveToFirst();
 
         while(!c.isAfterLast()){
-            String actionName = c.getString(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_NAME));
-            int actionDeviceId = c.getInt(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_DEVICE_ID));
-            String actionParams = c.getString(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_JSON));
-
-            Action ac = componentFactory.newAction(
-                    actionName,
-                    actionParams,
-                    actionDeviceId);
-
-            result.add(ac);
+            result.add(cursorToAction(c));
             c.moveToNext();
         }
 
         c.close();
 
         return result;
+    }
+
+    private Action cursorToAction(Cursor c){
+        boolean p = AndroidAppConsts.DEBUG_LOG_MACRO_CURSORS;
+        String actionName = c.getString(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_NAME));
+        int actionDeviceId = c.getInt(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_DEVICE_ID));
+        String actionParams = c.getString(c.getColumnIndexOrThrow(COL_ACTIONLIST_ACTION_JSON));
+
+        //noinspection ConstantConditions
+        if(p){
+            Lol.d(this, "----ACTION:");
+            Lol.d(this, "------ACTION NAME: "+actionName+" EXECUTION DEVICE: "+actionDeviceId);
+            Lol.d(this, "------ACTION PARAMS: "+actionParams);
+            Lol.d(this, "----END ACTION.");
+        }
+
+        return componentFactory.newAction(
+                actionName,
+                actionParams,
+                actionDeviceId);
     }
 
     private ContentValues macroToContentValues(MacroInterface macro){

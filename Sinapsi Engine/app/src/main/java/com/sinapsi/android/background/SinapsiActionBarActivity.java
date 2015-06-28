@@ -107,7 +107,12 @@ public class SinapsiActionBarActivity extends AppCompatActivity implements Servi
 
 
     public void returnActivity(Object... params){
-        setResult(0, tempParameterManager.newIntentForTempParameters(params));
+        setResult(RESULT_OK, tempParameterManager.newIntentForTempParameters(params));
+        finish();
+    }
+
+    public void cancelActivity(){
+        setResult(RESULT_CANCELED);
         finish();
     }
 

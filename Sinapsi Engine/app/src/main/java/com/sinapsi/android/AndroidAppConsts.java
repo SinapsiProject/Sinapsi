@@ -7,4 +7,5 @@ import com.sinapsi.engine.SinapsiVersions;
  */
 public class AndroidAppConsts {
     public static final int CLIENT_VERSION = SinapsiVersions.ANTARES.ordinal();
+    public static final boolean DEBUG_LOG_MACRO_CURSORS = true;
 }
