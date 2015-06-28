@@ -40,7 +40,7 @@ public interface LocalDBManager {
     public void clearDB();
 
     /**
-     * Gets the minimum of the macro's ids.
+     * Gets the minimum of the macro's negative ids, or 0 if there are no negative ids.
      *
      * @return the minimum id
      */

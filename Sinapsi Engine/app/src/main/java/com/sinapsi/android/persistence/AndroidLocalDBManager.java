@@ -261,7 +261,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
         c.close();
         db.close();
         localDBOpenHelper.close();
-        return min;
+        return Math.min(min,0);
     }
 
     @Override

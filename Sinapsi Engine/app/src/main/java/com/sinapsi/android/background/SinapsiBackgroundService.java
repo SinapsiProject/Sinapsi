@@ -780,6 +780,11 @@ public class SinapsiBackgroundService extends Service
         startForegroundMode();
     }
 
+    public MacroInterface newEmptyMacro(){
+        int id = syncManager.getMinId()-1;
+        return engine.newEmptyMacro(id);
+    }
+
 
     private void startForegroundMode() {
         //HINT: useful toggles instead of classic content pending intent
@@ -799,6 +804,7 @@ public class SinapsiBackgroundService extends Service
     private void stopForegroundMode() {
         stopForeground(true);
     }
+
 
 
 }

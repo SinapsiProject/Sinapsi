@@ -231,6 +231,22 @@ public class AndroidDiffDBManager implements DiffDBManager {
         return result;
     }
 
+    @Override
+    public int getMinMacroId() {
+        SQLiteDatabase db = diffDBOpenHelper.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT MIN(" + COL_CHANGE_MACRO_ID + ") FROM " + TABLE_CHANGES, null);
+        if(c == null || c.getCount() == 0)
+            return 0;
+        c.moveToFirst();
+        if(c.isNull(0))
+            return 0;
+        int min = c.getInt(0);
+        c.close();
+        db.close();
+        diffDBOpenHelper.close();
+        return Math.min(min, 0);
+    }
+
     private void removeChange(int macroId, SQLiteDatabase db){
         db.delete(TABLE_CHANGES, COL_CHANGE_MACRO_ID + " = ?", new String[]{"" + macroId});
     }

@@ -408,9 +408,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
     private void newMacro() {
         Lol.d(this, "newMacro called");
 
-        FactoryModel factoryModel = new FactoryModel();
-
-        MacroInterface m = factoryModel.newMacro("", service.getSyncManager().getMinId() - 1);
+        MacroInterface m = service.newEmptyMacro();
         startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
             @Override
             public void onActivityReturn(Object... returnValues) {
@@ -426,7 +424,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
             @Override
             public void onActivityCancel() {
-                Lol.d(MacroManagerFragment.this, "Editor Activity returned 0");
+                Lol.d(MacroManagerFragment.this, "Editor Activity returned RESULT_CANCELED");
                 //do nothing
             }
         }, EditorActivity.class, m);

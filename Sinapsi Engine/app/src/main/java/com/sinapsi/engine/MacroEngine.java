@@ -1,11 +1,14 @@
 package com.sinapsi.engine;
 
+import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.Macro;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,6 +19,7 @@ import java.util.HashMap;
  */
 public class MacroEngine {
 
+    private FactoryModel fm = new FactoryModel();
     private DeviceInterface device;
     private ActivationManager activator;
     private ComponentFactory factory;
@@ -142,6 +146,12 @@ public class MacroEngine {
             }
         }
         macros.clear();
+    }
+
+    public MacroInterface newEmptyMacro(int id){
+        MacroInterface result = fm.newMacro("", id);
+        result.setTrigger(getComponentFactory().newEmptyTrigger(result));
+        return result;
     }
 
     public class MissingMacroException extends Exception {

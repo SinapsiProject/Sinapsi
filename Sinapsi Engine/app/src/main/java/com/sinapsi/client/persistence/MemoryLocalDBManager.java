@@ -56,17 +56,8 @@ public class MemoryLocalDBManager implements LocalDBManager{
     @Override
     public int getMinMacroId() {
         int min = 0;
-        boolean first = true;
-        for(MacroInterface m: macros.values()){
-            if(first){
-                min = m.getId();
-                first = false;
-            }else{
-                if(m.getId()<min){
-                    min = m.getId();
-                }
-            }
-        }
+        for(MacroInterface m: macros.values())
+            if(m.getId()<min) min = m.getId();
         return min;
     }
 

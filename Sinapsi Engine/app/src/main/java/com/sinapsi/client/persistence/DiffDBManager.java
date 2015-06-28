@@ -54,4 +54,10 @@ public interface DiffDBManager {
      */
     public MacroChange getChangeForMacro(int id); //TODO: let this return only a macro change
 
+    /**
+     * Returns the smallest negative macro id, or 0 if there are no negative ids.
+     * @return the smallest macro id
+     */
+    public int getMinMacroId();
+
 }

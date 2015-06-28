@@ -420,7 +420,7 @@ public class SyncManager {
     }
 
     public int getMinId() {
-        return currentDb.getMinMacroId();
+        return Math.min(currentDb.getMinMacroId(), diffDb.getMinMacroId());
     }
 
     private Triplet<Pair<Map<Integer, MacroChange>, Map<Integer, MacroChange>>, List<MacroSyncConflict>, Integer>

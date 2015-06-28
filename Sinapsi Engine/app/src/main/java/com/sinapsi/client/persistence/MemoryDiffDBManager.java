@@ -4,9 +4,11 @@ import com.sinapsi.client.persistence.syncmodel.MacroChange;
 import com.sinapsi.model.MacroInterface;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Multi-platform implementation of DiffDBManager, which keeps all the changes
@@ -98,5 +100,15 @@ public class MemoryDiffDBManager implements DiffDBManager {
     @Override
     public MacroChange getChangeForMacro(int id) {
         return changes.get(id);
+    }
+
+    @Override
+    public int getMinMacroId() {
+        Set<Integer> ids = changes.keySet();
+        int min = 0;
+        for(Integer i:ids){
+            if(i<min) min = i;
+        }
+        return min;
     }
 }

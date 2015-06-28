@@ -10,11 +10,9 @@ import android.widget.TextView;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.engine.R;
-import com.sinapsi.engine.components.TriggerACPower;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.impl.Macro;
 
 public class EditorActivity extends SinapsiActionBarActivity {
 
