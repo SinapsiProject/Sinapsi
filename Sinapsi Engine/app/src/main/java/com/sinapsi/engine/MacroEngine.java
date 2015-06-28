@@ -1,6 +1,5 @@
 package com.sinapsi.engine;
 
-import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.engine.log.SinapsiLog;
@@ -8,7 +7,6 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.FactoryModel;
-import com.sinapsi.model.impl.Macro;
 
 import java.util.Collection;
 import java.util.HashMap;

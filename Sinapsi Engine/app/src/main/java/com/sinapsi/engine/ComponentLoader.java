@@ -1,8 +1,6 @@
 package com.sinapsi.engine;
 
-import com.sinapsi.android.Lol;
 import com.sinapsi.model.MacroComponent;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,15 +108,7 @@ public class  ComponentLoader {
     public MacroComponent newComponentInstance(MacroComponent.ComponentTypes type, String key){
         try {
             switch (type) {
-                case TRIGGER: {
-                    if(triggerClasses.get(key) == null) {
-                        Lol.printNullity(this, "triggerClasses.get(key)", triggerClasses.get(key));
-                        for (String k : triggerClasses.keySet()) {
-                            Lol.d(this, "TriggerClasses contains: " + k);
-                        }
-                        Lol.d(this, "Asked for Trigger: "+ key);
-                    }
-
+                case TRIGGER: {                  
                     return triggerClasses.get(key).newInstance();
                 }
                 case ACTION:
