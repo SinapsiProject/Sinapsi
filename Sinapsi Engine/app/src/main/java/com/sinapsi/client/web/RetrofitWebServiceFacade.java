@@ -395,6 +395,10 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 new Callback<Device>() {
                     @Override
                     public void success(Device deviceInterface, Response response) {
+                        if(deviceInterface == null) {
+                            result.failure(new RuntimeException("Returned device from server is null"));
+                            return;
+                        }
                         if (deviceInterface.isErrorOccured()) {
                             result.failure(new RuntimeException(deviceInterface.getErrorDescription()));
                             return;
