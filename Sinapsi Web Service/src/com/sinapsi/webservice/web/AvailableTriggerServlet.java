@@ -43,16 +43,19 @@ public class AvailableTriggerServlet extends HttpServlet {
         DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
         
         Gson gson = new Gson();   
-
         int idDevice = Integer.parseInt(request.getParameter("device"));
 
         try {
             DeviceInterface device = deviceManager.getDevice(idDevice);
             String email = userManager.getUserEmail(idDevice);
-            // create the encrypter
-            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
+            
+            Encrypt encrypter;
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
+            
             // get the available triggers from the db
             List<MacroComponent> triggers = engineManager.getAvailableTrigger(idDevice);
+            
             // send the encrypted data
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
             	out.print(encrypter.encrypt(gson.toJson(triggers)));
@@ -85,20 +88,24 @@ public class AvailableTriggerServlet extends HttpServlet {
         boolean success = false;
 
         // read the encrypted jsoned body
-        String encryptedJsonBody = BodyReader.read(request);
+        String cryptedJsonBody = BodyReader.read(request);
+        String cryptedString = gson.fromJson(cryptedJsonBody, new TypeToken<String>() {}.getType());
 
         try {
             DeviceInterface device = deviceManager.getDevice(idDevice);
             String email = userManager.getUserEmail(idDevice);
-            // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, device.getName(), device.getModel()), 
-                                            keysManager.getUserSessionKey(email, device.getName(), device.getModel()));
+            
+            Decrypt decrypter;
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                decrypter = new Decrypt(keysManager.getServerPrivateKey(email, device.getName(), device.getModel()), 
+                                        keysManager.getUserSessionKey(email, device.getName(), device.getModel()));
+            
             // decrypt the jsoned body
             String jsonBody;
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
-            	jsonBody = decrypter.decrypt(encryptedJsonBody);
+            	jsonBody = decrypter.decrypt(cryptedString);
             else
-            	jsonBody = encryptedJsonBody;
+            	jsonBody = cryptedJsonBody;
             
             // extract the list of triggers from the jsoned triggers
             List<MacroComponent> triggers = gson.fromJson(jsonBody,new TypeToken<List<MacroComponent>>() {}.getType());
@@ -115,8 +122,11 @@ public class AvailableTriggerServlet extends HttpServlet {
         try {
             DeviceInterface device = deviceManager.getDevice(idDevice);
             String email = userManager.getUserEmail(idDevice);
-            // return a crypted response to the client
-            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
+            
+            Encrypt encrypter;
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
+            
             if (success)
             	if(WebServiceConsts.ENCRYPTED_CONNECTION)
             		out.print(encrypter.encrypt(gson.toJson("success")));

@@ -45,31 +45,35 @@ public class RemoteMacroExecution extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    response.setContentType("application/json");
-	    
+	    Gson gson = new Gson();
 	    int deviceTarget = Integer.parseInt(request.getParameter("to_device"));
 	    int fromDevice = Integer.parseInt(request.getParameter("from_device"));
 	    Server wsserver = (Server) getServletContext().getAttribute("wsserver");
 	    WebServiceEngine engine = (WebServiceEngine) getServletContext().getAttribute("engine");
 
 	    // read the encrypted jsoned body
-        String encryptedJsonBody = BodyReader.read(request);
+        String cryptedJsonBody = BodyReader.read(request);
+        String cryptedString = gson.fromJson(cryptedJsonBody, new TypeToken<String>() {}.getType());
+        
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
        
-        Gson gson = new Gson();
+        
         
         try {
             DeviceInterface device = deviceManager.getDevice(fromDevice);
             String email = deviceManager.getUserEmail(fromDevice);
-            // create the decrypter
-            Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, device.getName(), device.getModel()), 
-                                            keysManager.getUserSessionKey(email, device.getName(), device.getModel()));
+            
+            Decrypt decrypter;
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                decrypter = new Decrypt(keysManager.getServerPrivateKey(email, device.getName(), device.getModel()), 
+                                        keysManager.getUserSessionKey(email, device.getName(), device.getModel()));
             //decrypt the jsoned body
             String jsonBody;
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
-            	jsonBody = decrypter.decrypt(encryptedJsonBody);
+            	jsonBody = decrypter.decrypt(cryptedString);
             else
-            	jsonBody = encryptedJsonBody;
+            	jsonBody = cryptedJsonBody;
             
             RemoteExecutionDescriptor RED = gson.fromJson(jsonBody,new TypeToken<RemoteExecutionDescriptor>() {}.getType());
             

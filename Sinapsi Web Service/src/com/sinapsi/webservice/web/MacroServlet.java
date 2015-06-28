@@ -5,11 +5,13 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.reflect.TypeToken;
@@ -106,29 +108,32 @@ public class MacroServlet extends HttpServlet {
 	    gsonManager = new WebServiceGsonManager(webServiceEngine);
 	    response.setContentType("application/json");
 	    out = response.getWriter();
-        
-               
+                      
         String email = request.getParameter("email");
         String deviceName = request.getParameter("name");
         String deviceModel = request.getParameter("model");
         String action = request.getParameter("action");
         
         // read the encrypted jsoned body
-        String encryptedJsonBody = BodyReader.read(request);
+        String cryptedJsonBody = BodyReader.read(request);
         
         try {
+            UserInterface user = userManager.getUserByEmail(email);
+            
+            String cryptedString = gsonManager.getGsonForUser(user.getId())
+                                              .fromJson(cryptedJsonBody, new TypeToken<String>() {}.getType());
+                    
             Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
-            // create the decrypter
+            
             Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, deviceName, deviceModel),    
                                             keysManager.getUserSessionKey(email, deviceName, deviceModel));
             // decrypt the jsoned body
             String jsonBody;
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
-            	jsonBody = decrypter.decrypt(encryptedJsonBody);
+            	jsonBody = decrypter.decrypt(cryptedString);
             else
-            	jsonBody = encryptedJsonBody;
-            
-            UserInterface user = userManager.getUserByEmail(email);
+            	jsonBody = cryptedJsonBody;
+                       
             // action to do: push a batch of changes, add a macro, update a macro and delete a macro
             switch (action) {
                 
