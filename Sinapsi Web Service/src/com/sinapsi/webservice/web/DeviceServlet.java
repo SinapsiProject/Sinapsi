@@ -102,8 +102,9 @@ public class DeviceServlet extends HttpServlet {
             int version = Integer.parseInt(request.getParameter("version"));
             
             // read the encrypted body
-            String encryptedJsonbody = BodyReader.read(request);
-
+            String cryptedJsonbody = BodyReader.read(request);
+            String cryptedString = gson.fromJson(cryptedJsonbody, new TypeToken<String>() {}.getType());
+            
             try {
                 // create the encrypter
             	Encrypt encrypter;
@@ -119,9 +120,10 @@ public class DeviceServlet extends HttpServlet {
                 //String jsonBody = decrypter.decrypt(encryptedJsonbody);
                 String jsonBody;
                 if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                	 jsonBody = decrypter.decrypt(encryptedJsonbody);
+                	 jsonBody = decrypter.decrypt(cryptedString);
                 else
-                	 jsonBody = encryptedJsonbody;
+                	 jsonBody = cryptedJsonbody;
+                
                 
                 // get the id string from the decrypter jsoned body
                 String id = gson.fromJson(jsonBody, new TypeToken<String>() {}.getType());

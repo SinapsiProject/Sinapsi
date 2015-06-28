@@ -97,7 +97,7 @@ public class WebServiceLog {
      * @return
      * @throws IOException 
      */
-    private Writer openFile(String type) throws IOException {
+    private static Writer openFile(String type) throws IOException {
         switch (type) {
             case STANDARD_OUT:
                 return new OutputStreamWriter(System.out);
