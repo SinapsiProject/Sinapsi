@@ -128,7 +128,7 @@ public class DeviceServlet extends HttpServlet {
                 	 jsonBody = cryptedJsonbody;
                 
                 
-                // get the id string from the decrypter jsoned body
+                // get the id string
                 String id = gson.fromJson(jsonBody, new TypeToken<String>() {}.getType());
                 int idUser = Integer.parseInt(id);
 
