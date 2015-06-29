@@ -9,6 +9,7 @@ import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
+import com.sinapsi.utils.Triplet;
 
 import java.security.PublicKey;
 import java.util.AbstractMap;
@@ -116,7 +117,7 @@ public interface RetrofitInterface {
             @Query("model") String model,
             @Query("type") String type,
             @Query("version") int version,
-            @Body String idUser,
+            @Body Triplet<String, List<MacroComponent>, List<MacroComponent>>  idUserTriggersActions,
             Callback<Device> device);
 
 

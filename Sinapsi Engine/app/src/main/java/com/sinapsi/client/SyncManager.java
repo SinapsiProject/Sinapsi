@@ -1,7 +1,5 @@
 package com.sinapsi.client;
 
-import android.support.annotation.Nullable;
-
 import com.sinapsi.client.persistence.DiffDBManager;
 import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.LocalDBManager;
@@ -286,8 +284,8 @@ public class SyncManager {
         public PushAndPullWebServiceCallBack(
                 MacroSyncCallback callback,
                 List<Pair<SyncOperation, MacroInterface>> pushtmp,
-                @Nullable Map<Integer, MacroChange> toBePulled,
-                @Nullable List<MacroInterface> serverMacros,
+                Map<Integer, MacroChange> toBePulled,
+                List<MacroInterface> serverMacros,
                 int[] pushedAndPulledCounters,
                 Integer noChangesCount,
                 Integer conflictsCount) {
