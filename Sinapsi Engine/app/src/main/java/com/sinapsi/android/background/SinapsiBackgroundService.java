@@ -29,6 +29,7 @@ import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
+import com.sinapsi.utils.Triplet;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.client.web.OnlineStatusProvider;
 import com.sinapsi.client.web.RetrofitWebServiceFacade;
@@ -317,6 +318,7 @@ public class SinapsiBackgroundService extends Service
 
     public void syncAndLoadMacros(final boolean explicit) {
         Lol.d(this, "Network is " + (isOnline()?"online":"offline"));
+
         if (isOnline()){
             syncManager.sync(new SyncManager.MacroSyncCallback() {
                 @Override
@@ -417,6 +419,7 @@ public class SinapsiBackgroundService extends Service
     public void onWebSocketMessage(String message) {
         Lol.d("WEB_SOCKET", "WebSocket message received: '" + message + "'");
         handleWsMessage(message, true);
+
     }
 
     @Override

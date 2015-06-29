@@ -18,7 +18,7 @@ public class AndroidDeviceInfo implements DeviceInfoAdapter {
     }
 
     /**
-     * Return os version
+     * Return client version
      *
      * @return
      */
