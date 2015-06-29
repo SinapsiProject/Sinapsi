@@ -35,6 +35,7 @@ public interface RetrofitInterface {
     public static final String DEVICES = "/devices";
     public static final String AVAILABLE_ACTIONS = "/available_actions";
     public static final String AVAILABLE_TRIGGERS = "/available_triggers";
+    public static final String AVAILABLE_COMPONENTS = "/available_components";
     public static final String REMOTE_MACRO = "/remote_macro";
     public static final String MACROS = "/macro";
 
@@ -117,7 +118,7 @@ public interface RetrofitInterface {
             @Query("model") String model,
             @Query("type") String type,
             @Query("version") int version,
-            @Body Triplet<String, List<MacroComponent>, List<MacroComponent>>  idUserTriggersActions,
+            @Body String idUser,
             Callback<Device> device);
 
 
@@ -154,6 +155,12 @@ public interface RetrofitInterface {
     public void getAvailableTriggers(
             @Query("device") int idDevice,
             Callback<List<MacroComponent>> triggers);
+
+
+    @POST(AVAILABLE_COMPONENTS)
+    public void setAvailableComponents(
+            @Body Triplet<Integer,List<MacroComponent>,List<MacroComponent>> deviceTriggersAndActions,
+            Callback<ComunicationInfo> result);
 
 
     /**
