@@ -3,6 +3,7 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -15,9 +16,11 @@ import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.utils.Pair;
+import com.sinapsi.utils.Triplet;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
@@ -35,7 +38,56 @@ public class AvailableComponents extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+	    response.setContentType("application/json");
+	    PrintWriter out = response.getWriter();
+	    DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
+	    EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");
+	    KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+	    Gson gson = new Gson();
+	        
+	    String email = request.getParameter("email");
+	    String name = request.getParameter("name");
+	    String model = request.getParameter("model");
+	    
+	    try {
+	        Encrypt encrypter;
+            if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model));
+            
+            List<Triplet<DeviceInterface, List<MacroComponent>, List<MacroComponent>>> data = new ArrayList<>();
+            
+            try {
+                List<DeviceInterface> devicesUser = deviceManager.getUserDevices(email);
+                
+                for(DeviceInterface device : devicesUser) {
+                    data.add(new Triplet<DeviceInterface, List<MacroComponent>, List<MacroComponent>>(
+                            device,
+                            engineManager.getAvailableTrigger(device.getId()), 
+                            engineManager.getAvailableAction(device.getId())));   
+                }
+                
+                if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                    out.print(encrypter.encrypt(gson.toJson(data)));
+                else
+                    out.print(gson.toJson(data));
+                out.flush();
+                
+            } catch(SQLException e) {
+                Triplet<Object, Object, Object> nullTriplet = new Triplet<>(null, null, null);
+                nullTriplet.errorOccured(true);
+                nullTriplet.setErrorDescription("Error during getting available components");
+                List<Triplet<Object, Object, Object>> nullData = new ArrayList<>();
+                nullData.add(nullTriplet);
+                
+                if(WebServiceConsts.ENCRYPTED_CONNECTION)
+                    out.print(encrypter.encrypt(gson.toJson(nullData)));
+                else
+                    out.print(gson.toJson(nullData));
+            }
+           
+	    } catch(Exception e) {	        
+	        e.printStackTrace();
+	    }
 	}
 
 	/**
