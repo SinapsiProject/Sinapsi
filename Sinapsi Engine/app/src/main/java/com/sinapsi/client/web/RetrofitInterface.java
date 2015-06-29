@@ -159,9 +159,19 @@ public interface RetrofitInterface {
 
     @POST(AVAILABLE_COMPONENTS)
     public void setAvailableComponents(
-            @Body Triplet<Integer,List<MacroComponent>,List<MacroComponent>> deviceTriggersAndActions,
+            @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
+            @Body Pair<List<MacroComponent>,List<MacroComponent>> triggersAndActions,
             Callback<ComunicationInfo> result);
 
+
+    @GET(AVAILABLE_COMPONENTS)
+    public void getAvailableComponents(
+            @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
+            Callback<List<Triplet<Device, List<MacroComponent>,List<MacroComponent>>>> result);
 
     /**
      * Send the available triggers on the current device
