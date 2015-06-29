@@ -38,4 +38,16 @@ public class DesktopDiffDBManager implements DiffDBManager {
 		return null;
 	}
 
+	@Override
+	public MacroChange getChangeForMacro(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getMinMacroId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

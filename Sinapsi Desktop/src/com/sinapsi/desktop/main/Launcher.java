@@ -4,6 +4,7 @@
 
 package com.sinapsi.desktop.main;
 
+import com.sinapsi.desktop.service.BackgroundService;
 import com.sinapsi.desktop.view.LoginLayout;
 
 import java.awt.AWTException;
@@ -29,6 +30,8 @@ import javafx.stage.WindowEvent;
 
 public class Launcher extends Application {	
 	
+	public static BackgroundService bgService = new BackgroundService();
+
 	// The STAGE!
 	private Stage primaryStage;
 	
@@ -50,6 +53,8 @@ public class Launcher extends Application {
 	
 	@Override
 	public void start(Stage stage) {
+		Thread t = new Thread(bgService);
+		t.start();
 		createTrayIcon(stage);
 		LoginLayout root = new LoginLayout();
 		this.primaryStage = stage;

@@ -1,151 +1,77 @@
 package com.sinapsi.desktop.controller;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.URISyntaxException;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Enumeration;
-import java.util.HashMap;
-
-import org.java_websocket.handshake.ServerHandshake;
-
-import retrofit.RetrofitError;
-import javafx.scene.control.Button;
-
-import com.sinapsi.client.web.*;
 import com.sinapsi.client.web.SinapsiWebServiceFacade.WebServiceCallback;
-import com.sinapsi.client.websocket.WSClient;
-import com.sinapsi.desktop.log.*;
+import com.sinapsi.desktop.enginesystem.DesktopDeviceInfo;
+import com.sinapsi.desktop.main.Launcher;
+import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
+import com.sinapsi.utils.Pair;
+
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
+
 
 public class LayoutController {
 	
-	private RetrofitWebServiceFacade retrofitService;
-	private WSClient wsClient;
-
-	public LayoutController(Button button) {
-		
-		try {
-			wsClient = new WSClient() { 
-
-				@Override
-				public void onOpen(ServerHandshake handshakedata) {
-					super.onOpen(handshakedata);
-				}
-
-				@Override
-				public void onMessage(String message) {
-					super.onMessage(message);
-					handleWsMessage(message, true);
-				}
-
-				@Override
-				public void onError(Exception ex) {
-					super.onError(ex);
-				}
-
-				@Override
-				public void onClose(int code, String reason, boolean remote) {
-					super.onClose(code, reason, remote);
-				}
-
-				public void handleWsMessage(String message, boolean firstCall) {
-					// TODO 
-				}
-			};
-
-			OnlineStatusProvider onlineStatusProvider = new OnlineStatusProvider() {
-
-				@Override
-				public boolean isOnline() {
-					try {
-						Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-						while (interfaces.hasMoreElements()) {
-							NetworkInterface interf = interfaces.nextElement();
-							if (interf.isUp() && !interf.isLoopback())
-								return true;
-						}
-
-					} catch(SocketException e) {
-						e.printStackTrace();
-					}
-					return false;
-				}
-			};
-
-			retrofitService = new RetrofitWebServiceFacade(new DesktopClientLog(),
-					onlineStatusProvider, 
-					wsClient);
-		}
-		catch(URISyntaxException e) {
-			e.printStackTrace();
-		}
+	private DesktopDeviceInfo deviceInfo = new DesktopDeviceInfo();
+	private Stage stage;
+	
+	public LayoutController(Button button, Stage stage) {
+		this.stage = stage;
 	}
-
+	
 	public void login(String email, String password) {
-		
-		retrofitService.requestLogin(email, new WebServiceCallback<HashMap.SimpleEntry<byte[],byte[]>>() {
-		
+		Launcher.bgService.getWeb().requestLogin(email, deviceInfo.getDeviceName(), deviceInfo.getDeviceModel(), new WebServiceCallback<Pair<byte[],byte[]>>() {
+			
 			@Override
-			public void success(SimpleEntry<byte[], byte[]> t, Object response) {
-				retrofitService.login(email, password, new WebServiceCallback<User>() {
+			public void success(Pair<byte[], byte[]> t, Object response) {
+				Launcher.bgService.getWeb().login(email, password, deviceInfo.getDeviceName(), deviceInfo.getDeviceModel(), new WebServiceCallback<User>() {
 
 					@Override
-					public void success(User t, Object response) {
-						if(t.isErrorOccured()) {
-							System.out.println("fanculo");
-							
+					public void success(User user, Object response) {
+						if(user == null) {
+							// TODO Error dialog
+							return;
 						}
-						else {
-							//wsClient.establishConnection();
-							// Info user
-							System.out.println("Fanculo, user id: " + t.getId());
-							
-						}
+						Launcher.bgService.getWeb().registerDevice(user, 
+								email, 
+								deviceInfo.getDeviceName(), 
+								deviceInfo.getDeviceModel(), 
+								deviceInfo.getDeviceType(), 
+								deviceInfo.getVersion(), 
+								new WebServiceCallback<Device>() {
+									
+									@Override
+									public void success(Device device, Object response) {
+										Launcher.bgService.setDevice(device);
+										Launcher.bgService.initEngine();
+										Launcher.bgService.getWSClient().establishConnection();
+										stage.close();
+									}
+									
+									@Override
+									public void failure(Throwable error) {
+										// TODO Error Dialog
+									}
+								});
 					}
 
 					@Override
 					public void failure(Throwable error) {
-						handleRetrofitError(error);
+						// TODO Auto-generated method stub
 					}
-
-				}); 				
+				});
 			}
-
+			
 			@Override
 			public void failure(Throwable error) {
-				handleRetrofitError(error);
+				// TODO Auto-generated method stub
+				
 			}
-
 		});
 	}
 
-	public void handleRetrofitError(Throwable t) {
-		
-		RetrofitError error = (RetrofitError) t;
-		error.printStackTrace();
-		String errstring = "An error occurred while communicating with the server.\n";
-
-		String errtitle = "Error: " + error.getKind().toString();
-
-		switch (error.getKind()) {
-		case NETWORK:
-			errstring += "Network error";
-			break;
-		case CONVERSION:
-			errstring += "Conversion error";
-
-			break;
-		case HTTP:
-			errstring += "HTTP Error " + error.getResponse().getStatus();
-			break;
-		case UNEXPECTED:
-			errstring += "An unexpected error occurred";
-			break;
-		}
-	}
-	
 	public void logout() {
-		retrofitService.logout();
+		
 	}
 }
