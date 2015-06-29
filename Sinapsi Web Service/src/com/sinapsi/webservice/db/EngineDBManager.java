@@ -327,11 +327,24 @@ public class EngineDBManager {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-
+        c = db.connect();
+        c.setAutoCommit(false);
+        
+        // clean the available triggers
         try {
-            c = db.connect();
-            c.setAutoCommit(false);
-
+            String query = "DELETE FROM availabletrigger WHERE iddevice = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idDevice);
+            r = s.executeQuery();
+            
+        } catch (SQLException e) {
+            c.rollback();
+            db.disconnect(c, s, r);
+            throw e;
+        }
+        
+        // add available triggers
+        try {
             for (int i = 0; i < triggers.size(); ++i) {
                 s = null;
                 r = null;
@@ -367,11 +380,24 @@ public class EngineDBManager {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-
+        c = db.connect();
+        c.setAutoCommit(false);
+        
+        // clean the available triggers
         try {
-            c = db.connect();
-            c.setAutoCommit(false);
+            String query = "DELETE FROM availableaction WHERE iddevice = ?";
+            s = c.prepareStatement(query);
+            s.setInt(1, idDevice);
+            r = s.executeQuery();
             
+        } catch (SQLException e) {
+            c.rollback();
+            db.disconnect(c, s, r);
+            throw e;
+        }
+        
+        // add available actions
+        try {
             for (int i = 0; i < actions.size(); ++i) {
                 s = null;
                 r = null;
