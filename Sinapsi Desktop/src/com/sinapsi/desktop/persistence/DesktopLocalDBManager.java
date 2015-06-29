@@ -37,4 +37,22 @@ public class DesktopLocalDBManager implements LocalDBManager{
 		return 0;
 	}
 
+	@Override
+	public boolean containsMacro(int id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public MacroInterface getMacroWithId(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteMacrosWithNegativeId() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
