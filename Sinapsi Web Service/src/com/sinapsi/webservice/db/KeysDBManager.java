@@ -167,7 +167,7 @@ public class KeysDBManager {
 	         s.setString(3, deviceModel);
 	         r = s.executeQuery();
 	         if (r.next()) {
-	            publicKey = r.getString("user_publickey");
+	            publicKey = new String(r.getString("user_publickey"));
 	         }
 	     } catch (SQLException ex) {
 	         db.disconnect(c, s, r);

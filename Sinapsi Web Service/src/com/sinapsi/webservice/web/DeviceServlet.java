@@ -53,7 +53,8 @@ public class DeviceServlet extends HttpServlet {
                 
                 Encrypt encrypter;
                 if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                    encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
+                    encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel),
+                                            keysManager.getServerUncryptedSessionKey(email, deviceName, deviceModel));
                 
                 User user = (User) deviceManager.getUserByEmail(email);
                 List<DeviceInterface> devices;

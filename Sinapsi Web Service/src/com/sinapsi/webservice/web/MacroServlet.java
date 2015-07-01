@@ -64,7 +64,8 @@ public class MacroServlet extends HttpServlet {
             // create the encrypter
         	Encrypt encrypter;
         	if(WebServiceConsts.ENCRYPTED_CONNECTION)
-        		encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
+        		encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel),
+        		                        keysManager.getServerUncryptedSessionKey(email, deviceName, deviceModel));
         	
         	UserInterface user = userManager.getUserByEmail(email);
         	
@@ -72,20 +73,20 @@ public class MacroServlet extends HttpServlet {
             List<MacroInterface> macros = engineManager.getUserMacro(user.getId());
             
             WebServiceLog log = new WebServiceLog(WebServiceLog.FILE_OUT);
-            log.log("user id : " + userManager.getUserByEmail(email).getId());
-            log.log(macros == null ? "macros null" : "macros not null");
             
             
             // sync macro for the current device
             deviceManager.macroNotSynced(deviceName, deviceModel, false);
             
+            String sdf= gsonManager.getGsonForUser(user.getId())
+                    .toJson(new Pair<Boolean, List<MacroInterface>>(false, macros));
+            log.log(sdf);
+            
             // send the encrypted data
-            if(WebServiceConsts.ENCRYPTED_CONNECTION)
-            	out.print(encrypter.encrypt(gsonManager.getGsonForUser(user.getId())
-            	                                       .toJson(new Pair<Boolean, List<MacroInterface>>(false, macros))));
+            if(WebServiceConsts.ENCRYPTED_CONNECTION) 
+            	out.print(encrypter.encrypt(sdf));
             else
-            	out.print(gsonManager.getGsonForUser(user.getId())
-            	                     .toJson(new Pair<Boolean, List<MacroInterface>>(false, macros)));
+            	out.print(sdf);
             out.flush();
             
         } catch(Exception ex) {
@@ -123,7 +124,8 @@ public class MacroServlet extends HttpServlet {
             String cryptedString = gsonManager.getGsonForUser(user.getId())
                                               .fromJson(cryptedJsonBody, new TypeToken<String>() {}.getType());
                     
-            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel));
+            Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel),
+                                            keysManager.getServerUncryptedSessionKey(email, deviceName, deviceModel));
             
             Decrypt decrypter = new Decrypt(keysManager.getServerPrivateKey(email, deviceName, deviceModel),    
                                             keysManager.getUserSessionKey(email, deviceName, deviceModel));
@@ -134,6 +136,9 @@ public class MacroServlet extends HttpServlet {
             else
             	jsonBody = cryptedJsonBody;
                        
+            WebServiceLog log = new WebServiceLog(WebServiceLog.FILE_OUT);
+            log.log("Received json ########\n" + jsonBody + "\n ################# \n");
+            
             // action to do: push a batch of changes, add a macro, update a macro and delete a macro
             switch (action) {
                 
