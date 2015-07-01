@@ -5,13 +5,13 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Utility class that read the body from a post request
- * @author Ayoub
  *
  */
 public class BodyReader {
 	
 	/**
 	 * Read the body from post request and return the jsoned string
+	 * 
 	 * @param request http servlet request
 	 * @return jsoned string
 	 */

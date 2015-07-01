@@ -40,6 +40,7 @@ public class DatabaseController {
 
     /**
      * Establish connection to the db
+     * 
      * @return Connection object
      * @throws SQLException
      */
@@ -49,6 +50,7 @@ public class DatabaseController {
 
     /**
      * Disconnect from the db
+     * 
      * @param c Connection object
      * @param s Statement object
      */
@@ -58,6 +60,7 @@ public class DatabaseController {
 
     /**
      * Disconnect from the db
+     * 
      * @param c Connection object
      * @param s Statement object
      * @param r Resultset object

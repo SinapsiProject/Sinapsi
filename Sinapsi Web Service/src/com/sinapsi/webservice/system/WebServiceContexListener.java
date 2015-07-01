@@ -35,6 +35,9 @@ public class WebServiceContexListener implements ServletContextListener {
     private Server wsserver;
     private WebServiceLog sclog = new WebServiceLog(WebServiceLog.SERVLET_CONTEXT_FILE_OUT);
    
+    /**
+     * When the app is destroyed
+     */
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
         // stop the web socket thread
@@ -61,6 +64,9 @@ public class WebServiceContexListener implements ServletContextListener {
         }
     }
 
+    /**
+     * When the app is the deployed
+     */
     @Override
     public void contextInitialized(ServletContextEvent e) {
         context = e.getServletContext();

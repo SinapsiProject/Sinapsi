@@ -24,7 +24,8 @@ import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
- * Servlet implementation class DeviceConnectedServlet
+ * Manage user devices
+ * 
  */
 @WebServlet("/devices")
 public class DeviceServlet extends HttpServlet {

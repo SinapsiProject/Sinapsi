@@ -30,7 +30,8 @@ import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
- * Servlet implementation class MacroServlet
+ * Macro Managment
+ * 
  */
 @WebServlet("/macro")
 public class MacroServlet extends HttpServlet {
@@ -74,19 +75,20 @@ public class MacroServlet extends HttpServlet {
             
             WebServiceLog log = new WebServiceLog(WebServiceLog.FILE_OUT);
             
-            
+            // get the value of sync before the update
+            boolean oldSyncValue = deviceManager.getMacroSyncValue(deviceName, deviceModel);
             // sync macro for the current device
             deviceManager.macroNotSynced(deviceName, deviceModel, false);
             
-            String sdf= gsonManager.getGsonForUser(user.getId())
-                    .toJson(new Pair<Boolean, List<MacroInterface>>(false, macros));
-            log.log(sdf);
+            String data= gsonManager.getGsonForUser(user.getId())
+                                   .toJson(new Pair<Boolean, List<MacroInterface>>(oldSyncValue, macros));
+            log.log(data);
             
             // send the encrypted data
             if(WebServiceConsts.ENCRYPTED_CONNECTION) 
-            	out.print(encrypter.encrypt(sdf));
+            	out.print(encrypter.encrypt(data));
             else
-            	out.print(sdf);
+            	out.print(data);
             out.flush();
             
         } catch(Exception ex) {

@@ -30,6 +30,7 @@ public class UserDBManager {
 	
 	/**
 	 * Secondaty ctor
+	 * 
 	 * @param db database controller
 	 */
 	public UserDBManager(DatabaseController db) {
@@ -38,6 +39,7 @@ public class UserDBManager {
 	
 	/**
 	 * Secondary ctor, for accessing to the servlet context
+	 * 
 	 * @param http http servlet, needed to access to the servlet context
 	 */
 	public UserDBManager(HttpServlet http) {
@@ -46,6 +48,7 @@ public class UserDBManager {
 	
 	 /**
      * Insert new user in the db
+     * 
      * @param email email of the new user
      * @param password password of the news user
      * @throws Exception
@@ -77,6 +80,7 @@ public class UserDBManager {
     
     /**
      * Update a user token in the db
+     * 
      * @param email email of the user
      * @param token secure random token
      * @throws SQLException
@@ -101,6 +105,7 @@ public class UserDBManager {
     
     /**
      * Return all users
+     * 
      * @return list of users
      * @throws SQLException
      */
@@ -134,6 +139,7 @@ public class UserDBManager {
     
     /**
      * Check if exist user a user with the token passed 
+     * 
      * @param email
      * @param token
      * @return boolean
@@ -163,6 +169,7 @@ public class UserDBManager {
     
     /**
      * Check if exist a user in the db with email and password
+     * 
      * @param email email to check
      * @param passowrd password to check
      * @throws Exception
@@ -192,6 +199,7 @@ public class UserDBManager {
     
     /**
      * Return user by id
+     * 
      * @param id id of the user
      * @return user user to return
      * @throws SQLException
@@ -221,6 +229,7 @@ public class UserDBManager {
 
     /**
      * Return user by email
+     * 
      * @param email email of the user 
      * @return user to return
      * @throws SQLException

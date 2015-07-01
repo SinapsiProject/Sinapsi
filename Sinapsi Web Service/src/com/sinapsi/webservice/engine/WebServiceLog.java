@@ -11,6 +11,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Utility Log class for Web Service
+ * @author Aleph0
+ *
+ */
 public class WebServiceLog {
     public static final String STANDARD_OUT = "STANDARD_OUT";
     public static final String STANDARD_ERR_OUT = "STANDARD_ERR_OUT";
@@ -34,6 +39,7 @@ public class WebServiceLog {
     
     /**
      * Seconday ctor. it user a file for output
+     * 
      * @param filename
      */
     public WebServiceLog(String type) {
@@ -46,6 +52,7 @@ public class WebServiceLog {
     
     /**
      * Write the log
+     * 
      * @param msg message
      */
     public void log(String msg) {
@@ -59,6 +66,7 @@ public class WebServiceLog {
     
     /**
      * Write a tag and the message
+     * 
      * @param tag tag of log, maybe the time or other things
      * @param msg message log
      */
@@ -73,7 +81,8 @@ public class WebServiceLog {
     
     /**
      * Get the time of the log
-     * @return
+     * 
+     * @return String
      */
     public String getTime() {
         return dateFormatLog.format(new Date());
@@ -81,6 +90,7 @@ public class WebServiceLog {
     
     /**
      * Set output writer
+     * 
      * @param type
      */
     public void setWriter(String type) {
@@ -93,6 +103,7 @@ public class WebServiceLog {
     }
     /**
      * If filename is null use standard output for log
+     * 
      * @param filename output filename
      * @return
      * @throws IOException 

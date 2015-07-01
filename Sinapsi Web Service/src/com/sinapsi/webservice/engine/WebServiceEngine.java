@@ -64,6 +64,7 @@ public class WebServiceEngine {
 
     /**
      * Init engines map
+     * 
      * @param users list ud users saved in the db
      */
     public void initEngines(List<UserInterface> users){
@@ -78,6 +79,7 @@ public class WebServiceEngine {
     
     /**
      * Add to the engine a websocket server
+     * 
      * @param wsserver Web Socket server
      */
     public void addWSServer(Server wsserver) {
@@ -86,6 +88,7 @@ public class WebServiceEngine {
 
     /**
      * Load the macro engine for the user
+     * 
      * @param user user saved in the db
      * @return macro engine
      */
@@ -149,6 +152,7 @@ public class WebServiceEngine {
 
     /**
      * Return the component factory for a specific user
+     * 
      * @param userid the id of the user
      * @return
      */
@@ -159,6 +163,7 @@ public class WebServiceEngine {
 
     /**
      * Load saved macro from the db
+     * 
      * @param u user
      * @return
      */
@@ -175,6 +180,7 @@ public class WebServiceEngine {
 
     /**
      * Return the device Web Service for a specific user
+     * 
      * @param user
      * @return
      */
@@ -201,6 +207,7 @@ public class WebServiceEngine {
 
     /**
      * Return the Engine for a specific user
+     * 
      * @param u user
      * @return
      */

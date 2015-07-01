@@ -15,7 +15,7 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 
 /**
- * Class that perform devices query 
+ * Class that perform device's query 
  *
  */
 public class DeviceDBManager extends UserDBManager {
@@ -30,6 +30,7 @@ public class DeviceDBManager extends UserDBManager {
 	
 	/**
      * Secondaty ctor
+     * 
      * @param db database controller
      */
 	public DeviceDBManager(DatabaseController db) {
@@ -38,6 +39,7 @@ public class DeviceDBManager extends UserDBManager {
 	
 	 /**
      * Secondary ctor, use the context listener to access to the db controller
+     * 
      * @param http http servlet
      */
 	public DeviceDBManager(HttpServlet http) {
@@ -46,6 +48,7 @@ public class DeviceDBManager extends UserDBManager {
 	
 	/**
 	 * Return the user for a specific id device
+	 * 
 	 * @param idDevice di device
 	 * @return user interface
 	 * @throws SQLException
@@ -72,6 +75,7 @@ public class DeviceDBManager extends UserDBManager {
 	}
     /**
      * Check if the device with name, model associate to idUser exist
+     * 
      * @param name name of the device
      * @param model model of the device
      * @param idUser id of the user
@@ -105,6 +109,7 @@ public class DeviceDBManager extends UserDBManager {
     
     /**
      * Insert new device in the db
+     * 
      * @param name name of the device
      * @param model model of the device
      * @param type type of the device (mobile/desktop)
@@ -147,6 +152,7 @@ public class DeviceDBManager extends UserDBManager {
     
     /**
      * Return the device with name, model of the id user
+     * 
      * @param name name of the device
      * @param model model of the device
      * @param idUser id of the user
@@ -180,6 +186,7 @@ public class DeviceDBManager extends UserDBManager {
     
     /**
      * Return the device with name and model
+     * 
      * @param name
      * @param model
      * @return
@@ -216,6 +223,7 @@ public class DeviceDBManager extends UserDBManager {
     
     /**
      * Return the device with id
+     * 
      * @param idUser id of the user
      * @return device interface
      * @throws SQLException
@@ -251,6 +259,7 @@ public class DeviceDBManager extends UserDBManager {
     
     /**
      * Return the name and the model of the device with id
+     * 
      * @param idDevice id of the device
      * @return
      * @throws SQLException
@@ -282,6 +291,7 @@ public class DeviceDBManager extends UserDBManager {
     
     /**
      * Return all device linked to user email
+     * 
      * @param email email of user
      * @return list of devices
      * @throws SQLException
@@ -356,7 +366,42 @@ public class DeviceDBManager extends UserDBManager {
     }
     
     /**
-     * Update the value of macro sync for the current device
+     * Return the sync macro value for a specific device
+     * 
+     * @param name name of the device
+     * @param model model of the device
+     * @return boolean
+     * @throws SQLException
+     */
+    public boolean getMacroSyncValue(String name, String model) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        boolean syncValue = false;
+        
+        try {
+            c = db.connect();
+            String query = "SELECT not_synced FROM device WHERE name = ? AND model = ?";
+            s = c.prepareStatement(query);
+            s.setString(1, name);
+            s.setString(2, model);
+            r = s.executeQuery();
+            
+            if(r.next()) 
+                syncValue = r.getBoolean("not_synced");
+            
+        } catch(SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        
+        db.disconnect(c, s, r);
+        return syncValue;
+    }
+    
+    /**
+     * Update the value of macro sync for a specific device
+     * 
      * @param b
      * @throws SQLException 
      */

@@ -21,7 +21,8 @@ import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
- * Servlet that Sign in the user
+ * Login System
+ * 
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {

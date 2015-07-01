@@ -27,7 +27,8 @@ import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
 import com.sinapsi.webshared.wsproto.WebSocketMessage;
 
 /**
- * Servlet implementation class RemoteMacroExecutionServlet
+ * Remote execution macro system
+ * 
  */
 @WebServlet("/remote_macro")
 public class RemoteMacroExecution extends HttpServlet {

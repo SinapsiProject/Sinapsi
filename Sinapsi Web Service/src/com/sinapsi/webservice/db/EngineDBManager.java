@@ -34,7 +34,8 @@ public class EngineDBManager {
     }
     
     /**
-     * Secondaty ctor
+     * Secondary ctor
+     * 
      * @param db database controller
      */
     public EngineDBManager(DatabaseController db) {
@@ -43,6 +44,7 @@ public class EngineDBManager {
     
     /**
      * Secondary ctor, use the context listener to access to the db controller
+     * 
      * @param http http servlet
      */
     public EngineDBManager(HttpServlet http) {
@@ -86,7 +88,7 @@ public class EngineDBManager {
     }
 
     /**
-     * Return the available Trigegrs offered by a specific device
+     * Return the available triggers offered by a specific device
      * 
      * @param idDevice id of the device
      * @return list of trigger
@@ -122,6 +124,7 @@ public class EngineDBManager {
     
     /**
      * Return the list of actions related to a specific macro
+     * 
      * @param idMacro id of the macro
      * @return list of actions
      * @throws SQLException
@@ -162,6 +165,7 @@ public class EngineDBManager {
 
     /**
      * Return the list of actions related to a specific macro
+     * 
      * @param email email of the user
      * @return list of actions
      * @throws SQLException
@@ -287,6 +291,7 @@ public class EngineDBManager {
 
     /**
      * Return the name of the trigger from the id
+     * 
      * @param id id of the trigger
      * @return
      * @throws SQLException 
@@ -424,6 +429,7 @@ public class EngineDBManager {
 
     /**
      * Return all macro of the user id
+     * 
      * @param id id of the user
      * @return
      * @throws SQLException 
@@ -480,6 +486,7 @@ public class EngineDBManager {
     
     /**
      * Return all macro of the user id
+     * 
      * @param id id of the user
      * @return
      * @throws SQLException 
@@ -530,6 +537,7 @@ public class EngineDBManager {
     
     /**
      * Control if exist a macro by id
+     * 
      * @param id id of the macro
      * @return boolean
      * @throws SQLException
@@ -560,6 +568,7 @@ public class EngineDBManager {
     
     /**
      * Delete from the db a macro
+     * 
      * @param idMacro id of the macro
      * @throws SQLException
      */
@@ -589,6 +598,7 @@ public class EngineDBManager {
     
     /**
      * Add to the db a list of macro
+     * 
      * @param idUser di of the user
      * @param macros list of macro
      * @throws SQLException
@@ -604,6 +614,7 @@ public class EngineDBManager {
     
     /**
      * Add to the db a macro, if already exist, updated
+     * 
      * @param idUser id of the user
      * @param macro macro interface
      * @return id of the macro
@@ -675,6 +686,7 @@ public class EngineDBManager {
 
     /**
      * Update macro
+     * 
      * @param idUser id of the user
      * @param macro macro to update
      * @throws SQLException

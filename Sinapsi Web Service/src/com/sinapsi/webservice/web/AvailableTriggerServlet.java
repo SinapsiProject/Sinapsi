@@ -24,7 +24,7 @@ import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
- * Servlet implementation class AvailableTriggerServlet
+ * Get/set available triggers for a specific device
  */
 @WebServlet("/available_triggers")
 public class AvailableTriggerServlet extends HttpServlet {
@@ -51,7 +51,8 @@ public class AvailableTriggerServlet extends HttpServlet {
             
             Encrypt encrypter;
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
+                encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()),
+                                        keysManager.getServerUncryptedSessionKey(email, device.getName(), device.getModel()));
             
             // get the available triggers from the db
             List<MacroComponent> triggers = engineManager.getAvailableTrigger(idDevice);

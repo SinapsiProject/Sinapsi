@@ -28,7 +28,7 @@ import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
- * Servlet implementation class AvailableComponents
+ * Get/Set available components for a specific device
  */
 @WebServlet("/available_components")
 public class AvailableComponents extends HttpServlet {
@@ -52,7 +52,8 @@ public class AvailableComponents extends HttpServlet {
 	    try {
 	        Encrypt encrypter;
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model));
+                encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model),
+                                        keysManager.getServerUncryptedSessionKey(email, name, model));
             
             List<Triplet<DeviceInterface, List<MacroComponent>, List<MacroComponent>>> data = new ArrayList<>();
             
@@ -112,7 +113,8 @@ public class AvailableComponents extends HttpServlet {
         try {
             Encrypt encrypter;
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model));
+                encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model),
+                                        keysManager.getServerUncryptedSessionKey(email, name, model));            
             
             // create the decrypter
             Decrypt decrypter;

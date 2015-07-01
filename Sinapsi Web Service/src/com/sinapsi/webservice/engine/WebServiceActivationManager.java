@@ -4,6 +4,11 @@ import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.execution.ExecutionInterface;
 
+/**
+ * Web service activation manager of Sinapsi
+ * @author Aleph0
+ *
+ */
 public class WebServiceActivationManager extends ActivationManager {
 
     public WebServiceActivationManager(ExecutionInterface defaultExecutionInterface) {

@@ -18,12 +18,11 @@ import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.websocket.Server;
 
 /**
- * Servlet implementation class DashboardServlet
+ * Manage the dashboard of Sinapsi
  */
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)

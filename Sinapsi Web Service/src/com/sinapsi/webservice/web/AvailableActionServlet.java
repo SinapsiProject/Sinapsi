@@ -24,7 +24,7 @@ import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
- * Servlet implementation class AvailableActionServlet
+ * Get/Set the available actions for a specific device
  */
 @WebServlet("/available_actions")
 public class AvailableActionServlet extends HttpServlet {
@@ -51,7 +51,8 @@ public class AvailableActionServlet extends HttpServlet {
             
             Encrypt encrypter;
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()));
+                encrypter = new Encrypt(keysManager.getUserPublicKey(email, device.getName(), device.getModel()),
+                                        keysManager.getServerUncryptedSessionKey(email, device.getName(), device.getModel()));
             
             // get the available actions from the db
             List<MacroComponent> actions = engineManager.getAvailableAction(idDevice);
