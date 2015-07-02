@@ -92,7 +92,9 @@ public class DialogUtils {
 
                 break;
             case HTTP:
-                errstring += "HTTP Error " + error.getResponse().getStatus();
+                if(error.getResponse().getStatus() == 404){
+                    errstring += "404: Unreachable server";
+                }else errstring += "HTTP Error " + error.getResponse().getStatus();
                 break;
             case UNEXPECTED:
                 errstring += "An unexpected error occurred";

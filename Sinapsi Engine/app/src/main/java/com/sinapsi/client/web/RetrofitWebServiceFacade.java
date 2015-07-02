@@ -9,7 +9,6 @@ import com.bgp.keymanager.SessionKeyManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
-import com.sinapsi.android.Lol;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.client.web.gson.DeviceInterfaceInstanceCreator;
 import com.sinapsi.client.websocket.WSClient;
@@ -21,6 +20,7 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ComunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.Macro;
 import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
@@ -113,6 +113,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                         })
                 .registerTypeAdapter(
                         MacroInterface.class,
+                        new MacroTypeAdapter(componentFactoryProvider))
+                .registerTypeAdapter(
+                        Macro.class,
                         new MacroTypeAdapter(componentFactoryProvider))
                 .create();
 
@@ -264,12 +267,13 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                                 return;
                             }
 
+
+                            setPrivateKey(prk);
                             RetrofitWebServiceFacade.this.publicKey = puk;
-                            RetrofitWebServiceFacade.this.privateKey = prk;
 
                             try {
+                                setServerSessionKey(SessionKeyManager.convertToKey(keys.getSecond()));
                                 RetrofitWebServiceFacade.this.serverPublicKey = PublicKeyManager.convertToKey(keys.getFirst());
-                                RetrofitWebServiceFacade.this.serverSessionKey = SessionKeyManager.convertToKey(keys.getSecond());
                             } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                                 e.printStackTrace();
                             }
@@ -395,7 +399,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 new Callback<Device>() {
                     @Override
                     public void success(Device deviceInterface, Response response) {
-                        if(deviceInterface == null) {
+                        if (deviceInterface == null) {
                             result.failure(new RuntimeException("Returned device from server is null"));
                             return;
                         }
@@ -416,11 +420,13 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
     //Don't force call this before login or NullPointerException occurs
     @Override
-    public void getAllMacros(WebServiceCallback<Pair<Boolean, List<MacroInterface>>> result) {
+    public void getAllMacros(DeviceInterface device, WebServiceCallback<Pair<Boolean, List<MacroInterface>>> result) {
         checkKeys();
         if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAllMacros(
                 loggedUser.getEmail(),
+                device.getName(),
+                device.getModel(),
                 convertCallback(result));
     }
 
@@ -508,7 +514,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 new Callback<Object>() {
                     @Override
                     public void success(Object o, Response response) {
-                        Lol.d("success encryption test");
+                        System.out.println("######## success encryption test ########");
                     }
 
                     @Override
@@ -532,4 +538,11 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         return loggedUser;
     }
 
+    public void setPrivateKey(PrivateKey privateKey) {
+        this.privateKey = privateKey;
+    }
+
+    public void setServerSessionKey(SecretKey serverSessionKey) {
+        this.serverSessionKey = serverSessionKey;
+    }
 }

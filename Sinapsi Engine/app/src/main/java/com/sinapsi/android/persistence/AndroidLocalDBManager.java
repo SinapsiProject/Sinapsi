@@ -170,19 +170,19 @@ public class AndroidLocalDBManager implements LocalDBManager {
         if(p) Lol.d(this, "====== MACRO DB CURSOR CONTENT ======");
 
 
-        int id = c.getInt(0);
-        String name = c.getString(1);
+        int id = c.getInt(1);
+        String name = c.getString(2);
 
         if(p) Lol.d(this, "MACRO: '"+id+":"+name+"'");
 
-        String iconName = c.getString(2);
-        String iconColor = c.getString(3);
+        String iconName = c.getString(3);
+        String iconColor = c.getString(4);
 
         if(p) Lol.d(this, "--ICON: "+iconName+" COLOR: "+iconColor);
 
-        boolean valid = c.getInt(4) != 0;
-        String failurePolicy = c.getString(5);
-        boolean enabled = c.getInt(6) != 0;
+        boolean valid = c.getInt(5) != 0;
+        String failurePolicy = c.getString(6);
+        boolean enabled = c.getInt(7) != 0;
 
         if(p) {
             Lol.d(this, "--ENABLED: "+enabled+" VALID: "+valid);
@@ -190,9 +190,9 @@ public class AndroidLocalDBManager implements LocalDBManager {
         }
 
 
-        int triggerDeviceId = c.getInt(7);
-        String triggerName = c.getString(8);
-        String triggerJSON = c.getString(9);
+        int triggerDeviceId = c.getInt(8);
+        String triggerName = c.getString(9);
+        String triggerJSON = c.getString(10);
 
         if(p){
             Lol.d(this, "--TRIGGER:");
@@ -242,8 +242,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public void clearDB() {
         Lol.d(this, "clearDB() called");
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
-        db.rawQuery("DELETE FROM " + TABLE_MACROS, null);
-        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS, null);
+        db.delete(TABLE_MACROS,null, null);
+        db.delete(TABLE_ACTION_LISTS, null, null);
         db.close();
         localDBOpenHelper.close();
     }
@@ -281,7 +281,10 @@ public class AndroidLocalDBManager implements LocalDBManager {
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM " + TABLE_MACROS +
                 " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
-        if(c == null || c.getCount() == 0)return null;
+        if(c == null || c.getCount() == 0){
+            Lol.d(this, "getMacroWithId: "+id+" ----> returning null");
+            return null;
+        }
         c.moveToFirst();
         MacroInterface result = cursorToMacro(c,db);
         db.close();

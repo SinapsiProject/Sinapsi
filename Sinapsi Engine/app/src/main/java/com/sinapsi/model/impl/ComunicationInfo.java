@@ -17,8 +17,8 @@ public class ComunicationInfo implements ComunicationInfoInterface {
      */
     public ComunicationInfo() {
         errorOccured = false;
-        description = "";
-        additionalInfo = "";
+        description = null;
+        additionalInfo = null;
     }
 
     /**
@@ -49,7 +49,7 @@ public class ComunicationInfo implements ComunicationInfoInterface {
      */
     @Override
     public String getErrorDescription() {
-        return description;
+        return (description==null)?"":description;
     }
 
     /**
@@ -58,7 +58,7 @@ public class ComunicationInfo implements ComunicationInfoInterface {
      */
     @Override
     public String getAdditionalInfo() {
-        return additionalInfo;
+        return (additionalInfo==null)?"":additionalInfo;
     }
 
     /**

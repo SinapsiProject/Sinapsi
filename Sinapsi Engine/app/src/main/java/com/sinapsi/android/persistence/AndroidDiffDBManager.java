@@ -208,7 +208,7 @@ public class AndroidDiffDBManager implements DiffDBManager {
 
     @Override
     public void clearDB() {
-        diffDBOpenHelper.getWritableDatabase().rawQuery("DELETE FROM " + TABLE_CHANGES, null);
+        diffDBOpenHelper.getWritableDatabase().delete(TABLE_CHANGES, null, null);
         diffDBOpenHelper.close();
     }
 

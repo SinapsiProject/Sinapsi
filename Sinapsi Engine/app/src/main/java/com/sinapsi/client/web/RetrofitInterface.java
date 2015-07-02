@@ -232,6 +232,8 @@ public interface RetrofitInterface {
     @GET(MACROS + ACTION + GET)
     public void getAllMacros(
             @Query("email") String email,
+            @Query("name") String deviceName,
+            @Query("model") String deviceModel,
             Callback<Pair<Boolean, List<MacroInterface>>> result);
 
     /**

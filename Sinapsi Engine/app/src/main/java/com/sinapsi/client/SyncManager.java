@@ -122,10 +122,13 @@ public class SyncManager {
             callback.onSyncSuccess(-1,-1,-1,-1);
             return;
         }
-        webService.getAllMacros(new SinapsiWebServiceFacade.WebServiceCallback<Pair<Boolean, List<MacroInterface>>>() {
+        webService.getAllMacros(device, new SinapsiWebServiceFacade.WebServiceCallback<Pair<Boolean, List<MacroInterface>>>() {
             @Override
             public void success(Pair<Boolean, List<MacroInterface>> result, Object response) {
                 final List<MacroInterface> serverMacros = result.getSecond();
+
+
+
                 if (result.getFirst()) {
                     if (diffDb.getAllChanges().isEmpty()) {
                         //only the server have new data, so just clear local db and pull everything
@@ -381,13 +384,13 @@ public class SyncManager {
             switch (mc.getChangeType()){
 
                 case ADDED:
-                    result.add(new Pair<>(SyncOperation.ADD, db.getMacroWithId(mc.getId())));
+                    result.add(new Pair<>(SyncOperation.ADD, db.getMacroWithId(mc.getMacroId())));
                     break;
                 case EDITED:
-                    result.add(new Pair<>(SyncOperation.ADD, db.getMacroWithId(mc.getId())));
+                    result.add(new Pair<>(SyncOperation.UPDATE, db.getMacroWithId(mc.getMacroId())));
                     break;
                 case REMOVED:
-                    result.add(new Pair<>(SyncOperation.ADD, fm.newMacro("", mc.getId())));
+                    result.add(new Pair<>(SyncOperation.DELETE, fm.newMacro("", mc.getMacroId())));
                     break;
             }
         }

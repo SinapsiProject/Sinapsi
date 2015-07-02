@@ -48,6 +48,12 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
 
     @Override
     public void write(JsonWriter out, MacroInterface m) throws IOException {
+
+        if(m==null) {
+            out.nullValue();
+            return;
+        }
+
         out.beginObject();
 
         //CommunicationInfo
@@ -91,6 +97,10 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
 
     @Override
     public MacroInterface read(JsonReader in) throws IOException {
+        if(in.peek() == JsonToken.NULL){
+            return null;
+        }
+
         MacroInterface result = factoryModel.newMacro("",-1);
 
         in.beginObject();
