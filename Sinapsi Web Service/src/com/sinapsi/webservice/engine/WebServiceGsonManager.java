@@ -7,8 +7,10 @@ import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.Macro;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.webshared.gson.MacroTypeAdapter;
+
 import java.lang.reflect.Type;
 
 /**
@@ -17,9 +19,11 @@ import java.lang.reflect.Type;
 public class WebServiceGsonManager {
     private FactoryModel factoryModel;
     private WebServiceEngine webServiceEngine;
+    
 
     public WebServiceGsonManager(WebServiceEngine webServiceEngine) {
         this.webServiceEngine = webServiceEngine;
+        
     }
 
     /**
@@ -29,6 +33,14 @@ public class WebServiceGsonManager {
      * @return a gson object
      */
     public Gson getGsonForUser(final int userId) {
+    	
+    	ComponentFactoryProvider cfProvider = new ComponentFactoryProvider() {
+            @Override
+            public ComponentFactory getComponentFactory() {
+                return webServiceEngine.getComponentFactoryForUser(userId);
+            }
+        };
+    	
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(
                         UserInterface.class,
@@ -40,14 +52,10 @@ public class WebServiceGsonManager {
                         })
                 .registerTypeAdapter(
                         MacroInterface.class,
-                        new MacroTypeAdapter(
-                                new ComponentFactoryProvider() {
-                                    @Override
-                                    public ComponentFactory getComponentFactory() {
-                                        return webServiceEngine.getComponentFactoryForUser(userId);
-                                    }
-                                }
-                        ))
+                        new MacroTypeAdapter(cfProvider))
+                .registerTypeAdapter(
+                		Macro.class, 
+                		new MacroTypeAdapter(cfProvider))
                 .create();
 
         return gson;

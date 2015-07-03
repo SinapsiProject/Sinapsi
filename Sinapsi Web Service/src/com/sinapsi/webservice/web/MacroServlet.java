@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
@@ -123,8 +124,9 @@ public class MacroServlet extends HttpServlet {
         try {
             UserInterface user = userManager.getUserByEmail(email);
             
-            String cryptedString = gsonManager.getGsonForUser(user.getId())
-                                              .fromJson(cryptedJsonBody, new TypeToken<String>() {}.getType());
+            Gson userGson = gsonManager.getGsonForUser(user.getId());
+            
+            String cryptedString = userGson.fromJson(cryptedJsonBody, new TypeToken<String>() {}.getType());
                     
             Encrypt encrypter = new Encrypt(keysManager.getUserPublicKey(email, deviceName, deviceModel),
                                             keysManager.getServerUncryptedSessionKey(email, deviceName, deviceModel));
@@ -148,8 +150,7 @@ public class MacroServlet extends HttpServlet {
                 case "push": {
                     
                     // extract the list of cahnges to do from the json
-                    List<Pair<SyncOperation, MacroInterface>> changes = gsonManager.getGsonForUser(user.getId())
-                                                                                   .fromJson(jsonBody, new TypeToken<List<Pair<SyncOperation, MacroInterface>>>() {}.getType());
+                    List<Pair<SyncOperation, MacroInterface>> changes = userGson.fromJson(jsonBody, new TypeToken<List<Pair<SyncOperation, MacroInterface>>>() {}.getType());
                     
                     // the result of computation is a list of pairs containing the sync operation and the id of macro
                     List<Pair<SyncOperation, Integer>> result = new ArrayList<Pair<SyncOperation,Integer>>();
@@ -161,12 +162,12 @@ public class MacroServlet extends HttpServlet {
                             case UPDATE: // update is do it by the add in case the id of macro already exixst in the db
                             case ADD:
                                 // add the macro in the db and add the returned id (of the macro) to the list result
-                                result.add(new Pair<SyncOperation, Integer>(SyncOperation.ADD, add(jsonBody, user, gsonManager)));
+                                result.add(new Pair<SyncOperation, Integer>(SyncOperation.ADD, add(change.getSecond(), user)));
                                 break;
                                 
                             case DELETE:
                                 // delete macro from the db and add a -1 id to the list of result
-                                deleteMacro(jsonBody, user, gsonManager);
+                                deleteMacro(change.getSecond().getId(), user);
                                 result.add(new Pair<SyncOperation, Integer>(SyncOperation.DELETE, -1));
                                 break;                                 
                         }
@@ -174,47 +175,51 @@ public class MacroServlet extends HttpServlet {
                     
                     // return the result
                     if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                    	out.print(encrypter.encrypt(gsonManager.getGsonForUser(user.getId())
-                    	                                       .toJson(result)));
+                    	out.print(encrypter.encrypt(userGson.toJson(result)));
                     else
-                    	out.print(gsonManager.getGsonForUser(user.getId())
-                    	                     .toJson(result));
+                    	out.print(userGson.toJson(result));
                     out.flush();
                 } break;
                 
                 case "add": {
+                	
+                	
+            		MacroInterface m = userGson.fromJson(jsonBody, MacroInterface.class);
+                	
                     // add macro and send the id of the macro
-                	if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                		out.print(encrypter.encrypt(gsonManager.getGsonForUser(user.getId())
-                		                                       .toJson(add(jsonBody, user, gsonManager))));
-                	else
-                		out.print(gsonManager.getGsonForUser(user.getId())
-                		                     .toJson(add(jsonBody, user, gsonManager)));
+                	if(WebServiceConsts.ENCRYPTED_CONNECTION){
+                		
+                		out.print(encrypter.encrypt(userGson.toJson(add(m, user))));
+                	} else {
+                		out.print(userGson.toJson(add(m, user)));
+                	}
+                		
                     out.flush();                
                 } break;
                 
                 case "add_macros": {
+                	
+                	List<MacroInterface> macros = userGson.fromJson(jsonBody, new TypeToken<List<MacroInterface>>(){}.getType());
+                	
                     // add a list of macro and send the macro ids
                 	if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                		out.print(encrypter.encrypt(gsonManager.getGsonForUser(user.getId())
-                		                                       .toJson(addMacros(jsonBody, user, gsonManager))));
+                		out.print(encrypter.encrypt(userGson.toJson(addMacros(macros, user))));
                 	else
-                		out.print(gsonManager.getGsonForUser(user.getId())
-                		                     .toJson(addMacros(jsonBody, user, gsonManager)));
+                		out.print(userGson.toJson(addMacros(macros, user)));
                     out.flush();                   
                 } break;
                 
                 case "delete": {
                     // delete macro
-                    deleteMacro(jsonBody, user, gsonManager);
+                	MacroInterface m = userGson.fromJson(jsonBody, MacroInterface.class);
+                	
+                    deleteMacro(m.getId(), user);
                     
                     //send -1 id
                     if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                    	out.print(encrypter.encrypt(gsonManager.getGsonForUser(user.getId())
-                    	                                       .toJson(-1)));
+                    	out.print(encrypter.encrypt(userGson.toJson(-1)));
                     else
-                    	out.print(gsonManager.getGsonForUser(user.getId())
-                    	                     .toJson(-1));
+                    	out.print(userGson.toJson(-1));
                     out.flush();
                 } break;
         
@@ -234,12 +239,8 @@ public class MacroServlet extends HttpServlet {
 	 * @param deviceName device name of the user
 	 * @param deviceModel device model of the user
 	 */
-	private int add(String jsonBody, UserInterface user, WebServiceGsonManager gm) {
+	private int add(MacroInterface macro, UserInterface user) {
 		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
-	    
-	    // extract the list of actions from the jsoned triggers
-        MacroInterface macro = gm.getGsonForUser(user.getId())
-                                 .fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
         
         // add macro and return the id if macro already exist, update 
         try {
@@ -261,13 +262,9 @@ public class MacroServlet extends HttpServlet {
 	 * @param deviceName device name of the user
 	 * @param deviceModel device model of the user
 	 */
-	private List<Integer> addMacros(String jsonBody, UserInterface user, WebServiceGsonManager gm) {
+	private List<Integer> addMacros(List<MacroInterface> macros, UserInterface user) {
 		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db"); 
 	    
-	    // extract the list of actions from the jsoned triggers
-        List<MacroInterface> macros = gm.getGsonForUser(user.getId())
-                                        .fromJson(jsonBody, new TypeToken<List<MacroInterface>>() {}.getType());
-        
         try {
             return engineManager.addUserMacros(user.getId(), macros);
    
@@ -281,16 +278,12 @@ public class MacroServlet extends HttpServlet {
 	 * Delete macro
 	 * @param jsonBody json body
 	 */
-	private void deleteMacro(String jsonBody, UserInterface user, WebServiceGsonManager gm) {
+	private void deleteMacro(int id, UserInterface user) {
 		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");  
 		
-	    // extract the list of actions from the jsoned triggers
-        MacroInterface macro = gm.getGsonForUser(user.getId())
-                                 .fromJson(jsonBody, new TypeToken<MacroInterface>() {}.getType());
-        
         // delete macro
         try {
-            engineManager.deleteUserMacro(macro.getId());
+            engineManager.deleteUserMacro(id);
         } catch (SQLException e) {
             e.printStackTrace();
         } 
