@@ -343,7 +343,7 @@ public class DeviceDBManager extends UserDBManager {
         
         try {
             c = db.connect();
-            String query = "SELECT id FROM device WHERE iduser = ?";
+            String query = "SELECT id FROM device WHERE iduser = ? AND type = 'Web'";
             s = c.prepareStatement(query);
             s.setInt(1, idUser);
             r = s.executeQuery();
@@ -355,6 +355,7 @@ public class DeviceDBManager extends UserDBManager {
             } else {
                 DeviceInterface newDevice = newDevice("Cloud", "Sinapsi", "Web", idUser, 1);
                 idDevice = newDevice.getId();
+
             }
         } catch(SQLException ex) {
             db.disconnect(c, s, r);
