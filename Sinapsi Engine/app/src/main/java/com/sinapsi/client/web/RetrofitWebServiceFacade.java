@@ -108,7 +108,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                         new InstanceCreator<UserInterface>() {
                             @Override
                             public UserInterface createInstance(Type type) {
-                                return factoryModel.newUser(-1, null, null);
+                                return factoryModel.newUser(-1, null, null, false, null);
                             }
                         })
                 .registerTypeAdapter(

@@ -32,7 +32,9 @@ public class AndroidUserSettingsFacade implements UserSettingsFacade {
         return fM.newUser(
                 id,
                 email,
-                ""
+                "",
+                false,
+                "user"
         );
     }
 

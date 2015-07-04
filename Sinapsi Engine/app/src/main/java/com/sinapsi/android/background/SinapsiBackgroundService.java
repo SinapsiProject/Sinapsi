@@ -114,7 +114,7 @@ public class SinapsiBackgroundService extends Service
 
     private boolean started = false;
     private boolean onlineMode = false;
-    private static final UserInterface logoutUser = fm.newUser(-1, "Not logged in yet.", "");
+    private static final UserInterface logoutUser = fm.newUser(-1, "Not logged in yet.", "", false, "user");
     private UserInterface loggedUser = logoutUser;
 
 

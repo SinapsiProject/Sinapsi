@@ -22,4 +22,18 @@ $('form').submit(function(event) {
     });
        
 });
+
+function register() {
+    var email = document.getElementById('email').value;
+    var password =document.getElementById('password').value
+                     
+    if(email.length == 0 || passowrd.length == 0)
+       $('h1').toggleClass('error');
+    else {
+         var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", "register?email=${email}&passoword=${password}", false);
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+}
     

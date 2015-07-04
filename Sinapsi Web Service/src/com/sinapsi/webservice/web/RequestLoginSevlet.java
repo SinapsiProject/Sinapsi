@@ -68,6 +68,16 @@ public class RequestLoginSevlet extends HttpServlet {
                 return;
             }
             
+            // user exist but is not is not active
+            if(user != null && user.getActivation() == false) {
+                Pair<byte[], byte[]> pair = new Pair<byte[], byte[]>(null, null);
+                pair.errorOccured(true);
+                pair.setErrorDescription("User is not active");
+                out.print(gson.toJson(pair));
+                out.flush();
+                return;
+            }
+            
             byte[] byteKey = gson.fromJson(BodyReader.read(request), new TypeToken<byte[]>(){}.getType());
             PublicKey clientPublicKey = PublicKeyManager.convertToKey(byteKey);
             

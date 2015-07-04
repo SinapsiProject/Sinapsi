@@ -238,8 +238,9 @@ public class MacroServlet extends HttpServlet {
 	 * @param email email of the user
 	 * @param deviceName device name of the user
 	 * @param deviceModel device model of the user
+	 * @throws Exception 
 	 */
-	private int add(MacroInterface macro, UserInterface user) {
+	private int add(MacroInterface macro, UserInterface user) throws Exception {
 		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
         
         // add macro and return the id if macro already exist, update 
@@ -251,8 +252,8 @@ public class MacroServlet extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }     
-        return -1;
 	}
 	
 	/**

@@ -162,7 +162,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                 public void failure(Throwable t) {
                     showProgress(false);
                     if (!(t instanceof RetrofitError)) {
-                        Lol.d(LoginActivity.class, "User does not exist");
+                        Lol.d(LoginActivity.class, "User does not exist or is not active");
                         mEmailView.setError(getString(R.string.username_does_not_exist));
                         return;
                     }
