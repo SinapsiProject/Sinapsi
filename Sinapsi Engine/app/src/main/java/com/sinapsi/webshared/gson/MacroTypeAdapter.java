@@ -117,7 +117,6 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
         result.setErrorDescription(commErrorDesc);
         result.setAdditionalInfo(commAdditional);
 
-
         //Macro's metadata
         in.nextName();//MACRO_NAME
         String macroName = in.nextString();
@@ -135,39 +134,39 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
         boolean enabled = in.nextBoolean();
 
 
-        //Trigger
-        in.nextName();//TRIGGER_DEVICE_ID
-        int triggerDeviceId = in.nextInt();
-
-        String triggerName = null;
-        if(in.nextName().equals(TRIGGER_NAME)) {//TRIGGER_NAME
-            if (in.peek() == JsonToken.NULL) {
-                in.nextNull();
-            } else {
-                triggerName = in.nextString();
-            }
-        }
-
-        String triggerJson = null;
-        if(in.nextName().equals(TRIGGER_JSON)) {//TRIGGER_JSON
-            if (in.peek() == JsonToken.NULL) {
-                in.nextNull();
-            } else {
-                triggerJson = in.nextString();
-            }
-        }
-
-
-        result.errorOccured(commError);
-        result.setErrorDescription(commErrorDesc);
-        result.setAdditionalInfo(commAdditional);
-
         result.setName(macroName);
         result.setId(id);
         result.setIconName(iconName);
         result.setMacroColor(iconColor);
         result.setValid(valid);
         result.setExecutionFailurePolicy(failurePolicy);
+
+
+        //Trigger
+        in.nextName();//TRIGGER_DEVICE_ID
+        int triggerDeviceId = in.nextInt();
+
+
+
+        String triggerName = null;
+        String triggerJson = null;
+        if(in.nextName().equals(TRIGGER_NAME)) {//TRIGGER_NAME
+            if (in.peek() == JsonToken.NULL) {
+                in.nextNull();
+            } else {
+                triggerName = in.nextString();
+            }
+            in.nextName();//TRIGGER_JSON
+
+            if(in.peek() == JsonToken.NULL){
+                in.nextNull();
+            }else {
+                triggerJson = in.nextString();
+            }
+
+            in.nextName();//MACRO_ACTIONS -- this is anticipated here in order to avoid JsonSyntaxExceptions
+        }
+
 
         Trigger trigger = null;
         if(triggerName == null){
@@ -184,7 +183,7 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
         result.setEnabled(enabled);
 
         //Actions
-        in.nextName();//MACRO_ACTIONS
+        
         in.beginArray();
         while(in.hasNext()){
             in.nextName();//ACTION_NAME

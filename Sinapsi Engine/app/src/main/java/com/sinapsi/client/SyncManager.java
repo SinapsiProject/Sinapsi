@@ -127,133 +127,17 @@ public class SyncManager {
             public void success(Pair<Boolean, List<MacroInterface>> result, Object response) {
                 final List<MacroInterface> serverMacros = result.getSecond();
 
-
-
                 if (result.getFirst()) {
-                    if (diffDb.getAllChanges().isEmpty()) {
-                        //only the server have new data, so just clear local db and pull everything
-                        clearAll();
-                        for (MacroInterface mi : serverMacros) {
-                            currentDb.addOrUpdateMacro(mi);
-                            lastSyncDb.addOrUpdateMacro(mi);
-                            callback.onSyncSuccess(0, null, null, null);
-                            return;
-                        }
-                    } else {
-                        //checks all the differences between the macro collection in the server
-                        //  and the macros that were in the last sync
-                        MemoryDiffDBManager diffServer_OldCopy = new MemoryDiffDBManager();
-                        for (MacroInterface serverMacro : serverMacros) {
-                            if (lastSyncDb.containsMacro(serverMacro.getId())) {
-
-                                MacroInterface oldCopyMacro = lastSyncDb.getMacroWithId(serverMacro.getId());
-
-                                if (!areMacrosEqual(oldCopyMacro, serverMacro)) {
-                                    try {
-                                        diffServer_OldCopy.macroUpdated(serverMacro);
-                                    } catch (InconsistentMacroChangeException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            } else {
-                                try {
-                                    diffServer_OldCopy.macroAdded(serverMacro);
-                                } catch (InconsistentMacroChangeException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-
-                        }
-
-                        for (MacroInterface oldCopyMacro : lastSyncDb.getAllMacros()) {
-                            boolean found = false;
-                            for (MacroInterface serverMacro : serverMacros) {
-                                if (oldCopyMacro.getId() == serverMacro.getId()) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                try {
-                                    diffServer_OldCopy.macroRemoved(oldCopyMacro.getId());
-                                } catch (InconsistentMacroChangeException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                        final Triplet<Pair<Map<Integer, MacroChange>, Map<Integer, MacroChange>>, List<MacroSyncConflict>, Integer> diffsAnalysisResults; //TODO: define specific class for this
-                        diffsAnalysisResults = analyzeDiffs(currentDb.getAllMacros(), serverMacros, diffServer_OldCopy, diffDb);
-
-                        final Map<Integer, MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
-                        final Map<Integer, MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
-                        final int[] pushedAndPulledCounters = new int[]{0, 0};
-
-                        List<MacroSyncConflict> conflicts = diffsAnalysisResults.getSecond();
-                        final Integer noChangesCount = diffsAnalysisResults.getThird();
-                        if (conflicts.isEmpty()) {
-                            //there are no conflicts,
-                            //proceeds directly with push and pull
-                            final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed.values(), currentDb);
-                            webService.pushChanges(
-                                    device,
-                                    pushtmp,
-                                    new PushAndPullWebServiceCallBack(
-                                            callback,
-                                            pushtmp,
-                                            toBePulled,
-                                            serverMacros,
-                                            pushedAndPulledCounters,
-                                            noChangesCount,
-                                            0)
-                            );
-                        } else {
-                            callback.onSyncConflicts(conflicts, new ConflictResolutionCallback() {
-                                @Override
-                                public void onConflictsResolved(final List<MacroChange> toBePushedConflicts, final List<MacroChange> toBePulledConflicts) {
-
-
-                                    for (MacroChange conflictChange : toBePushedConflicts) {
-                                        toBePushed.put(conflictChange.getMacroId(), conflictChange);
-                                    }
-                                    for (MacroChange conflictChange : toBePulledConflicts) {
-                                        toBePulled.put(conflictChange.getMacroId(), conflictChange);
-                                    }
-
-                                    final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed.values(), currentDb);
-                                    webService.pushChanges(
-                                            device,
-                                            pushtmp,
-                                            new PushAndPullWebServiceCallBack(
-                                                    callback,
-                                                    pushtmp,
-                                                    toBePulled,
-                                                    serverMacros,
-                                                    pushedAndPulledCounters,
-                                                    noChangesCount,
-                                                    toBePushedConflicts.size() + toBePulledConflicts.size())
-                                    );
-                                }
-
-                                @Override
-                                public void onAbort() {
-                                    //abort by user (no changes on both client and server)
-                                    return;
-                                }
-                            });
-                        }
-                    }
-
+                    syncWithFreshDataFromServer(callback, serverMacros);
                 } else {
                     if (diffDb.getAllChanges().isEmpty()) {
                         //server and client probably have same data, but let's do
                         //another check on the number of macros to see if this is true
-                        if (currentDb.getAllMacros().size() == serverMacros.size()) {
-                            //no changes.
-                        } else {
+                        if (currentDb.getAllMacros().size() != serverMacros.size()) {
                             //something in the change tracking system has gone wrong
-                            throw new SyncServerException("The change tracking mechanism failed");
+                            System.out.println("SINAPSI SYNC MANAGER: The change tracking mechanism failed, the server returned a false negative sync flag");
+                            //forcing to sync as if the boolean was true
+                            syncWithFreshDataFromServer(callback, serverMacros);
                         }
                     } else {
                         //only the client has updated data
@@ -376,6 +260,126 @@ public class SyncManager {
             return;
         }
     }
+
+
+    private void syncWithFreshDataFromServer(final MacroSyncCallback callback, final List<MacroInterface> serverMacros){
+        if (diffDb.getAllChanges().isEmpty()) {
+            //only the server have new data, so just clear local db and pull everything
+            clearAll();
+            for (MacroInterface mi : serverMacros) {
+                currentDb.addOrUpdateMacro(mi);
+                lastSyncDb.addOrUpdateMacro(mi);
+                callback.onSyncSuccess(0, null, null, null);
+                return;
+            }
+        } else {
+            //checks all the differences between the macro collection in the server
+            //  and the macros that were in the last sync
+            MemoryDiffDBManager diffServer_OldCopy = new MemoryDiffDBManager();
+            for (MacroInterface serverMacro : serverMacros) {
+                if (lastSyncDb.containsMacro(serverMacro.getId())) {
+
+                    MacroInterface oldCopyMacro = lastSyncDb.getMacroWithId(serverMacro.getId());
+
+                    if (!areMacrosEqual(oldCopyMacro, serverMacro)) {
+                        try {
+                            diffServer_OldCopy.macroUpdated(serverMacro);
+                        } catch (InconsistentMacroChangeException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    try {
+                        diffServer_OldCopy.macroAdded(serverMacro);
+                    } catch (InconsistentMacroChangeException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            }
+
+            for (MacroInterface oldCopyMacro : lastSyncDb.getAllMacros()) {
+                boolean found = false;
+                for (MacroInterface serverMacro : serverMacros) {
+                    if (oldCopyMacro.getId() == serverMacro.getId()) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    try {
+                        diffServer_OldCopy.macroRemoved(oldCopyMacro.getId());
+                    } catch (InconsistentMacroChangeException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            final Triplet<Pair<Map<Integer, MacroChange>, Map<Integer, MacroChange>>, List<MacroSyncConflict>, Integer> diffsAnalysisResults; //TODO: define specific class for this
+            diffsAnalysisResults = analyzeDiffs(currentDb.getAllMacros(), serverMacros, diffServer_OldCopy, diffDb);
+
+            final Map<Integer, MacroChange> toBePushed = diffsAnalysisResults.getFirst().getSecond();
+            final Map<Integer, MacroChange> toBePulled = diffsAnalysisResults.getFirst().getFirst();
+            final int[] pushedAndPulledCounters = new int[]{0, 0};
+
+            List<MacroSyncConflict> conflicts = diffsAnalysisResults.getSecond();
+            final Integer noChangesCount = diffsAnalysisResults.getThird();
+            if (conflicts.isEmpty()) {
+                //there are no conflicts,
+                //proceeds directly with push and pull
+                final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed.values(), currentDb);
+                webService.pushChanges(
+                        device,
+                        pushtmp,
+                        new PushAndPullWebServiceCallBack(
+                                callback,
+                                pushtmp,
+                                toBePulled,
+                                serverMacros,
+                                pushedAndPulledCounters,
+                                noChangesCount,
+                                0)
+                );
+            } else {
+                callback.onSyncConflicts(conflicts, new ConflictResolutionCallback() {
+                    @Override
+                    public void onConflictsResolved(final List<MacroChange> toBePushedConflicts, final List<MacroChange> toBePulledConflicts) {
+
+
+                        for (MacroChange conflictChange : toBePushedConflicts) {
+                            toBePushed.put(conflictChange.getMacroId(), conflictChange);
+                        }
+                        for (MacroChange conflictChange : toBePulledConflicts) {
+                            toBePulled.put(conflictChange.getMacroId(), conflictChange);
+                        }
+
+                        final List<Pair<SyncOperation, MacroInterface>> pushtmp = convertChangesToPushSyncOps(toBePushed.values(), currentDb);
+                        webService.pushChanges(
+                                device,
+                                pushtmp,
+                                new PushAndPullWebServiceCallBack(
+                                        callback,
+                                        pushtmp,
+                                        toBePulled,
+                                        serverMacros,
+                                        pushedAndPulledCounters,
+                                        noChangesCount,
+                                        toBePushedConflicts.size() + toBePulledConflicts.size())
+                        );
+                    }
+
+                    @Override
+                    public void onAbort() {
+                        //abort by user (no changes on both client and server)
+                        return;
+                    }
+                });
+            }
+        }
+    }
+
+
 
     private List<Pair<SyncOperation, MacroInterface>> convertChangesToPushSyncOps(Collection<MacroChange> toBePushed, LocalDBManager db) {
         List<Pair<SyncOperation, MacroInterface>> result = new ArrayList<>();
