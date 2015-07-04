@@ -138,19 +138,23 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
         //Trigger
         in.nextName();//TRIGGER_DEVICE_ID
         int triggerDeviceId = in.nextInt();
-        in.nextName();//TRIGGER_NAME
+
         String triggerName = null;
-        if(in.peek() == JsonToken.NULL){
-            in.nextNull();
-        }else{
-            triggerName = in.nextString();
+        if(in.nextName().equals(TRIGGER_NAME)) {//TRIGGER_NAME
+            if (in.peek() == JsonToken.NULL) {
+                in.nextNull();
+            } else {
+                triggerName = in.nextString();
+            }
         }
-        in.nextName();//TRIGGER_JSON
+
         String triggerJson = null;
-        if(in.peek() == JsonToken.NULL){
-            in.nextNull();
-        }else {
-            triggerJson = in.nextString();
+        if(in.nextName().equals(TRIGGER_JSON)) {//TRIGGER_JSON
+            if (in.peek() == JsonToken.NULL) {
+                in.nextNull();
+            } else {
+                triggerJson = in.nextString();
+            }
         }
 
 
