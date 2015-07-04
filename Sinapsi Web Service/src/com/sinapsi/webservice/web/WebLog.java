@@ -94,7 +94,9 @@ public class WebLog extends HttpServlet {
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
                     Pair<BufferedReader, String> brrs = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
-                    BufferedReader brr = brrs.getFirst();
+                    BufferedReader brr = null;
+                    if(brrs != null)
+                        brr = brrs.getFirst();
                     
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
@@ -111,7 +113,9 @@ public class WebLog extends HttpServlet {
                 try {
                     FileInputStream fstram = new FileInputStream(new File("/var/log/tomcat7/catalina.out"));
                     Pair<BufferedReader, String> brrs = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
-                    BufferedReader brr = brrs.getFirst();
+                    BufferedReader brr = null;
+                    if(brrs != null)
+                        brr = brrs.getFirst();
                     
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
@@ -128,7 +132,9 @@ public class WebLog extends HttpServlet {
                 try {
                     FileInputStream fstram = new FileInputStream(new File("/var/log/postgresql/postgresql-9.1-main.log"));
                     Pair<BufferedReader, String> brrs = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
-                    BufferedReader brr = brrs.getFirst();
+                    BufferedReader brr = null;
+                    if(brrs != null)
+                        brr = brrs.getFirst();
                     
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
@@ -161,7 +167,9 @@ public class WebLog extends HttpServlet {
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
                     Pair<BufferedReader, String> brrs = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
-                    BufferedReader brr = brrs.getFirst();
+                    BufferedReader brr = null;
+                    if(brrs != null)
+                        brr = brrs.getFirst();
                     
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));
@@ -194,7 +202,9 @@ public class WebLog extends HttpServlet {
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
                     Pair<BufferedReader, String> brrs = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
-                    BufferedReader brr = brrs.getFirst();
+                    BufferedReader brr = null;
+                    if(brrs != null)
+                        brr = brrs.getFirst();
                     
                     if(brr == null)
                         brr = new BufferedReader(new InputStreamReader(fstram));

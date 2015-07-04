@@ -224,7 +224,7 @@ public class DeviceDBManager extends UserDBManager {
     /**
      * Return the device with id
      * 
-     * @param idUser id of the user
+     * @param idDevice id of the device
      * @return device interface
      * @throws SQLException
      */
@@ -236,7 +236,7 @@ public class DeviceDBManager extends UserDBManager {
 
         try {
             c = db.connect();
-            String query = "SELECT * FROM device WHERE idu = ?";
+            String query = "SELECT * FROM device WHERE id = ?";
             s = c.prepareStatement(query);
             s.setInt(1, idDevice);
             r = s.executeQuery();

@@ -79,6 +79,12 @@ public class WebServiceContexListener implements ServletContextListener {
         deviceDbManager = new DeviceDBManager(db);
         engine = new WebServiceEngine();
                 
+        context.setAttribute("db", db);
+        context.setAttribute("users_db", userDbManager);
+        context.setAttribute("keys_db", keysDbManager);
+        context.setAttribute("engines_db", engineDbManager);
+        context.setAttribute("devices_db", deviceDbManager);  
+        
        // start  web socket server thread
         try {
             wsserver = new Server(8887);
@@ -91,7 +97,8 @@ public class WebServiceContexListener implements ServletContextListener {
         } catch (IOException | InterruptedException e2) {
             e2.printStackTrace();
         }
-       
+        
+        context.setAttribute("wsserver", wsserver);  
         
         // initialize Sinapsi engine
         try {
@@ -101,13 +108,7 @@ public class WebServiceContexListener implements ServletContextListener {
             e1.printStackTrace();
         }  
         
-        // add object to the contex 
         context.setAttribute("engine", engine);
-        context.setAttribute("db", db);
-        context.setAttribute("users_db", userDbManager);
-        context.setAttribute("keys_db", keysDbManager);
-        context.setAttribute("engines_db", engineDbManager);
-        context.setAttribute("devices_db", deviceDbManager);  
-        context.setAttribute("wsserver", wsserver);  
+        
     }
 }

@@ -129,19 +129,17 @@ public class EngineDBManager {
      * @return list of actions
      * @throws SQLException
      */
-    public List<Action> getActions(int idMacro) throws SQLException {
+    public List<Action> getActions(int idMacro, ComponentFactory componentFactory) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
         List<Action> actions = new ArrayList<Action>();
-        // get the engine from the contex listener
-        WebServiceEngine engine = (WebServiceEngine) http.getServletContext().getAttribute("engine");
-        DeviceDBManager deviceDBManager = (DeviceDBManager) http.getServletContext().getAttribute("devices_db");
+        DeviceDBManager deviceDBManager = new DeviceDBManager();
         
         
         try {
             c = db.connect();
-            String query = "SELECT iduser, iddevice, name, actionjson " +
+            String query = "SELECT iduser, actionmacrolist.iddevice, name, actionjson " +
                            "FROM actionmacrolist, macro " +
                            "WHERE actionmacrolist.idmacro = macro.id and actionmacrolist.idmacro =  ?";
             s = c.prepareStatement(query);
@@ -149,7 +147,6 @@ public class EngineDBManager {
             r = s.executeQuery();
             
             while(r.next()) {
-                ComponentFactory componentFactory = engine.getComponentFactoryForUser(r.getInt("iduser"));
                 DeviceInterface device = deviceDBManager.getDevice(r.getInt("iddevice"));
                 Action action = componentFactory.newAction(r.getString("name"), r.getString("actionjson"), device.getId());
                 actions.add(action);
@@ -223,7 +220,7 @@ public class EngineDBManager {
 
         try {
             c = db.connect();
-            s = c.prepareStatement("SELECT id FROM action WHERE low(name) = low(?)");
+            s = c.prepareStatement("SELECT id FROM action WHERE name = ?");
             s.setString(1, name);
             r = s.executeQuery();
 
@@ -264,7 +261,7 @@ public class EngineDBManager {
 
         try {
             c = db.connect();
-            s = c.prepareStatement("SELECT id FROM trigger WHERE low(name) = low(?)");
+            s = c.prepareStatement("SELECT id FROM trigger WHERE name = ?");
             s.setString(1, name);
             r = s.executeQuery();
 
@@ -434,7 +431,7 @@ public class EngineDBManager {
      * @return
      * @throws SQLException 
      */
-    public List<MacroInterface> getUserMacro(int id) throws SQLException {
+    /*public List<MacroInterface> getUserMacro(int id) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
@@ -483,7 +480,7 @@ public class EngineDBManager {
         db.disconnect(c, s, r);
         return macros;
     }
-    
+    */
     /**
      * Return all macro of the user id
      * 
@@ -517,7 +514,8 @@ public class EngineDBManager {
                 macro.setTrigger(trigger);
                 
                 // create a action/actions (of macro:id) from the information saved in the db
-                for(Action actionI :  getActions(r.getInt("id"))) 
+                List<Action> actions = getActions(r.getInt("id"), componentFactory);
+                for(Action actionI :  actions) 
                     macro.addAction(actionI);                  
                 
                 macro.setIconName(r.getString("icon"));
@@ -673,14 +671,16 @@ public class EngineDBManager {
                 r = s.getGeneratedKeys();
                 r.next();
             } 
-                       
+                
+            c.commit();
+            db.disconnect(c, s, r);
+            
         } catch(SQLException ex) {
+            ex.printStackTrace();
             c.rollback();
             db.disconnect(c, s, r);
         }
-        
-        c.commit();
-        db.disconnect(c, s, r);
+ 
         return idMacro;
     }
 

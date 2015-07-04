@@ -48,7 +48,8 @@ public class MacroServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
-		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db");     
+		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db"); 
+		WebServiceEngine engine = (WebServiceEngine) getServletContext().getAttribute("engin");
 	    UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
 	    DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");  
 	    WebServiceEngine webServiceEngine = (WebServiceEngine) getServletContext().getAttribute("engine");
@@ -72,7 +73,7 @@ public class MacroServlet extends HttpServlet {
         	UserInterface user = userManager.getUserByEmail(email);
         	
             // get the list of macro from the db
-            List<MacroInterface> macros = engineManager.getUserMacro(user.getId());
+            List<MacroInterface> macros = engineManager.getUserMacro(user.getId(), engine.getComponentFactoryForUser(user.getId()));
             
             WebServiceLog log = new WebServiceLog(WebServiceLog.FILE_OUT);
             
