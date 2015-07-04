@@ -1,7 +1,5 @@
 package com.sinapsi.model;
 
-import com.sinapsi.model.impl.Device;
-
 import java.util.List;
 
 /**
@@ -18,7 +16,7 @@ public interface FactoryModelInterface {
      * @param password the user's password
      * @return a new UserInterface instance
      */
-    public UserInterface newUser(int id, String email, String password);
+    public UserInterface newUser(int id, String email, String password, boolean active, String role);
 
     /**
      * Should create a new instance of UserInterface
@@ -28,7 +26,7 @@ public interface FactoryModelInterface {
      * @param password the user's password
      * @return a new UserInterface instance
      */
-    public UserInterface newUser(int id, String email, String password, List<DeviceInterface> devices);
+    public UserInterface newUser(int id, String email, String password, boolean active, String role, List<DeviceInterface> devices);
 
 
     /**

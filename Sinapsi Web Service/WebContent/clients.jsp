@@ -3,6 +3,8 @@
     contentType="text/html; charset=utf-8"
     pageEncoding="utf-8" 
 %>
+<%@page import="java.util.List"%>
+<%@page import="com.sinapsi.model.UserInterface"%>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -34,6 +36,12 @@
             }
             if(email == null) 
                 response.sendRedirect("login.html");
+            
+            List<UserInterface> admins = (List<UserInterface>) session.getAttribute("admins");
+            List<UserInterface> users = (List<UserInterface>) session.getAttribute("users");
+            List<UserInterface> pendingusers = (List<UserInterface>) session.getAttribute("pending_users");
+            
+            session.removeAttribute("admins");
         %>
     <div id="wrapper">
         <nav class="navbar navbar-default top-navbar" role="navigation">
@@ -112,14 +120,120 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-header">
-                            Sinapsi <small>Summary</small>
+                            Sinapsi <small>Users</small>
                         </h1>
-                        <h2>Work in progress</h2>
                     </div>
                 </div>
                 <!-- /. ROW  -->
-
-               
+                <div class="row">
+                <div class="col-md-12">
+                    <!-- Advanced Tables -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                             <h3>Administrators</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Email log</th>
+                                        </tr>
+                                    </thead>
+                                     <tbody>
+                                        <%
+                                           for(UserInterface admin : admins) {
+                                        %>
+                                        <tr>
+                                            <td><%=admin.getEmail()%></td>
+                                            <td><label>
+                                                    <input type="checkbox" value="">
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <%
+                                           }
+                                        %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                
+                <div class="row">
+                <div class="col-md-12">
+                    <!-- Advanced Tables -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                             <h3>Users</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                     <tbody>
+                                        <%
+                                           for(UserInterface user : users) {
+                                        %>
+                                        <tr>
+                                            <td><%=user.getEmail() %></td>
+                                        </tr>
+                                        <%
+                                           }
+                                        %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                
+                
+                <div class="row">
+                <div class="col-md-12">
+                    <!-- Advanced Tables -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                             <h3>Users pending for activation</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Active user</th>
+                                            <th>Delete user</th>
+                                        </tr>
+                                    </thead>
+                                     <tbody>
+                                        <%
+                                           for(UserInterface pendingUser : pendingusers) {
+                                        %>
+                                        <tr>
+                                            <td><%=pendingUser.getEmail() %></td>
+                                            <td><a href="#" class="btn btn-default btn-sm">Active</a></td>
+                                            <td><a href="#" class="btn btn-danger btn-sm">Delete</a></td>                                            
+                                        </tr>
+                                        <%
+                                           }
+                                        %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                
                 <!-- /. ROW  -->
 				
             </div>

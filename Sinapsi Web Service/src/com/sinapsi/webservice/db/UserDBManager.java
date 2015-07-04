@@ -60,15 +60,19 @@ public class UserDBManager {
         UserInterface user = null;
         try {
             c = db.connect();
-            s = c.prepareStatement("INSERT INTO users(email, password) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+            s = c.prepareStatement("INSERT INTO users(email, password, active, role) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             s.setString(1, email);
             s.setString(2, Password.getSaltedHash(password));
+            s.setBoolean(3, false);
+            s.setString(4, "user");
             s.execute();
             r = s.getGeneratedKeys();
             r.next();
 
             int id = r.getInt(1);
-            user = db.factory.newUser(id, email, password);
+            boolean active= r.getBoolean("active");
+            String role = r.getString("role");
+            user = db.factory.newUser(id, email, password, active, role);
 
         } catch (SQLException e) {
             db.disconnect(c, s, r);
@@ -104,6 +108,29 @@ public class UserDBManager {
     }
     
     /**
+     * Active user
+     * 
+     * @param email email of the user
+     * @throws SQLException
+     */
+    public void activeUser(String email) throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+           
+        try {
+            c = db.connect();
+            s = c.prepareStatement("UPDATE users SET active = 'true' WHERE email = ?");
+            s.setString(1, email);
+            s.execute();
+               
+        } catch(Exception e) {
+            db.disconnect(c, s);
+            throw e;
+        }
+        db.disconnect(c, s);
+    }
+    
+    /**
      * Return all users
      * 
      * @return list of users
@@ -117,7 +144,7 @@ public class UserDBManager {
         DeviceDBManager devicedb = new DeviceDBManager();
         try {
             c = db.connect();
-            String query = "SELECT id, email, password FROM users";
+            String query = "SELECT id, email, password, active, role FROM users";
             s = c.prepareStatement(query);
             r = s.executeQuery();
 
@@ -125,7 +152,9 @@ public class UserDBManager {
                 int id = r.getInt("id");
                 String email = r.getString("email");
                 String pwd = r.getString("password");
-                UserInterface user = db.factory.newUser(id, email, pwd, devicedb.getUserDevices(email));
+                boolean active = r.getBoolean("active");
+                String role = r.getString("role");
+                UserInterface user = db.factory.newUser(id, email, pwd, active, role, devicedb.getUserDevices(email));
                 users.add(user);
             }
 
@@ -216,7 +245,7 @@ public class UserDBManager {
             s.setInt(1, id);
             r = s.executeQuery();
             if (r.next())
-                user = db.factory.newUser(id, r.getString("email"), r.getString("password"));
+                user = db.factory.newUser(id, r.getString("email"), r.getString("password"), r.getBoolean("active"), r.getString("role"));
 
         } catch (SQLException ex) {
             db.disconnect(c, s, r);
@@ -246,7 +275,7 @@ public class UserDBManager {
             s.setString(1, email);
             r = s.executeQuery();
             if (r.next())
-                user = db.factory.newUser(r.getInt("id"), email, r.getString("password"));
+                user = db.factory.newUser(r.getInt("id"), email, r.getString("password"), r.getBoolean("active"), r.getString("role"));
 
         } catch (SQLException ex) {
             db.disconnect(c, s, r);
@@ -282,5 +311,76 @@ public class UserDBManager {
         }
         db.disconnect(c, s, r);
         return email;
+    }
+    
+    /**
+     * Return all administrators
+     * 
+     * @return list of users
+     * @throws SQLException
+     */
+    public List<UserInterface> getAdmins() throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<UserInterface> users = new ArrayList<UserInterface>();
+        try {
+            c = db.connect();
+            String query = "SELECT id, email, password, active, role FROM users WHERE role = 'admin'";
+            s = c.prepareStatement(query);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                int id = r.getInt("id");
+                String email = r.getString("email");
+                String pwd = r.getString("password");
+                boolean active = r.getBoolean("active");
+                String role = r.getString("role");
+                UserInterface user = db.factory.newUser(id, email, pwd, active, role);
+                users.add(user);
+            }
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return users;
+    }
+    
+    /**
+     * Return all users that are waiting for activation
+     * 
+     * @return list of users
+     * @throws SQLException
+     */
+    public List<UserInterface> getPendingUsers() throws SQLException {
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        List<UserInterface> users = new ArrayList<UserInterface>();
+        
+        try {
+            c = db.connect();
+            String query = "SELECT id, email, password, active, role FROM users WHERE active = 'false'";
+            s = c.prepareStatement(query);
+            r = s.executeQuery();
+
+            while (r.next()) {
+                int id = r.getInt("id");
+                String email = r.getString("email");
+                String pwd = r.getString("password");
+                boolean active = r.getBoolean("active");
+                String role = r.getString("role");
+                UserInterface user = db.factory.newUser(id, email, pwd, active, role);
+                users.add(user);
+            }
+
+        } catch (SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return users;
     }
 }

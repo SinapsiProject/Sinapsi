@@ -21,16 +21,16 @@ public class FactoryModel implements FactoryModelInterface {
 	 * @see com.sinapsi.model.FactoryModelInterface#newUser(int, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public UserInterface newUser(int id, String email, String password) {
-		return new User(id, email, password);
+	public UserInterface newUser(int id, String email, String password, boolean active, String role) {
+		return new User(id, email, password, active, role);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.sinapsi.model.FactoryModelInterface#newUser(int, java.lang.String, java.lang.String, java.lang.List)
 	 */
 	@Override
-	public UserInterface newUser(int id, String email, String password, List<DeviceInterface> devices) {
-		return new User(id, email, password, devices);
+	public UserInterface newUser(int id, String email, String password, boolean active, String role, List<DeviceInterface> devices) {
+		return new User(id, email, password, active, role, devices);
 	}
 
 	/* (non-Javadoc)

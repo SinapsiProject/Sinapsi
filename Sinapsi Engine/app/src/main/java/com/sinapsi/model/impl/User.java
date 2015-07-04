@@ -12,18 +12,22 @@ import java.util.List;
 public class User extends ComunicationInfo implements UserInterface {
     private List<DeviceInterface> devices;
     private int id;
+    private String role;
     private String email;
     private String password;
+    private boolean activation;
 
-    User(int Id, String mail, String pwd) {
+    User(int Id, String mail, String pwd, boolean active, String userRole) {
     	super();
     	id = Id;
     	password = pwd;
     	email = mail;
+    	activation = active;
+    	role = userRole;
     }
 
-    User(int Id, String mail, String pwd, List<DeviceInterface> devices){
-        this(Id, mail, pwd);
+    User(int Id, String mail, String pwd, boolean active, String userRole, List<DeviceInterface> devices){
+        this(Id, mail, pwd, active, userRole);
         this.devices = devices;
     }
     
@@ -36,7 +40,23 @@ public class User extends ComunicationInfo implements UserInterface {
         return id;
     }
 
-
+    /**
+     * Return the role of the user
+     * @return String
+     */
+    @Override
+    public String getRole() {
+        return role;
+    }
+    
+    /**
+     * Return the value of the user activation
+     */
+    @Override
+    public boolean getActivation() {
+        return activation;
+    }
+    
     /**
      * Return the email of the user
      * @return email
