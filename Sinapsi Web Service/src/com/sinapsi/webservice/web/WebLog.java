@@ -53,6 +53,8 @@ public class WebLog extends HttpServlet {
 	                email = cookie.getValue();
 	        }
 	    }
+	    if(email == null) 
+            response.sendRedirect("login.html");
 	    
         try {
             UserInterface user = userManager.getUserByEmail(email);

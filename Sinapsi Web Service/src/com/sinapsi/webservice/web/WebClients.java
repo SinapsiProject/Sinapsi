@@ -34,6 +34,9 @@ public class WebClients extends HttpServlet {
 	    UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
 	    HttpSession session = request.getSession();
 	    
+	    String action = request.getParameter("action");
+	    String emailUser = request.getParameter("email");
+	    
 	    String email = null;
         Cookie[] cookies = request.getCookies();
         if(cookies != null) {
@@ -42,16 +45,32 @@ public class WebClients extends HttpServlet {
                     email = cookie.getValue();
             }
         }
-        
+        if(email == null) 
+            response.sendRedirect("login.html");
         
         try {
             UserInterface user = userManager.getUserByEmail(email);
+             
             // user don't have the permission to see this page
             if(user.getRole().equals("user")) {
                 session.setAttribute("role", "user");
                 request.getRequestDispatcher("clients.jsp").forward(request, response);
                 
             } if(user.getRole().equals("admin")) {
+                if(action != null) {
+                    UserInterface userActions = userManager.getUserByEmail(emailUser);
+                    switch (action) {
+                        case "active":
+                            if(userActions.getActivation() == false)
+                                userManager.activeUser(emailUser);
+                            break;
+    
+                        case "delete":
+                            if(userActions.getRole() != "admin" && userActions.getActivation() == false)
+                                userManager.deleteUser(emailUser);
+                            break;
+                    }
+                }
                 List<UserInterface> administrators = userManager.getAdmins();
                 List<UserInterface> users = userManager.getUsers();
                 List<UserInterface> pendingUsers = userManager.getPendingUsers();

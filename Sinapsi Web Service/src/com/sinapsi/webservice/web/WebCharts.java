@@ -50,6 +50,9 @@ public class WebCharts extends HttpServlet {
                     email = cookie.getValue();
             }
         }
+        if(email == null) 
+            response.sendRedirect("login.html");
+        
 	    try {
             UserInterface user = userManager.getUserByEmail(email);
             // user don't have the permission to see this page

@@ -245,8 +245,8 @@
                                         %>
                                         <tr>
                                             <td><%=pendingUser.getEmail() %></td>
-                                            <td><a href="#" class="btn btn-default btn-sm">Active</a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm">Delete</a></td>                                            
+                                            <td><a href="web_clients?action=active&email=<%=pendingUser.getEmail()%>" class="btn btn-default btn-sm">Active</a></td>
+                                            <td><a href="web_clients?action=delete&email=<%=pendingUser.getEmail()%>" class="btn btn-danger btn-sm">Delete</a></td>                                            
                                         </tr>
                                         <%
                                            }

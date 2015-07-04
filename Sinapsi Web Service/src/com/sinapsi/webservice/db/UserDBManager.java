@@ -131,6 +131,29 @@ public class UserDBManager {
     }
     
     /**
+    * Delete user
+    * 
+    * @param email email of the user
+    * @throws SQLException
+    */
+   public void deleteUser(String email) throws SQLException {
+       Connection c = null;
+       PreparedStatement s = null;
+          
+       try {
+           c = db.connect();
+           s = c.prepareStatement("DELETE FROM users WHERE email = ?");
+           s.setString(1, email);
+           s.execute();
+              
+       } catch(Exception e) {
+           db.disconnect(c, s);
+           throw e;
+       }
+       db.disconnect(c, s);
+   }
+    
+    /**
      * Return all users
      * 
      * @return list of users
