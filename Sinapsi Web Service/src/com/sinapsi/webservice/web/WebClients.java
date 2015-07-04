@@ -43,22 +43,26 @@ public class WebClients extends HttpServlet {
             }
         }
         
+        
         try {
             UserInterface user = userManager.getUserByEmail(email);
             // user don't have the permission to see this page
-            if(user.getRole().equals("user"))
+            if(user.getRole().equals("user")) {
+                session.setAttribute("role", "user");
                 request.getRequestDispatcher("clients.jsp").forward(request, response);
-            
-            List<UserInterface> administrators = userManager.getAdmins();
-            List<UserInterface> users = userManager.getUsers();
-            List<UserInterface> pendingUsers = userManager.getPendingUsers();
-            
-            session.setAttribute("admins", administrators);
-            session.setAttribute("users", users);
-            session.setAttribute("pending_users", pendingUsers);
-            
-            request.getRequestDispatcher("clients.jsp").forward(request, response);
-            
+                
+            } if(user.getRole().equals("admin")) {
+                List<UserInterface> administrators = userManager.getAdmins();
+                List<UserInterface> users = userManager.getUsers();
+                List<UserInterface> pendingUsers = userManager.getPendingUsers();
+                
+                session.setAttribute("role", "admin");
+                session.setAttribute("admins", administrators);
+                session.setAttribute("users", users);
+                session.setAttribute("pending_users", pendingUsers);
+                
+                request.getRequestDispatcher("clients.jsp").forward(request, response);
+            }   
         } catch (SQLException e) {
             e.printStackTrace();
         }   

@@ -5,16 +5,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.sinapsi.model.UserInterface;
 import com.sinapsi.utils.Pair;
+import com.sinapsi.webservice.db.UserDBManager;
 
 /**
  * Servlet implementation class WebLog
@@ -34,9 +40,35 @@ public class WebLog extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String type = request.getParameter("type");
+	    UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+	    HttpSession session = request.getSession();
+	    String type = request.getParameter("type");
 		String dateFilter = request.getParameter("filter_text");
 		
+		String email = null;
+	    Cookie[] cookies = request.getCookies();
+	    if(cookies != null) {
+	        for(Cookie cookie : cookies) {
+	            if(cookie.getName().equals("user")) 
+	                email = cookie.getValue();
+	        }
+	    }
+	    
+        try {
+            UserInterface user = userManager.getUserByEmail(email);
+            // user don't have the permission to see this page
+            if(user.getRole().equals("user")) {
+                session.setAttribute("role", "user");
+                request.getRequestDispatcher("log.jsp").forward(request, response);
+            
+            } 
+            if(user.getRole().equals("admin"))
+                session.setAttribute("role", "admin");
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        
+        
 		switch (type) {
             case "tomcat": 
                 try {
@@ -58,7 +90,6 @@ public class WebLog extends HttpServlet {
                     }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
-                    HttpSession session = request.getSession();
                     BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
                     
                     if(brr == null)
@@ -75,7 +106,6 @@ public class WebLog extends HttpServlet {
             case "catalina":
                 try {
                     FileInputStream fstram = new FileInputStream(new File("/var/log/tomcat7/catalina.out"));
-                    HttpSession session = request.getSession();
                     BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
                     
                     if(brr == null)
@@ -92,7 +122,6 @@ public class WebLog extends HttpServlet {
             case "db":
                 try {
                     FileInputStream fstram = new FileInputStream(new File("/var/log/postgresql/postgresql-9.1-main.log"));
-                    HttpSession session = request.getSession();
                     BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
                     
                     if(brr == null)
@@ -125,7 +154,6 @@ public class WebLog extends HttpServlet {
                     }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
-                    HttpSession session = request.getSession();
                     BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
                     
                     if(brr == null)
@@ -158,7 +186,6 @@ public class WebLog extends HttpServlet {
                     }
                     
                     FileInputStream fstram = new FileInputStream(new File(dayliLog));
-                    HttpSession session = request.getSession();
                     BufferedReader brr = (BufferedReader) session.getAttribute("log_buffer");
                     
                     if(brr == null)

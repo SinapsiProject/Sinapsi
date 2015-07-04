@@ -31,6 +31,11 @@
     <%
        Vector<Pair<String, String>> load = (Vector<Pair<String, String>>) session.getAttribute("server_load");
        session.removeAttribute("server_load");
+       String role = (String) session.getAttribute("role");
+      
+    %>
+    <%
+       if(role == "admin") {
     %>
     <script>
         var app = angular.module("nvd3TestApp", ['nvd3ChartDirectives']);
@@ -81,9 +86,21 @@
       
         }
     </script>
+    <%
+       }
+    %>
 </head>
-
+<%
+   if(role == "admin") {
+%>
 <body ng-app='nvd3TestApp'>
+<%
+   } if(role == "user") {
+%>
+<body>
+<%
+   }
+%>
     <%
             String email = null;
             Cookie[] cookies = request.getCookies();
@@ -95,6 +112,7 @@
             }
             if(email == null) 
                 response.sendRedirect("login.html");
+            
         %>
     <div id="wrapper">
         <nav class="navbar navbar-default top-navbar" role="navigation">
@@ -177,7 +195,26 @@
                         </h1>
                     </div>
                 </div>
-                
+                 <%
+                   if(role == "user") {
+                 %>
+                <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Messages
+                        </div>        
+                        <div class="panel-body"> 
+                           <div class="alert alert-danger">
+                              You need <strong>administration</strong> permisison to see this page.
+                           </div>
+                        </div>
+                   </div>
+                </div>
+                </div>  
+                <%       
+                   } if(role == "admin") {
+                %>
                 <!-- /. ROW  -->
                 <div class="row" >                     
                      <div class="col-md-12 col-sm-12 col-xs-12" ng-app='nvd3TestApp'>                     
@@ -210,6 +247,9 @@
                         </div>
                     </div>
                 </div>
+                <%
+                   }
+                %>
                 <!-- /. ROW  -->
             </div>
             <!-- /. PAGE INNER  -->

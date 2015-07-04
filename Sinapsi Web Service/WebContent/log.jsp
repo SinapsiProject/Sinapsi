@@ -43,6 +43,7 @@
        if(email == null) 
            response.sendRedirect("login.html");
  
+       String role = (String) session.getAttribute("role");
        Pair<BufferedReader, String> log = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
        session.removeAttribute("log_buffer");
     %>
@@ -119,7 +120,35 @@
         </nav>
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
-            <div id="page-inner">
+            <div id="page-inner"> 
+                <%
+                   if(role == "user") {
+                %>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h1 class="page-header">
+                           Sinapsi <small>Log</small>
+                        </h1>
+                    </div>
+                </div>
+                <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Messages
+                        </div>        
+                        <div class="panel-body"> 
+                           <div class="alert alert-danger">
+                              You need <strong>administration</strong> permisison to see this page.
+                           </div>
+                        </div>
+                   </div>
+                </div>
+                </div> 
+                </div> 
+                <%       
+                   } if(role == "admin") {
+                %>
                 <div class="row">
                     <div class="col-md-6">
                         <h1 class="page-header">
@@ -164,16 +193,13 @@
                         </div>
                     </div>
                 </div>
-                <script type="application/javascript">
-                    $(document).ready(function() {
-                        $('#tomcat_log').scrollTop($('#tomcat_log').height());
-                    }
-                    
-                </script>
-               <!-- /. ROW  -->
-               
-                <!-- /. ROW  -->
-				<!-- /. return to top  -->
+             </div>
+             <script type="application/javascript">
+                 $(document).ready(function() {
+                    $('#tomcat_log').scrollTop($('#tomcat_log').height());
+                 }    
+             </script>
+		     <!-- /. return to top  -->
             <a href="#" id="back-to-top" title="Back to top" style="
                     position: fixed;
                     bottom: 20px;
@@ -219,7 +245,9 @@
                 });
             }
             </script>
-            </div>
+            <%
+               }
+            %>
             <!-- /. PAGE INNER  -->
             pre-alpha 1.0 version © 2015 Sinapsi
         </div>
