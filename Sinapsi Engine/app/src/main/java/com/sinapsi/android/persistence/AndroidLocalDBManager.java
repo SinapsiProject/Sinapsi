@@ -29,6 +29,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public static final String TABLE_MACROS = "macro";
     public static final String TABLE_ACTION_LISTS = "action_list";
 
+    public static final String COL_MACRO_ROW_ID = "row_id";
     public static final String COL_MACRO_ID = "id";
     public static final String COL_MACRO_NAME = "name";
     public static final String COL_MACRO_ICON_NAME = "icon_name";
@@ -41,6 +42,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public static final String COL_MACRO_TRIGGER_JSON = "trigger_json";
 
     public static final String[] ALL_COLUMNS_MACROS = new String[]{
+            COL_MACRO_ROW_ID,
             COL_MACRO_ID,
             COL_MACRO_NAME,
             COL_MACRO_ICON_NAME,
@@ -69,7 +71,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     public static final String SQL_STATEMENT_CREATE_TABLE_MACROS = "" +
             "CREATE TABLE " + TABLE_MACROS + " (" +
-            "row_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COL_MACRO_ROW_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_MACRO_ID + " INTEGER, " +
             COL_MACRO_NAME + " TEXT, " +
             COL_MACRO_ICON_NAME + " TEXT, " +
@@ -165,6 +167,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
 
     @SuppressWarnings("ConstantConditions")
     private MacroInterface cursorToMacro(Cursor c, SQLiteDatabase db) {
+
         boolean p = AndroidAppConsts.DEBUG_LOG_MACRO_CURSORS;
 
         if(p) Lol.d(this, "====== MACRO DB CURSOR CONTENT ======");

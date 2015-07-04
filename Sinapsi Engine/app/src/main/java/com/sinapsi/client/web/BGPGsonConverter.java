@@ -5,8 +5,6 @@ import com.bgp.codec.EncodingMethod;
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.sinapsi.client.AppConsts;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -14,8 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import javax.crypto.SecretKey;
+
 import retrofit.converter.ConversionException;
 import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedInput;
@@ -62,6 +59,8 @@ public class BGPGsonConverter extends GsonConverter {
             decrypter.setCustomDecoding(decodingMethod);
 
             String uncryptedStr = decrypter.decrypt(cryptedString);
+
+
 
             //calls super to convert to object
             final InputStream is = new ByteArrayInputStream(uncryptedStr.getBytes());
