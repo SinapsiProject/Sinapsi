@@ -25,10 +25,12 @@ import com.sinapsi.client.AppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.persistence.AndroidUserSettingsFacade;
 import com.sinapsi.android.enginesystem.AndroidNotificationAdapter;
+import com.sinapsi.client.SafeSyncManager;
 import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
+import com.sinapsi.model.impl.Macro;
 import com.sinapsi.utils.Triplet;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.client.web.OnlineStatusProvider;
@@ -101,7 +103,7 @@ public class SinapsiBackgroundService extends Service
         ComponentFactoryProvider {
 
     private RetrofitWebServiceFacade web;
-    private SyncManager syncManager;
+    private SafeSyncManager safeSyncManager;
     private UserSettingsFacade settings;
 
     private MacroEngine engine;
@@ -234,7 +236,7 @@ public class SinapsiBackgroundService extends Service
 
 
 
-        syncManager = new SyncManager(
+        SyncManager syncManager = new SyncManager(
                 web,
                 aldbm_old,
                 aldbm_curr,
@@ -243,24 +245,25 @@ public class SinapsiBackgroundService extends Service
 
         );
 
+        safeSyncManager = new SafeSyncManager(syncManager, this);
+
         if(AppConsts.DEBUG_CLEAR_DB_ON_START) syncManager.clearAll();
 
         if (AppConsts.DEBUG_MACROS) createLocalMacroExamples();
 
         // loads macros from local db/web service -------------------
-        syncAndLoadMacros(false, new BackgroundOperationCallback() {
+        syncMacros(new BackgroundSyncCallback() {
             @Override
-            public void onBackgroundOperationSuccess() {
-                // starts the engine (and the TriggerOnEngineStart activates)
+            public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
                 engine.startEngine();
             }
 
             @Override
-            public void onBackgroundOperationFail() {
-                // starts the engine anyway, with not-synced data
+            public void onBackgroundSyncFail(Throwable error) {
+                //try to start the engine anyway
                 engine.startEngine();
             }
-        });
+        }, false);
 
 
         startForegroundMode();
@@ -300,14 +303,7 @@ public class SinapsiBackgroundService extends Service
         return sf;
     }
 
-    /**
-     * Loads all saved macros from a local db.
-     *
-     * @return the saved macros
-     */
-    public List<MacroInterface> loadSavedMacros() {
-        return syncManager.getAllMacros();
-    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -324,59 +320,8 @@ public class SinapsiBackgroundService extends Service
         return new SinapsiServiceBinder();
     }
 
-    public void syncAndLoadMacros(final boolean explicit, final BackgroundOperationCallback callback) {
-        Lol.d(this, "Network is " + (isOnline()?"online":"offline"));
-
-        if (isOnline()){
-            syncManager.sync(new SyncManager.MacroSyncCallback() {
-                @Override
-                public void onSyncSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts) {
-                    //hint: optimize by updating engine's macro list with actual changes (and not by clearing and reloading everithing)
-                    engine.clearMacros();
-                    engine.addMacros(loadSavedMacros());
-                    callback.onBackgroundOperationSuccess();
-                }
-
-                @Override
-                public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
-
-                    //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification, duplicate and disable macros)
-                    //if(sinapsiGuiIsOpen){
-                    for(MacroSyncConflict conflict: conflicts){
-                        //TODO: show dialog to the user
-                    }
-                    //}else{
-                    //  showConflictNotification(conflicts.size());
-                    //  engine.pause();
-                    //  setResolveConflictsOnNextGuiOpen(true, conflictCallback);
-                    //}
-                }
-
-                @Override
-                public void onSyncFailure(Throwable error) {
-                    Lol.d(SinapsiBackgroundService.class, "Sync failed: " + error.getMessage());
-                    error.printStackTrace();
-                    if(explicit){
-                        if(!(error instanceof RetrofitError)){
-                            DialogUtils.showOkDialog(SinapsiBackgroundService.this, "Sync failed", error.getMessage(), true);
-                        }else{
-                            DialogUtils.handleRetrofitError(error, SinapsiBackgroundService.this, true);
-                        }
-                    }
-                    callback.onBackgroundOperationFail();
-                }
-            });
-        } else {
-            engine.clearMacros();
-            engine.addMacros(loadSavedMacros());
-            callback.onBackgroundOperationSuccess();
-        }
-
-
-    }
 
     public List<MacroInterface> getMacros() {
-
         return new ArrayList<>(engine.getMacros().values());
     }
 
@@ -455,20 +400,21 @@ public class SinapsiBackgroundService extends Service
                 } catch (MacroEngine.MissingMacroException e) {
                     if (firstcall) {
                         //retries after a sync
-                        syncAndLoadMacros(false, new BackgroundOperationCallback() {
+
+                        syncMacros(new BackgroundSyncCallback() {
                             @Override
-                            public void onBackgroundOperationSuccess() {
+                            public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
                                 handleWsMessage(message, false);
                             }
 
                             @Override
-                            public void onBackgroundOperationFail() {
+                            public void onBackgroundSyncFail(Throwable error) {
                                 //TODO: a remote execution descriptor arrived,
                                 //----:     the macro is not present on this
                                 //----:     client, and an attempt to sync failed.
                                 //----:     what to do?
                             }
-                        });
+                        }, false);
 
                     } else {
                         e.printStackTrace();
@@ -480,17 +426,17 @@ public class SinapsiBackgroundService extends Service
             }
             break;
             case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
-                syncAndLoadMacros(false, new BackgroundOperationCallback() {
+                syncMacros(new BackgroundSyncCallback() {
                     @Override
-                    public void onBackgroundOperationSuccess() {
-                        //does nothing
+                    public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                        //do nothing
                     }
 
                     @Override
-                    public void onBackgroundOperationFail() {
-                        //does nothing
+                    public void onBackgroundSyncFail(Throwable error) {
+                        //do nothing
                     }
-                });
+                }, false);
             }
             break;
             case SinapsiMessageTypes.NEW_CONNECTION:{
@@ -515,64 +461,65 @@ public class SinapsiBackgroundService extends Service
     @Override
     public void onUserLogOut() {
         this.loggedUser = logoutUser;
+        pauseEngine();
         stopForegroundMode();
     }
 
-    public void removeMacro(int id, BackgroundOperationCallback callback, boolean userIntention) {
-        try {
-            syncManager.removeMacro(id);
-            syncAndLoadMacros(userIntention, callback);
-        } catch (InconsistentMacroChangeException e) {
-            e.printStackTrace();
-            if(userIntention){
+    /**
+     * Loads all saved macros from a local db.
+     *
+     *
+     */
+    public void syncMacros(final BackgroundSyncCallback callback, final boolean userIntention) {
+        safeSyncManager.getMacros(new BackgroundServiceInternalSyncCallback(callback, userIntention));
+    }
+
+    public void removeMacro(int id, final BackgroundSyncCallback callback, final boolean userIntention) {
+        safeSyncManager.removeMacro(id, new BackgroundServiceInternalSyncCallback(callback, userIntention));
+    }
+
+    public void updateMacro(MacroInterface macro, final BackgroundSyncCallback callback, final boolean userIntention) {
+        safeSyncManager.updateMacro(macro, new BackgroundServiceInternalSyncCallback(callback, userIntention));
+    }
+
+    public void addMacro(MacroInterface macro, final BackgroundSyncCallback callback, final boolean userIntention){
+        safeSyncManager.addMacro(macro, new BackgroundServiceInternalSyncCallback(callback, userIntention));
+    }
+
+    public void handleConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback callback){
+        //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification, duplicate and disable macros)
+        //if(sinapsiGuiIsOpen){
+        for(MacroSyncConflict conflict: conflicts){
+            //TODO: show dialog to the user
+        }
+        //}else{
+        //  showConflictNotification(conflicts.size());
+        //  engine.pause();
+        //  setResolveConflictsOnNextGuiOpen(true, conflictCallback);
+        //}
+    }
+
+    public void handleSyncFailure(Throwable e, boolean showError) {
+
+        Lol.d(SinapsiBackgroundService.class, "Sync failed: " + e.getMessage());
+        e.printStackTrace();
+
+        if(showError) {
+            if (e instanceof RetrofitError) {
+                DialogUtils.handleRetrofitError(e, SinapsiBackgroundService.this, true);
+            } else if(e instanceof InconsistentMacroChangeException) {
                 DialogUtils.showOkDialog(this,
                         "Error",
-                        "A data consistency error occurred while deleting the macro.\n" +
+                        "A data consistency error occurred while syncing data.\n" +
                                 "Retry. If this fails again, contact developers of Sinapsi\n" +
                                 "Error description:" + e.getMessage(),
                         true);
+            } else {
+                DialogUtils.showOkDialog(SinapsiBackgroundService.this, "Sync failed", e.getMessage(), true);
             }
         }
     }
 
-    public void updateMacro(MacroInterface macro, BackgroundOperationCallback callback, boolean userIntention) {
-        try {
-            syncManager.updateMacro(macro);
-            syncAndLoadMacros(userIntention, callback);
-        } catch (InconsistentMacroChangeException e) {
-            e.printStackTrace();
-            if(userIntention){
-                DialogUtils.showOkDialog(this,
-                        "Error",
-                        "A data consistency error occurred while updating the macro.\n" +
-                                "Retry. If this fails again, contact developers of Sinapsi\n" +
-                                "Error description:" + e.getMessage(),
-                        true);
-            }
-        }
-    }
-
-    public void addMacro(MacroInterface macro, BackgroundOperationCallback callback, boolean userIntention){
-        try {
-            Lol.d(this, "Calling syncManager.addMacro() passing macro '" + macro.getId() + ":"+macro.getName()+"'");
-            syncManager.addMacro(macro);
-            syncAndLoadMacros(userIntention,callback);
-        } catch (InconsistentMacroChangeException e) {
-            e.printStackTrace();
-            if(userIntention){
-                DialogUtils.showOkDialog(this,
-                        "Error",
-                        "A data consistency error occurred while adding the macro.\n" +
-                                "Retry. If this fails again, contact developers of Sinapsi.\n" +
-                                "Error description:" + e.getMessage(),
-                        true);
-            }
-        }
-    }
-
-    public SyncManager getSyncManager() {
-        return syncManager;
-    }
 
     public void mockLogin() {
         onUserLogIn(logoutUser);
@@ -622,7 +569,7 @@ public class SinapsiBackgroundService extends Service
     /**
      * model factory getter
      *
-     * @return the component factory
+     * @return the model factory
      */
     public FactoryModel getFactoryModel() {
         return fm;
@@ -821,7 +768,7 @@ public class SinapsiBackgroundService extends Service
     }
 
     public MacroInterface newEmptyMacro(){
-        int id = syncManager.getMinId()-1;
+        int id = safeSyncManager.getMinId()-1;
         return engine.newEmptyMacro(id);
     }
 
@@ -846,9 +793,38 @@ public class SinapsiBackgroundService extends Service
     }
 
 
-    public static interface BackgroundOperationCallback{
-        public void onBackgroundOperationSuccess();
-        public void onBackgroundOperationFail();
+    public static interface BackgroundSyncCallback{
+        public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros);
+        public void onBackgroundSyncFail(Throwable error);
+    }
+
+    private class BackgroundServiceInternalSyncCallback implements SyncManager.MacroSyncCallback{
+
+        private final BackgroundSyncCallback callback;
+        private final boolean userIntention;
+
+        public BackgroundServiceInternalSyncCallback(BackgroundSyncCallback callback, boolean userIntention){
+            this.callback = callback;
+            this.userIntention = userIntention;
+        }
+
+        @Override
+        public void onSyncSuccess(List<MacroInterface> currentMacros) {
+            engine.clearMacros();
+            engine.addMacros(currentMacros);
+            callback.onBackgroundSyncSuccess(currentMacros);
+        }
+
+        @Override
+        public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
+            handleConflicts(conflicts, conflictCallback);
+        }
+
+        @Override
+        public void onSyncFailure(Throwable error) {
+            handleSyncFailure(error, userIntention);
+            callback.onBackgroundSyncFail(error);
+        }
     }
 
 }

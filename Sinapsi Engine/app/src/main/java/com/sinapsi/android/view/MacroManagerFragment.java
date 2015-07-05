@@ -244,15 +244,15 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        service.removeMacro(elem.getId(), new SinapsiBackgroundService.BackgroundOperationCallback() {
+                                        service.removeMacro(elem.getId(), new SinapsiBackgroundService.BackgroundSyncCallback() {
                                             @Override
-                                            public void onBackgroundOperationSuccess() {
-                                                updateContent(true, false);
+                                            public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                                                updateContent(true, currentMacros);
                                             }
 
                                             @Override
-                                            public void onBackgroundOperationFail() {
-
+                                            public void onBackgroundSyncFail(Throwable error) {
+                                                //already handled by service
                                             }
                                         }, true);
 
@@ -288,15 +288,15 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                     throw new RuntimeException("OnActivityReturn failed");
                                 } else {
                                     if ((Boolean) returnValues[1]) //updates the macro only if there was at least a change in the editor
-                                        service.updateMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundOperationCallback() {
+                                        service.updateMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundSyncCallback() {
                                             @Override
-                                            public void onBackgroundOperationSuccess() {
-                                                //TODO: ?? there is need to refresh?
+                                            public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                                                updateContent(true, currentMacros);
                                             }
 
                                             @Override
-                                            public void onBackgroundOperationFail() {
-                                                //TODO: ??
+                                            public void onBackgroundSyncFail(Throwable error) {
+
                                             }
                                         }, true);
                                 }
@@ -331,23 +331,23 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
 
                         try {
                             service.getEngine().setMacroEnabled(elem.getId(), !elem.isEnabled());
-                            service.updateMacro(elem, new SinapsiBackgroundService.BackgroundOperationCallback() {
-                                @Override
-                                public void onBackgroundOperationSuccess() {
-                                    updateContent(true, false);
-                                }
-
-                                @Override
-                                public void onBackgroundOperationFail() {
-
-                                }
-                            }, true);
                         } catch (MacroEngine.MissingMacroException e) {
                             //just print stack trace and ignore
                             e.printStackTrace();
-                            updateContent(true, false);
+                            updateContent(true, macroList); //Resets any fragments' content state
                         }
 
+                        service.updateMacro(elem, new SinapsiBackgroundService.BackgroundSyncCallback() {
+                            @Override
+                            public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                                updateContent(true, currentMacros);
+                            }
+
+                            @Override
+                            public void onBackgroundSyncFail(Throwable error) {
+                                // already handled by user
+                            }
+                        }, true);
                     }
                 });
 
@@ -401,56 +401,59 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateContent(true, false);
+                updateContent(true, null);
             }
         });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateContent(true, true);
+                updateContent(true, null);
             }
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.sinapsi_blue);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
-        updateContent(true, true);
+        updateContent(true, null);
         created = true;
         return rootView;
     }
 
-    private void updateContent(boolean userIntent, boolean doSync) {
+    private void updateContent(boolean userIntent, @Nullable List<MacroInterface> macros) {
         Lol.d(this, "Update content started");
         if (!isServiceConnected()) return;
         swipeRefreshLayout.setRefreshing(true);
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
 
 
-        if (doSync) {
-            service.syncAndLoadMacros(userIntent, new SinapsiBackgroundService.BackgroundOperationCallback() {
+        if (macros == null) {
+            service.syncMacros(new SinapsiBackgroundService.BackgroundSyncCallback() {
                 @Override
-                public void onBackgroundOperationSuccess() {
-                    updateMacroList(service.getMacros());
+                public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                    updateMacroList(currentMacros);
                     Lol.d(this, "Macro in updated list: " + macroList.getItemCount());
 
                     swipeRefreshLayout.setRefreshing(false);
-                    transitionManager.makeTransitionIfDifferent(States.LIST.name());
+                    if (currentMacros.isEmpty()) transitionManager.makeTransitionIfDifferent(States.NO_ELEMENTS.name());
+                    else transitionManager.makeTransitionIfDifferent(States.LIST.name());
                     Lol.d(this, "Update content finished");
-
                 }
 
                 @Override
-                public void onBackgroundOperationFail() {
+                public void onBackgroundSyncFail(Throwable error) {
                     //TODO?
                     swipeRefreshLayout.setRefreshing(false);
-                    transitionManager.makeTransitionIfDifferent(States.LIST.name());
+                    if (macroList.isEmpty())
+                        transitionManager.makeTransitionIfDifferent(States.NO_ELEMENTS.name());
+                    else transitionManager.makeTransitionIfDifferent(States.LIST.name());
                 }
-            });
+            }, userIntent);
         }else {
-            updateMacroList(service.getMacros());
+            updateMacroList(macros);
             Lol.d(this, "Macro in updated list: " + macroList.getItemCount());
 
             swipeRefreshLayout.setRefreshing(false);
-            transitionManager.makeTransitionIfDifferent(States.LIST.name());
+            if(macros.isEmpty()) transitionManager.makeTransitionIfDifferent(States.NO_ELEMENTS.name());
+            else transitionManager.makeTransitionIfDifferent(States.LIST.name());
             Lol.d(this, "Update content finished");
         }
 
@@ -469,15 +472,15 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     throw new RuntimeException("OnActivityReturn failed");
                 } else {
                     Lol.printNullity(this, "returnValues[0]", returnValues[0]);
-                    service.addMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundOperationCallback() {
+                    service.addMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundSyncCallback() {
                         @Override
-                        public void onBackgroundOperationSuccess() {
-                            // there is need to refresh? no?
+                        public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                            updateContent(true, currentMacros);
                         }
 
                         @Override
-                        public void onBackgroundOperationFail() {
-                            //TODO: ??
+                        public void onBackgroundSyncFail(Throwable error) {
+                            //already handled by service
                         }
                     }, true);
 
@@ -518,7 +521,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         service.addWebServiceConnectionListener(this);
 
         //updates on service connected only if this is visible to the user
-        if (created) updateContent(true, true);
+        if (created) updateContent(true, null);
     }
 
     public void setIsListOnTop(boolean b) {

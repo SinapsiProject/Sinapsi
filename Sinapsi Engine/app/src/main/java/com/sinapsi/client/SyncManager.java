@@ -35,7 +35,7 @@ public class SyncManager {
      * the async nature of the sync() method.
      */
     public interface MacroSyncCallback {
-        public void onSyncSuccess(Integer pushed, Integer pulled, Integer noChanged, Integer resolvedConflicts);
+        public void onSyncSuccess(List<MacroInterface> currentMacros);
         public void onSyncConflicts(List<MacroSyncConflict> conflicts, ConflictResolutionCallback conflictCallback);
         public void onSyncFailure(Throwable error);
     }
@@ -119,7 +119,7 @@ public class SyncManager {
 
     public void sync(final MacroSyncCallback callback) {
         if(AppConsts.DEBUG_DISABLE_SYNC){
-            callback.onSyncSuccess(-1,-1,-1,-1);
+            callback.onSyncSuccess(currentDb.getAllMacros());
             return;
         }
         webService.getAllMacros(device, new SinapsiWebServiceFacade.WebServiceCallback<Pair<Boolean, List<MacroInterface>>>() {
@@ -139,7 +139,7 @@ public class SyncManager {
                             //forcing to sync as if the boolean was true
                             syncWithFreshDataFromServer(callback, serverMacros);
                         }
-                        callback.onSyncSuccess(0,0,null,0);
+                        callback.onSyncSuccess(currentDb.getAllMacros());
                     } else {
                         //only the client has updated data
                         List<MacroChange> toBePushed = diffDb.getAllChanges();
@@ -168,7 +168,7 @@ public class SyncManager {
                 currentDb.addOrUpdateMacro(mi);
                 lastSyncDb.addOrUpdateMacro(mi);
             }
-            callback.onSyncSuccess(0, null, null, null);
+            callback.onSyncSuccess(serverMacros);
             return;
         } else {
             //checks all the differences between the macro collection in the server
@@ -347,11 +347,7 @@ public class SyncManager {
 
                 commit(tempDB);
 
-                callback.onSyncSuccess(
-                        pushedAndPulledCounters[0],
-                        pushedAndPulledCounters[1],
-                        noChangesCount,
-                        conflictsCount);
+                callback.onSyncSuccess(currentDb.getAllMacros());
 
             }
 
