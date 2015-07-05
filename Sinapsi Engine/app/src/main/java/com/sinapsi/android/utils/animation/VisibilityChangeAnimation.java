@@ -6,5 +6,6 @@ import android.view.View;
  *
  */
 public interface VisibilityChangeAnimation {
-    public void setVisibility(final View view,final boolean show);
+    public void fadeIn(View v);
+    public void fadeOut(View v);
 }

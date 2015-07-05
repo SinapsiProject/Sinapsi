@@ -10,8 +10,11 @@ import android.view.ViewAnimationUtils;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.utils.VersionUtils;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * An utility class to manage animated visibility transitions between groups of views.
@@ -30,17 +33,40 @@ public class ViewTransitionManager {
     }
 
     public void makeTransition(String viewsKey){
+
+
+
+
+
+
         if (map.containsKey(viewsKey)){
-            //hides everything
-            for(List<View> lv: map.values()){
-                for(View v: lv)
-                    showView(false, v);
+
+            Set<View> viewSet = new HashSet<>();
+            for(List<View> lv: map.values())
+                viewSet.addAll(lv);
+
+            for(View v: viewSet){
+
+                boolean previouslyVisible = false;
+                boolean show = false;
+
+
+                if(!currentState.equals("") && map.get(currentState).contains(v))
+                    previouslyVisible = true;
+
+                if(map.get(viewsKey).contains(v))
+                    show = true;
+
+                if(previouslyVisible && !show){
+                    fadeOut(v);
+                }else if(!previouslyVisible && show){
+                    fadeIn(v);
+                }
             }
-            //shows only the selected views
-            for(View sv: map.get(viewsKey))
-                showView(true, sv);
+
             currentState = viewsKey;
-        }else throw new RuntimeException("Invalid key: "+viewsKey);
+
+        } else throw new RuntimeException("Invalid key: "+viewsKey);
     }
 
     public void makeTransitionIfDifferent(String viewsKey){
@@ -51,9 +77,14 @@ public class ViewTransitionManager {
         return currentState;
     }
 
-    public void showView(final boolean show, final View view){
-        animationMethod.setVisibility(view,show);
+    public void fadeIn(final View view){
+        animationMethod.fadeIn(view);
     }
+
+    public void fadeOut(final View view){
+        animationMethod.fadeOut(view);
+    }
+
 
     public void setAnimationMethod(VisibilityChangeAnimation am){
         animationMethod = am;
@@ -65,34 +96,60 @@ public class ViewTransitionManager {
 
         @Override
         @SuppressLint("NewApi")
-        public void setVisibility(final View v, final boolean show) {
+        public void fadeIn(final View v) {
             VersionUtils.versionedDo(
                     new VersionUtils.VersionedTask(-1) {
                         @Override
                         public void doTask() {
                             Lol.d("TransitionAnimation","No animation");
-                            v.setVisibility(show ? View.VISIBLE : View.GONE);
+                            v.setVisibility(View.VISIBLE);
                         }
                     },
                     Build.VERSION.SDK_INT,
                     new VersionUtils.VersionedTask(Build.VERSION_CODES.HONEYCOMB_MR2) {
                         @Override
                         public void doTask() {
-                            //Lol.d("TransitionAnimation", "Alpha animation");
-                            v.setVisibility(show ? View.GONE : View.VISIBLE);
-                            //Lol.d("TransitionAnimation","visibility -> " + ((v.getVisibility() == View.VISIBLE)? "visible":"gone"));
-                            v.setAlpha(show ? 0 : 1);
 
-                            v.animate().setDuration(animShortTime).alpha(show ? 1 : 0)
+                            v.setVisibility(View.VISIBLE);
+                            v.setAlpha(0);
+                            v.animate().setDuration(animShortTime).alpha(1)
                                     .setListener(new AnimatorListenerAdapter() {
                                         @Override
                                         public void onAnimationEnd(Animator animation) {
                                             super.onAnimationEnd(animation);
-                                            v.setVisibility(show ? View.VISIBLE : View.GONE);
-                                            //Lol.d("TransitionAnimation", "visibility -> " + ((v.getVisibility() == View.VISIBLE) ? "visible" : "gone"));
+                                            v.setVisibility(View.VISIBLE);
                                         }
                                     }).start();
-                            //FIXME: alpha animation seems not to work
+                        }
+                    });
+        }
+
+        @Override
+        @SuppressLint("NewApi")
+        public void fadeOut(final View v) {
+            VersionUtils.versionedDo(
+                    new VersionUtils.VersionedTask(-1) {
+                        @Override
+                        public void doTask() {
+                            Lol.d("TransitionAnimation","No animation");
+                            v.setVisibility(View.VISIBLE);
+                        }
+                    },
+                    Build.VERSION.SDK_INT,
+                    new VersionUtils.VersionedTask(Build.VERSION_CODES.HONEYCOMB_MR2) {
+                        @Override
+                        public void doTask() {
+
+                            v.setVisibility(View.VISIBLE);
+                            v.setAlpha(1);
+                            v.animate().setDuration(animShortTime).alpha(0)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            v.setVisibility(View.GONE);
+                                        }
+                                    }).start();
                         }
                     });
         }
