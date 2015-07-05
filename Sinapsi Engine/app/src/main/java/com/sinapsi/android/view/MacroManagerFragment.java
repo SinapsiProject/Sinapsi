@@ -288,6 +288,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                     throw new RuntimeException("OnActivityReturn failed");
                                 } else {
                                     if ((Boolean) returnValues[1]) //updates the macro only if there was at least a change in the editor
+                                        transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
                                         service.updateMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundSyncCallback() {
                                             @Override
                                             public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
@@ -337,6 +338,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                             updateContent(true, macroList); //Resets any fragments' content state
                         }
 
+                        transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
                         service.updateMacro(elem, new SinapsiBackgroundService.BackgroundSyncCallback() {
                             @Override
                             public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
