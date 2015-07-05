@@ -60,7 +60,7 @@ public class BGPGsonConverter extends GsonConverter {
 
             String uncryptedStr = decrypter.decrypt(cryptedString);
 
-            System.out.println("BGPRETROFIT: "+uncryptedStr);
+            System.out.println("<-- BGPRETROFIT: "+uncryptedStr);
 
             //calls super to convert to object
             final InputStream is = new ByteArrayInputStream(uncryptedStr.getBytes());
@@ -94,6 +94,8 @@ public class BGPGsonConverter extends GsonConverter {
     public TypedOutput toBody(Object object) {
 
         String message = myGson.toJson(object);
+
+        System.out.println("--> BGPRETROFIT: "+message);
 
         try {
             // use 128 bits/16bytes lenght key for session
