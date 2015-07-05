@@ -193,7 +193,7 @@ public class Macro extends ComunicationInfo implements MacroInterface {
      */
     @Override
     public void execute(ExecutionInterface sf) {
-        sf.pushScope(new ActionListExecution(actions));
+        if(!actions.isEmpty())sf.pushScope(new ActionListExecution(actions));
         sf.execute();
     }
 

@@ -72,6 +72,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_macro_manager, container, false);
 
+        Lol.d(this, "MACRO MANAGER FRAGMENT onCreateView() called");
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.new_macro_button);
         macroListRecycler = (RecyclerView) rootView.findViewById(R.id.macro_list_recycler);
