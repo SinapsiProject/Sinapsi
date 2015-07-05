@@ -60,7 +60,7 @@ public class BGPGsonConverter extends GsonConverter {
 
             String uncryptedStr = decrypter.decrypt(cryptedString);
 
-
+            System.out.println("BGPRETROFIT: "+uncryptedStr);
 
             //calls super to convert to object
             final InputStream is = new ByteArrayInputStream(uncryptedStr.getBytes());

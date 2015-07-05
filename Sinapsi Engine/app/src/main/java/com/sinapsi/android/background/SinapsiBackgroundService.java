@@ -245,15 +245,23 @@ public class SinapsiBackgroundService extends Service
 
         if(AppConsts.DEBUG_CLEAR_DB_ON_START) syncManager.clearAll();
 
-        // loads macros from local db/web service -------------------
-        syncAndLoadMacros(false);
-
-
         if (AppConsts.DEBUG_MACROS) createLocalMacroExamples();
 
+        // loads macros from local db/web service -------------------
+        syncAndLoadMacros(false, new BackgroundOperationCallback() {
+            @Override
+            public void onBackgroundOperationSuccess() {
+                // starts the engine (and the TriggerOnEngineStart activates)
+                engine.startEngine();
+            }
 
-        // starts the engine (and the TriggerOnEngineStart activates)
-        engine.startEngine();
+            @Override
+            public void onBackgroundOperationFail() {
+                // starts the engine anyway, with not-synced data
+                engine.startEngine();
+            }
+        });
+
 
         startForegroundMode();
     }
@@ -316,7 +324,7 @@ public class SinapsiBackgroundService extends Service
         return new SinapsiServiceBinder();
     }
 
-    public void syncAndLoadMacros(final boolean explicit) {
+    public void syncAndLoadMacros(final boolean explicit, final BackgroundOperationCallback callback) {
         Lol.d(this, "Network is " + (isOnline()?"online":"offline"));
 
         if (isOnline()){
@@ -326,6 +334,7 @@ public class SinapsiBackgroundService extends Service
                     //hint: optimize by updating engine's macro list with actual changes (and not by clearing and reloading everithing)
                     engine.clearMacros();
                     engine.addMacros(loadSavedMacros());
+                    callback.onBackgroundOperationSuccess();
                 }
 
                 @Override
@@ -354,11 +363,13 @@ public class SinapsiBackgroundService extends Service
                             DialogUtils.handleRetrofitError(error, SinapsiBackgroundService.this, true);
                         }
                     }
+                    callback.onBackgroundOperationFail();
                 }
             });
         } else {
             engine.clearMacros();
             engine.addMacros(loadSavedMacros());
+            callback.onBackgroundOperationSuccess();
         }
 
 
@@ -432,7 +443,7 @@ public class SinapsiBackgroundService extends Service
         Lol.d("WEB_SOCKET", "WebSocket Close: " + code + ":"+reason);
     }
 
-    private void handleWsMessage(String message, boolean firstcall) {
+    private void handleWsMessage(final String message, boolean firstcall) {
 
         Gson gson = new Gson();
         WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
@@ -444,8 +455,21 @@ public class SinapsiBackgroundService extends Service
                 } catch (MacroEngine.MissingMacroException e) {
                     if (firstcall) {
                         //retries after a sync
-                        syncAndLoadMacros(false);
-                        handleWsMessage(message, false);
+                        syncAndLoadMacros(false, new BackgroundOperationCallback() {
+                            @Override
+                            public void onBackgroundOperationSuccess() {
+                                handleWsMessage(message, false);
+                            }
+
+                            @Override
+                            public void onBackgroundOperationFail() {
+                                //TODO: a remote execution descriptor arrived,
+                                //----:     the macro is not present on this
+                                //----:     client, and an attempt to sync failed.
+                                //----:     what to do?
+                            }
+                        });
+
                     } else {
                         e.printStackTrace();
                         //the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
@@ -456,7 +480,17 @@ public class SinapsiBackgroundService extends Service
             }
             break;
             case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
-                syncAndLoadMacros(false);
+                syncAndLoadMacros(false, new BackgroundOperationCallback() {
+                    @Override
+                    public void onBackgroundOperationSuccess() {
+                        //does nothing
+                    }
+
+                    @Override
+                    public void onBackgroundOperationFail() {
+                        //does nothing
+                    }
+                });
             }
             break;
             case SinapsiMessageTypes.NEW_CONNECTION:{
@@ -481,12 +515,13 @@ public class SinapsiBackgroundService extends Service
     @Override
     public void onUserLogOut() {
         this.loggedUser = logoutUser;
+        stopForegroundMode();
     }
 
-    public void removeMacro(int id, boolean userIntention) {
+    public void removeMacro(int id, BackgroundOperationCallback callback, boolean userIntention) {
         try {
             syncManager.removeMacro(id);
-            syncAndLoadMacros(userIntention);
+            syncAndLoadMacros(userIntention, callback);
         } catch (InconsistentMacroChangeException e) {
             e.printStackTrace();
             if(userIntention){
@@ -500,10 +535,10 @@ public class SinapsiBackgroundService extends Service
         }
     }
 
-    public void updateMacro(MacroInterface macro, boolean userIntention) {
+    public void updateMacro(MacroInterface macro, BackgroundOperationCallback callback, boolean userIntention) {
         try {
             syncManager.updateMacro(macro);
-            syncAndLoadMacros(userIntention);
+            syncAndLoadMacros(userIntention, callback);
         } catch (InconsistentMacroChangeException e) {
             e.printStackTrace();
             if(userIntention){
@@ -517,11 +552,11 @@ public class SinapsiBackgroundService extends Service
         }
     }
 
-    public void addMacro(MacroInterface macro, boolean userIntention){
+    public void addMacro(MacroInterface macro, BackgroundOperationCallback callback, boolean userIntention){
         try {
             Lol.d(this, "Calling syncManager.addMacro() passing macro '" + macro.getId() + ":"+macro.getName()+"'");
             syncManager.addMacro(macro);
-            syncAndLoadMacros(userIntention);
+            syncAndLoadMacros(userIntention,callback);
         } catch (InconsistentMacroChangeException e) {
             e.printStackTrace();
             if(userIntention){
@@ -811,5 +846,9 @@ public class SinapsiBackgroundService extends Service
     }
 
 
+    public static interface BackgroundOperationCallback{
+        public void onBackgroundOperationSuccess();
+        public void onBackgroundOperationFail();
+    }
 
 }
