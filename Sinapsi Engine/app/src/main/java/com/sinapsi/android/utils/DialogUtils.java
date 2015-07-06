@@ -7,7 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.WindowManager;
 
-import com.sinapsi.engine.R;
+import com.sinapsi.android.R;
 
 import retrofit.RetrofitError;
 

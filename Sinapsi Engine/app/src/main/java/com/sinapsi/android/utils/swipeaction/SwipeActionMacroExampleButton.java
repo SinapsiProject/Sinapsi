@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Toast;
 
-import com.sinapsi.engine.R;
+import com.sinapsi.android.R;
 import com.sinapsi.model.MacroInterface;
 
 /**

@@ -5,11 +5,9 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ScaleDrawable;
 
-import com.sinapsi.engine.R;
+import com.sinapsi.android.R;
 import com.sinapsi.model.MacroInterface;
 
 /**

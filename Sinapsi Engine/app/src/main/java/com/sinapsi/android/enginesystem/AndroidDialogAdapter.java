@@ -7,7 +7,7 @@ import android.text.InputType;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-import com.sinapsi.engine.R;
+import com.sinapsi.android.R;
 import com.sinapsi.engine.system.DialogAdapter;
 
 /**

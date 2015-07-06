@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sinapsi.android.background.SinapsiFragment;
-import com.sinapsi.engine.R;
+import com.sinapsi.android.R;
 
 /**
  * About fragment with app infos and links.

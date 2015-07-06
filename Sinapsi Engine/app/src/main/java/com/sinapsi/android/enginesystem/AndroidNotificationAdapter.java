@@ -5,7 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.support.v4.app.NotificationCompat;
 
-import com.sinapsi.engine.R;
+import com.sinapsi.android.R;
 import com.sinapsi.engine.system.NotificationAdapter;
 
 /**

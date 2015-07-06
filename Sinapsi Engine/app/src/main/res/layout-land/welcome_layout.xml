@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:background="#ECEDF2"
     android:id="@+id/welcome_layout_land"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:gravity="center">
 
     <RelativeLayout
         android:layout_width="wrap_content"

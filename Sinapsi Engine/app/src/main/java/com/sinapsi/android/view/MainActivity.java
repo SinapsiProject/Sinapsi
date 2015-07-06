@@ -23,8 +23,7 @@ import com.sinapsi.android.SinapsiAndroidApplication;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.utils.DialogUtils;
-import com.sinapsi.client.AppConsts;
-import com.sinapsi.engine.R;
+import com.sinapsi.android.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +55,10 @@ public class MainActivity extends SinapsiActionBarActivity {
             startActivity(i);
             finish();
             return;
+        }else{
+            startService(new Intent(getApplicationContext(), com.sinapsi.android.background.SinapsiBackgroundService.class));
         }
+
 
         setContentView(R.layout.activity_main);
 

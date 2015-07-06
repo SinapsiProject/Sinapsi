@@ -1,16 +1,11 @@
 package com.sinapsi.android.utils.swipeaction;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.text.TextUtils;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.sinapsi.engine.R;
 
 /**
  * An utility class to initialize and show SwipeActionButtons on a LinearLayout

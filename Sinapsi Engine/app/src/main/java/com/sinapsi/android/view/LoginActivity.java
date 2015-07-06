@@ -8,8 +8,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 
 import android.os.Build;
@@ -29,15 +27,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.enginesystem.AndroidDeviceInfo;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.client.AppConsts;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
-import com.sinapsi.engine.R;
-import com.sinapsi.model.DeviceInterface;
+import com.sinapsi.android.R;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;

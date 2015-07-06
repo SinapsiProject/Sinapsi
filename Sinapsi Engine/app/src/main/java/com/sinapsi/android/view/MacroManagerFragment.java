@@ -34,7 +34,7 @@ import com.sinapsi.android.utils.swipeaction.SmartSwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
 import com.sinapsi.android.view.editor.EditorActivity;
 import com.sinapsi.engine.MacroEngine;
-import com.sinapsi.engine.R;
+import com.sinapsi.android.R;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.utils.HashMapBuilder;
 
