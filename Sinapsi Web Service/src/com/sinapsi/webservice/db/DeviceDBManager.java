@@ -60,7 +60,7 @@ public class DeviceDBManager extends UserDBManager {
         UserInterface user = null;
         try {
             c = db.connect();
-            s = c.prepareStatement("SELECT iduser, email, password FROM device, users WHERE device.iduser = users.id AND device.id = ?");
+            s = c.prepareStatement("SELECT iduser, email, password, active, role FROM device, users WHERE device.iduser = users.id AND device.id = ?");
             s.setInt(1, idDevice);
             r = s.executeQuery();
             if (r.next()) 
