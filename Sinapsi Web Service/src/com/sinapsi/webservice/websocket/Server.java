@@ -98,21 +98,6 @@ public class Server extends WebSocketServer {
 
         this.start();
         wslog.log(wslog.getTime(), "websocket server started on port: " + getPort());
-
-       /* BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
-        
-        while (true) {
-            String in = sysin.readLine();
-            this.broadcast(in);
-            if(in.equals("exit")) {
-                this.stop();
-                break;
-            } else if( in.equals("restart")) {
-                this.stop();
-                this.start();
-                break;
-            }
-        }*/
     }
 
     /**
@@ -134,10 +119,12 @@ public class Server extends WebSocketServer {
      *            
      */
     public void broadcast(String text) {
+        wslog.log(wslog.getTime(), "broadcast : " + text);
         Collection<WebSocket> con = connections();
         synchronized (con) {
             for(WebSocket c : con) {
-                c.send(text);
+                if(c.isOpen())
+                    c.send(text);
             }
         }
     }
@@ -157,6 +144,7 @@ public class Server extends WebSocketServer {
      * @param msg message
      */
     public void send(WebSocket c, String msg) {
+        wslog.log(wslog.getTime(), clientsWS.get(c) + " : " + msg);
         c.send(msg);
     }
 }

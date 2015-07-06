@@ -634,7 +634,7 @@ public class EngineDBManager {
             List<Action> actions = macro.getActions();
             int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion());   
             int idDevice =  macro.getTrigger().getExecutionDevice().getId();
-            
+            int counter = 0;
             
             String query = "INSERT INTO macro(name, iduser, triggerjson, iddevice, idtrigger, icon, color, incomplete, errorpolicy)" +
                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -655,8 +655,8 @@ public class EngineDBManager {
             r.next();
             idMacro = r.getInt("id");  
             
-            String query2 = "INSERT INTO actionmacrolist(idmacro, idaction, actionjson, iddevice)" +
-                            "VALUES(?, ?, ?, ?)";
+            String query2 = "INSERT INTO actionmacrolist(idmacro, idaction, actionjson, iddevice, counter)" +
+                            "VALUES(?, ?, ?, ?, ?)";
             
             for(Action action : actions) {
                 s = null;
@@ -666,6 +666,7 @@ public class EngineDBManager {
                 s.setInt(2, getIdAction(action.getName(), action.getMinVersion()));
                 s.setString(3, action.getActualParameters());
                 s.setInt(4, action.getExecutionDevice().getId());
+                s.setInt(5, counter++);
                 s.execute();   
                 r = s.getGeneratedKeys();
                 r.next();
