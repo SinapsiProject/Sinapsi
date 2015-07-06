@@ -237,8 +237,9 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                         service.initAndStartEngine();
                         service.getWSClient().establishConnection();
 
-                        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(i);
 
                         showProgress(false);

@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.sinapsi.android.AndroidAppConsts;
+import com.sinapsi.android.SinapsiAndroidApplication;
 import com.sinapsi.android.persistence.AndroidDiffDBManager;
 import com.sinapsi.android.persistence.AndroidLocalDBManager;
 import com.sinapsi.android.utils.DialogUtils;
@@ -456,6 +457,8 @@ public class SinapsiBackgroundService extends Service
     @Override
     public void onUserLogIn(UserInterface user) {
         this.loggedUser = user;
+        SinapsiAndroidApplication app = (SinapsiAndroidApplication)getApplication();
+        app.setLoggedIn(true);
     }
 
     @Override
@@ -463,6 +466,8 @@ public class SinapsiBackgroundService extends Service
         this.loggedUser = logoutUser;
         pauseEngine();
         stopForegroundMode();
+        SinapsiAndroidApplication app = (SinapsiAndroidApplication)getApplication();
+        app.setLoggedIn(false);
     }
 
     /**

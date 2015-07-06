@@ -2,6 +2,7 @@ package com.sinapsi.android.view;
 
 import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.sinapsi.android.Lol;
+import com.sinapsi.android.SinapsiAndroidApplication;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.utils.DialogUtils;
@@ -46,6 +48,16 @@ public class MainActivity extends SinapsiActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(!((SinapsiAndroidApplication)getApplication()).isLoggedIn()){
+            Intent i = new Intent(getApplicationContext(), WelcomeActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);

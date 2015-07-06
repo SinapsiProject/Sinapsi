@@ -10,10 +10,19 @@ import com.sinapsi.android.utils.TempParameterManager;
  */
 public class SinapsiAndroidApplication extends Application {
 
+    private boolean isLoggedIn = false;
+
     private TempParameterManager parameterManager = new TempParameterManager();
 
     public TempParameterManager getParameterManager(){
         return parameterManager;
     }
 
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.isLoggedIn = loggedIn;
+    }
 }

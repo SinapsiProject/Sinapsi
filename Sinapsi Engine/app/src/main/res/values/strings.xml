@@ -5,7 +5,7 @@
     <string name="no">Nope</string>
 
     <string name="app_name">Sinapsi</string>
-    <string name="title_activity_macro_manager">MacroManagerActivity</string>
+    <string name="title_activity_macro_manager">Sinapsi</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="ok">OK</string>
