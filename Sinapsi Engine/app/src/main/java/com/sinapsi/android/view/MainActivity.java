@@ -208,7 +208,10 @@ public class MainActivity extends SinapsiActionBarActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 //ON YES
                                 service.getWeb().logout();
-                                MainActivity.this.finish();
+                                Intent i = new Intent(getApplicationContext(), WelcomeActivity.class);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(i);
                             }
                         }, new DialogInterface.OnClickListener() {
 

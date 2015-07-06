@@ -21,7 +21,8 @@ import com.sinapsi.android.R;
  */
 public class WelcomeActivity extends Activity {
 
-    private static final int TOTAL_ANIM_DURATION = 1500;
+    private static final int ANIM_TOTAL_DURATION = 1500;
+    private static final int ANIM_START_OFFSET = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +59,19 @@ public class WelcomeActivity extends Activity {
         ImageView logo = (ImageView) findViewById(R.id.logo);
 
         Animation alpha1 = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
-        alpha1.setDuration(TOTAL_ANIM_DURATION/3);
+        alpha1.setStartOffset(ANIM_START_OFFSET);
+        alpha1.setDuration(ANIM_TOTAL_DURATION /3);
         alpha1.setFillAfter(true);
 
         Animation alpha2 = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
         alpha1.setFillAfter(true);
-        alpha2.setStartOffset(alpha1.getDuration());
-        alpha2.setDuration(TOTAL_ANIM_DURATION/3);
+        alpha2.setStartOffset(ANIM_START_OFFSET+alpha1.getDuration());
+        alpha2.setDuration(ANIM_TOTAL_DURATION /3);
 
         Animation alpha3 = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
         alpha1.setFillAfter(true);
-        alpha3.setStartOffset(alpha1.getDuration()+alpha2.getDuration());
-        alpha3.setDuration(TOTAL_ANIM_DURATION/3);
+        alpha3.setStartOffset(ANIM_START_OFFSET+alpha1.getDuration()+alpha2.getDuration());
+        alpha3.setDuration(ANIM_TOTAL_DURATION /3);
 
 
         logo.startAnimation(alpha1);

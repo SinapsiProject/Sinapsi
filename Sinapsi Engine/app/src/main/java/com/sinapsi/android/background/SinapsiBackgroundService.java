@@ -464,10 +464,10 @@ public class SinapsiBackgroundService extends Service
     @Override
     public void onUserLogOut() {
         this.loggedUser = logoutUser;
-        pauseEngine();
-        stopForegroundMode();
         SinapsiAndroidApplication app = (SinapsiAndroidApplication) getApplication();
         app.setLoggedIn(false);
+        pauseEngine();
+        stopForegroundMode();
     }
 
     /**
