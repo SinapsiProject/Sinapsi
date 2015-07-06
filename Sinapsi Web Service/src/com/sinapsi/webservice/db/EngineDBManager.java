@@ -696,6 +696,8 @@ public class EngineDBManager {
     private int updateMacro(int idUser, MacroInterface macro) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
+        ResultSet r = null;
+        
         try {
             c = db.connect();
             c.setAutoCommit(false);
@@ -721,19 +723,30 @@ public class EngineDBManager {
             s.setInt(10, macro.getId());
             s.execute();
             
+            // delete actions
+            String query3 = "DELETE FROM actionmacrolist";
+            s = c.prepareStatement(query3);
+            s.execute();
+            
+            // add actions
+            String query2 = "INSERT INTO actionmacrolist(idmacro, idaction, actionjson, iddevice, counter)" +
+                            "VALUES(?, ?, ?, ?, ?)";
+            int counter = 0;
+            
             for(Action action : actions) {
                 s = null;
-                String query2 = "UPDATE actionmacrolist " + 
-                                "SET idmacro = ?, idaction = ?, actionjson = ?, iddevice = ?" +
-                                "WHERE idmacro = ?";
-
-                s = c.prepareStatement(query2);
+                r = null;
+                s = c.prepareStatement(query2, Statement.RETURN_GENERATED_KEYS);
                 s.setInt(1, macro.getId());
                 s.setInt(2, getIdAction(action.getName(), action.getMinVersion()));
                 s.setString(3, action.getActualParameters());
                 s.setInt(4, action.getExecutionDevice().getId());
-                s.execute();                   
-            }
+                s.setInt(5, counter++);
+                s.execute();   
+                r = s.getGeneratedKeys();
+                r.next();
+            } 
+
             
             c.commit();
             db.disconnect(c, s);  
