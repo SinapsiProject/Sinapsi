@@ -38,7 +38,7 @@ public class ObscuredSharedPreferences implements SharedPreferences {
         SEKRIT = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID).toCharArray();
     }
 
-    public class Editor implements SharedPreferences.Editor {
+    private class Editor implements SharedPreferences.Editor {
         protected SharedPreferences.Editor delegate;
 
         public Editor() {

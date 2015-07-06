@@ -26,6 +26,7 @@ import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.WebServiceConnectionListener;
+import com.sinapsi.android.enginesystem.components.ActionToast;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.utils.GraphicsUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
@@ -33,8 +34,12 @@ import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.android.utils.swipeaction.SmartSwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
 import com.sinapsi.android.view.editor.EditorActivity;
+import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.android.R;
+import com.sinapsi.engine.components.ActionLog;
+import com.sinapsi.engine.components.TriggerScreenPower;
+import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.utils.HashMapBuilder;
 
@@ -244,6 +249,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
+                                        transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
                                         service.removeMacro(elem.getId(), new SinapsiBackgroundService.BackgroundSyncCallback() {
                                             @Override
                                             public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
@@ -289,17 +295,17 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                                 } else {
                                     if ((Boolean) returnValues[1]) //updates the macro only if there was at least a change in the editor
                                         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
-                                        service.updateMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundSyncCallback() {
-                                            @Override
-                                            public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
-                                                updateContent(true, currentMacros);
-                                            }
+                                    service.updateMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundSyncCallback() {
+                                        @Override
+                                        public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                                            updateContent(true, currentMacros);
+                                        }
 
-                                            @Override
-                                            public void onBackgroundSyncFail(Throwable error) {
+                                        @Override
+                                        public void onBackgroundSyncFail(Throwable error) {
 
-                                            }
-                                        }, true);
+                                        }
+                                    }, true);
                                 }
                             }
 
@@ -435,7 +441,8 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     Lol.d(this, "Macro in updated list: " + macroList.getItemCount());
 
                     swipeRefreshLayout.setRefreshing(false);
-                    if (currentMacros.isEmpty()) transitionManager.makeTransitionIfDifferent(States.NO_ELEMENTS.name());
+                    if (currentMacros.isEmpty())
+                        transitionManager.makeTransitionIfDifferent(States.NO_ELEMENTS.name());
                     else transitionManager.makeTransitionIfDifferent(States.LIST.name());
                     Lol.d(this, "Update content finished");
                 }
@@ -449,12 +456,13 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     else transitionManager.makeTransitionIfDifferent(States.LIST.name());
                 }
             }, userIntent);
-        }else {
+        } else {
             updateMacroList(macros);
             Lol.d(this, "Macro in updated list: " + macroList.getItemCount());
 
             swipeRefreshLayout.setRefreshing(false);
-            if(macros.isEmpty()) transitionManager.makeTransitionIfDifferent(States.NO_ELEMENTS.name());
+            if (macros.isEmpty())
+                transitionManager.makeTransitionIfDifferent(States.NO_ELEMENTS.name());
             else transitionManager.makeTransitionIfDifferent(States.LIST.name());
             Lol.d(this, "Update content finished");
         }
@@ -466,6 +474,29 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         Lol.d(this, "newMacro called");
 
         MacroInterface m = service.newEmptyMacro();
+
+        // here starts test macro creation TODO: delete
+        m.setTrigger(service.getComponentFactory().newTrigger(
+                TriggerScreenPower.TRIGGER_SCREEN_POWER,
+                new ActualParamBuilder()
+                        .put("screen_power", true)
+                        .create().toString(),
+                m,
+                service.getDevice().getId()));
+        m.addAction(service.getComponentFactory().newAction(
+                ActionToast.ACTION_TOAST,
+                new ActualParamBuilder()
+                        .put("message", "Screen is on.")
+                        .create().toString(),
+                service.getDevice().getId()));
+        m.addAction(service.getComponentFactory().newAction(
+                ActionLog.ACTION_LOG,
+                new ActualParamBuilder()
+                        .put("log_message", "Screen is on on android")
+                        .create().toString(),
+                service.getDevice().getId())); //TODO: change device id with service id
+        // here ends test macro creation
+
         startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
             @Override
             public void onActivityReturn(Object... returnValues) {

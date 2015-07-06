@@ -16,6 +16,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.android.SinapsiAndroidApplication;
+import com.sinapsi.android.enginesystem.ToastAdapter;
+import com.sinapsi.android.enginesystem.components.ActionToast;
 import com.sinapsi.android.persistence.AndroidDiffDBManager;
 import com.sinapsi.android.persistence.AndroidLocalDBManager;
 import com.sinapsi.android.utils.DialogUtils;
@@ -149,7 +151,7 @@ public class SinapsiBackgroundService extends Service
                 new AndroidBase64DecodingMethod());
 
         // inits the engine with mock data for debug
-        if(AppConsts.DEBUG_BYPASS_LOGIN) mockLogin();
+        if (AppConsts.DEBUG_BYPASS_LOGIN) mockLogin();
 
     }
 
@@ -209,7 +211,8 @@ public class SinapsiBackgroundService extends Service
                 ActionContinueConfirmDialog.class,
                 ActionLog.class,
                 ActionSimpleNotification.class,
-                ActionStringInputDialog.class);
+                ActionStringInputDialog.class,
+                ActionToast.class);
         // here ends engine initialization      ---------------------
 
         // sync manager initialization ------------------------------
@@ -218,7 +221,7 @@ public class SinapsiBackgroundService extends Service
         AndroidLocalDBManager aldbm_curr;
         AndroidDiffDBManager addbm;
 
-        if(loggedUser.getId() == logoutUser.getId()){
+        if (loggedUser.getId() == logoutUser.getId()) {
             aldbm_old = new AndroidLocalDBManager(getApplicationContext(), "logout_user-lastSync.db", engine.getComponentFactory());
             aldbm_curr = new AndroidLocalDBManager(getApplicationContext(), "logout_user-current.db", engine.getComponentFactory());
             addbm = new AndroidDiffDBManager(getApplicationContext(), "logout_user-diff.db");
@@ -227,12 +230,11 @@ public class SinapsiBackgroundService extends Service
             Log.d("DBLOCATION", getApplicationContext().getDatabasePath("logout_user-lastSync.db").getAbsolutePath());
             Log.d("DBLOCATION", getApplicationContext().getDatabasePath("logout_user-lastSync.db").getAbsolutePath());
             Log.d("DBLOCATION", getApplicationContext().getDatabasePath("logout_user-lastSync.db").getAbsolutePath());
-        }else{
-            aldbm_old = new AndroidLocalDBManager(getApplicationContext(),loggedUser.getEmail().replace('@', '_').replace('.','_')+"-lastSync.db", engine.getComponentFactory());
-            aldbm_curr = new AndroidLocalDBManager(getApplicationContext(),loggedUser.getEmail().replace('@', '_').replace('.','_')+"-current.db", engine.getComponentFactory());
-            addbm = new AndroidDiffDBManager(getApplicationContext(), loggedUser.getEmail().replace('@', '_').replace('.','_')+"-diff.db");
+        } else {
+            aldbm_old = new AndroidLocalDBManager(getApplicationContext(), loggedUser.getEmail().replace('@', '_').replace('.', '_') + "-lastSync.db", engine.getComponentFactory());
+            aldbm_curr = new AndroidLocalDBManager(getApplicationContext(), loggedUser.getEmail().replace('@', '_').replace('.', '_') + "-current.db", engine.getComponentFactory());
+            addbm = new AndroidDiffDBManager(getApplicationContext(), loggedUser.getEmail().replace('@', '_').replace('.', '_') + "-diff.db");
         }
-
 
 
         SyncManager syncManager = new SyncManager(
@@ -246,9 +248,9 @@ public class SinapsiBackgroundService extends Service
 
         safeSyncManager = new SafeSyncManager(syncManager, this);
 
-        if(AppConsts.DEBUG_CLEAR_DB_ON_START) syncManager.clearAll();
+        if (AppConsts.DEBUG_CLEAR_DB_ON_START) syncManager.clearAll();
 
-        if (AppConsts.DEBUG_MACROS) createLocalMacroExamples();
+        if (AppConsts.DEBUG_TEST_MACROS) createLocalMacroExamples();
 
         // loads macros from local db/web service -------------------
         syncMacros(new BackgroundSyncCallback() {
@@ -284,7 +286,7 @@ public class SinapsiBackgroundService extends Service
         sf.addSystemService(SMSAdapter.SERVICE_SMS, new AndroidSMSAdapter(this));
         sf.addSystemService(WifiAdapter.SERVICE_WIFI, new AndroidWifiAdapter(this));
         sf.addSystemService(NotificationAdapter.SERVICE_NOTIFICATION, new AndroidNotificationAdapter(getApplicationContext()));
-
+        sf.addSystemService(ToastAdapter.SERVICE_TOAST, new ToastAdapter(this));
 
         PackageManager pm = getPackageManager();
 
@@ -293,15 +295,15 @@ public class SinapsiBackgroundService extends Service
         sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_INTERCEPT_SCREEN_POWER, true);
         sf.setRequirementSpec(CommonDeviceConsts.REQUIREMENT_AC_CHARGER, true);
         sf.setRequirementSpec(DialogAdapter.REQUIREMENT_INPUT_DIALOGS, true);
-        if (pm.hasSystemFeature(PackageManager.FEATURE_WIFI))
-            sf.setRequirementSpec(WifiAdapter.REQUIREMENT_WIFI, true);
-        if (pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
-            sf.setRequirementSpec(SMSAdapter.REQUIREMENT_SMS_READ, true);
+
+        sf.setRequirementSpec(WifiAdapter.REQUIREMENT_WIFI, pm.hasSystemFeature(PackageManager.FEATURE_WIFI));
+        sf.setRequirementSpec(SMSAdapter.REQUIREMENT_SMS_READ, pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY));
+
+        sf.setRequirementSpec(ToastAdapter.REQUIREMENT_TOAST, true);
 
 
         return sf;
     }
-
 
 
     @Override
@@ -384,7 +386,7 @@ public class SinapsiBackgroundService extends Service
 
     @Override
     public void onWebSocketClose(int code, String reason, boolean remote) {
-        Lol.d("WEB_SOCKET", "WebSocket Close: " + code + ":"+reason);
+        Lol.d("WEB_SOCKET", "WebSocket Close: " + code + ":" + reason);
     }
 
     private void handleWsMessage(final String message, boolean firstcall) {
@@ -438,11 +440,11 @@ public class SinapsiBackgroundService extends Service
                 }, false);
             }
             break;
-            case SinapsiMessageTypes.NEW_CONNECTION:{
+            case SinapsiMessageTypes.NEW_CONNECTION: {
 
             }
             break;
-            case SinapsiMessageTypes.CONNECTION_LOST:{
+            case SinapsiMessageTypes.CONNECTION_LOST: {
 
             }
         }
@@ -455,7 +457,7 @@ public class SinapsiBackgroundService extends Service
     @Override
     public void onUserLogIn(UserInterface user) {
         this.loggedUser = user;
-        SinapsiAndroidApplication app = (SinapsiAndroidApplication)getApplication();
+        SinapsiAndroidApplication app = (SinapsiAndroidApplication) getApplication();
         app.setLoggedIn(true);
     }
 
@@ -464,14 +466,12 @@ public class SinapsiBackgroundService extends Service
         this.loggedUser = logoutUser;
         pauseEngine();
         stopForegroundMode();
-        SinapsiAndroidApplication app = (SinapsiAndroidApplication)getApplication();
+        SinapsiAndroidApplication app = (SinapsiAndroidApplication) getApplication();
         app.setLoggedIn(false);
     }
 
     /**
      * Loads all saved macros from a local db.
-     *
-     *
      */
     public void syncMacros(final BackgroundSyncCallback callback, final boolean userIntention) {
         safeSyncManager.getMacros(new BackgroundServiceInternalSyncCallback(callback, userIntention));
@@ -485,14 +485,14 @@ public class SinapsiBackgroundService extends Service
         safeSyncManager.updateMacro(macro, new BackgroundServiceInternalSyncCallback(callback, userIntention));
     }
 
-    public void addMacro(MacroInterface macro, final BackgroundSyncCallback callback, final boolean userIntention){
+    public void addMacro(MacroInterface macro, final BackgroundSyncCallback callback, final boolean userIntention) {
         safeSyncManager.addMacro(macro, new BackgroundServiceInternalSyncCallback(callback, userIntention));
     }
 
-    public void handleConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback callback){
+    public void handleConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback callback) {
         //TODO (show them to the user, only if sinapsi gui is open, otherwise show notification, duplicate and disable macros)
         //if(sinapsiGuiIsOpen){
-        for(MacroSyncConflict conflict: conflicts){
+        for (MacroSyncConflict conflict : conflicts) {
             //TODO: show dialog to the user
         }
         //}else{
@@ -507,10 +507,10 @@ public class SinapsiBackgroundService extends Service
         Lol.d(SinapsiBackgroundService.class, "Sync failed: " + e.getMessage());
         e.printStackTrace();
 
-        if(showError) {
+        if (showError) {
             if (e instanceof RetrofitError) {
                 DialogUtils.handleRetrofitError(e, SinapsiBackgroundService.this, true);
-            } else if(e instanceof InconsistentMacroChangeException) {
+            } else if (e instanceof InconsistentMacroChangeException) {
                 DialogUtils.showOkDialog(this,
                         "Error",
                         "A data consistency error occurred while syncing data.\n" +
@@ -760,18 +760,18 @@ public class SinapsiBackgroundService extends Service
         //engine.addMacro(myMacro3);
     }
 
-    public void pauseEngine(){
+    public void pauseEngine() {
         engine.pauseEngine();
         stopForegroundMode();
     }
 
-    public void resumeEngine(){
+    public void resumeEngine() {
         engine.resumeEngine();
         startForegroundMode();
     }
 
-    public MacroInterface newEmptyMacro(){
-        int id = safeSyncManager.getMinId()-1;
+    public MacroInterface newEmptyMacro() {
+        int id = safeSyncManager.getMinId() - 1;
         return engine.newEmptyMacro(id);
     }
 
@@ -796,17 +796,18 @@ public class SinapsiBackgroundService extends Service
     }
 
 
-    public static interface BackgroundSyncCallback{
+    public static interface BackgroundSyncCallback {
         public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros);
+
         public void onBackgroundSyncFail(Throwable error);
     }
 
-    private class BackgroundServiceInternalSyncCallback implements SyncManager.MacroSyncCallback{
+    private class BackgroundServiceInternalSyncCallback implements SyncManager.MacroSyncCallback {
 
         private final BackgroundSyncCallback callback;
         private final boolean userIntention;
 
-        public BackgroundServiceInternalSyncCallback(BackgroundSyncCallback callback, boolean userIntention){
+        public BackgroundServiceInternalSyncCallback(BackgroundSyncCallback callback, boolean userIntention) {
             this.callback = callback;
             this.userIntention = userIntention;
         }

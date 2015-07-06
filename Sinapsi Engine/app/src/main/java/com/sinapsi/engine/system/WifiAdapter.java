@@ -10,8 +10,8 @@ import com.sinapsi.engine.parameters.SwitchStatusChoices;
  */
 public interface WifiAdapter {
 
-    String SERVICE_WIFI = "SERVICE_WIFI";
-    String REQUIREMENT_WIFI = "REQUIREMENT_WIFI";
+    public static final String SERVICE_WIFI = "SERVICE_WIFI";
+    public static final String REQUIREMENT_WIFI = "REQUIREMENT_WIFI";
 
     /**
      * Getter of the main wifi adapter's status.

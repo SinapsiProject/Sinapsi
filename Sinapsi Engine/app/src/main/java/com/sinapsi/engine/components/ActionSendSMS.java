@@ -26,9 +26,9 @@ public class ActionSendSMS extends Action {
     public static final String ACTION_SEND_SMS = "ACTION_SEND_SMS";
 
     @Override
-    public void onActivate(final ExecutionInterface di) throws JSONException{
-        SMSAdapter sa = (SMSAdapter) di.getSystemFacade().getSystemService(SMSAdapter.SERVICE_SMS);
-        JSONObject pjo = getParsedParams(di.getLocalVars(),di.getGlobalVars());
+    public void onActivate(final ExecutionInterface ei) throws JSONException{
+        SMSAdapter sa = (SMSAdapter) ei.getSystemFacade().getSystemService(SMSAdapter.SERVICE_SMS);
+        JSONObject pjo = getParsedParams(ei.getLocalVars(), ei.getGlobalVars());
         SMSAdapter.Sms sms = new SMSAdapter.Sms();
 
         sms.setAddress(pjo.getString("number"));

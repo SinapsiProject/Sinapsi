@@ -6,9 +6,9 @@ package com.sinapsi.engine.system;
  */
 public interface DialogAdapter {
 
-    String SERVICE_DIALOGS = "SERVICE_DIALOGS";
-    String REQUIREMENT_SIMPLE_DIALOGS = "REQUIREMENT_SIMPLE_DIALOGS";
-    String REQUIREMENT_INPUT_DIALOGS = "REQUIREMENT_INPUT_DIALOGS";
+    public static final String SERVICE_DIALOGS = "SERVICE_DIALOGS";
+    public static final String REQUIREMENT_SIMPLE_DIALOGS = "REQUIREMENT_SIMPLE_DIALOGS";
+    public static final String REQUIREMENT_INPUT_DIALOGS = "REQUIREMENT_INPUT_DIALOGS";
 
     /**
      * Simple listener interface, to be implemented, in

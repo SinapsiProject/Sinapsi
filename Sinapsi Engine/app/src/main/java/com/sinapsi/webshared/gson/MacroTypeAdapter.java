@@ -85,9 +85,11 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
         out.name(MACRO_ACTIONS).beginArray();
         for(int i = 0; i < m.getActions().size(); ++i){
             Action a = m.getActions().get(i);
+            out.beginObject();
             out.name(ACTION_NAME).value(a.getName());
             out.name(ACTION_DEVICE_ID).value(a.getExecutionDevice().getId());
             out.name(ACTION_JSON).value(a.getActualParameters());
+            out.endObject();
         }
         out.endArray();
 
@@ -186,13 +188,14 @@ public class MacroTypeAdapter extends TypeAdapter<MacroInterface> {
         
         in.beginArray();
         while(in.hasNext()){
+            in.beginObject();
             in.nextName();//ACTION_NAME
             String actionName = in.nextString();
             in.nextName();//ACTION_DEVICE_ID
             int actionDeviceId = in.nextInt();
             in.nextName();//ACTION_JSON
             String actionJson = in.nextString();
-
+            in.endObject();
             Action action = componentFactoryProvider.getComponentFactory().newAction(
                     actionName,
                     actionJson,

@@ -44,13 +44,6 @@ public class EditorActivity extends SinapsiActionBarActivity {
             @Override
             public void onClick(View v) {
                 input.setName(tv.getText().toString());
-                input.setTrigger(service.getComponentFactory().newTrigger(
-                        TriggerScreenPower.TRIGGER_SCREEN_POWER,
-                        new ActualParamBuilder()
-                                    .put("screen_power", true)
-                                    .create().toString(),
-                        input,
-                        service.getDevice().getId()));
                 returnActivity(input, changed);
             }
         });
