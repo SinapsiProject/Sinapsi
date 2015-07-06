@@ -235,7 +235,6 @@ public class AndroidLocalDBManager implements LocalDBManager {
         Lol.d(this, "removeMacro() called on macro with id: " + id);
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
         db.delete(TABLE_MACROS, COL_MACRO_ID + " = ?", new String[]{"" + id});
-        //db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE " + COL_MACRO_ID + " = ?", new String[]{"" + id});
         deleteActionsForMacro(id, db);
         db.close();
         localDBOpenHelper.close();
@@ -299,8 +298,8 @@ public class AndroidLocalDBManager implements LocalDBManager {
     public void deleteMacrosWithNegativeId() {
         SQLiteDatabase db = localDBOpenHelper.getWritableDatabase();
 
-        db.rawQuery("DELETE FROM " + TABLE_MACROS + " WHERE " + COL_MACRO_ID + " < 0", null);
-        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " < 0", null);
+        db.delete(TABLE_MACROS, COL_MACRO_ID + " < 0", null);
+        db.delete(TABLE_ACTION_LISTS, COL_ACTIONLIST_MACRO_ID + " < 0", null);
 
         db.close();
         localDBOpenHelper.close();
