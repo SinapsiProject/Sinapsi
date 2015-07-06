@@ -49,7 +49,7 @@ public class MacroServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
 		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db"); 
-		WebServiceEngine engine = (WebServiceEngine) getServletContext().getAttribute("engin");
+		WebServiceEngine engine = (WebServiceEngine) getServletContext().getAttribute("engine");
 	    UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
 	    DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");  
 	    WebServiceEngine webServiceEngine = (WebServiceEngine) getServletContext().getAttribute("engine");

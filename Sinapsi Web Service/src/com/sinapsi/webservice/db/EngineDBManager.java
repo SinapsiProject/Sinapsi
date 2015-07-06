@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServlet;
-
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.Trigger;
@@ -555,7 +553,7 @@ public class EngineDBManager {
             if(r.next())
                 macroFound = true;
             
-        }catch(SQLException e) {
+        } catch(SQLException e) {
             db.disconnect(c, s, r);
             throw e;
         }
@@ -629,6 +627,7 @@ public class EngineDBManager {
             return updateMacro(idUser, macro);
         
         
+        
         try {
             c = db.connect();
             c.setAutoCommit(false);
@@ -694,15 +693,33 @@ public class EngineDBManager {
     private int updateMacro(int idUser, MacroInterface macro) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
-        
         try {
             c = db.connect();
             c.setAutoCommit(false);
             
             List<Action> actions = macro.getActions();
             int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion()); 
+            int idDevice = macro.getTrigger().getExecutionDevice().getId();
+            
+            String query = "UPDATE macro " +
+                           "SET name=?, iduser=?, triggerjson=?, iddevice=?, idtrigger=?, icon=?, color=?, incomplete=?, errorpolicy=? " + 
+                           "WHERE id = ?";
+            
+            s = c.prepareStatement(query);
+            s.setString(1, macro.getName());
+            s.setInt(2, idUser);
+            s.setString(3, macro.getTrigger().getActualParameters());
+            s.setInt(4, idDevice);
+            s.setInt(5, idTrigger);
+            s.setString(6, macro.getIconName());
+            s.setString(7, macro.getMacroColor());
+            s.setInt(8, macro.isValid() ? 0 : 1);
+            s.setString(9, macro.getExecutionFailurePolicy());
+            s.setInt(10, macro.getId());
+            s.execute();
             
             for(Action action : actions) {
+                s = null;
                 String query2 = "UPDATE actionmacrolist " + 
                                 "SET idmacro = ?, idaction = ?, actionjson = ?, iddevice = ?" +
                                 "WHERE idmacro = ?";
@@ -712,35 +729,20 @@ public class EngineDBManager {
                 s.setInt(2, getIdAction(action.getName(), action.getMinVersion()));
                 s.setString(3, action.getActualParameters());
                 s.setInt(4, action.getExecutionDevice().getId());
-                s.execute();   
-
-                s = null;
-                String query = "UPDATE macro " +
-                               "SET name=?, iduser=?, triggerjson=?, iddevice=?, idtrigger=?, icon=?, color=?, incomplete=?, errorpolicy=? " + 
-                               "WHERE email = ?";
-                
-                s = c.prepareStatement(query);
-                s.setString(1, macro.getName());
-                s.setInt(2, idUser);
-                s.setString(3, macro.getTrigger().getActualParameters());
-                s.setInt(4, action.getExecutionDevice().getId());
-                s.setInt(5, idTrigger);
-                s.setString(6, macro.getIconName());
-                s.setString(7, macro.getMacroColor());
-                s.setInt(8, macro.isValid() ? 0 : 1);
-                s.setString(9, macro.getExecutionFailurePolicy());
-                s.execute();
+                s.execute();                   
             }
+            
+            c.commit();
+            db.disconnect(c, s);  
                
         } catch(Exception e) {
             // in case of error, rollback the changes and disconnect
+            e.printStackTrace();
             c.rollback();
             db.disconnect(c, s);
             throw e;
         }
-        // in case of success, commit all changes in the db and disconnect
-        c.commit();
-        db.disconnect(c, s);   
+         
         return macro.getId();
     }   
 }

@@ -109,7 +109,6 @@ public class WebCharts extends HttpServlet {
                             
                             files.add(new Pair<String, String>(dateM.toString(), Integer.toString(count)));  
                         } catch (ParseException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                         
