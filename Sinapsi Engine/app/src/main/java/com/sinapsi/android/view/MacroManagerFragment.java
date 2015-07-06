@@ -486,16 +486,22 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         m.addAction(service.getComponentFactory().newAction(
                 ActionToast.ACTION_TOAST,
                 new ActualParamBuilder()
-                        .put("message", "Screen is on.")
+                        .put("message", "Screen is on. 2")
                         .create().toString(),
                 service.getDevice().getId()));
         m.addAction(service.getComponentFactory().newAction(
                 ActionLog.ACTION_LOG,
                 new ActualParamBuilder()
-                        .put("log_message", "Screen is on on android")
+                        .put("log_message", "Screen is on on android 2")
                         .create().toString(),
-                service.getDevice().getId())); //TODO: change device id with service id
-        // here ends test macro creation
+                51)); //the web service id for a@bf seems to be 51
+        m.addAction(service.getComponentFactory().newAction(
+                ActionToast.ACTION_TOAST,
+                new ActualParamBuilder()
+                        .put("message", "YAY!!!!! 2")
+                        .create().toString(),
+                service.getDevice().getId()));
+        // here ends test macro creation //TODO: delete this macro
 
         startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
             @Override
