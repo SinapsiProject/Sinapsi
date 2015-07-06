@@ -137,9 +137,11 @@ public class EngineDBManager {
         
         try {
             c = db.connect();
-            String query = "SELECT iduser, actionmacrolist.iddevice, name, actionjson " +
-                           "FROM actionmacrolist, macro " +
-                           "WHERE actionmacrolist.idmacro = macro.id and actionmacrolist.idmacro =  ?";
+            String query = "SELECT iduser, actionmacrolist.iddevice, action.name, actionjson " +
+                           "FROM actionmacrolist, macro, action " +
+                           "WHERE actionmacrolist.idmacro = macro.id AND " +
+                                 "action.id = actionmacrolist.idaction AND " +
+                                 "actionmacrolist.idmacro =  ?";
             s = c.prepareStatement(query);
             s.setInt(1, idMacro);
             r = s.executeQuery();
@@ -177,11 +179,11 @@ public class EngineDBManager {
         
         try {
             c = db.connect();
-            String query = "SELECT iduser, actionmacrolist.iddevice, macro.name, actionjson " +
-                           "FROM  actionmacrolist, macro, users " +
-                           "WHERE users.id = macro.iduser AND " +
-                                 "actionmacrolist.idmacro = macro.id AND " +
-                                 "users.email =  ?";
+            String query = "SELECT iduser, actionmacrolist.iddevice, action.name, actionjson " +
+                           "FROM actionmacrolist, macro, action " +
+                           "WHERE actionmacrolist.idmacro = macro.id AND " +
+                                 "action.id = actionmacrolist.idaction AND " +
+                                 "actionmacrolist.idmacro =  ?";
             
             s = c.prepareStatement(query);
             s.setString(1, email);
