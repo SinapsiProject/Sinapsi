@@ -73,7 +73,8 @@ public class MemoryLocalDBManager implements LocalDBManager{
 
     @Override
     public void deleteMacrosWithNegativeId() {
-        for(Integer i:macros.keySet()){
+        Integer[] indexes = macros.keySet().toArray(new Integer[macros.keySet().size()]);
+        for(Integer i:indexes){
             if(i<0) macros.remove(i);
         }
     }
