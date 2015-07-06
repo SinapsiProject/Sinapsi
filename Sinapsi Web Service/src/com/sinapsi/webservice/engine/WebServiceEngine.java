@@ -42,7 +42,7 @@ public class WebServiceEngine {
     private EngineDBManager engineDb = new EngineDBManager();
     private DeviceDBManager deviceDB = new DeviceDBManager();
     private Server wsserver;
-    private WebServiceLog wslog = new WebServiceLog(WebServiceLog.FILE_OUT);
+    private WebServiceLog actionlog = new WebServiceLog(WebServiceLog.ACTION_LOG_FILE);
     
     public static final String DEFAULT_WEB_SERVICE_DEVICE_NAME = "Cloud";
     public static final String DEFAULT_WEB_SERVICE_DEVICE_MODEL = "Sinapsi";
@@ -56,7 +56,7 @@ public class WebServiceEngine {
         sinapsiLog.addLogInterface(new SystemLogInterface() {
             @Override
             public void printMessage(LogMessage lm) {
-                wslog.log(wslog.getTime(), lm.getTag() + " : " + lm.getMessage());
+                actionlog.log(actionlog.getTime(), lm.getTag() + " : " + lm.getMessage());
             }
         });
     }

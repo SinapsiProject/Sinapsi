@@ -216,6 +216,39 @@ public class WebLog extends HttpServlet {
                 }
                 break;
                 
+            case "actionlog":
+                try {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String dayliLog = "/var/log/sinapsi/action_log." + dateFormat.format(date) + ".log";
+                    
+                    // filter enabled
+                    if(dateFilter != "") {
+                        // check if exist the file
+                        File f = new File("/var/log/sinapsi/action_log." + dateFilter + ".log");
+                        
+                        if(f.exists()) {
+                            dayliLog = "/var/log/sinapsi/action_log." + dateFilter + ".log";
+                        } else {
+                            dayliLog = "/var/log/sinapsi/empty_file.log";
+                        }
+                    }
+                    
+                    FileInputStream fstram = new FileInputStream(new File(dayliLog));
+                    Pair<BufferedReader, String> brrs = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
+                    BufferedReader brr = null;
+                    if(brrs != null)
+                        brr = brrs.getFirst();
+                    
+                    if(brr == null)
+                        brr = new BufferedReader(new InputStreamReader(fstram));
+                    
+                    session.setAttribute("log_buffer", new Pair<BufferedReader, String>(brr, "actionlog"));
+                    request.getRequestDispatcher("log.jsp").forward(request, response);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                break;
         }
 	}
 

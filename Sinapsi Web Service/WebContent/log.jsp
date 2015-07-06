@@ -96,6 +96,14 @@
                         <a href="web_macro_editor"><i class="fa fa-edit"></i> Macro Editor </a>
                     </li> 
                     <li>
+                        <a href="#"><i class="fa fa-fw fa-file"></i> Engine <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a href="web_log?type=actionlog">Log</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
                         <a class="active-menu" href="#"><i class="fa fa-fw fa-file"></i> Log <span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>

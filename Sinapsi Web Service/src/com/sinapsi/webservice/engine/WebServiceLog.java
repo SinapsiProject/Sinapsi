@@ -22,6 +22,7 @@ public class WebServiceLog {
     public static final String FILE_OUT = "FILE_OUT";
     public static final String WEBSOCKET_FILE_OUT = "WEBSOCKET_FILE_OUT";
     public static final String SERVLET_CONTEXT_FILE_OUT = "SERVLET_CONTEXT_FILE_OUT";
+    public static final String ACTION_LOG_FILE = "ACTION_LOG_FILE";
     
     private DateFormat dateFormatLog = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private BufferedWriter logger;
@@ -146,6 +147,16 @@ public class WebServiceLog {
                 return new PrintWriter(new FileOutputStream(file, true));  
             }
             
+            case ACTION_LOG_FILE: {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                File file = new File("/var/log/sinapsi/action_log." + dateFormat.format(date) + ".log");
+                file.createNewFile();
+                file.setWritable(true, false);
+                file.setReadable(true, false);
+                return new PrintWriter(new FileOutputStream(file, true)); 
+            }
+                
             default:
                 return new OutputStreamWriter(System.out);        
         } 
