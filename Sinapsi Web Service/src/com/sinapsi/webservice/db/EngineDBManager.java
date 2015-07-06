@@ -685,6 +685,7 @@ public class EngineDBManager {
  
         return idMacro;
     }
+    
 
     /**
      * Update macro
@@ -700,8 +701,16 @@ public class EngineDBManager {
         
         try {
             c = db.connect();
-            c.setAutoCommit(false);
+
+            // delete macro actions
+            String query3 = "DELETE FROM actionmacrolist WHERE idmacro = ?";
+            s = c.prepareStatement(query3);
+            s.setInt(1, macro.getId());
+            s.execute();
             
+            s = null;
+            
+            c.setAutoCommit(false);
             List<Action> actions = macro.getActions();
             int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion()); 
             int idDevice = macro.getTrigger().getExecutionDevice().getId();
@@ -721,12 +730,7 @@ public class EngineDBManager {
             s.setInt(8, macro.isValid() ? 0 : 1);
             s.setString(9, macro.getExecutionFailurePolicy());
             s.setInt(10, macro.getId());
-            s.execute();
-            
-            // delete actions
-            String query3 = "DELETE FROM actionmacrolist";
-            s = c.prepareStatement(query3);
-            s.execute();
+            s.execute();           
             
             // add actions
             String query2 = "INSERT INTO actionmacrolist(idmacro, idaction, actionjson, iddevice, counter)" +
