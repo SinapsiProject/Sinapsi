@@ -375,7 +375,7 @@ public class AndroidLocalDBManager implements LocalDBManager {
     }
 
     private void deleteActionsForMacro(int id, SQLiteDatabase db){
-        db.rawQuery("DELETE FROM " + TABLE_ACTION_LISTS + " WHERE " + COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{"" + id});
+        db.delete(TABLE_ACTION_LISTS, COL_ACTIONLIST_MACRO_ID + " = ?", new String[]{""+id});
     }
 
     private void insertActionsForMacro(MacroInterface macro, SQLiteDatabase db){
