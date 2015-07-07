@@ -63,12 +63,12 @@ public class WebCharts extends HttpServlet {
                 return;
             }
             
-            if(user.getRole() == "user") {
+            if(user.getRole().equals("user")) {
                 session.setAttribute("role", "user");
                 request.getRequestDispatcher("charts.jsp").forward(request, response);
                 return;
             } 
-            if(user.getRole() == "admin")
+            if(user.getRole().equals("admin"))
                 session.setAttribute("role", "admin");
         } catch (SQLException e1) {
             e1.printStackTrace();

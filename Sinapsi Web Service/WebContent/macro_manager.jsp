@@ -155,6 +155,13 @@
                 <div class="row">
                    <div class="col-md-12">
                       <%
+                         if(macros.size() == 0) {
+                      %>
+                      <h1> <center> You have not any macro yet!</center></h1>
+                      <%
+                         } else {
+                      %>
+                      <%
                          int counter = 0;
                          for(MacroInterface macro : macros) {
                              
@@ -228,14 +235,18 @@
                          <%
                             }
                          %>
+                         <%
+                            }
+                         %>
                       </div>
                    </div>
                 </div>
                
                 <!-- /. ROW  -->
+                pre-alpha 1.0 version © 2015 Sinapsi
             </div>
             <!-- /. PAGE INNER  -->
-             pre-alpha 1.0 version © 2015 Sinapsi
+             
         </div>
         <!-- /. PAGE WRAPPER  -->
     </div>
