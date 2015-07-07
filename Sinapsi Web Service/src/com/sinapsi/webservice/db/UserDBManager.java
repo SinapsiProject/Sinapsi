@@ -5,7 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -60,7 +64,7 @@ public class UserDBManager {
         UserInterface user = null;
         try {
             c = db.connect();
-            s = c.prepareStatement("INSERT INTO users(email, password, active, role) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            s = c.prepareStatement("INSERT INTO users(email, password, active, role, date_registration) VALUES (?, ?, ?, ?, now()::date)", Statement.RETURN_GENERATED_KEYS);
             s.setString(1, email);
             s.setString(2, Password.getSaltedHash(password));
             s.setBoolean(3, false);
@@ -80,6 +84,33 @@ public class UserDBManager {
         }
         db.disconnect(c, s);
         return user;
+    }
+    
+    public Date getDateRegistration(int idUser) throws SQLException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        Date date = null;
+        
+        Connection c = null;
+        PreparedStatement s = null;
+        ResultSet r = null;
+        try {
+            c = db.connect();
+            s = c.prepareStatement("SELECT date_registration FROM users WHERE id ?");
+            s.setInt(1, idUser);
+            r = s.executeQuery();
+            if (r.next())
+                try {
+                    dateFormat.parse(r.getString("date_registration"));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            
+        } catch(SQLException ex) {
+            db.disconnect(c, s, r);
+            throw ex;
+        }
+        db.disconnect(c, s, r);
+        return date;
     }
     
     /**

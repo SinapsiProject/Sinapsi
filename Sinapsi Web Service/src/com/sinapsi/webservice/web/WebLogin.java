@@ -38,7 +38,7 @@ public class WebLogin extends HttpServlet {
             if (user != null) {
                 
                 // the user is ok
-                if (userManager.checkUser(email, password)) {          
+                if (userManager.checkUser(email, password) && user.getActivation() == true) {          
                     Cookie cookie = new Cookie("user", email);
                    
                     cookie.setMaxAge(60*60);
