@@ -29,6 +29,7 @@ body {
     background-color: transparent;
     padding:10px;
     min-height:1200px;
+    padding-top: 60px;
 }
 
 .text-center {
@@ -356,6 +357,12 @@ background: #256581;
 .top-navbar {
 	background:#256581;
 	border-bottom:none;
+    -webkit-box-shadow: 0px 12px 26px -1px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 12px 26px -1px rgba(0,0,0,0.75);
+    box-shadow: 0px 12px 26px -1px rgba(0,0,0,0.75);
+    position: fixed;
+    width: 100%;
+    z-index: 100;
 	
 }
 .top-navbar .nav > li > a > i {
@@ -421,6 +428,7 @@ line-height: 1.428571429;
         z-index: 1;
         position: absolute;
         width: 260px;
+        padding-top: 90px;
     }
 
    .navbar {

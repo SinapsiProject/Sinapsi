@@ -698,7 +698,6 @@ public class EngineDBManager {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        
         try {
             c = db.connect();
 

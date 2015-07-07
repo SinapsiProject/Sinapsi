@@ -1,8 +1,8 @@
-<%@ page 
-    language="java" 
-    contentType="text/html; charset=utf-8"
-    pageEncoding="utf-8" 
-%>
+<%@ page import="java.util.List"%>
+<%@ page import="com.sinapsi.model.MacroInterface"%>
+<%@ page import="com.sinapsi.engine.Action"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -34,6 +34,8 @@
             }
             if(email == null) 
                 response.sendRedirect("login.html");
+
+            List<MacroInterface> macros = (List<MacroInterface>) session.getAttribute("macros");
         %>
     <div id="wrapper">
         <nav class="navbar navbar-default top-navbar" role="navigation">
@@ -71,7 +73,7 @@
                     <li>
                         <a href="dashboard"><i class="fa fa-dashboard"></i> Dashboard</a>
                     </li>
-					<li>
+                    <li>
                         <a href="web_charts"><i class="fa fa-bar-chart-o"></i> Charts</a>
                     </li>
                       <li>
@@ -84,7 +86,7 @@
                         <a href="web_macro_editor"><i class="fa fa-edit"></i> Macro Editor </a>
                     </li> 
                     <li>
-                        <a href="#"><i class="fa fa-fw fa-file"></i> Engine <span class="fa arrow"></span></a>
+                        <a href="#"><i class="glyphicon glyphicon-cog"></i> Engine <span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
                                 <a href="web_log?type=actionlog">Log</a>
@@ -120,16 +122,66 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-header">
-                            Sinapsi <small>Summary</small>
+                            Sinapsi <small>Macro Manager</small>
                         </h1>
-                        <h2>Work in progress</h2>
                     </div>
                 </div>
                 <!-- /. ROW  -->
-
+                <!-- macro 1 -->
+                <div class="row">
+                   <div class="col-md-12">
+                      <%
+                         for(MacroInterface macro : macros) {
+                       %>
+                      <div class="panel panel-default">
+                         <div class="panel-heading">
+                            <h3>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="collapsed"
+                               style="text-decoration:none">
+                                <%=macro.getName()%> <small>starts on device <%=macro.getTrigger().getExecutionDevice().getModel()%> </small>
+                            </a>
+                            
+                            <div class="btn-toolbar"> 
+                            <button class="btn btn-danger pull-right"><i class="fa fa-pencil"></i> Delete</button>
+                            <button class="btn btn-primary pull-right"><i class="fa fa-edit "></i> Edit</button></h3>  
+                            </div>
+                           
+                         <div id="collapseOne" class="panel-collapse collapse" style="height: 0px;">
+                         <div class="panel-body"> 
+                            <div class="alert alert-info">
+                               <h4><strong>Trigger by </strong></h4>
+                                <%=macro.getTrigger().getName()%>
+                                <h5><strong>On parameters </strong></h5>
+                                <%=macro.getTrigger().getActualParameters()%>
+                            </div>
+                             
+                            <div class="alert alert-warning">
+                                 <h4><strong>Actions </strong></h4>
+                                 <%
+                                    for(Action action : macro.getActions()) {
+                                  %>
+                                 <div class="alert alert-success">
+                                     <%=action.getName() %>
+                                     <h5><strong>On parameters </strong></h5>
+                                     <%=action.getActualParameters() %>
+                                     <h5><strong>Executed on device </strong></h5>
+                                     <%=action.getExecutionDevice().getModel() %>
+                                </div>
+                                <%
+                                    }
+                                %>
+                            </div>
+                         </div> 
+                         </div>   
+                         </div>
+                         <%
+                            }
+                         %>
+                      </div>
+                   </div>
+                </div>
                
                 <!-- /. ROW  -->
-				
             </div>
             <!-- /. PAGE INNER  -->
              pre-alpha 1.0 version © 2015 Sinapsi
