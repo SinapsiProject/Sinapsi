@@ -24,12 +24,19 @@
     <!-- Google Fonts-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
+<%       
+   String role = (String) session.getAttribute("role");
+   if(role == "admin") {
+%>
 <script type="text/javascript">
     function scrollDown() {
         $(document).scrollTop($(document).height());
     }
     window.onload = scrollDown;
 </script>
+<%
+   }
+%>
 <body>
     <%
        String email = null;
@@ -43,7 +50,7 @@
        if(email == null) 
            response.sendRedirect("login.html");
  
-       String role = (String) session.getAttribute("role");
+       
        Pair<BufferedReader, String> log = (Pair<BufferedReader, String>) session.getAttribute("log_buffer");
        session.removeAttribute("log_buffer");
     %>
