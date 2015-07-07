@@ -54,14 +54,17 @@ public class WebMacroManager extends HttpServlet {
                     email = cookie.getValue();
             }
         }
-        if(email == null) 
-            request.getRequestDispatcher("login.html");
+        if(email == null) {
+            request.getRequestDispatcher("login.html").forward(request, response);
+            return;
+        }
         
         try {
             UserInterface user = userManager.getUserByEmail(email);
             
             if(user == null) {
-                request.getRequestDispatcher("login.html");
+                request.getRequestDispatcher("login.html").forward(request, response);
+                return;
             }
             String actionPar = request.getParameter("action");
             String idMacro = request.getParameter("macro");
