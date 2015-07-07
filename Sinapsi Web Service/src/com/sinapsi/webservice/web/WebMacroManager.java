@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
@@ -53,10 +55,26 @@ public class WebMacroManager extends HttpServlet {
             }
         }
         if(email == null) 
-            response.sendRedirect("login.html");
+            request.getRequestDispatcher("login.html");
         
         try {
             UserInterface user = userManager.getUserByEmail(email);
+            
+            if(user == null) {
+                request.getRequestDispatcher("login.html");
+            }
+            String actionPar = request.getParameter("action");
+            String idMacro = request.getParameter("macro");
+            
+            if(idMacro != null && actionPar.equals("delete")) {
+                // delete macro
+                try {
+                    engineManager.deleteUserMacro(Integer.parseInt(idMacro));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } 
+            }
+            
             // get the list of macro from the db
             List<MacroInterface> macros = engineManager.getUserMacro(user.getId(), engine.getComponentFactoryForUser(user.getId()));
             Map<Integer, String> devices = new HashMap<Integer, String>();

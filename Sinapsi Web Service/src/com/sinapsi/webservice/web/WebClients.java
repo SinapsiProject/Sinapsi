@@ -46,12 +46,15 @@ public class WebClients extends HttpServlet {
             }
         }
         if(email == null) 
-            response.sendRedirect("login.html");
+            request.getRequestDispatcher("login.html");
         
         try {
             UserInterface user = userManager.getUserByEmail(email);
              
-            // user don't have the permission to see this page
+            if(user == null) {
+                request.getRequestDispatcher("login.html");
+            }
+            
             if(user.getRole().equals("user")) {
                 session.setAttribute("role", "user");
                 request.getRequestDispatcher("clients.jsp").forward(request, response);

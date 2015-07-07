@@ -50,16 +50,23 @@ public class WebCharts extends HttpServlet {
                     email = cookie.getValue();
             }
         }
-        if(email == null) 
-            response.sendRedirect("login.html");
+        if(email == null) {
+            request.getRequestDispatcher("login.html").forward(request, response);
+            return;
+        }
         
 	    try {
             UserInterface user = userManager.getUserByEmail(email);
-            // user don't have the permission to see this page
+            
+            if(user == null) {
+                request.getRequestDispatcher("login.html").forward(request, response);
+                return;
+            }
+            
             if(user.getRole() == "user") {
                 session.setAttribute("role", "user");
                 request.getRequestDispatcher("charts.jsp").forward(request, response);
-            
+                return;
             } 
             if(user.getRole() == "admin")
                 session.setAttribute("role", "admin");

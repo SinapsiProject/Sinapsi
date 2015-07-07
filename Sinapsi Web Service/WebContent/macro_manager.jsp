@@ -129,12 +129,35 @@
                         </h1>
                     </div>
                 </div>
+                <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <p>You are about to delete this Macro, this procedure is irreversible.</p>
+                                <p>Do you want to proceed?</p>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <a class="btn btn-danger btn-ok">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- /. ROW  -->
                 <!-- macro 1 -->
                 <div class="row">
                    <div class="col-md-12">
                       <%
+                         int counter = 0;
                          for(MacroInterface macro : macros) {
+                             
                              String triggerParameters =   macro.getTrigger().getActualParameters();  
                              triggerParameters = triggerParameters.replace("{", "");
                              triggerParameters = triggerParameters.replace("}", "");
@@ -142,6 +165,7 @@
                              triggerParameters = triggerParameters.replace("parameters:", "");
                              triggerParameters = triggerParameters.replace(":", " : ");
                              triggerParameters = triggerParameters.replace("_", " ");
+                             triggerParameters = triggerParameters.replace("TRIGGER", "");
                              
                              String triggerName = macro.getTrigger().getName();
                              triggerName = triggerName.replace("_", " ");
@@ -149,17 +173,20 @@
                       <div class="panel panel-default">
                          <div class="panel-heading">
                             <h3>
-                            <a data-toggle="collapse" data-parent="#accordion" href="#<%=macro.getId()%>" class="collapsed"
+                            <a data-toggle="collapse" data-parent="#accordion" href="#<%=counter%>" class="collapsed"
                                style="text-decoration:none">
                                 <%=macro.getName()%> <small>starts on device <%=triggeredDevices.get(macro.getTrigger().getExecutionDevice().getId())%> </small>
                             </a>
                             
                             <div class="btn-toolbar"> 
-                            <button class="btn btn-danger pull-right"><i class="fa fa-pencil"></i> Delete</button>
+                            <button data-href="web_macro_manager?action=delete&macro=<%=macro.getId()%>" data-toggle="modal" 
+                                    data-target="#confirm-delete" class="btn btn-danger pull-right">
+                                    <i class="fa fa-pencil"></i> Delete</button>
                             <button class="btn btn-primary pull-right"><i class="fa fa-edit "></i> Edit</button></h3>  
-                            </div>
-                           
-                         <div id="<%=macro.getId()%>" class="panel-collapse collapse" style="height: 0px;">
+                         </div>
+                         
+                         
+                         <div id="<%=counter++%>" class="panel-collapse collapse" style="height: 0px;">
                          <div class="panel-body"> 
                             <div class="alert alert-info">
                                <h4><strong>Triggered by </strong></h4>
@@ -225,5 +252,11 @@
     <script src="assets/js/morris/morris.js"></script>
     <!-- Custom Js -->
     <script src="assets/js/custom-scripts.js"></script>
+    <script>
+        $('#confirm-delete').on('show.bs.modal', function(e) {
+            $(this).find('.btn-danger').attr('href', $(e.relatedTarget).data('href'));
+                $('.debug-url').html('Delete URL: <strong>' + $(this).find('.btn-ok').attr('href') + '</strong>');
+            });
+    </script>
 </body>
 </html>
