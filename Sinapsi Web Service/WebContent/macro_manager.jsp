@@ -132,13 +132,23 @@
                    <div class="col-md-12">
                       <%
                          for(MacroInterface macro : macros) {
+                             String triggerParameters =   macro.getTrigger().getActualParameters();  
+                             triggerParameters = triggerParameters.replace("{", "");
+                             triggerParameters = triggerParameters.replace("}", "");
+                             triggerParameters = triggerParameters.replace("\"", "");
+                             triggerParameters = triggerParameters.replace("parameters:", "");
+                             triggerParameters = triggerParameters.replace(":", " : ");
+                             triggerParameters = triggerParameters.replace("_", " ");
+                             
+                             String triggerName = macro.getTrigger().getName();
+                             triggerName = triggerName.replace("_", " ");
                        %>
                       <div class="panel panel-default">
                          <div class="panel-heading">
                             <h3>
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="collapsed"
+                            <a data-toggle="collapse" data-parent="#accordion" href="#<%=macro.getId()%>" class="collapsed"
                                style="text-decoration:none">
-                                <%=macro.getName()%> <small>starts on device <%=macro.getTrigger().getExecutionDevice().getModel()%> </small>
+                                <%=macro.getName()%> <small>starts on device <%=macro.getTrigger().getExecutionDevice().getId()%> </small>
                             </a>
                             
                             <div class="btn-toolbar"> 
@@ -146,26 +156,37 @@
                             <button class="btn btn-primary pull-right"><i class="fa fa-edit "></i> Edit</button></h3>  
                             </div>
                            
-                         <div id="collapseOne" class="panel-collapse collapse" style="height: 0px;">
+                         <div id="<%=macro.getId()%>" class="panel-collapse collapse" style="height: 0px;">
                          <div class="panel-body"> 
                             <div class="alert alert-info">
                                <h4><strong>Trigger by </strong></h4>
-                                <%=macro.getTrigger().getName()%>
+                                <%=triggerName%>
                                 <h5><strong>On parameters </strong></h5>
-                                <%=macro.getTrigger().getActualParameters()%>
+                                <%=triggerParameters%>
                             </div>
                              
                             <div class="alert alert-warning">
                                  <h4><strong>Actions </strong></h4>
                                  <%
                                     for(Action action : macro.getActions()) {
+                                        String actionParameters = action.getActualParameters();
+                                        actionParameters = actionParameters.replace("{", "");
+                                        actionParameters = actionParameters.replace("}", "");
+                                        actionParameters = actionParameters.replace("\"", "");
+                                        actionParameters = actionParameters.replace("parameters:", "");
+                                        actionParameters = actionParameters.replace(":", " : ");
+                                        actionParameters = actionParameters.replace("_", " ");
+                                        
+                                        String actionName = action.getName();
+                                        actionName = actionName.replace("_", " ");
+                                        
                                   %>
                                  <div class="alert alert-success">
-                                     <%=action.getName() %>
+                                     <%=actionName%>
                                      <h5><strong>On parameters </strong></h5>
-                                     <%=action.getActualParameters() %>
+                                     <%=actionParameters%>
                                      <h5><strong>Executed on device </strong></h5>
-                                     <%=action.getExecutionDevice().getModel() %>
+                                     <%=action.getExecutionDevice().getId() %>
                                 </div>
                                 <%
                                     }
