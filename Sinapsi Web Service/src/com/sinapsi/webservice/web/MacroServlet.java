@@ -16,6 +16,7 @@ import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.SyncOperation;
@@ -106,6 +107,7 @@ public class MacroServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
+		EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db"); 
 		DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");  
 		UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
 		WebServiceEngine webServiceEngine = (WebServiceEngine) getServletContext().getAttribute("engine");
@@ -140,7 +142,8 @@ public class MacroServlet extends HttpServlet {
             	jsonBody = decrypter.decrypt(cryptedString);
             else
             	jsonBody = cryptedJsonBody;
-                       
+                    
+            //DEBUG
             WebServiceLog log = new WebServiceLog(WebServiceLog.FILE_OUT);
             log.log("Received json ########\n" + jsonBody + "\n ################# \n");
             
@@ -180,6 +183,12 @@ public class MacroServlet extends HttpServlet {
                     else
                     	out.print(userGson.toJson(result));
                     out.flush();
+                    
+                    // update the macros in the engine
+                    MacroEngine macroEngine =  webServiceEngine.getEngineForUser(user);
+                    macroEngine.clearMacros();
+                    macroEngine.addMacros(engineManager.getUserMacro(user.getId(), webServiceEngine.getComponentFactoryForUser(user.getId())));
+                    
                 } break;
                 
                 case "add": {
