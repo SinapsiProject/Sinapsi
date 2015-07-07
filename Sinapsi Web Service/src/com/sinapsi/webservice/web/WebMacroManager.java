@@ -2,7 +2,9 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -10,8 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import com.sinapsi.engine.Action;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.engine.WebServiceEngine;
@@ -37,6 +41,7 @@ public class WebMacroManager extends HttpServlet {
         EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db"); 
         WebServiceEngine engine = (WebServiceEngine) getServletContext().getAttribute("engine");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
         HttpSession session = request.getSession();
 	    
         String email = null;
@@ -54,8 +59,21 @@ public class WebMacroManager extends HttpServlet {
             UserInterface user = userManager.getUserByEmail(email);
             // get the list of macro from the db
             List<MacroInterface> macros = engineManager.getUserMacro(user.getId(), engine.getComponentFactoryForUser(user.getId()));
+            Map<Integer, String> devices = new HashMap<Integer, String>();
+            Map<Integer, String> devicesTriggered = new HashMap<Integer, String>();
             
+            for(MacroInterface macro : macros) {
+                int deviceTrigger = macro.getTrigger().getExecutionDevice().getId();
+                devicesTriggered.put(deviceTrigger, deviceManager.getDevice(deviceTrigger).getModel());
+                
+                for(Action action : macro.getActions()) {
+                    int idDevice = action.getExecutionDevice().getId();
+                    devices.put(idDevice, deviceManager.getDevice(idDevice).getModel());
+                }
+            }
             session.setAttribute("macros", macros);
+            session.setAttribute("triggeredDevice", devicesTriggered);
+            session.setAttribute("devices", devices);
             
         } catch(SQLException e) {
             e.printStackTrace();

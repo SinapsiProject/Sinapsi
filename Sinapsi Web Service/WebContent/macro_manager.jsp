@@ -1,6 +1,7 @@
 <%@ page import="java.util.List"%>
 <%@ page import="com.sinapsi.model.MacroInterface"%>
 <%@ page import="com.sinapsi.engine.Action"%>
+<%@ page import="java.util.Map"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -36,6 +37,8 @@
                 response.sendRedirect("login.html");
 
             List<MacroInterface> macros = (List<MacroInterface>) session.getAttribute("macros");
+            Map<Integer, String> devices = (Map<Integer, String>) session.getAttribute("devices");
+            Map<Integer, String> triggeredDevices = (Map<Integer, String>) session.getAttribute("triggeredDevice");
         %>
     <div id="wrapper">
         <nav class="navbar navbar-default top-navbar" role="navigation">
@@ -148,7 +151,7 @@
                             <h3>
                             <a data-toggle="collapse" data-parent="#accordion" href="#<%=macro.getId()%>" class="collapsed"
                                style="text-decoration:none">
-                                <%=macro.getName()%> <small>starts on device <%=macro.getTrigger().getExecutionDevice().getId()%> </small>
+                                <%=macro.getName()%> <small>starts on device <%=triggeredDevices.get(macro.getTrigger().getExecutionDevice().getId())%> </small>
                             </a>
                             
                             <div class="btn-toolbar"> 
@@ -159,14 +162,14 @@
                          <div id="<%=macro.getId()%>" class="panel-collapse collapse" style="height: 0px;">
                          <div class="panel-body"> 
                             <div class="alert alert-info">
-                               <h4><strong>Trigger by </strong></h4>
+                               <h4><strong>Triggered by </strong></h4>
                                 <%=triggerName%>
                                 <h5><strong>On parameters </strong></h5>
                                 <%=triggerParameters%>
                             </div>
                              
                             <div class="alert alert-warning">
-                                 <h4><strong>Actions </strong></h4>
+                                 <h4><strong>Actions executed</strong></h4>
                                  <%
                                     for(Action action : macro.getActions()) {
                                         String actionParameters = action.getActualParameters();
@@ -186,7 +189,7 @@
                                      <h5><strong>On parameters </strong></h5>
                                      <%=actionParameters%>
                                      <h5><strong>Executed on device </strong></h5>
-                                     <%=action.getExecutionDevice().getId() %>
+                                     <%=devices.get(action.getExecutionDevice().getId())%>
                                 </div>
                                 <%
                                     }
