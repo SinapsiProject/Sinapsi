@@ -109,12 +109,18 @@
 					</div>
 				</div>
 				<%
-				  String users = (String) session.getAttribute("registered_users");
+				    String users = null;
+				    String serverRequests = null;
+            if (role == "admin") {
+                users = (String) session.getAttribute("registered_users");
+                serverRequests = (String) session.getAttribute("server_requestes");
+            }
 				  String clients = (String) session.getAttribute("clients_connected");
-				  String serverRequests = (String) session.getAttribute("server_requestes");
 				  String macros = (String) session.getAttribute("n_macros");
 				%>
-				
+				<% 
+			    if (role == "admin") {
+			  %>
 				<div class="row">
 					<div class="col-md-3 col-sm-12 col-xs-12">
 						<div
@@ -123,7 +129,7 @@
 								<i class="fa fa-users fa-5x"></i>
 								<h1><%=users%></h1>
 							</div>
-							<div class="panel-footer bg-color-grey">No. of registered
+							<div class="panel-footer bg-color-grey">Registered
 								user</div>
 						</div>
 					</div>
@@ -132,10 +138,10 @@
 						<div
 							class="panel panel-primary text-center no-boder bg-color-blue">
 							<div class="panel-body">
-								<i class="fa fa-users fa-5x"></i>
+								<i class="fa fa-tablet fa-5x"></i>
 								<h1><%=clients%></h1>
 							</div>
-							<div class="panel-footer bg-color-grey">No. of clients
+							<div class="panel-footer bg-color-grey">Devices
 								connected</div>
 						</div>
 					</div>
@@ -147,7 +153,7 @@
                  <h1><%=macros%> </h1>
                </div>
              <div class="panel-footer back-footer-brown">
-               No. of Macros</div>
+               Macros</div>
              </div>
           </div>
                     
@@ -157,12 +163,45 @@
 								<i class="fa fa-bar-chart-o fa-5x"></i>
 								<h1><%=serverRequests%></h1>
 							</div>
-							<div class="panel-footer bg-color-red">No. of daily server
+							<div class="panel-footer bg-color-red">Daily server
 								request</div>
 						</div>
 					</div>
 				</div>
+        <%
+			    }
+        %>
+        
+        <% 
+          if (role == "user") {
+        %>
+        <div class="row">
+          <div class="col-md-6 col-sm-12 col-xs-12">
+            <div
+              class="panel panel-primary text-center no-boder bg-color-blue">
+              <div class="panel-body">
+                <i class="fa fa-tablet fa-5x"></i>
+                <h1><%=clients%></h1>
+              </div>
+              <div class="panel-footer bg-color-grey">Devices
+                connected</div>
+            </div>
+          </div>
 
+          <div class="col-md-6 col-sm-12 col-xs-12">
+             <div class="panel panel-primary text-center no-boder bg-color-brown">
+               <div class="panel-body">
+                 <i class="fa fa-cogs fa-5x"></i>
+                 <h1><%=macros%> </h1>
+               </div>
+             <div class="panel-footer back-footer-brown">
+               Macros</div>
+             </div>
+          </div>
+        </div>
+        <%
+          }
+        %>
 			</div>
 			pre-alpha 1.0 version © 2015 Sinapsi
 		</div>
