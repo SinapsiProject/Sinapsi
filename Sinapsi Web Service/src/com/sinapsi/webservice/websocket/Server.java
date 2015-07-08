@@ -3,9 +3,11 @@ package com.sinapsi.webservice.websocket;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.java_websocket.WebSocket;
@@ -25,6 +27,12 @@ import com.sinapsi.webshared.wsproto.WebSocketMessage;
 public class Server extends WebSocketServer {
     private Map<String, WebSocket> clients = Collections.synchronizedMap(new HashMap<String, WebSocket>());
     private Map<WebSocket, String> clientsWS = Collections.synchronizedMap(new HashMap<WebSocket, String>());
+    
+    private Map<Integer, WebSocket> devices = Collections.synchronizedMap(new HashMap<Integer, WebSocket>());
+    private Map<WebSocket, Integer> devicesWS = Collections.synchronizedMap(new HashMap<WebSocket, Integer>());
+    
+    private Map<String, Integer> clientDevices = Collections.synchronizedMap(new HashMap<String, Integer>());
+    
     private WebServiceLog wslog = new WebServiceLog(WebServiceLog.WEBSOCKET_FILE_OUT);
     
     /**
@@ -52,6 +60,11 @@ public class Server extends WebSocketServer {
         clients.put(handshake.getFieldValue("Username"), conn);
         clientsWS.put(conn, handshake.getFieldValue("Username"));
         
+        devices.put(Integer.parseInt(handshake.getFieldValue("device")), conn);
+        devicesWS.put(conn, Integer.parseInt(handshake.getFieldValue("device")));
+        
+        clientDevices.put(handshake.getFieldValue("Username"), Integer.parseInt(handshake.getFieldValue("device")));
+        
         Gson gson = new Gson();
         broadcast(gson.toJson(new WebSocketMessage(SinapsiMessageTypes.NEW_CONNECTION, "New connection: " + handshake.getFieldValue("Username"))));
         wslog.log(wslog.getTime(), handshake.getFieldValue("Username") + " connected!");
@@ -65,6 +78,11 @@ public class Server extends WebSocketServer {
         Gson gson = new Gson();
         broadcast(gson.toJson((new WebSocketMessage(SinapsiMessageTypes.CONNECTION_LOST, clientsWS.get(conn) + " disconnected!"))));
         wslog.log(wslog.getTime(), clientsWS.get(conn) + " disconnected!");
+        
+        clientDevices.remove(clientsWS.get(conn));
+        
+        devices.remove(devicesWS.get(conn));
+        devicesWS.remove(conn);   
         
         clients.remove(clientsWS.get(conn));
         clientsWS.remove(conn);      
@@ -136,6 +154,37 @@ public class Server extends WebSocketServer {
      */
     public WebSocket getClient(String username) {
         return clients.get(username);
+    }
+    
+   
+    /**
+     * Return the connected devices
+     * @param username email of the user
+     * @return List of devices id
+     */
+    public List<Integer> getDevicesOnline(String username) {
+       List<Integer> devicesConnected = new ArrayList<Integer>();
+       synchronized (devicesConnected) {
+          for(Map.Entry<String, Integer> entry : clientDevices.entrySet()) {
+             if(entry.getKey() == username)  
+                devicesConnected.add(entry.getValue());
+          }
+       } 
+       return devicesConnected;
+    }
+    
+    /**
+     * Return the connectivity of a device
+     * @param id id of the device
+     * @return boolean
+     */
+    public boolean isDeviceOnline(Integer id) {
+       WebSocket device = devices.get(id);
+       
+       if(device != null)
+          return devices.get(id).isOpen();
+       else
+          return false;
     }
     
     /**

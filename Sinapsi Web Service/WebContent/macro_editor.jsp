@@ -75,6 +75,8 @@
 							Macro Manager </a></li>
 					<li><a class="active-menu" href="web_macro_editor"><i
 							class="fa fa-edit"></i> Macro Editor </a></li>
+					<li><a href="web_devices"><i class="fa fa-desktop"></i>
+              Devices </a></li>
 					<%
             if (role == "admin") {
           %>

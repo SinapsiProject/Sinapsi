@@ -73,6 +73,8 @@
 							Macro Manager </a></li>
 					<li><a href="web_macro_editor"><i class="fa fa-edit"></i>
 							Macro Editor </a></li>
+					<li><a href="web_devices"><i class="fa fa-desktop"></i>
+              Devices </a></li>
 					<%
             if (role == "admin") {
           %>
@@ -110,10 +112,11 @@
 				  String users = (String) session.getAttribute("registered_users");
 				  String clients = (String) session.getAttribute("clients_connected");
 				  String serverRequests = (String) session.getAttribute("server_requestes");
+				  String macros = (String) session.getAttribute("n_macros");
 				%>
 				
 				<div class="row">
-					<div class="col-md-4 col-sm-12 col-xs-12">
+					<div class="col-md-3 col-sm-12 col-xs-12">
 						<div
 							class="panel panel-primary text-center no-boder bg-color-grey">
 							<div class="panel-body">
@@ -125,7 +128,7 @@
 						</div>
 					</div>
 
-					<div class="col-md-4 col-sm-12 col-xs-12">
+					<div class="col-md-3 col-sm-12 col-xs-12">
 						<div
 							class="panel panel-primary text-center no-boder bg-color-blue">
 							<div class="panel-body">
@@ -137,7 +140,18 @@
 						</div>
 					</div>
 
-					<div class="col-md-4 col-sm-12 col-xs-12">
+          <div class="col-md-3 col-sm-12 col-xs-12">
+             <div class="panel panel-primary text-center no-boder bg-color-brown">
+               <div class="panel-body">
+                 <i class="fa fa-cogs fa-5x"></i>
+                 <h1><%=macros%> </h1>
+               </div>
+             <div class="panel-footer back-footer-brown">
+               No. of Macros</div>
+             </div>
+          </div>
+                    
+					<div class="col-md-3 col-sm-12 col-xs-12">
 						<div class="panel panel-primary text-center no-boder bg-color-red">
 							<div class="panel-body">
 								<i class="fa fa-bar-chart-o fa-5x"></i>

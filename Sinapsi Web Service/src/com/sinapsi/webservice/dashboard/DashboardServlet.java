@@ -18,7 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
+import com.sinapsi.webservice.engine.WebServiceEngine;
 import com.sinapsi.webservice.websocket.Server;
 
 /**
@@ -65,22 +67,29 @@ public class DashboardServlet extends HttpServlet {
             session.setAttribute("role", "admin");
          
          session.setAttribute("registered_users",Integer.toString(userManager.getUsers().size()));
+      
+         // macros
+         WebServiceEngine engine = (WebServiceEngine) getServletContext().getAttribute("engine");
+         EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db"); 
+         session.setAttribute("n_macros", Integer.toString(engineManager.getUserMacro(user.getId(), engine.getComponentFactoryForUser(user.getId())).size()));
+
       } catch (SQLException e) {
          session.setAttribute("log_buffer", "0");
          e.printStackTrace();
       }
-
+      
       // clients connected
       Server wsserver = (Server) getServletContext().getAttribute("wsserver");
-      session.setAttribute("clients_connected",
-            Integer.toString(wsserver.connections().size()));
+      session.setAttribute("clients_connected", Integer.toString(wsserver.connections().size()));
 
+      
       // server requestes
       DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
       Date date = new Date();
       String dayliLog = "/var/log/tomcat7/localhost_access_log."
             + dateFormat.format(date) + ".txt";
 
+      
       // count n of line in the dayli log (fastest way to count the number of
       // line. thanks: stackoverflow")
       BufferedInputStream is = new BufferedInputStream(new FileInputStream(
