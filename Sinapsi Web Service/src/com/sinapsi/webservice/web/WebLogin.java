@@ -1,12 +1,15 @@
 package com.sinapsi.webservice.web;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import com.sinapsi.model.impl.User;
 import com.sinapsi.webservice.db.UserDBManager;
 
@@ -32,6 +35,7 @@ public class WebLogin extends HttpServlet {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
+		HttpSession session = request.getSession();
 		
 		try {
 		    User user = (User) userManager.getUserByEmail(email);           
@@ -43,8 +47,8 @@ public class WebLogin extends HttpServlet {
                    
                     cookie.setMaxAge(60*60);
                     response.addCookie(cookie);
+                    session.setAttribute("role", user.getRole());
                     response.sendRedirect("dashboard");
-                    //request.getRequestDispatcher("index.jsp").forward(request, response);
                 } else {
                     request.getRequestDispatcher("error.html").forward(request, response);
                 }

@@ -66,6 +66,7 @@ public class WebMacroManager extends HttpServlet {
                 request.getRequestDispatcher("login.html").forward(request, response);
                 return;
             }
+            
             String actionPar = request.getParameter("action");
             String idMacro = request.getParameter("macro");
             
@@ -92,6 +93,13 @@ public class WebMacroManager extends HttpServlet {
                     devices.put(idDevice, deviceManager.getDevice(idDevice).getModel());
                 }
             }
+           
+            if (user.getRole().equals("user")) 
+               session.setAttribute("role", "user");
+
+            if (user.getRole().equals("admin")) 
+               session.setAttribute("role", "admin");
+            
             session.setAttribute("macros", macros);
             session.setAttribute("triggeredDevice", devicesTriggered);
             session.setAttribute("devices", devices);
