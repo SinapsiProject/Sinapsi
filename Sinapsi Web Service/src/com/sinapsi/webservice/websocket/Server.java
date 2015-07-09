@@ -188,6 +188,15 @@ public class Server extends WebSocketServer {
     }
     
     /**
+     * Return a specific device
+     * @param idDevice id of device
+     * @return websocket connection object
+     */
+    public WebSocket getDevice(Integer idDevice) {
+       return devices.get(idDevice);
+    }
+    
+    /**
      * Send message to a device
      * @param idDevice id of the device
      * @param msg message

@@ -425,28 +425,28 @@ public class EngineDBManager {
     }
 
     /**
-     * Return all macro of the user id
+     * Return macro with id
      * 
-     * @param id id of the user
+     * @param id id of the macro
      * @return
      * @throws SQLException 
      */
-    /*public List<MacroInterface> getUserMacro(int id) throws SQLException {
+    public MacroInterface getMacro(int id) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        List<MacroInterface> macros = new ArrayList<MacroInterface>();
+        MacroInterface macro = null;
         DeviceDBManager deviceDb = new DeviceDBManager();
         
         try {
             c = db.connect();
-            s = c.prepareStatement("SELECT * FROM macro WHERE macro.iduser = ?");
+            s = c.prepareStatement("SELECT * FROM macro WHERE macro.id = ?");
             s.setInt(1, id);
             r = s.executeQuery();
 
-            while (r.next()) {
+            if(r.next()) {
                 // create a new macro from the information saved in the db
-                MacroInterface macro = db.factory.newMacro(r.getString("name"), r.getInt("id"));
+                macro = db.factory.newMacro(r.getString("name"), r.getInt("id"));
                 
                 // get the engine from the contex listener
                 WebServiceEngine engine = (WebServiceEngine) http.getServletContext().getAttribute("engine");
@@ -463,14 +463,13 @@ public class EngineDBManager {
                 macro.setTrigger(trigger);
                 
                 // create a action/actions (of macro:id) from the information saved in the db
-                for(Action actionI :  getActions(r.getInt("id"))) 
+                for(Action actionI : getActions(r.getInt("id"), componentFactory)) 
                     macro.addAction(actionI);                  
                 
                 macro.setIconName(r.getString("icon"));
                 macro.setValid(r.getInt("incomplete") == 0 ? true : false);
                 macro.setMacroColor(r.getString("color"));
                 macro.setExecutionFailurePolicy(r.getString("errorpolicy"));
-                macros.add(macro);
             }
 
         } catch (SQLException ex) {
@@ -478,9 +477,9 @@ public class EngineDBManager {
             throw ex;
         }
         db.disconnect(c, s, r);
-        return macros;
+        return macro;
     }
-    */
+    
     /**
      * Return all macro of the user id
      * 
