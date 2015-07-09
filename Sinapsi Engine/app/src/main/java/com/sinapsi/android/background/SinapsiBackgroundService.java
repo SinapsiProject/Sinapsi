@@ -395,7 +395,7 @@ public class SinapsiBackgroundService extends Service
         WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
         switch (wsMsg.getMsgType()) {
             case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR: {
-                RemoteExecutionDescriptor red = (RemoteExecutionDescriptor) wsMsg.getData();
+                RemoteExecutionDescriptor red = gson.fromJson(wsMsg.getData(), RemoteExecutionDescriptor.class);
                 try {
                     engine.continueMacro(red);
                 } catch (MacroEngine.MissingMacroException e) {

@@ -123,7 +123,8 @@ public class WebServiceEngine {
                 WebSocket clientTarget;
                 try {
                     clientTarget = wsserver.getClient(deviceDB.getUserEmail(dev.getId()));
-                    wsserver.send(clientTarget, gson.toJson(new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, red)));  
+                    String redMessage = gson.toJson(red);
+                    wsserver.send(clientTarget, gson.toJson(new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, redMessage)));  
                     
                 } catch (SQLException e) {
                     e.printStackTrace();

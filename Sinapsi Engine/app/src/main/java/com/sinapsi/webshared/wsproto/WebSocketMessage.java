@@ -7,9 +7,9 @@ package com.sinapsi.webshared.wsproto;
 public class WebSocketMessage {
 
     private String msgType;
-    private Object data;
+    private String data;
 
-    public WebSocketMessage(String msgType, Object data) {
+    public WebSocketMessage(String msgType, String data) {
         this.msgType = msgType;
         this.data = data;
     }
@@ -18,7 +18,7 @@ public class WebSocketMessage {
         return msgType;
     }
 
-    public Object getData() {
+    public String getData() {
         return data;
     }
 }
