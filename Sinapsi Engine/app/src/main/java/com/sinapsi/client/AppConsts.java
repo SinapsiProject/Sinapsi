@@ -18,7 +18,7 @@ public class AppConsts {
     public static final boolean DEBUG_DISABLE_SYNC = false;
 
     public static final String SINAPSI_URL = "http://massolit.ns0.it:8181/sinapsi";
-    public static final String SINAPSI_WS_URL = "ws://massolit.ns0.it:8887";
+    public static final String SINAPSI_WS_URL = "wss://massolit.ns0.it:8887";
 
     public static final String PREFS_FILE_NAME = "SinapsiPrefs";
 
