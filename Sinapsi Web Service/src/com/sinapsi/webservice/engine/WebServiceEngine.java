@@ -25,10 +25,14 @@ import com.sinapsi.webservice.engine.components.ActionSendEmail;
 import com.sinapsi.webservice.engine.components.TriggerEmailReceived;
 import com.sinapsi.webservice.engine.system.EmailAdapter;
 import com.sinapsi.webservice.websocket.Server;
+import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
+import com.sinapsi.webshared.wsproto.WebSocketMessage;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.java_websocket.WebSocket;
 
 /**
@@ -119,7 +123,7 @@ public class WebServiceEngine {
                 WebSocket clientTarget;
                 try {
                     clientTarget = wsserver.getClient(deviceDB.getUserEmail(dev.getId()));
-                    wsserver.send(clientTarget, gson.toJson(red));  
+                    wsserver.send(clientTarget, gson.toJson(new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, red)));  
                     
                 } catch (SQLException e) {
                     e.printStackTrace();
