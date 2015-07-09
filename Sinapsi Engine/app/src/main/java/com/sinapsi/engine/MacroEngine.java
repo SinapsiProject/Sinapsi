@@ -101,8 +101,8 @@ public class MacroEngine {
         if(m == null) throw new MissingMacroException();
 
         ei.continueExecutionFromRemote(m, red.getLocalVariables(), red.getStack());
-        ei.execute();
         log.log("MACROENGINE", "Continuing execution of macro with name '" + m.getName() + "'");
+        ei.execute();
     }
 
     public void pauseEngine(){

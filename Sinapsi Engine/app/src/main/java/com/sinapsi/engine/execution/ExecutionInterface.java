@@ -164,6 +164,7 @@ public class ExecutionInterface {
      */
     public void execute(){
         while(!isPaused && !stack.isEmpty() && !isCancelled){
+            log.log("EXECUTION","execute() iteration");
             ActionListExecution ale = stack.peek();
             Action a = ale.getNextAction();
             DeviceInterface ad = a.getExecutionDevice();
@@ -261,7 +262,7 @@ public class ExecutionInterface {
     public void continueExecutionFromRemote(MacroInterface macro, VariableManager localVars, Deque<Integer> indexes){
         this.localVars = localVars;
 
-
+        this.macro = macro;
         Iterator<Integer> indexIter = indexes.descendingIterator();
         while(indexIter.hasNext()){
             int index = indexIter.next();

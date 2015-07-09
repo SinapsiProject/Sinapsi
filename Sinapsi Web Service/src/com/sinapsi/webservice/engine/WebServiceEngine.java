@@ -107,13 +107,7 @@ public class WebServiceEngine {
         WebExecutionInterface webExecutionInterface = new WebExecutionInterface() {
             @Override
             public void continueExecutionOnDevice(ExecutionInterface ei, DeviceInterface dev) {
-            	
-            	//TODO: delete next 4 lines after bugfix
-            	sinapsiLog.log("TEMPTEST","ei is"+(ei == null?"null":"not null"));
-            	sinapsiLog.log("TEMPTEST","ei.getMacro() is"+(ei.getMacro() == null?"null":"not null"));
-            	sinapsiLog.log("TEMPTEST","ei.getLocalVars() is"+(ei.getLocalVars() == null?"null":"not null"));
-            	sinapsiLog.log("TEMPTEST","ei.getExecutionStackIndexes() is"+(ei.getExecutionStackIndexes() == null?"null":"not null"));
-            	
+            	 
                 RemoteExecutionDescriptor red = new RemoteExecutionDescriptor(
                         ei.getMacro().getId(),
                         ei.getLocalVars(),
