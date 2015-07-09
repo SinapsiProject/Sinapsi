@@ -202,7 +202,9 @@ public class Server extends WebSocketServer {
      * @param msg message
      */
     public void send(Integer idDevice, String msg) {
-       wslog.log(wslog.getTime(), "To : " + idDevice  + " MSG : " + msg);
-       devices.get(idDevice).send(msg);
+       if(devices.get(idDevice).isOpen()) {
+          wslog.log(wslog.getTime(), "To : " + idDevice  + " MSG : " + msg);
+          devices.get(idDevice).send(msg);
+       }
     }
 }

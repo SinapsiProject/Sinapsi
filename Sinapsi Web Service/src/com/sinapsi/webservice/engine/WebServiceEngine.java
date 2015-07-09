@@ -27,13 +27,10 @@ import com.sinapsi.webservice.engine.system.EmailAdapter;
 import com.sinapsi.webservice.websocket.Server;
 import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
 import com.sinapsi.webshared.wsproto.WebSocketMessage;
-
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.java_websocket.WebSocket;
 
 /**
  * Web Service engine
@@ -120,15 +117,8 @@ public class WebServiceEngine {
                 //call the websocket server passing the red object, device target and sender device
                 Gson gson = new Gson();
                 
-                WebSocket clientTarget;
-                try {
-                    clientTarget = wsserver.getClient(deviceDB.getUserEmail(dev.getId()));
-                    String redMessage = gson.toJson(red);
-                    wsserver.send(clientTarget, gson.toJson(new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, redMessage)));  
-                    
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }                             
+                String redMessage = gson.toJson(red);
+                wsserver.send(dev.getId(), gson.toJson(new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, redMessage)));                            
             }
         };
 

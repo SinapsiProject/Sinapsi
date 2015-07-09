@@ -7,7 +7,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.bgp.decryption.Decrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -16,7 +15,6 @@ import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.webservice.db.DeviceDBManager;
-import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.engine.WebServiceEngine;
 import com.sinapsi.webservice.system.WebServiceConsts;
@@ -50,7 +48,6 @@ public class RemoteMacroExecution extends HttpServlet {
 	    int fromDevice = Integer.parseInt(request.getParameter("from_device"));
 	    Server wsserver = (Server) getServletContext().getAttribute("wsserver");
 	    WebServiceEngine engine = (WebServiceEngine) getServletContext().getAttribute("engine");
-	    EngineDBManager engineManager = (EngineDBManager) getServletContext().getAttribute("engines_db"); 
 
 	    // read the encrypted jsoned body
         String cryptedJsonBody = BodyReader.read(request);
@@ -89,18 +86,7 @@ public class RemoteMacroExecution extends HttpServlet {
             } else {                
                 WebSocketMessage message = new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, gson.toJson(RED));
                 
-                if(wsserver.getDevice(deviceTarget).isClosed()) {
-                   String errorPolicy = engineManager.getMacro(RED.getIdMacro()).getExecutionFailurePolicy();
-                   
-                   switch (errorPolicy) {
-                     case "ABORT_ON_UNAVAILABLE_AT_SWITCH":
-                        
-                     break;
-                  }
-                }
-                
-                if(wsserver.getDevice(deviceTarget).isOpen())
-                   wsserver.send(deviceTarget, gson.toJson(message));  
+                wsserver.send(deviceTarget, gson.toJson(message));  
             }
             
         } catch(Exception e) {
