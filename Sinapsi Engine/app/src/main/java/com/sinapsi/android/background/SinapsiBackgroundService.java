@@ -9,7 +9,10 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -33,6 +36,8 @@ import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
+import com.sinapsi.utils.Pair;
+import com.sinapsi.utils.Triplet;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.client.web.OnlineStatusProvider;
 import com.sinapsi.client.web.RetrofitWebServiceFacade;
@@ -121,9 +126,13 @@ public class SinapsiBackgroundService extends Service
     private UserInterface loggedUser = logoutUser;
 
 
+    private MainThreadRedHandler mainThreadRedHandler;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mainThreadRedHandler = new MainThreadRedHandler(Looper.getMainLooper());
 
         // loading settings from shared preferences -----------------
         settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
@@ -395,35 +404,8 @@ public class SinapsiBackgroundService extends Service
         WebSocketMessage wsMsg = gson.fromJson(message, WebSocketMessage.class);
         switch (wsMsg.getMsgType()) {
             case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR: {
-                RemoteExecutionDescriptor red = gson.fromJson(wsMsg.getData(), RemoteExecutionDescriptor.class);
-                try {
-                    engine.continueMacro(red);
-                } catch (MacroEngine.MissingMacroException e) {
-                    if (firstcall) {
-                        //retries after a sync
-
-                        syncMacros(new BackgroundSyncCallback() {
-                            @Override
-                            public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
-                                handleWsMessage(message, false);
-                            }
-
-                            @Override
-                            public void onBackgroundSyncFail(Throwable error) {
-                                //TODO: a remote execution descriptor arrived,
-                                //----:     the macro is not present on this
-                                //----:     client, and an attempt to sync failed.
-                                //----:     what to do?
-                            }
-                        }, false);
-
-                    } else {
-                        e.printStackTrace();
-                        //the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
-                        //just prints the stack trace and ignores the message
-                    }
-
-                }
+                final RemoteExecutionDescriptor red = gson.fromJson(wsMsg.getData(), RemoteExecutionDescriptor.class);
+                handleWsRed(red);
             }
             break;
             case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
@@ -775,6 +757,12 @@ public class SinapsiBackgroundService extends Service
         return engine.newEmptyMacro(id);
     }
 
+    private void handleWsRed(RemoteExecutionDescriptor red){
+        Message msg = mainThreadRedHandler.obtainMessage();
+        msg.obj = new Triplet<RemoteExecutionDescriptor, MacroEngine, Boolean>(red, engine, true);
+        msg.sendToTarget();
+    }
+
 
     private void startForegroundMode() {
         //HINT: useful toggles instead of classic content pending intent
@@ -831,4 +819,54 @@ public class SinapsiBackgroundService extends Service
         }
     }
 
+    private final class MainThreadRedHandler extends Handler{
+
+        public MainThreadRedHandler(Looper looper) {
+            super(looper); //SUPER LOOPER!
+        }
+
+        private void handleRecursive(RemoteExecutionDescriptor red, MacroEngine engine, boolean firstcall){
+            Message msg = obtainMessage();
+            msg.obj = new Triplet<RemoteExecutionDescriptor, MacroEngine, Boolean>(red, engine, firstcall);
+            handleMessage(msg);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            final Triplet<RemoteExecutionDescriptor, MacroEngine, Boolean> triplet = (Triplet<RemoteExecutionDescriptor, MacroEngine, Boolean>) msg.obj;
+
+            try {
+                engine.continueMacro(triplet.getFirst());
+            } catch (MacroEngine.MissingMacroException e) {
+                if (triplet.getThird()) {
+                    //retries after a sync
+
+                    syncMacros(new BackgroundSyncCallback() {
+                        @Override
+                        public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                            handleRecursive(triplet.getFirst(), triplet.getSecond(), false);
+                        }
+
+                        @Override
+                        public void onBackgroundSyncFail(Throwable error) {
+                            //TODO: a remote execution descriptor arrived,
+                            //----:     the macro is not present on this
+                            //----:     client, and an attempt to sync failed.
+                            //----:     what to do?
+                        }
+                    }, false);
+
+                } else {
+                    e.printStackTrace();
+                    //the server is trying to tell the client to execute a macro that doesn't exist (neither in the server)
+                    //just prints the stack trace and ignores the message
+                }
+            }
+        }
+
+
+
+    }
 }
