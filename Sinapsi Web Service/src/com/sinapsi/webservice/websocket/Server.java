@@ -188,12 +188,12 @@ public class Server extends WebSocketServer {
     }
     
     /**
-     * Send <var>msg</var> to a specific connected websocket client
-     * @param c websocket client
+     * Send message to a device
+     * @param idDevice id of the device
      * @param msg message
      */
-    public void send(WebSocket c, String msg) {
-        wslog.log(wslog.getTime(), clientsWS.get(c) + " : " + msg);
-        c.send(msg);
+    public void send(Integer idDevice, String msg) {
+       wslog.log(wslog.getTime(), "To : " + idDevice  + " MSG : " + msg);
+       devices.get(idDevice).send(msg);
     }
 }

@@ -7,9 +7,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.java_websocket.WebSocket;
-
 import com.bgp.decryption.Decrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -87,9 +84,8 @@ public class RemoteMacroExecution extends HttpServlet {
             	cloudMacroEngine.continueMacro(RED);
             
             } else {                
-                WebSocket clientTarget = wsserver.getClient(deviceManager.getUserEmail(deviceTarget));
                 WebSocketMessage message = new WebSocketMessage(SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR, gson.toJson(RED));
-                wsserver.send(clientTarget, gson.toJson(message));  
+                wsserver.send(deviceTarget, gson.toJson(message));  
                 //TODO: define comunication error with the client policy
             }
             
