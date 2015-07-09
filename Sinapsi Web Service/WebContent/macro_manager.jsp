@@ -177,7 +177,7 @@
 								<h3>
 									<a data-toggle="collapse" data-parent="#accordion"
 										href="#<%=counter%>" class="collapsed"
-										style="text-decoration: none"> <%=macro.getName()%> <small>starts
+										style="text-decoration: none; color: <%=macro.getMacroColor()%>"> <%=macro.getName()%> <small>starts
 											on device <%=triggeredDevices.get(macro.getTrigger().getExecutionDevice().getId())%>
 									</small>
 									</a>
