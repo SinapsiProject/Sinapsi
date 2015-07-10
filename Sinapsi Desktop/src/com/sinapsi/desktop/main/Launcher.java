@@ -30,28 +30,28 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class Launcher extends Application {	
-	
+
 	public static BackgroundService bgService;
 
 	// The STAGE!
 	private Stage primaryStage;
-	
+
 	// Tray stuff
 	private SystemTray tray;
 	private TrayIcon trayIcon;
-	
+
 	// Boolean for message show
 	private boolean firstTime;
-	
+
 	// GUI stuff
 	private MenuItem showItem;
 	private MenuItem closeItem;
 	private PopupMenu popUpMenu;
-	
+
 	// Images
 	private Image icon;
-	
-	
+
+
 	@Override
 	public void start(Stage stage) {
 		Thread t = new Thread(bgService);
@@ -67,11 +67,11 @@ public class Launcher extends Application {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
+
 	// Creating TrayIcon while launching
 	public void createTrayIcon(final Stage stage) {
 		if(SystemTray.isSupported()) {
@@ -79,64 +79,64 @@ public class Launcher extends Application {
 			tray = SystemTray.getSystemTray();
 			// Loading image
 			try {
-                URL url = new URL("http://www.digitalphotoartistry.com/rose1.jpg");
-                icon = ImageIO.read(url);
-            } catch (IOException ex) {
-                System.out.println(ex);
-            }
+				URL url = new URL("http://www.digitalphotoartistry.com/rose1.jpg");
+				icon = ImageIO.read(url);
+			} catch (IOException ex) {
+				System.out.println(ex);
+			}
 		}
-		
+
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
 				hide(stage);	
 			}
 		});
-		
+
 		// ActionListener
 		final ActionListener closeListener = new ActionListener() {
-	        @Override
-	        public void actionPerformed(java.awt.event.ActionEvent e) {
-	            System.exit(0);
-	        }
-	    };
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				System.exit(0);
+			}
+		};
 
-	    ActionListener showListener = new ActionListener() {
-	        @Override
-	        public void actionPerformed(java.awt.event.ActionEvent e) {
-	            Platform.runLater(new Runnable() {
-	                @Override
-	                public void run() {
-	                    primaryStage.show();
-	                }
-	            });
-	        }
-	    };
-		
+		ActionListener showListener = new ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						primaryStage.show();
+					}
+				});
+			}
+		};
+
 		popUpMenu = new PopupMenu();
 		showItem = new MenuItem("Show");
 		closeItem = new MenuItem("Close");
-		
+
 		showItem.addActionListener(showListener);
 		popUpMenu.add(showItem);
-		
+
 		closeItem.addActionListener(closeListener);
 		popUpMenu.add(closeItem);
-	
+
 		trayIcon = new TrayIcon(icon, "Sinapsi", popUpMenu);
 		trayIcon.addActionListener(showListener);
-		
+
 		try {
 			tray.add(trayIcon);
 		} catch(AWTException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// Hiding 
 	public void hide(final Stage stage) {
 		Platform.runLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if(SystemTray.isSupported()) {
@@ -148,16 +148,15 @@ public class Launcher extends Application {
 			}
 		});
 	}
-	
+
 	// Minimized window message
 	public void minimizedMessage() {
-	        if (firstTime) {
-	            trayIcon.displayMessage("Sinapsi",
-	                    "Sinapsi is now minimized!.",
-	                    TrayIcon.MessageType.INFO);
-	            firstTime = false;
-	        }
+		if (firstTime) {
+			trayIcon.displayMessage("Sinapsi",
+					"Sinapsi is now minimized!.",
+					TrayIcon.MessageType.INFO);
+			firstTime = false;
+		}
 	}
 }	
-	
-	
+

@@ -18,6 +18,7 @@ import com.sinapsi.client.web.SinapsiWebServiceFacade.WebServiceCallback;
 import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.desktop.enginesystem.DesktopActivationManager;
 import com.sinapsi.desktop.enginesystem.DesktopDeviceInfo;
+import com.sinapsi.desktop.enginesystem.DesktopNotificationAdapter;
 import com.sinapsi.desktop.log.DesktopClientLog;
 import com.sinapsi.desktop.persistence.DesktopDiffDBManager;
 import com.sinapsi.desktop.persistence.DesktopLocalDBManager;
@@ -26,6 +27,7 @@ import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.engine.VariableManager;
 import com.sinapsi.engine.components.ActionLog;
 import com.sinapsi.engine.components.ActionSetVariable;
+import com.sinapsi.engine.components.ActionSimpleNotification;
 import com.sinapsi.engine.components.TriggerEngineStart;
 import com.sinapsi.engine.execution.ExecutionInterface;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
@@ -33,11 +35,13 @@ import com.sinapsi.engine.execution.WebExecutionInterface;
 import com.sinapsi.engine.log.LogMessage;
 import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.engine.log.SystemLogInterface;
+import com.sinapsi.engine.system.NotificationAdapter;
 import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ComunicationInfo;
+import com.sinapsi.utils.Pair;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
 import com.sinapsi.webshared.wsproto.WebSocketEventHandler;
@@ -70,7 +74,7 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 				this, 
 				this, 
 				this);
-		
+
 		deviceInfo = new DesktopDeviceInfo(rootPasswd);
 	}
 
@@ -100,6 +104,8 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 		};
 
 		SystemFacade sf = new SystemFacade(); // TODO fill
+		sf.addSystemService(NotificationAdapter.SERVICE_NOTIFICATION, new DesktopNotificationAdapter());
+		sf.setRequirementSpec(NotificationAdapter.REQUIREMENT_SIMPLE_NOTIFICATIONS, true);
 		VariableManager globalVariables = new VariableManager();
 		macroEngine = new MacroEngine(device, 
 				new DesktopActivationManager(
@@ -112,7 +118,8 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 								sinapsiLog, 
 								TriggerEngineStart.class, 
 								ActionSetVariable.class, 
-								ActionLog.class);
+								ActionLog.class,
+								ActionSimpleNotification.class);
 
 
 		SyncManager syncManager = new SyncManager(web, 
@@ -120,7 +127,7 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 				new DesktopLocalDBManager(), 
 				new DesktopDiffDBManager(), 
 				device);
-		
+
 		safeSyncManager = new SafeSyncManager(syncManager, this);
 
 		if(AppConsts.DEBUG_CLEAR_DB_ON_START)
@@ -129,6 +136,23 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 
 
 		macroEngine.startEngine();
+		
+		//TODO: eliminare questo dopo aver fatto i db manager
+		getWeb().getAllMacros(device, new WebServiceCallback<Pair<Boolean,List<MacroInterface>>>() {
+
+			@Override
+			public void success(Pair<Boolean, List<MacroInterface>> t,
+					Object response) {
+				macroEngine.clearMacros();
+				macroEngine.addMacros(t.getSecond());
+				
+			}
+
+			@Override
+			public void failure(Throwable error) {
+				System.out.println("Error");				
+			}
+		});
 	}
 
 	public List<MacroInterface> getMacros() {
@@ -166,7 +190,23 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 		} break;
 
 		case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
-			syncMacros(new BackgroundSyncCallback() {
+			//TODO: eliminare questo dopo aver fatto i db manager
+			getWeb().getAllMacros(device, new WebServiceCallback<Pair<Boolean,List<MacroInterface>>>() {
+
+				@Override
+				public void success(Pair<Boolean, List<MacroInterface>> t,
+						Object response) {
+					macroEngine.clearMacros();
+					macroEngine.addMacros(t.getSecond());
+					
+				}
+
+				@Override
+				public void failure(Throwable error) {
+					System.out.println("Error");				
+				}
+			});
+			/*syncMacros(new BackgroundSyncCallback() {
 
 				@Override
 				public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
@@ -177,7 +217,7 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 				public void onBackgroundSyncFail(Throwable error) {
 					//Do nothing					
 				}
-			},false);
+			},false);*/
 		} break;
 
 		case SinapsiMessageTypes.NEW_CONNECTION: {
@@ -316,7 +356,7 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 	}
 
 	public DesktopDeviceInfo getDeviceInfo() {
-		
+
 		return deviceInfo;
 	}
 

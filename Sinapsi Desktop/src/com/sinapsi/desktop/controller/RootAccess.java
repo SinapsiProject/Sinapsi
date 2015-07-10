@@ -15,11 +15,11 @@ public class RootAccess {
 	static InputStream is;
 	static byte[] buff = new byte[8192];
 	static int n;
-	
+
 	public RootAccess() {
 
 	}
-	
+
 	public static String getPasswdForRoot() throws IOException {
 		Process p = Runtime.getRuntime().exec(new String[] { "sh", "-c", "sudo -S id" });
 
