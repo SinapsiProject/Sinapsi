@@ -9,7 +9,7 @@ http://creativecommons.org/licenses/by/3.0/
     COMMON  STYLES    
 ------------------------------------------------*/
 body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Lato', sans-serif;
 }
 
  #wrapper {
@@ -68,7 +68,7 @@ p {
 .page-header {
 padding-bottom: 9px;
 margin: 10px 0 45px;
-border-bottom: 1px solid #C7D1DD;
+border-bottom: 1px solid #757a80;
 }
 .panel-back {
     background-color:#fff;
@@ -248,7 +248,6 @@ text-align: left;
 height: 60px;
 font-size: 30px;
 font-weight: 700;
-text-transform: uppercase;
 line-height: 30px;
 }
 .top-navbar .nav > li {

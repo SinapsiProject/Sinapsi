@@ -15,7 +15,7 @@
 <script src="assets/js/jquery-1.7.1.min.js"></script>
 <script src="assets/js/jquery-ui-1.8.18.custom.min.js"></script>
 <link href="assets/css/custom-styles.css" rel="stylesheet" />
-<link href='http://fonts.googleapis.com/css?family=Open+Sans'
+<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700'
 	rel='stylesheet' type='text/css' />
 </head>
 <%

@@ -16,10 +16,11 @@ $('#err_password').click(function() {
 $('form').submit(function(event) {
     event.preventDefault();
     $('.wrapper').addClass('form-success');
-    
+    $('#cog').css("-webkit-animation", "rotation 1s infinite linear");
     $('form').fadeOut(700, function() {
         this.submit();
     });
+    
        
 });
 

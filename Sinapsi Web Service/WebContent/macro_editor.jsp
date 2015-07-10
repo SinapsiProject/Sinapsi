@@ -11,7 +11,7 @@
 <!-- FontAwesome Styles-->
 <link href="assets/css/font-awesome.css" rel="stylesheet" />
 <link href="assets/css/custom-styles.css" rel="stylesheet" />
-<link href='http://fonts.googleapis.com/css?family=Open+Sans'
+<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700'
 	rel='stylesheet' type='text/css' />
 </head>
 
