@@ -3,28 +3,45 @@ package com.sinapsi.desktop.enginesystem;
 import java.io.IOException;
 
 import com.sinapsi.desktop.DesktopConsts;
+import com.sinapsi.desktop.controller.RootAccess;
 import com.sinapsi.engine.system.DeviceInfoAdapter;
 
 public class DesktopDeviceInfo implements DeviceInfoAdapter {
-
+	
+	private String rootPsw;
+	
+	public DesktopDeviceInfo(String rootPsw) {
+		this.rootPsw = rootPsw;
+	}
+	
 	@Override
 	public String getDeviceName() {
-		Runtime runTime = Runtime.getRuntime();
+		// execute command with root privilege
+		String out = null;
 		try {
-			Process p =	runTime.exec("hdparm -l /dev/sd? | grep 'Serial\\ Number'");
-			p.waitFor();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch(InterruptedException e) {
+		Process p = RootAccess.runFromRoot("hdparm -I /dev/sd? | grep 'Serial\\ Number'", rootPsw);
+		out = RootAccess.streamToString(p.getInputStream());
+		out = out.substring(out.indexOf(":") + 1, out.indexOf("\n"));
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		return null; 
+		
+		return out;
 	}
 
 	@Override
 	public String getDeviceModel() {
-		// TODO Modello pc
-		return null;
+		// execute command with root privilege
+		String out = null;
+		try {
+		Process p = RootAccess.runFromRoot("dmidecode | grep \"Manufacturer\"", rootPsw);
+		out = RootAccess.streamToString(p.getInputStream());
+		out = out.substring(out.indexOf(":") + 1, out.indexOf("\n"));
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return out;
 	}
 
 	@Override

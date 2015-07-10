@@ -1,11 +1,13 @@
 package com.sinapsi.desktop.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.print.attribute.standard.MediaSize.Engineering;
 
 import com.google.gson.Gson;
 import com.sinapsi.client.AppConsts;
+import com.sinapsi.client.SafeSyncManager;
 import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.SyncManager.ConflictResolutionCallback;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
@@ -15,6 +17,7 @@ import com.sinapsi.client.web.UserLoginStatusListener;
 import com.sinapsi.client.web.SinapsiWebServiceFacade.WebServiceCallback;
 import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.desktop.enginesystem.DesktopActivationManager;
+import com.sinapsi.desktop.enginesystem.DesktopDeviceInfo;
 import com.sinapsi.desktop.log.DesktopClientLog;
 import com.sinapsi.desktop.persistence.DesktopDiffDBManager;
 import com.sinapsi.desktop.persistence.DesktopLocalDBManager;
@@ -46,9 +49,12 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 	private RetrofitWebServiceFacade web;
 	private DeviceInterface device;
 	private MacroEngine macroEngine;
-	private SyncManager syncManager;
+	private SafeSyncManager safeSyncManager;
+	private DesktopDeviceInfo deviceInfo;
+	private String rootPasswd;
 
-	public BackgroundService() {
+	public BackgroundService(String rootPasswd) {
+		this.rootPasswd = rootPasswd;
 		sinapsiLog = new SinapsiLog();
 		sinapsiLog.addLogInterface(new SystemLogInterface() {
 
@@ -64,6 +70,8 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 				this, 
 				this, 
 				this);
+		
+		deviceInfo = new DesktopDeviceInfo(rootPasswd);
 	}
 
 	public void initEngine() {
@@ -107,11 +115,13 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 								ActionLog.class);
 
 
-		syncManager = new SyncManager(web, 
+		SyncManager syncManager = new SyncManager(web, 
 				new DesktopLocalDBManager(), 
 				new DesktopLocalDBManager(), 
 				new DesktopDiffDBManager(), 
 				device);
+		
+		safeSyncManager = new SafeSyncManager(syncManager, this);
 
 		if(AppConsts.DEBUG_CLEAR_DB_ON_START)
 			syncManager.clearAll();
@@ -121,74 +131,66 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 		macroEngine.startEngine();
 	}
 
-	public List<MacroInterface> loadSavedMacros() {
-		return syncManager.getAllMacros();
-	}
-
-	public void syncAndLoadMacros(final boolean explicit) {
-		if(isOnline()) {
-			syncManager.sync(new SyncManager.MacroSyncCallback() {
-
-				@Override
-				public void onSyncSuccess(Integer pushed, Integer pulled,
-						Integer noChanged, Integer resolvedConflicts) {
-					macroEngine.clearMacros();
-					macroEngine.addMacros(loadSavedMacros());					
-				}
-
-				@Override
-				public void onSyncFailure(Throwable error) {
-					// TODO Failure dialog
-				}
-
-				@Override
-				public void onSyncConflicts(List<MacroSyncConflict> conflicts,
-						ConflictResolutionCallback conflictCallback) {
-					// TODO Sync Conflicts Dialog
-
-				}
-			});
-		}
-		else {
-			macroEngine.clearMacros();
-			macroEngine.addMacros(loadSavedMacros());
-		}
-
+	public List<MacroInterface> getMacros() {
+		return new ArrayList<>(macroEngine.getMacros().values());
 	}
 
 	public void handleWSMessage(String message, boolean firstCall) {
 		Gson gson = new Gson();
 		WebSocketMessage wsMessage = gson.fromJson(message, WebSocketMessage.class);
-		
+
 		switch(wsMessage.getMsgType()) {
-			case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR: {
-				RemoteExecutionDescriptor red = (RemoteExecutionDescriptor) wsMessage.getData();
-				try {
-					macroEngine.continueMacro(red);
-				} catch(MacroEngine.MissingMacroException e) {
-					if(firstCall) {
-						syncAndLoadMacros(false);
-						handleWSMessage(message, firstCall);
-					} else 					
+		case SinapsiMessageTypes.REMOTE_EXECUTION_DESCRIPTOR: {
+			RemoteExecutionDescriptor red = gson.fromJson(wsMessage.getData(), RemoteExecutionDescriptor.class);
+			try {
+				macroEngine.continueMacro(red);
+			} catch(MacroEngine.MissingMacroException e) {
+				if(firstCall) {
+					syncMacros(new BackgroundSyncCallback() {
+
+						@Override
+						public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+							handleWSMessage(message, false);							
+						}
+
+						@Override
+						public void onBackgroundSyncFail(Throwable error) {
+							// TODO Auto-generated method stub
+						}
+
+					}, false);
+
+				} else 					
 					e.printStackTrace();
+			}
+		} break;
+
+		case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
+			syncMacros(new BackgroundSyncCallback() {
+
+				@Override
+				public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+					// Do nothing					
 				}
-			} break;
-			
-			case SinapsiMessageTypes.MODEL_UPDATED_NOTIFICATION: {
-				syncAndLoadMacros(false);
-			} break;
-			
-			case SinapsiMessageTypes.NEW_CONNECTION: {
-				
-			} break;
-			
-			case SinapsiMessageTypes.CONNECTION_LOST: {
-				
-			} break;
-		
+
+				@Override
+				public void onBackgroundSyncFail(Throwable error) {
+					//Do nothing					
+				}
+			},false);
+		} break;
+
+		case SinapsiMessageTypes.NEW_CONNECTION: {
+
+		} break;
+
+		case SinapsiMessageTypes.CONNECTION_LOST: {
+
+		} break;
+
 		}
 	}	
-	
+
 	public WSClient getWSClient() {
 		return getWeb().getWebSocketClient();
 	}
@@ -221,8 +223,8 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 
 	@Override
 	public boolean isOnline() {
-		// TODO Auto-generated method stub
-		return false;
+		// TODO device is online
+		return true;
 	}
 
 	public DeviceInterface getDevice() {
@@ -239,8 +241,7 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 
 	@Override
 	public ComponentFactory getComponentFactory() {
-		// TODO Auto-generated method stub
-		return null;
+		return macroEngine.getComponentFactory();
 	}
 
 	@Override
@@ -249,10 +250,74 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 
 	}
 
+	public static interface BackgroundSyncCallback {
+		public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros);
+
+		public void onBackgroundSyncFail(Throwable error);
+	}
+
+	private class BackgroundServiceInternalSyncCallback implements SyncManager.MacroSyncCallback {
+
+		private final BackgroundSyncCallback callback;
+		private final boolean userIntention;
+
+		public BackgroundServiceInternalSyncCallback(BackgroundSyncCallback callback, boolean userIntention) {
+			this.callback = callback;
+			this.userIntention = userIntention;
+		}
+
+		@Override
+		public void onSyncSuccess(List<MacroInterface> currentMacros) {
+			macroEngine.clearMacros();
+			macroEngine.addMacros(currentMacros);
+			callback.onBackgroundSyncSuccess(currentMacros);
+		}
+
+		@Override
+		public void onSyncConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback conflictCallback) {
+			handleConflicts(conflicts, conflictCallback);
+		}
+
+		@Override
+		public void onSyncFailure(Throwable error) {
+			handleSyncFailure(error, userIntention);
+			callback.onBackgroundSyncFail(error);
+		}
+	}
+
+	public void handleConflicts(List<MacroSyncConflict> conflicts, SyncManager.ConflictResolutionCallback callback) {
+
+	}
+
+	public void handleSyncFailure(Throwable e, boolean showError) {
+
+	}
+
 	@Override
 	public void onUserLogOut() {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void syncMacros(final BackgroundSyncCallback callback, final boolean userIntention) {
+		safeSyncManager.getMacros(new BackgroundServiceInternalSyncCallback(callback, userIntention));
+	}
+
+	public void removeMacro(int id, final BackgroundSyncCallback callback, final boolean userIntention) {
+		safeSyncManager.removeMacro(id, new BackgroundServiceInternalSyncCallback(callback, userIntention));
+	}
+
+	public void updateMacro(MacroInterface macro, final BackgroundSyncCallback callback, final boolean userIntention) {
+		safeSyncManager.updateMacro(macro, new BackgroundServiceInternalSyncCallback(callback, userIntention));
+	}
+
+	public void addMacro(MacroInterface macro, final BackgroundSyncCallback callback, final boolean userIntention) {
+		safeSyncManager.addMacro(macro, new BackgroundServiceInternalSyncCallback(callback, userIntention));
+	}
+
+	public DesktopDeviceInfo getDeviceInfo() {
+		
+		return deviceInfo;
 	}
 
 

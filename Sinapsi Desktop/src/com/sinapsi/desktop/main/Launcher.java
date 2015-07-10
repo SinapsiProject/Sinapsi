@@ -4,6 +4,7 @@
 
 package com.sinapsi.desktop.main;
 
+import com.sinapsi.desktop.controller.RootAccess;
 import com.sinapsi.desktop.service.BackgroundService;
 import com.sinapsi.desktop.view.LoginLayout;
 
@@ -30,7 +31,7 @@ import javafx.stage.WindowEvent;
 
 public class Launcher extends Application {	
 	
-	public static BackgroundService bgService = new BackgroundService();
+	public static BackgroundService bgService;
 
 	// The STAGE!
 	private Stage primaryStage;
@@ -60,6 +61,11 @@ public class Launcher extends Application {
 		this.primaryStage = stage;
 		this.primaryStage.setResizable(false);
 		root.start(primaryStage);
+		try {
+			bgService = new BackgroundService(RootAccess.getPasswdForRoot());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -73,7 +79,8 @@ public class Launcher extends Application {
 			tray = SystemTray.getSystemTray();
 			// Loading image
 			try {
-				icon = ImageIO.read(GET.class.getResource("/res/first_logo.ico"));
+                URL url = new URL("http://www.digitalphotoartistry.com/rose1.jpg");
+                icon = ImageIO.read(url);
             } catch (IOException ex) {
                 System.out.println(ex);
             }

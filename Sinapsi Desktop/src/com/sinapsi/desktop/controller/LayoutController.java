@@ -7,13 +7,14 @@ import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
 
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 
 public class LayoutController {
 	
-	private DesktopDeviceInfo deviceInfo = new DesktopDeviceInfo();
+	
 	private Stage stage;
 	
 	public LayoutController(Button button, Stage stage) {
@@ -21,6 +22,8 @@ public class LayoutController {
 	}
 	
 	public void login(String email, String password) {
+		DesktopDeviceInfo deviceInfo = Launcher.bgService.getDeviceInfo();
+		
 		Launcher.bgService.getWeb().requestLogin(email, deviceInfo.getDeviceName(), deviceInfo.getDeviceModel(), new WebServiceCallback<Pair<byte[],byte[]>>() {
 			
 			@Override
@@ -46,7 +49,14 @@ public class LayoutController {
 										Launcher.bgService.setDevice(device);
 										Launcher.bgService.initEngine();
 										Launcher.bgService.getWSClient().establishConnection();
-										stage.close();
+										Platform.runLater(new Runnable() {
+											
+											@Override
+											public void run() {
+												stage.close();												
+											}
+										});
+										
 									}
 									
 									@Override
