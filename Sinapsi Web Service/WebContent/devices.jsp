@@ -43,7 +43,7 @@
             class="icon-bar"></span> <span class="icon-bar"></span> <span
             class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="index.html">Sinapsi</a>
+        <a class="navbar-brand" href="index.jsp">Sinapsi</a>
       </div>
 
       <ul class="nav navbar-top-links navbar-right">
@@ -150,9 +150,9 @@
                             }
                           %>
                         <%
-                          } if(entry.getKey().getType().equals("Desktop")) {
+                          } if(entry.getKey().getType().equals("PC Linux")) {
                         %>
-                        <td><i class="fa fa-laptop"></i></td>
+                        <td><i class="fa fa-linux"></i></td>
                           <%
                             if(entry.getValue() == true) {
                           %>
