@@ -1,4 +1,3 @@
-![alt tag](http://i61.tinypic.com/1zzszt0.png)   
 #Sinapsi
 ***Distributed intelligent automation system***
   
