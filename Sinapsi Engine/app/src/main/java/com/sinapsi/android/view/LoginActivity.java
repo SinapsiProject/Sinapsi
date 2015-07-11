@@ -231,7 +231,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                     public void success(Device device, Object response) {
 
                         service.setDevice(device);
-                        service.initAndStartEngine();
+                        service.initEngine();
                         service.getWSClient().establishConnection();
 
                         service.getWeb().setAvailableComponents(
@@ -245,6 +245,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                                             failure(new RuntimeException(communicationInfo.getErrorDescription()));
                                             return;
                                         }
+                                        service.syncMacrosAndStartEngine();
                                         startMainActivity();
                                         showProgress(false);
                                     }

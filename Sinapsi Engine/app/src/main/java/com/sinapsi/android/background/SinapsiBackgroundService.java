@@ -163,7 +163,7 @@ public class SinapsiBackgroundService extends Service
 
     }
 
-    public void initAndStartEngine() {
+    public void initEngine() {
         // initializing web execution interface ---------------------
         WebExecutionInterface defaultWebExecutionInterface = new WebExecutionInterface() {
             @Override
@@ -260,6 +260,10 @@ public class SinapsiBackgroundService extends Service
 
         if (AppConsts.DEBUG_TEST_MACROS) createLocalMacroExamples();
 
+
+    }
+
+    public void syncMacrosAndStartEngine(){
         // loads macros from local db/web service -------------------
         syncMacros(new BackgroundSyncCallback() {
             @Override
@@ -508,7 +512,7 @@ public class SinapsiBackgroundService extends Service
     public void mockLogin() {
         onUserLogIn(logoutUser);
         setDevice(new FactoryModel().newDevice(-1, "Test device", "Sinapsi debug", "AndroidSmartphone", loggedUser, AndroidAppConsts.CLIENT_VERSION));
-        initAndStartEngine();
+        initEngine();
     }
 
 
