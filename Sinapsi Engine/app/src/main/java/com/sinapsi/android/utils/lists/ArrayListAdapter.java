@@ -23,6 +23,15 @@ public abstract class ArrayListAdapter<T> extends RecyclerView.Adapter<ArrayList
         arrayList = new ArrayList<>();
     }
 
+    public ArrayListAdapter(ArrayList<T> arrayList, Boolean addAll){
+        if(addAll){
+            this.arrayList = new ArrayList<>();
+            this.arrayList.addAll(arrayList);
+        }else{
+            this.arrayList = arrayList;
+        }
+    }
+
     public ArrayListAdapter(Collection<? extends T> collection) {
         this.arrayList = new ArrayList<>(collection);
     }

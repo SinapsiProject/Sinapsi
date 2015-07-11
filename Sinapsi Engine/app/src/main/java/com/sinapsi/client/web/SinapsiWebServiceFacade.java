@@ -31,6 +31,8 @@ public interface SinapsiWebServiceFacade {
         void success(T t, Object response);
 
         void failure(Throwable error);
+
+        //TODO: void offline(); //to be called from RetrofitWebServiceFacade when is offline
     }
 
     /**

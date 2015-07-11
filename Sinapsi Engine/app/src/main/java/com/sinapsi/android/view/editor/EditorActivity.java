@@ -2,10 +2,12 @@ package com.sinapsi.android.view.editor;
 
 import android.content.ComponentName;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sinapsi.android.Lol;
@@ -13,10 +15,11 @@ import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.R;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
+import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
+import com.sinapsi.engine.builder.ActionBuilder;
 import com.sinapsi.engine.builder.MacroBuilder;
-import com.sinapsi.engine.components.TriggerScreenPower;
-import com.sinapsi.engine.parameters.ActualParamBuilder;
+import com.sinapsi.engine.builder.ParameterBuilder;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
@@ -38,6 +41,9 @@ public class EditorActivity extends SinapsiActionBarActivity {
     private Boolean changed = true;
     private MacroInterface input;
     private MacroBuilder macroBuilder;
+
+    private ParameterListAdapter triggerParameters = new ParameterListAdapter();
+    private ActionListAdapter actionList = new ActionListAdapter();
 
     private Map<Integer, Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>> availabilityTable = new HashMap<>();
 
@@ -76,7 +82,15 @@ public class EditorActivity extends SinapsiActionBarActivity {
                 .create());
 
 
+        RecyclerView triggerParamsRecyclerView = (RecyclerView) findViewById(R.id.trigger_parameter_list_recycler);
+        LinearLayoutManager llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        triggerParamsRecyclerView.setAdapter(triggerParameters);
+        triggerParamsRecyclerView.setLayoutManager(llm);
 
+        RecyclerView actionListRecyclerView = (RecyclerView) findViewById(R.id.action_list_recycler);
+        LinearLayoutManager llm2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        actionListRecyclerView.setAdapter(actionList);
+        actionListRecyclerView.setLayoutManager(llm2);
 
         /*final TextView tv = ((TextView) findViewById(R.id.test_text));
         tv.setText(input.getName());
@@ -98,38 +112,49 @@ public class EditorActivity extends SinapsiActionBarActivity {
     @Override
     public void onServiceConnected(ComponentName name) {
         super.onServiceConnected(name);
-
         updateAvailabilityTable();
 
     }
 
     private void updateAvailabilityTable() {
-        service.getWeb().getAvailableComponents(service.getDevice(), new SinapsiWebServiceFacade.WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>>() {
-            @Override
-            public void success(List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>> triplets, Object response) {
-                availabilityTable.clear();
-                addLocalAvailability();
-                for (Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>> t : triplets) {
-                    if (t.getFirst().getId() != service.getDevice().getId())
-                        availabilityTable.put(t.getFirst().getId(), t);
+        if(service.isOnline()){
+            transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
+            service.getWeb().getAvailableComponents(service.getDevice(), new SinapsiWebServiceFacade.WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>>() {
+                @Override
+                public void success(List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>> triplets, Object response) {
+                    availabilityTable.clear();
+                    addLocalAvailability();
+                    for (Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>> t : triplets) {
+                        if (t.getFirst().getId() != service.getDevice().getId())
+                            availabilityTable.put(t.getFirst().getId(), t);
+                    }
+                    updateView();
+                    transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
                 }
-            }
 
-            @Override
-            public void failure(Throwable error) {
-                if (error instanceof RetrofitError) {
-                    DialogUtils.handleRetrofitError(error, EditorActivity.this, false);
-                } else {
-                    DialogUtils.showOkDialog(EditorActivity.this,
-                            "Error",
-                            "Something has gone wrong while downloading the availability" +
-                                    " of components on other devices from server. Local " +
-                                    "components will still be available", false);
+                @Override
+                public void failure(Throwable error) {
+                    if (error instanceof RetrofitError) {
+                        DialogUtils.handleRetrofitError(error, EditorActivity.this, false);
+                    } else {
+                        DialogUtils.showOkDialog(EditorActivity.this,
+                                "Error",
+                                "Something has gone wrong while downloading the availability" +
+                                        " of components on other devices from server. Local " +
+                                        "components will still be available", false);
+                    }
+                    availabilityTable.clear();
+                    addLocalAvailability();
+                    updateView();
+                    transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
                 }
-                availabilityTable.clear();
-                addLocalAvailability();
-            }
-        });
+            });
+        }else{
+            availabilityTable.clear();
+            addLocalAvailability();
+            updateView();
+            transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
+        }
     }
 
     private void addLocalAvailability(){
@@ -140,6 +165,25 @@ public class EditorActivity extends SinapsiActionBarActivity {
                         service.getEngine().getAvailableTriggerDescriptors(),
                         service.getEngine().getAvailableActionDescriptors()
                 ));
+    }
+
+    private void updateView(){
+        ((TextView) findViewById(R.id.edittext_macro_editor_macro_name)).setText(macroBuilder.getName());
+        ((TextView) findViewById(R.id.textview_macro_editor_trigger_name)).setText(macroBuilder.getTrigger().getName());
+
+        Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>> t = availabilityTable.get(macroBuilder.getTrigger().getDeviceId());
+        if(t == null){
+            ((TextView) findViewById(R.id.textview_macro_editor_trigger_device)).setText("on Device with id: "+macroBuilder.getTrigger().getDeviceId());
+        }else{
+            ((TextView) findViewById(R.id.textview_macro_editor_trigger_device)).setText("on Device: "+t.getFirst().getModel());
+        }
+
+        triggerParameters.clear();
+        triggerParameters.addAll(macroBuilder.getTrigger().getParameters());
+
+        actionList.clear();
+        actionList.addAll(macroBuilder.getActions());
+
     }
 
     @Override
@@ -168,5 +212,31 @@ public class EditorActivity extends SinapsiActionBarActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(NO_CHANGES_BOOLEAN, changed);
+    }
+
+    public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder>{
+
+        @Override
+        public View onCreateView(ViewGroup parent, int viewType) {
+            return null;//TODO: impl
+        }
+        @Override
+        public void onBindViewHolder(ItemViewHolder viewHolder, ParameterBuilder elem, int position) {
+            //TODO: impl
+        }
+
+    }
+
+    public class ActionListAdapter extends ArrayListAdapter<ActionBuilder>{
+
+        @Override
+        public View onCreateView(ViewGroup parent, int viewType) {
+            return null;//TODO: impl
+        }
+        @Override
+        public void onBindViewHolder(ItemViewHolder viewHolder, ActionBuilder elem, int position) {
+            //TODO: impl
+        }
+
     }
 }
