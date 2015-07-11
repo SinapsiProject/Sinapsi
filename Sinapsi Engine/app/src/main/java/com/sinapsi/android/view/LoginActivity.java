@@ -241,6 +241,10 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                                 new SinapsiWebServiceFacade.WebServiceCallback<CommunicationInfo>() {
                                     @Override
                                     public void success(CommunicationInfo communicationInfo, Object response) {
+                                        if(communicationInfo.isErrorOccured()){
+                                            failure(new RuntimeException(communicationInfo.getErrorDescription()));
+                                            return;
+                                        }
                                         startMainActivity();
                                         showProgress(false);
                                     }
@@ -253,7 +257,7 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                                             DialogUtils.showOkDialog(
                                                     LoginActivity.this,
                                                     "Device components availability update error",
-                                                    re.getMessage(),
+                                                    "Server message:\n" + re.getMessage(),
                                                     false);
 
                                             showProgress(false);
