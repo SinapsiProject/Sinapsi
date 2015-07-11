@@ -38,7 +38,7 @@ public class ActionSendSMS extends Action {
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("number", FormalParamBuilder.Types.STRING, false)
                 .put("msg", FormalParamBuilder.Types.STRING, false)

@@ -11,6 +11,13 @@ import org.json.JSONObject;
  */
 public class FormalParamBuilder {
 
+    public static final String FORMAL_PARAMETERS = "formal_parameters";
+    public static final String NAME = "name";
+    public static final String TYPE = "type";
+    public static final String BOOL_STYLE = "boolStyle";
+    public static final String OPTIONAL = "optional";
+    public static final String CHOICE_ENTRIES = "choiceEntries";
+
     public enum Types {
         CHOICE,
         STRING,
@@ -59,9 +66,9 @@ public class FormalParamBuilder {
      */
     public FormalParamBuilder put(String name, Types type, boolean optional) throws JSONException{
         arr.put(new JSONObject()
-            .put("name", name)
-            .put("type", type.toString())
-            .put("optional", optional));
+            .put(NAME, name)
+            .put(TYPE, type.toString())
+            .put(OPTIONAL, optional));
         return this;
     }
 
@@ -77,10 +84,10 @@ public class FormalParamBuilder {
      */
     public FormalParamBuilder put(String name, JSONArray choiceEntries, boolean optional) throws JSONException{
         arr.put(new JSONObject()
-            .put("name", name)
-            .put("type", Types.CHOICE.toString())
-            .put("choiceEntries", choiceEntries)
-            .put("optional", optional));
+            .put(NAME, name)
+            .put(TYPE, Types.CHOICE.toString())
+            .put(CHOICE_ENTRIES, choiceEntries)
+            .put(OPTIONAL, optional));
         return this;
     }
 
@@ -95,10 +102,10 @@ public class FormalParamBuilder {
      */
     public FormalParamBuilder put(String name, BoolStyles boolStyle, boolean optional) throws JSONException{
         arr.put(new JSONObject()
-                .put("name", name)
-                .put("type", Types.BOOLEAN.toString())
-                .put("boolStyle", boolStyle.toString())
-                .put("optional", optional));
+                .put(NAME, name)
+                .put(TYPE, Types.BOOLEAN.toString())
+                .put(BOOL_STYLE, boolStyle.toString())
+                .put(OPTIONAL, optional));
         return this;
     }
 
@@ -116,10 +123,10 @@ public class FormalParamBuilder {
      */
     public FormalParamBuilder putAdvancedString(String name, boolean optional) throws JSONException{
         arr.put(new JSONObject()
-                .put("name", name)
-                .put("type", Types.STRING_ADVANCED.toString())
-                .put("choiceEntries", JSONUtils.enumValuesToJSONArray(StringMatchingModeChoices.class))
-                .put("optional", optional));
+                .put(NAME, name)
+                .put(TYPE, Types.STRING_ADVANCED.toString())
+                .put(CHOICE_ENTRIES, JSONUtils.enumValuesToJSONArray(StringMatchingModeChoices.class))
+                .put(OPTIONAL, optional));
         return this;
     }
 
@@ -129,7 +136,7 @@ public class FormalParamBuilder {
      * @throws JSONException
      */
     public JSONObject create() throws JSONException {
-        return obj.put("formal_parameters", arr);
+        return obj.put(FORMAL_PARAMETERS, arr);
     }
 
 

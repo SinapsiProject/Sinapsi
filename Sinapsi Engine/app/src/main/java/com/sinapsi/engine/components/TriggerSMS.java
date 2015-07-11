@@ -25,7 +25,7 @@ public class TriggerSMS extends Trigger{
 
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("sender_number", FormalParamBuilder.Types.STRING, true)
                 .putAdvancedString("message_content", true)

@@ -38,7 +38,7 @@ public class ActionSimpleNotification extends Action {
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("notification_title", FormalParamBuilder.Types.STRING, false)
                 .put("notification_message", FormalParamBuilder.Types.STRING, false)

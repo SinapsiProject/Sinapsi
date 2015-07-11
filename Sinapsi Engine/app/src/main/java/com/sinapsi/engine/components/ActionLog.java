@@ -33,7 +33,7 @@ public class ActionLog extends Action {
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("log_message", FormalParamBuilder.Types.STRING, false)
                 .create();

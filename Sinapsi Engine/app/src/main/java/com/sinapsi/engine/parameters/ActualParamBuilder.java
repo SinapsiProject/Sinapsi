@@ -8,6 +8,7 @@ import org.json.JSONObject;
  * This comes handy during macro editing.
  */
 public class ActualParamBuilder {
+    public static final String PARAMETERS = "parameters";
     private JSONObject obj = new JSONObject();
     private JSONObject par = new JSONObject();
 

@@ -240,5 +240,5 @@ public abstract class Action implements Parameterized, DistributedComponent {
      *
      * @return the JSONObject containing the formal parameters
      */
-    protected abstract JSONObject getFormalParametersJSON() throws JSONException;
+    public abstract JSONObject getFormalParametersJSON() throws JSONException;
 }

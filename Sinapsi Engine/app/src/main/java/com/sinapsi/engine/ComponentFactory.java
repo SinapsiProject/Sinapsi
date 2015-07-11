@@ -141,7 +141,7 @@ public class ComponentFactory {
     public Trigger newEmptyTrigger(MacroInterface macro){
         Trigger t = new Trigger() {
             @Override
-            protected JSONObject getFormalParametersJSON() throws JSONException {
+            public JSONObject getFormalParametersJSON() throws JSONException {
                 return null;
             }
 
@@ -173,7 +173,7 @@ public class ComponentFactory {
     private Trigger newRemoteTrigger(final String componentName, String parameters, MacroInterface macro, int executionDevice){
         Trigger t = new Trigger() {
             @Override
-            protected JSONObject getFormalParametersJSON() throws JSONException {
+            public JSONObject getFormalParametersJSON() throws JSONException {
                 return null;
             }
 
@@ -217,7 +217,7 @@ public class ComponentFactory {
             }
 
             @Override
-            protected JSONObject getFormalParametersJSON() throws JSONException {
+            public JSONObject getFormalParametersJSON() throws JSONException {
                 return null;
             }
 

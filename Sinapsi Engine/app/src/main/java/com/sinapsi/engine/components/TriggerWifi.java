@@ -57,7 +57,7 @@ public class TriggerWifi extends Trigger {
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException{
+    public JSONObject getFormalParametersJSON() throws JSONException{
         return new FormalParamBuilder()
                 .put("wifi_status", JSONUtils.enumValuesToJSONArray(SwitchStatusChoices.class), true)
                 .put("wifi_connection_status", JSONUtils.enumValuesToJSONArray(ConnectionStatusChoices.class), true)

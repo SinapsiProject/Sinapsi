@@ -27,7 +27,7 @@ public class ActionToast extends Action {
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("message", FormalParamBuilder.Types.STRING, false)
                 .create();

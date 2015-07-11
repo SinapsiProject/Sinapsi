@@ -23,7 +23,7 @@ public class TriggerACPower extends Trigger {
     public static final String TRIGGER_AC_POWER = "TRIGGER_AC_POWER";
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("ac_power", FormalParamBuilder.BoolStyles.ON_OFF, true)
                 .create();

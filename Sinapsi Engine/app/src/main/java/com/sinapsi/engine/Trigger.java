@@ -1,6 +1,7 @@
 package com.sinapsi.engine;
 
 import com.sinapsi.engine.execution.ExecutionInterface;
+import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.DistributedComponent;
 import com.sinapsi.model.MacroInterface;
@@ -157,9 +158,9 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
             //we don't rethrow just to not make the system crash for one trigger.
         }
 
-        JSONObject pjo;
+        JSONObject actualParamJSONObject;
         try {
-            pjo = actualParameterObj.getJSONObject("parameters");
+            actualParamJSONObject = actualParameterObj.getJSONObject(ActualParamBuilder.PARAMETERS);
         } catch (JSONException e1) {
             /*
             there is no parameters array, and, because all trigger parameters
@@ -180,11 +181,11 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
         }
         if (valuesObj == null) return true;
 
-        Iterator<String> pars = pjo.keys();
+        Iterator<String> parIterator = actualParamJSONObject.keys();
 
-        while (pars.hasNext()) {
-            String key = pars.next();
-            Object parvalue = pjo.opt(key);
+        while (parIterator.hasNext()) {
+            String key = parIterator.next();
+            Object parvalue = actualParamJSONObject.opt(key);
             try {
                 if (parvalue == null) {
                     continue;
@@ -251,13 +252,13 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
         try {
             formparams = getFormalParametersJSON();
             if (formparams == null) return;
-            JSONArray params = formparams.getJSONArray("formal_parameters");
+            JSONArray params = formparams.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
             if (params == null) return;
             for (int i = 0; i < params.length(); i++) {
                 JSONObject o = (JSONObject) params.get(i);
-                String name = o.getString("name");
+                String name = o.getString(FormalParamBuilder.NAME);
                 try {
-                    switch (FormalParamBuilder.Types.valueOf(o.getString("type"))) {
+                    switch (FormalParamBuilder.Types.valueOf(o.getString(FormalParamBuilder.TYPE))) {
                         case CHOICE:
                         case STRING:
                         case STRING_ADVANCED:
@@ -297,7 +298,7 @@ public abstract class Trigger implements Parameterized, DistributedComponent {
      *
      * @return the JSONObject containing the formal parameters
      */
-    protected abstract JSONObject getFormalParametersJSON() throws JSONException;
+    public abstract JSONObject getFormalParametersJSON() throws JSONException;
 
     /**
      * Method the extending class has to implement in order to get

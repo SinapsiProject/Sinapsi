@@ -60,7 +60,7 @@ public class ActionStringInputDialog extends Action{
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("var_name", FormalParamBuilder.Types.STRING, false)
                 .put("var_scope", JSONUtils.enumValuesToJSONArray(VariableManager.Scopes.class), false)

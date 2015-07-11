@@ -36,7 +36,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
         final MacroInterface input = (MacroInterface) params[0];
 
-        final TextView tv = ((TextView) findViewById(R.id.test_text));
+        /*final TextView tv = ((TextView) findViewById(R.id.test_text));
         tv.setText(input.getName());
 
         Button returnButton = (Button) findViewById(R.id.return_macro_button);
@@ -46,7 +46,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
                 input.setName(tv.getText().toString());
                 returnActivity(input, changed);
             }
-        });
+        });*/
 
     }
 

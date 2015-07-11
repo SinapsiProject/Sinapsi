@@ -53,7 +53,7 @@ public class ActionContinueConfirmDialog extends Action {
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("dialog_message", FormalParamBuilder.Types.STRING, false)
                 .put("dialog_title", FormalParamBuilder.Types.STRING, false)

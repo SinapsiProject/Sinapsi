@@ -18,7 +18,7 @@ public class TriggerEngineStart extends Trigger{
     public static final String TRIGGER_ENGINE_START = "TRIGGER_ENGINE_START";
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return null; /*No parameter available for now, however, in the event is stored
                      the timestamp of the Engine startup.*/
     }

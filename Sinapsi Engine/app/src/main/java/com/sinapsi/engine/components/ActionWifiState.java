@@ -59,7 +59,7 @@ public class ActionWifiState extends Action{
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                 .put("wifi_switch", FormalParamBuilder.BoolStyles.ON_OFF,false)
                 .create();
