@@ -1,5 +1,6 @@
 package com.sinapsi.engine.builder;
 
+import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.engine.parameters.StringMatchingModeChoices;
 import com.sinapsi.utils.JSONUtils;
@@ -19,6 +20,7 @@ public class ParameterBuilder {
     private FormalParamBuilder.Types type;
     private boolean optional;
     private String[] choiceEntries;
+    private FormalParamBuilder.BoolStyles boolStyle;
 
     //actual part
     private String strValue;
@@ -76,6 +78,7 @@ public class ParameterBuilder {
                     break;
 
                 case BOOLEAN:{
+                    boolStyle = FormalParamBuilder.BoolStyles.valueOf(formalObj.getString(FormalParamBuilder.BOOL_STYLE));
                     Boolean val;
                     try{
                         val =actualValuesObj.getBoolean(name);
@@ -128,7 +131,25 @@ public class ParameterBuilder {
     }
 
     public static String buildActualString(List<ParameterBuilder> parameterBuilders){
-        return null; //TODO: impl
+        ActualParamBuilder apb = new ActualParamBuilder();
+        for(ParameterBuilder pb: parameterBuilders){
+            switch (pb.getType()){
+                case CHOICE:
+                case STRING:
+                    apb.put(pb.getName(), pb.getStrValue());
+                    break;
+                case INT:
+                    apb.put(pb.getName(), pb.getIntValue());
+                    break;
+                case BOOLEAN:
+                    apb.put(pb.getName(), pb.getBoolValue());
+                    break;
+                case STRING_ADVANCED:
+                    apb.put(pb.getName(), pb.getStrValue(), pb.getStringMatchingMode());
+                    break;
+            }
+        }
+        return apb.create().toString();
     }
 
     //FORMAL PART
@@ -151,6 +172,10 @@ public class ParameterBuilder {
 
     public String[] getChoiceEntries() {
         return choiceEntries;
+    }
+
+    public FormalParamBuilder.BoolStyles getBoolStyle() {
+        return boolStyle;
     }
 
 
@@ -186,4 +211,6 @@ public class ParameterBuilder {
     public void setStringMatchingMode(StringMatchingModeChoices stringMatchingMode) {
         this.stringMatchingMode = stringMatchingMode;
     }
+
+
 }

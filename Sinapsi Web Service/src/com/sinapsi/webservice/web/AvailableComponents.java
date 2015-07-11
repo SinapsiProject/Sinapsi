@@ -18,7 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
-import com.sinapsi.model.impl.ComunicationInfo;
+import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.utils.Triplet;
 import com.sinapsi.webservice.db.DeviceDBManager;
