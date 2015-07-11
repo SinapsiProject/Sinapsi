@@ -56,7 +56,7 @@ public class MacroBuilder{
         macro.setEnabled(enabled);
         macro.setTrigger(trigger.buildTrigger(engine.getComponentFactory(), macro));
         for(ActionBuilder ab: actions){
-            macro.addAction(ab.buildAction());
+            macro.addAction(ab.buildAction(engine.getComponentFactory()));
         }
         return macro;
     }
@@ -122,8 +122,5 @@ public class MacroBuilder{
         return actions;
     }
 
-    public void setActions(List<ActionBuilder> actions) {
-        this.actions = actions;
-    }
 
 }

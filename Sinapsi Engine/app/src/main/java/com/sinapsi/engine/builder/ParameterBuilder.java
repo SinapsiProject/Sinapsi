@@ -50,13 +50,7 @@ public class ParameterBuilder {
                     } catch (JSONException je){
                         val = null;
                     }
-                    if(val == null){
-                        if(!isOptional()){
-                            //TODO: inconsistent actual parameter error
-                        }
-                    }else{
-                        strValue = val;
-                    }
+                    strValue = val;
                 }
                     break;
 
@@ -67,13 +61,8 @@ public class ParameterBuilder {
                     }catch (JSONException je){
                         val = null;
                     }
-                    if(val == null){
-                        if(!isOptional()){
-                            //TODO: inconsistent actual parameter error
-                        }
-                    }else{
-                        intValue = val;
-                    }
+                    intValue = val;
+
                 }
                     break;
 
@@ -85,42 +74,25 @@ public class ParameterBuilder {
                     }catch (JSONException je){
                         val = null;
                     }
-                    if(val == null){
-                        if(!isOptional()){
-                            //TODO: inconsistent actual parameter error
-                        }
-                    }else{
-                        boolValue = val;
-                    }
+                    boolValue = val;
+
                 }
                     break;
 
                 case STRING_ADVANCED:{
                     JSONObject objval = actualValuesObj.optJSONObject(name);
-                    if(objval == null){
-                        if(!isOptional()){
-                            //TODO: inconsistent actual parameter error
-                        }
-                    }else{
-                        String val = null;
-                        String matchingMode = null;
-                        try{
-                            val = objval.getString("value");
-                            matchingMode = objval.getString("matchingMode");
-                        }catch (JSONException je){
-                            //does nothing
-                        }
-                        if(matchingMode == null){
-                            //TODO: inconsistent actual parameter error
-                        } else if(val == null ){
-                            if(!isOptional()){
-                                //TODO: inconsistent actual parameter error
-                            }
-                        } else {
-                            this.stringMatchingMode = StringMatchingModeChoices.valueOf(matchingMode);
-                            strValue = val;
-                        }
+                    String val = null;
+                    String matchingMode = null;
+                    try{
+                        val = objval.getString("value");
+                        matchingMode = objval.getString("matchingMode");
+                    }catch (JSONException je){
+                        val = null;
+                        matchingMode = null;
                     }
+
+                    this.stringMatchingMode = StringMatchingModeChoices.valueOf(matchingMode);
+                    strValue = val;
                 }
                     break;
             }

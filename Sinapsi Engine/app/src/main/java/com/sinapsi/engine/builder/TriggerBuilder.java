@@ -5,6 +5,7 @@ import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.TriggerDescriptor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +26,30 @@ public class TriggerBuilder {
 
     public TriggerBuilder(Trigger trigger) {
         debuildTrigger(trigger);
+    }
+
+    public TriggerBuilder(TriggerDescriptor trigger, int deviceId){
+        debuildTriggerDescriptor(trigger, deviceId);
+    }
+
+    private void debuildTriggerDescriptor(TriggerDescriptor trigger, int deviceId) {
+        this.name = trigger.getName();
+        this.deviceId = deviceId;
+
+        try {
+            JSONObject formalJson = new JSONObject(trigger.getFormalParameters());
+            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
+
+            JSONObject actualJson = new JSONObject(); //this is from a descriptor, so a new empty actual param obj is ok
+
+            for (int i = 0; i < formalPArray.length(); ++i) {
+                JSONObject fo = formalPArray.getJSONObject(i);
+                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
+                this.parameters.add(pm);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void debuildTrigger(Trigger trigger) {
@@ -71,9 +96,5 @@ public class TriggerBuilder {
 
     public List<ParameterBuilder> getParameters() {
         return parameters;
-    }
-
-    public void setParameters(List<ParameterBuilder> parameters) {
-        this.parameters = parameters;
     }
 }
