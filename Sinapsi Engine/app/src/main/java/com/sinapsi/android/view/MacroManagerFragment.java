@@ -475,6 +475,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         Lol.d(this, "newMacro called");
 
         MacroInterface m = service.newEmptyMacro();
+        m.setName("New macro");
 
         // here starts test macro creation TODO: delete
         m.setTrigger(service.getComponentFactory().newTrigger(

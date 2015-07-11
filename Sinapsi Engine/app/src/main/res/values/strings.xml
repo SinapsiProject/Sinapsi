@@ -25,5 +25,16 @@
     <string name="username_does_not_exist">This username does not exist or is not active</string>
     <string name="log_out">Log out</string>
     <string name="are_you_sure_log_out">Are you sure you want to log out?</string>
+    <string name="macro_uppercase_text">MACRO</string>
+    <string name="macro_editor_macro_name">Name:</string>
+    <string name="macro_name_hint"><![CDATA[< Macro name >]]></string>
+    <string name="trigger_uppercase_text">TRIGGER</string>
+    <string name="actions_uppercase_text">ACTIONS</string>
+    <string name="select_trigger_text">Select trigger</string>
+    <string name="trigger_empty_raw_text">TRIGGER_EMPTY</string>
+    <string name="action_editor_example_text">ACTION X</string>
+    <string name="drag_to_sort_action">Long press and drag to sort</string>
+    <string name="delete_action_text">Delete action</string>
+    <string name="parameters_label_text">PARAMETERS:</string>
 
 </resources>

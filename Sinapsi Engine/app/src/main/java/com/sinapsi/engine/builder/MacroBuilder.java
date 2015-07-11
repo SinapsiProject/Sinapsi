@@ -15,7 +15,6 @@ public class MacroBuilder{
 
 
     private MacroInterface macro;
-    private MacroEngine engine;
 
     private String name;
     private String iconName;
@@ -27,9 +26,8 @@ public class MacroBuilder{
     private List<ActionBuilder> actions = new ArrayList<>();
 
 
-    public MacroBuilder(MacroInterface inputMacro, MacroEngine engine) {
+    public MacroBuilder(MacroInterface inputMacro) {
         this.macro = inputMacro;
-        this.engine = engine;
 
         debuildMacro();
     }
@@ -47,7 +45,7 @@ public class MacroBuilder{
         }
     }
 
-    public MacroInterface build(){
+    public MacroInterface build(MacroEngine engine){
         macro.setName(name);
         macro.setIconName(iconName);
         macro.setMacroColor(color);
