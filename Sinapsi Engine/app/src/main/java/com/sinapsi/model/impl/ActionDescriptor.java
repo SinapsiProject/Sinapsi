@@ -8,17 +8,19 @@ import java.util.HashMap;
  * Abstraction of Action, this class is not the real representation of Action object, but gives support to database manager
  * 
  */
-public class ActionDescriptor extends ComunicationInfo implements MacroComponent {
+public class ActionDescriptor extends CommunicationInfo implements MacroComponent {
 	private int minVersion;
 	private String name;
+	private String formalParams;
 	
 	/**
 	 * Default ctor
 	 */
-	public ActionDescriptor(int minVer, String n) {
+	public ActionDescriptor(int minVersion, String name, String formalParams) {
 		super();
-		minVersion = minVer;
-		name = n;
+		this.minVersion = minVersion;
+		this.name = name;
+        this.formalParams = formalParams;
 	}
 
 	@Override
@@ -39,5 +41,20 @@ public class ActionDescriptor extends ComunicationInfo implements MacroComponent
     @Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public String getFormalParameters() {
+		return formalParams;
+	}
+
+	@Override
+	public String getActualParameters() {
+		return null;
+	}
+
+	@Override
+	public void setActualParameters(String params) {
+		//does nothing
 	}
 }

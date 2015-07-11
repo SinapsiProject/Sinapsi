@@ -1,12 +1,12 @@
 package com.sinapsi.model.impl;
 
-import com.sinapsi.model.ComunicationInfoInterface;
+import com.sinapsi.model.CommunicationInfoInterface;
 
 /**
  * Implementation of the comunication interface
  *
  */
-public class ComunicationInfo implements ComunicationInfoInterface {
+public class CommunicationInfo implements CommunicationInfoInterface {
 
     private String additionalInfo;
     private String description;
@@ -15,7 +15,7 @@ public class ComunicationInfo implements ComunicationInfoInterface {
     /**
      * Default ctor
      */
-    public ComunicationInfo() {
+    public CommunicationInfo() {
         errorOccured = false;
         description = null;
         additionalInfo = null;
@@ -27,7 +27,7 @@ public class ComunicationInfo implements ComunicationInfoInterface {
      * @param desc error description
      * @param err true if error occured, false otherwise
      */
-    public ComunicationInfo(String desc, boolean err) {
+    public CommunicationInfo(String desc, boolean err) {
         description = desc;
         errorOccured = err;
     }

@@ -1,11 +1,11 @@
 package com.sinapsi.utils;
 
-import com.sinapsi.model.impl.ComunicationInfo;
+import com.sinapsi.model.impl.CommunicationInfo;
 
 /**
  * Class used to serialize a pair of object across Sinapsi's network
  */
-public class Pair<T1, T2> extends ComunicationInfo{
+public class Pair<T1, T2> extends CommunicationInfo {
 
     private T1 first = null;
     private T2 second = null;

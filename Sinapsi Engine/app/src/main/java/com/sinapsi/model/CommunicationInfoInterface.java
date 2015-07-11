@@ -5,7 +5,7 @@ package com.sinapsi.model;
  * Gives a way to verify if occured an comunication error between server and clients
  *
  */
-public interface ComunicationInfoInterface {
+public interface CommunicationInfoInterface {
 
     public static final String ERROR_INVALID_CREDENTIALS = "ERROR_INVALID_CREDENTIALS";
 

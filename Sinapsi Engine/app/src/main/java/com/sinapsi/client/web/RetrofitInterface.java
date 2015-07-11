@@ -1,22 +1,20 @@
 package com.sinapsi.client.web;
 
+import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.impl.ComunicationInfo;
+import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.SyncOperation;
+import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.utils.Triplet;
 
-import java.security.PublicKey;
-import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.List;
-
-import javax.crypto.SecretKey;
 
 import retrofit.Callback;
 import retrofit.http.Body;
@@ -143,7 +141,7 @@ public interface RetrofitInterface {
     public void setAvailableActions(
             @Query("device") int idDevice,
             @Body List<MacroComponent> actions,
-            Callback<ComunicationInfo> result);
+            Callback<CommunicationInfo> result);
 
 
     /**
@@ -165,8 +163,8 @@ public interface RetrofitInterface {
             @Query("email") String email,
             @Query("name") String deviceName,
             @Query("model") String deviceModel,
-            @Body Pair<List<MacroComponent>,List<MacroComponent>> triggersAndActions,
-            Callback<ComunicationInfo> result);
+            @Body Pair<List<TriggerDescriptor>,List<ActionDescriptor>> triggersAndActions,
+            Callback<CommunicationInfo> result);
 
 
     @GET(AVAILABLE_COMPONENTS)
@@ -174,7 +172,7 @@ public interface RetrofitInterface {
             @Query("email") String email,
             @Query("name") String deviceName,
             @Query("model") String deviceModel,
-            Callback<List<Triplet<DeviceInterface, List<MacroComponent>,List<MacroComponent>>>> result);
+            Callback<List<Triplet<DeviceInterface, List<TriggerDescriptor>,List<ActionDescriptor>>>> result);
 
 
 
@@ -189,7 +187,7 @@ public interface RetrofitInterface {
     public void setAvailableTriggers(
             @Query("device") int idDevice,
             @Body List<MacroComponent> triggers,
-            Callback<ComunicationInfo> result);
+            Callback<CommunicationInfo> result);
 
 
     /**
@@ -222,7 +220,7 @@ public interface RetrofitInterface {
             @Query("name") String deviceName,
             @Query("model") String deviceModel,
             @Body MacroInterface macro,
-            Callback<ComunicationInfo> result);
+            Callback<CommunicationInfo> result);
 
     /**
      * Gets all the macros from the server
@@ -248,7 +246,7 @@ public interface RetrofitInterface {
             @Query("from_device") int from_device_id,
             @Query("to_device") int to_device_id,
             @Body RemoteExecutionDescriptor red,
-            Callback<ComunicationInfo> result);
+            Callback<CommunicationInfo> result);
 
 
     /**

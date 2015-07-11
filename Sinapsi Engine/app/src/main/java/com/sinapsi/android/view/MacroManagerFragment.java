@@ -38,6 +38,7 @@ import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.android.R;
 import com.sinapsi.engine.components.ActionLog;
+import com.sinapsi.engine.components.ActionSimpleNotification;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.model.MacroInterface;
@@ -490,17 +491,13 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                         .create().toString(),
                 service.getDevice().getId()));
         m.addAction(service.getComponentFactory().newAction(
-                ActionLog.ACTION_LOG,
+                ActionSimpleNotification.ACTION_SIMPLE_NOTIFICATION,
                 new ActualParamBuilder()
-                        .put("log_message", "Screen is on on android 2")
+                        .put("notification_title", "Test Distributed Macro")
+                        .put("notification_message", "Gnarf")
                         .create().toString(),
-                51)); //the web service id for a@bf seems to be 51
-        m.addAction(service.getComponentFactory().newAction(
-                ActionToast.ACTION_TOAST,
-                new ActualParamBuilder()
-                        .put("message", "YAY!!!!! 2")
-                        .create().toString(),
-                service.getDevice().getId()));
+                57)); //the web service id for a@bf seems to be 51
+
         // here ends test macro creation //TODO: delete this macro
 
         startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {

@@ -17,13 +17,16 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
-import com.sinapsi.model.impl.ComunicationInfo;
+import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.Macro;
 import com.sinapsi.model.impl.SyncOperation;
+import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
+import com.sinapsi.utils.Triplet;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.webshared.gson.MacroTypeAdapter;
 import com.sinapsi.webshared.wsproto.WebSocketEventHandler;
@@ -430,46 +433,33 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 convertCallback(result));
     }
 
+
+
     @Override
-    public void getAvailableActions(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
+    public void setAvailableComponents(DeviceInterface device, List<TriggerDescriptor> triggers, List<ActionDescriptor> actions, WebServiceCallback<CommunicationInfo> result){
         checkKeys();
-        if (!onlineStatusProvider.isOnline()) return;
-        cryptedRetrofit.getAvailableActions(
-                device.getId(),
+        if(!onlineStatusProvider.isOnline()) return;
+        cryptedRetrofit.setAvailableComponents(
+                loggedUser.getEmail(),
+                device.getName(),
+                device.getModel(),
+                new Pair<>(triggers, actions),
                 convertCallback(result));
     }
 
     @Override
-    public void setAvailableActions(DeviceInterface device, List<MacroComponent> actions, WebServiceCallback<ComunicationInfo> result) {
+    public void getAvailableComponents(DeviceInterface device, WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>> result){
         checkKeys();
-        if (!onlineStatusProvider.isOnline()) return;
-        cryptedRetrofit.setAvailableActions(
-                device.getId(),
-                actions,
+        if(!onlineStatusProvider.isOnline()) return;
+        cryptedRetrofit.getAvailableComponents(
+                loggedUser.getEmail(),
+                device.getName(),
+                device.getModel(),
                 convertCallback(result));
     }
 
     @Override
-    public void getAvailableTriggers(DeviceInterface device, WebServiceCallback<List<MacroComponent>> result) {
-        checkKeys();
-        if (!onlineStatusProvider.isOnline()) return;
-        cryptedRetrofit.getAvailableTriggers(
-                device.getId(),
-                convertCallback(result));
-    }
-
-    @Override
-    public void setAvailableTriggers(DeviceInterface device, List<MacroComponent> triggers, WebServiceCallback<ComunicationInfo> result) {
-        checkKeys();
-        if (!onlineStatusProvider.isOnline()) return;
-        cryptedRetrofit.setAvailableTriggers(
-                device.getId(),
-                triggers,
-                convertCallback(result));
-    }
-
-    @Override
-    public void continueMacroOnDevice(DeviceInterface fromDevice, DeviceInterface toDevice, RemoteExecutionDescriptor red, WebServiceCallback<ComunicationInfo> result) {
+    public void continueMacroOnDevice(DeviceInterface fromDevice, DeviceInterface toDevice, RemoteExecutionDescriptor red, WebServiceCallback<CommunicationInfo> result) {
         checkKeys();
         if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.continueMacroOnDevice(

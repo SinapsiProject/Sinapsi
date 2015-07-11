@@ -14,7 +14,7 @@ import java.util.List;
  * A macro is a list of actions activated by a trigger.
  *
  */
-public class Macro extends ComunicationInfo implements MacroInterface {
+public class Macro extends CommunicationInfo implements MacroInterface {
 
     public static final String ABORT_ON_UNAVAILABLE_AT_START = "ABORT_ON_UNAVAILABLE_AT_START";
     public static final String ABORT_ON_UNAVAILABLE_AT_SWITCH = "ABORT_ON_UNAVAILABLE_AT_SWITCH";

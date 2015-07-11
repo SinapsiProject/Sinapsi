@@ -5,11 +5,15 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
-import com.sinapsi.model.impl.ComunicationInfo;
+import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.SyncOperation;
+import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
+import com.sinapsi.utils.Triplet;
+
 import java.util.List;
 
 /**
@@ -101,46 +105,31 @@ public interface SinapsiWebServiceFacade {
      */
     public void getAllMacros(DeviceInterface device, WebServiceCallback<Pair<Boolean, List<MacroInterface>>> result);
 
-    /**
-     * Gets the availability of actions on the specified device
-     *
-     * @param device the device
-     * @param result a List of action instances
-     */
-    public void getAvailableActions(DeviceInterface device,
-                                    WebServiceCallback<List<MacroComponent>> result);
 
     /**
-     * Sets the availability of actions on the specified device
+     * Sets the availability of triggers and actions of the current device
      *
-     * @param device  the device
-     * @param actions a List of action instances
-     * @param result  a string containing infos on the operation result
+     * @param device   the caller device
+     * @param triggers the available triggers
+     * @param actions  the available actions
+     * @param result   the result callback
      */
-    public void setAvailableActions(DeviceInterface device,
-                                    List<MacroComponent> actions,
-                                    WebServiceCallback<ComunicationInfo> result);
-
-    /**
-     * Gets the availability of triggers on the specified device
-     *
-     * @param device the device
-     * @param result a List of trigger instances
-     */
-    public void getAvailableTriggers(DeviceInterface device,
-                                     WebServiceCallback<List<MacroComponent>> result);
+    void setAvailableComponents(DeviceInterface device,
+                                List<TriggerDescriptor> triggers,
+                                List<ActionDescriptor> actions,
+                                WebServiceCallback<CommunicationInfo> result);
 
 
     /**
-     * Sets the availability of triggers on the specified device
+     * Downloads a list of triplets containing a device with related lists of descriptors
+     * of available triggers and actions on that device. Useful when, in the editor, there
+     * is the need to fetch the available components for every device in the account in order
+     * tho show them to the user.
      *
-     * @param device   the device
-     * @param triggers a List of trigger instances
-     * @param result   a string containing infos on the operation result
+     * @param device the caller device
+     * @param result the result callback
      */
-    public void setAvailableTriggers(DeviceInterface device,
-                                     List<MacroComponent> triggers,
-                                     WebServiceCallback<ComunicationInfo> result);
+    void getAvailableComponents(DeviceInterface device, WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>> result);
 
     /**
      * Asks the server to continued the specified macro on a remote device
@@ -154,7 +143,7 @@ public interface SinapsiWebServiceFacade {
     public void continueMacroOnDevice(DeviceInterface fromDevice,
                                       DeviceInterface toDevice,
                                       RemoteExecutionDescriptor red,
-                                      WebServiceCallback<ComunicationInfo> result);
+                                      WebServiceCallback<CommunicationInfo> result);
 
 
     /**
@@ -180,5 +169,5 @@ public interface SinapsiWebServiceFacade {
      * @param email
      * @param callback
      */
-    public void encryptionTest(String email, String deviceName, String deviceModel,WebServiceCallback<Object> callback);
+    public void encryptionTest(String email, String deviceName, String deviceModel, WebServiceCallback<Object> callback);
 }

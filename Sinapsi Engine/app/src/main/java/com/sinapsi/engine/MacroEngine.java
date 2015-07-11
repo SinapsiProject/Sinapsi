@@ -6,10 +6,14 @@ import com.sinapsi.engine.log.SinapsiLog;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.TriggerDescriptor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Macro engine class. Used to initialize the whole macro execution system
@@ -149,6 +153,18 @@ public class MacroEngine {
     public MacroInterface newEmptyMacro(int id){
         MacroInterface result = fm.newMacro("", id);
         result.setTrigger(getComponentFactory().newEmptyTrigger(result));
+        return result;
+    }
+
+    public List<TriggerDescriptor> getAvailableTriggerDescriptors(){
+        List<TriggerDescriptor> result = new ArrayList<>();
+        result.addAll(getComponentFactory().getAvailableTriggerDescriptors(activator.executionInterface.getSystemFacade()));
+        return result;
+    }
+
+    public List<ActionDescriptor> getAvailableActionDescriptors(){
+        List<ActionDescriptor> result = new ArrayList<>();
+        result.addAll(getComponentFactory().getAvailableActionDescriptors(activator.executionInterface.getSystemFacade()));
         return result;
     }
 

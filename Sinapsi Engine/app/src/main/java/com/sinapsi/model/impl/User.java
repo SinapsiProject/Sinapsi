@@ -9,7 +9,7 @@ import java.util.List;
  * Implementation of the user interface
  *
  */
-public class User extends ComunicationInfo implements UserInterface {
+public class User extends CommunicationInfo implements UserInterface {
     private List<DeviceInterface> devices;
     private int id;
     private String role;

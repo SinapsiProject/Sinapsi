@@ -35,6 +35,7 @@ import com.sinapsi.client.AppConsts;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.android.R;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
@@ -233,19 +234,44 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                         service.initAndStartEngine();
                         service.getWSClient().establishConnection();
 
-                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(i);
+                        service.getWeb().setAvailableComponents(
+                                device,
+                                service.getEngine().getAvailableTriggerDescriptors(),
+                                service.getEngine().getAvailableActionDescriptors(),
+                                new SinapsiWebServiceFacade.WebServiceCallback<CommunicationInfo>() {
+                                    @Override
+                                    public void success(CommunicationInfo communicationInfo, Object response) {
+                                        startMainActivity();
+                                        showProgress(false);
+                                    }
 
-                        showProgress(false);
+                                    @Override
+                                    public void failure(Throwable error) {
+                                        if(!(error instanceof RetrofitError)){
+                                            RuntimeException re = (RuntimeException) error;
+                                            Lol.d(LoginActivity.class, "setAvailableComponents Error! Server reason: " + re.getMessage());
+                                            DialogUtils.showOkDialog(
+                                                    LoginActivity.this,
+                                                    "Device components availability update error",
+                                                    re.getMessage(),
+                                                    false);
+
+                                            showProgress(false);
+                                            return;
+                                        }
+                                        DialogUtils.handleRetrofitError(error, LoginActivity.this, false);
+                                        showProgress(false);
+                                    }
+                                });
+
+
                     }
 
                     @Override
                     public void failure(Throwable error) {
                         if (!(error instanceof RetrofitError)) {
                             RuntimeException re = (RuntimeException) error;
-                            Lol.d(LoginActivity.class, "RegisterDevice Error! Server reason:" + re.getMessage());
+                            Lol.d(LoginActivity.class, "RegisterDevice Error! Server reason: " + re.getMessage());
                             DialogUtils.showOkDialog(
                                     LoginActivity.this,
                                     "Device login error",
@@ -359,5 +385,12 @@ public class LoginActivity extends SinapsiActionBarActivity implements LoaderCal
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
+    }
+
+    private void startMainActivity(){
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 }

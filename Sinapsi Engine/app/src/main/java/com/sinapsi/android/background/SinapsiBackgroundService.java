@@ -36,7 +36,6 @@ import com.sinapsi.client.SyncManager;
 import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
-import com.sinapsi.utils.Pair;
 import com.sinapsi.utils.Triplet;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.client.web.OnlineStatusProvider;
@@ -80,7 +79,7 @@ import com.sinapsi.engine.system.WifiAdapter;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
-import com.sinapsi.model.impl.ComunicationInfo;
+import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
@@ -176,10 +175,10 @@ public class SinapsiBackgroundService extends Service
                                 ei.getMacro().getId(),
                                 ei.getLocalVars(),
                                 ei.getExecutionStackIndexes()),
-                        new SinapsiWebServiceFacade.WebServiceCallback<ComunicationInfo>() {
+                        new SinapsiWebServiceFacade.WebServiceCallback<CommunicationInfo>() {
 
                             @Override
-                            public void success(ComunicationInfo s, Object response) {
+                            public void success(CommunicationInfo s, Object response) {
                                 sinapsiLog.log("EXECUTION_CONTINUE", s.getAdditionalInfo());
                             }
 

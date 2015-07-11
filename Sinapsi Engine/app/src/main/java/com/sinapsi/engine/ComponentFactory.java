@@ -6,7 +6,9 @@ import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.model.impl.FactoryModel;
+import com.sinapsi.model.impl.TriggerDescriptor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -100,13 +102,14 @@ public class ComponentFactory {
     /**
      * Get a list of all trigger names available on a specific system facade.
      * @param di the system facade
-     * @return a List of String names
+     * @return a List of TriggerDescriptor object containing all the metadata of
+     *          available triggers.
      */
-    public List<String> getAvailableTriggerNamesOnDevice(SystemFacade di){
-        List<String> result = new ArrayList<>();
-        for(String x: loader.getTriggerKeys()){
-            if(getAvailabilityOnDevice(x, MacroComponent.ComponentTypes.TRIGGER,di))
-                result.add(x);
+    public List<TriggerDescriptor> getAvailableTriggerDescriptors(SystemFacade di){
+        List<TriggerDescriptor> result = new ArrayList<>();
+        for(String name: loader.getTriggerKeys()){
+            if(getAvailabilityOnDevice(name, MacroComponent.ComponentTypes.TRIGGER,di))
+                result.add(newTriggerDescriptor(name));
         }
         return result;
     }
@@ -116,13 +119,23 @@ public class ComponentFactory {
      * @param di the system facade
      * @return a List of String names
      */
-    public List<String> getAvailableActionNamesOnDevice(SystemFacade di){
-        List<String> result = new ArrayList<>();
-        for(String x: loader.getActionKeys()){
-            if(getAvailabilityOnDevice(x, MacroComponent.ComponentTypes.ACTION,di))
-                result.add(x);
+    public List<ActionDescriptor> getAvailableActionDescriptors(SystemFacade di){
+        List<ActionDescriptor> result = new ArrayList<>();
+        for(String name: loader.getActionKeys()){
+            if(getAvailabilityOnDevice(name, MacroComponent.ComponentTypes.ACTION,di))
+                result.add(newActionDescriptor(name));
         }
         return result;
+    }
+
+    private ActionDescriptor newActionDescriptor(String name){
+        Action a = (Action) loader.newComponentInstance(MacroComponent.ComponentTypes.ACTION, name);
+        return fm.newActionDescriptor(a.getMinVersion(), a.getName(), a.getFormalParameters());
+    }
+
+    private TriggerDescriptor newTriggerDescriptor(String name){
+        Trigger t = (Trigger) loader.newComponentInstance(MacroComponent.ComponentTypes.TRIGGER, name);
+        return fm.newTriggerDescriptor(t.getMinVersion(), t.getName(), t.getFormalParameters());
     }
 
     public Trigger newEmptyTrigger(MacroInterface macro){

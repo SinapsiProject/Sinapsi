@@ -8,7 +8,7 @@ import java.util.HashMap;
  * should implement this interface.
  *
  */
-public interface MacroComponent {
+public interface MacroComponent extends Parameterized{
 
     /**
      * Getter of the metadata name of the class implementing

@@ -1,5 +1,8 @@
 package com.sinapsi.model;
 
+import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.TriggerDescriptor;
+
 import java.util.List;
 
 /**
@@ -57,7 +60,7 @@ public interface FactoryModelInterface {
      * @param name the name of the abstract action
      * @return
      */
-    public MacroComponent newActionAbstraction(int minVersion, String name);
+    public ActionDescriptor newActionDescriptor(int minVersion, String name, String formalParameters);
     
     /**
      * Should create a new trigger abstract representation
@@ -65,6 +68,6 @@ public interface FactoryModelInterface {
      * @param name the name of the abstract trigger
      * @return
      */
-    public MacroComponent newTriggerAbstraction(int minVersion, String name);
+    public TriggerDescriptor newTriggerDescriptor(int minVersion, String name, String formalParameters);
     
 }
