@@ -773,7 +773,7 @@ public class SinapsiBackgroundService extends Service
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         builder.setContentTitle(getString(R.string.app_name))
                 .setContentText("Sinapsi Engine service is running")
-                .setSmallIcon(R.drawable.ic_notif_icon)
+                .setSmallIcon(R.drawable.ic_stat_1436506281_cog)
                 .setContentIntent(maini);
         Notification forenotif = builder.build();
         startForeground(1, forenotif);

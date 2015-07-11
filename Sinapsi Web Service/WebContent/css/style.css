@@ -201,16 +201,16 @@ p {
     position: absolute;
     z-index: -1;
     display: grid;
-    opacity: 0.6;
-    -webkit-animation : rotation 12s infinite linear;
-    -moz-transform: rotation 12s infinite linear;
+    opacity: 0.4;
+    -webkit-animation : rotation 19s infinite linear;
+    -moz-transform: rotation 19s infinite linear;
 }
 
 #cog_error {
     position: absolute;
     z-index: -1;
     display: grid;
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 @-webkit-keyframes rotation {
