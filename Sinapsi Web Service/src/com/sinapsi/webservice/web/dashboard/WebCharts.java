@@ -1,4 +1,4 @@
-package com.sinapsi.webservice.web;
+package com.sinapsi.webservice.web.dashboard;
 
 import java.io.BufferedInputStream;
 import java.io.File;

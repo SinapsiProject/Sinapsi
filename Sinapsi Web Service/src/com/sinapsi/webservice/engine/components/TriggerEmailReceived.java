@@ -30,7 +30,7 @@ public class TriggerEmailReceived extends Trigger {
     }
 
     @Override
-    protected JSONObject getFormalParametersJSON() throws JSONException {
+    public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()
                         .putAdvancedString("message", true)
                         .putAdvancedString("subject", true)

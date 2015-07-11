@@ -7,13 +7,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServlet;
+
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.webservice.engine.WebServiceEngine;
 
 /**
@@ -57,11 +61,11 @@ public class EngineDBManager {
      * @return list of actions
      * @throws SQLException
      */
-    public List<MacroComponent> getAvailableAction(int idDevice) throws SQLException {
+    public List<ActionDescriptor> getAvailableAction(int idDevice) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        List<MacroComponent> actions = new ArrayList<MacroComponent>();
+        List<ActionDescriptor> actions = new ArrayList<ActionDescriptor>();
 
         try {
             c = db.connect();
@@ -73,7 +77,7 @@ public class EngineDBManager {
             while (r.next()) {
                 int minVersion = r.getInt("minversion");
                 String name = r.getString("name");
-                MacroComponent action = db.factory.newActionAbstraction(minVersion, name);
+                ActionDescriptor action = db.factory.newActionDescriptor(minVersion, name, r.getString("parameters"));
                 actions.add(action);
             }
 
@@ -92,11 +96,11 @@ public class EngineDBManager {
      * @return list of trigger
      * @throws SQLException
      */
-    public List<MacroComponent> getAvailableTrigger(int idDevice) throws SQLException {
+    public List<TriggerDescriptor> getAvailableTrigger(int idDevice) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
-        List<MacroComponent> triggers = new ArrayList<MacroComponent>();
+        List<TriggerDescriptor> triggers = new ArrayList<TriggerDescriptor>();
 
         try {
             c = db.connect();
@@ -108,7 +112,7 @@ public class EngineDBManager {
             while (r.next()) {
                 int minVersion = r.getInt("minversion");
                 String name = r.getString("name");
-                MacroComponent trigger = db.factory.newTriggerAbstraction(minVersion, name);
+                TriggerDescriptor trigger = db.factory.newTriggerDescriptor(minVersion, name, r.getString("parameters"));
                 triggers.add(trigger);
             }
 
@@ -212,7 +216,7 @@ public class EngineDBManager {
      * @return id of the action
      * @throws SQLException
      */
-    public int getIdAction(String name, int versionAction) throws SQLException {
+    public int getIdAction(String name, int versionAction, String parameters) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
@@ -228,9 +232,10 @@ public class EngineDBManager {
                 id = r.getInt("id");
 
             else {
-                s = c.prepareStatement("INSERT INTO action(name, minversion) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                s = c.prepareStatement("INSERT INTO action(name, minversion, parameters) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
                 s.setString(1, name);
                 s.setInt(2, versionAction);
+                s.setString(3, parameters);
                 s.execute();
                 r = s.getGeneratedKeys();
                 r.next();
@@ -253,7 +258,7 @@ public class EngineDBManager {
      * @return id of the trigger
      * @throws SQLException
      */
-    public int getTrigger(String name, int minVersion) throws SQLException {
+    public int getTrigger(String name, int minVersion, String parameters) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
@@ -269,9 +274,10 @@ public class EngineDBManager {
                 id = r.getInt("id");
 
             else {
-                s = c.prepareStatement("INSERT INTO trigger(name, minversion) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                s = c.prepareStatement("INSERT INTO trigger(name, minversion, parameters) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
                 s.setString(1, name);
                 s.setInt(2, minVersion);
+                s.setString(3, parameters);
                 s.execute();
                 r = s.getGeneratedKeys();
                 r.next();
@@ -325,7 +331,7 @@ public class EngineDBManager {
      * @param triggers list of triggers
      * @throws SQLException
      */
-    public void addAvailableTriggers(int idDevice, List<MacroComponent> triggers) throws SQLException {
+    public void addAvailableTriggers(int idDevice, List<TriggerDescriptor> triggers) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
@@ -350,10 +356,10 @@ public class EngineDBManager {
             for (int i = 0; i < triggers.size(); ++i) {
                 s = null;
                 r = null;
-                MacroComponent trigger = triggers.get(i);
+                TriggerDescriptor trigger = triggers.get(i);
                 String nameDevice = trigger.getName();
                 int versionTrigger = trigger.getMinVersion();
-                int idTrigger = getTrigger(nameDevice, versionTrigger);
+                int idTrigger = getTrigger(nameDevice, versionTrigger, trigger.getFormalParameters());
 
                 String query = "INSERT INTO availabletrigger(idtrigger, iddevice) VALUES(?, ?)";
                 s = c.prepareStatement(query);
@@ -378,7 +384,7 @@ public class EngineDBManager {
      * @param actions  list of actions
      * @throws SQLException
      */
-    public void addAvailableActions(int idDevice, List<MacroComponent> actions) throws SQLException {
+    public void addAvailableActions(int idDevice, List<ActionDescriptor> actions) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
@@ -403,10 +409,10 @@ public class EngineDBManager {
             for (int i = 0; i < actions.size(); ++i) {
                 s = null;
                 r = null;
-                MacroComponent action = actions.get(i);
+                ActionDescriptor action = actions.get(i);
                 String nameDevice = action.getName();
                 int versionTrigger = action.getMinVersion();
-                int idAction = getIdAction(nameDevice, versionTrigger);
+                int idAction = getIdAction(nameDevice, versionTrigger, action.getFormalParameters());
 
                 String query = "INSERT INTO availableaction(idaction, iddevice) VALUES(?, ?)";
                 s = c.prepareStatement(query);
@@ -633,7 +639,7 @@ public class EngineDBManager {
             c = db.connect();
             c.setAutoCommit(false);
             List<Action> actions = macro.getActions();
-            int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion());   
+            int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion(), macro.getTrigger().getFormalParameters());   
             int idDevice =  macro.getTrigger().getExecutionDevice().getId();
             int counter = 0;
             
@@ -664,7 +670,7 @@ public class EngineDBManager {
                 r = null;
                 s = c.prepareStatement(query2, Statement.RETURN_GENERATED_KEYS);
                 s.setInt(1, idMacro);
-                s.setInt(2, getIdAction(action.getName(), action.getMinVersion()));
+                s.setInt(2, getIdAction(action.getName(), action.getMinVersion(), action.getFormalParameters()));
                 s.setString(3, action.getActualParameters());
                 s.setInt(4, action.getExecutionDevice().getId());
                 s.setInt(5, counter++);
@@ -710,7 +716,7 @@ public class EngineDBManager {
             
             c.setAutoCommit(false);
             List<Action> actions = macro.getActions();
-            int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion()); 
+            int idTrigger = getTrigger(macro.getTrigger().getName(), macro.getTrigger().getMinVersion(), macro.getTrigger().getFormalParameters()); 
             int idDevice = macro.getTrigger().getExecutionDevice().getId();
             
             String query = "UPDATE macro " +
@@ -740,7 +746,7 @@ public class EngineDBManager {
                 r = null;
                 s = c.prepareStatement(query2, Statement.RETURN_GENERATED_KEYS);
                 s.setInt(1, macro.getId());
-                s.setInt(2, getIdAction(action.getName(), action.getMinVersion()));
+                s.setInt(2, getIdAction(action.getName(), action.getMinVersion(), action.getFormalParameters()));
                 s.setString(3, action.getActualParameters());
                 s.setInt(4, action.getExecutionDevice().getId());
                 s.setInt(5, counter++);

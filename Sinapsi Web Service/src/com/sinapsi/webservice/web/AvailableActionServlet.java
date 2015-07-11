@@ -3,19 +3,17 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
@@ -55,7 +53,7 @@ public class AvailableActionServlet extends HttpServlet {
                                         keysManager.getServerUncryptedSessionKey(email, device.getName(), device.getModel()));
             
             // get the available actions from the db
-            List<MacroComponent> actions = engineManager.getAvailableAction(idDevice);
+            List<ActionDescriptor> actions = engineManager.getAvailableAction(idDevice);
             
             // send the encrypted data
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
@@ -107,7 +105,7 @@ public class AvailableActionServlet extends HttpServlet {
             	jsonBody = cryptedJsonBody;
             
             // extract the list of actions from the jsoned triggers
-            List<MacroComponent> actions = gson.fromJson(jsonBody, new TypeToken<List<MacroComponent>>() {}.getType());
+            List<ActionDescriptor> actions = gson.fromJson(jsonBody, new TypeToken<List<ActionDescriptor>>() {}.getType());
             
             // add the list of actions in the db
             engineManager.addAvailableActions(idDevice, actions);

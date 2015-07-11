@@ -3,19 +3,17 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
@@ -55,7 +53,7 @@ public class AvailableTriggerServlet extends HttpServlet {
                                         keysManager.getServerUncryptedSessionKey(email, device.getName(), device.getModel()));
             
             // get the available triggers from the db
-            List<MacroComponent> triggers = engineManager.getAvailableTrigger(idDevice);
+            List<TriggerDescriptor> triggers = engineManager.getAvailableTrigger(idDevice);
             
             // send the encrypted data
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
@@ -109,7 +107,7 @@ public class AvailableTriggerServlet extends HttpServlet {
             	jsonBody = cryptedJsonBody;
             
             // extract the list of triggers from the jsoned triggers
-            List<MacroComponent> triggers = gson.fromJson(jsonBody,new TypeToken<List<MacroComponent>>() {}.getType());
+            List<TriggerDescriptor> triggers = gson.fromJson(jsonBody,new TypeToken<List<TriggerDescriptor>>() {}.getType());
             // add the list of trigger in the db
             engineManager.addAvailableTriggers(idDevice, triggers);
             success = true;

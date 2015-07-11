@@ -18,7 +18,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.model.impl.CommunicationInfo;
+import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.utils.Triplet;
 import com.sinapsi.webservice.db.DeviceDBManager;
@@ -55,13 +57,13 @@ public class AvailableComponents extends HttpServlet {
                 encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model),
                                         keysManager.getServerUncryptedSessionKey(email, name, model));
             
-            List<Triplet<DeviceInterface, List<MacroComponent>, List<MacroComponent>>> data = new ArrayList<>();
+            List<Triplet<DeviceInterface, List<TriggerDescriptor>,List<ActionDescriptor>>> data = new ArrayList<>();
             
             try {
                 List<DeviceInterface> devicesUser = deviceManager.getUserDevices(email);
                 
                 for(DeviceInterface device : devicesUser) {
-                    data.add(new Triplet<DeviceInterface, List<MacroComponent>, List<MacroComponent>>(
+                    data.add(new Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>(
                             device,
                             engineManager.getAvailableTrigger(device.getId()), 
                             engineManager.getAvailableAction(device.getId())));   
@@ -129,11 +131,11 @@ public class AvailableComponents extends HttpServlet {
             else
                  jsonBody = cryptedJsonbody;
             
-            Pair<List<MacroComponent>, List<MacroComponent>> newData = gson.fromJson(jsonBody, 
+            Pair<List<TriggerDescriptor>,List<ActionDescriptor>> newData = gson.fromJson(jsonBody, 
                     new TypeToken<Pair<List<MacroComponent>, List<MacroComponent>>>() {}.getType());
             
-            List<MacroComponent> availableTriggers = newData.getFirst();
-            List<MacroComponent> avalabbleActions = newData.getSecond();
+            List<TriggerDescriptor> availableTriggers = newData.getFirst();
+            List<ActionDescriptor> avalabbleActions = newData.getSecond();
             
             String errorDescription = "";
             boolean errorOccured = false;
@@ -153,15 +155,15 @@ public class AvailableComponents extends HttpServlet {
             
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
                 if(errorOccured)
-                    out.print(encrypter.encrypt(gson.toJson(new ComunicationInfo(errorDescription, true))));
+                    out.print(encrypter.encrypt(gson.toJson(new CommunicationInfo(errorDescription, true))));
                 else
-                    out.print(encrypter.encrypt(gson.toJson(new ComunicationInfo())));
+                    out.print(encrypter.encrypt(gson.toJson(new CommunicationInfo())));
             
             else
                 if(errorOccured)
-                    out.print(gson.toJson(new ComunicationInfo(errorDescription, true)));
+                    out.print(gson.toJson(new CommunicationInfo(errorDescription, true)));
                 else
-                    out.print(gson.toJson(new ComunicationInfo()));
+                    out.print(gson.toJson(new CommunicationInfo()));
             
             out.flush();
         } catch (Exception e) {
