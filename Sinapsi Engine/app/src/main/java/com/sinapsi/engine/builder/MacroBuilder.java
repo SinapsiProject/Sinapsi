@@ -6,6 +6,7 @@ import com.sinapsi.model.MacroInterface;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is an helper class used to register all the user's changes
@@ -24,9 +25,11 @@ public class MacroBuilder{
     private boolean enabled;
     private TriggerBuilder trigger;
     private List<ActionBuilder> actions = new ArrayList<>();
+    private Map<Integer, ComponentsAvailability> availabilityMap;
 
 
-    public MacroBuilder(MacroInterface inputMacro) {
+    public MacroBuilder(MacroInterface inputMacro, Map<Integer, ComponentsAvailability> availabilityMap) {
+        this.availabilityMap = availabilityMap;
         this.macro = inputMacro;
 
         debuildMacro();

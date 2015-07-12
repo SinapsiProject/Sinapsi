@@ -18,6 +18,7 @@ import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.builder.ActionBuilder;
+import com.sinapsi.engine.builder.ComponentsAvailability;
 import com.sinapsi.engine.builder.MacroBuilder;
 import com.sinapsi.engine.builder.ParameterBuilder;
 import com.sinapsi.model.DeviceInterface;
@@ -45,7 +46,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
     private ParameterListAdapter triggerParameters = new ParameterListAdapter();
     private ActionListAdapter actionList = new ActionListAdapter();
 
-    private Map<Integer, Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>> availabilityTable = new HashMap<>();
+    private Map<Integer, ComponentsAvailability> availabilityTable = new HashMap<>();
 
     private ViewTransitionManager transitionManager;
 
@@ -126,7 +127,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
                     addLocalAvailability();
                     for (Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>> t : triplets) {
                         if (t.getFirst().getId() != service.getDevice().getId())
-                            availabilityTable.put(t.getFirst().getId(), t);
+                            availabilityTable.put(t.getFirst().getId(), new ComponentsAvailability(t.getFirst(), t.getSecond(), t.getThird()));
                     }
                     updateView();
                     transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
@@ -160,7 +161,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
     private void addLocalAvailability(){
         availabilityTable.put(
                 service.getDevice().getId(),
-                new Triplet<>(
+                new ComponentsAvailability(
                         service.getDevice(),
                         service.getEngine().getAvailableTriggerDescriptors(),
                         service.getEngine().getAvailableActionDescriptors()
@@ -171,11 +172,11 @@ public class EditorActivity extends SinapsiActionBarActivity {
         ((TextView) findViewById(R.id.edittext_macro_editor_macro_name)).setText(macroBuilder.getName());
         ((TextView) findViewById(R.id.textview_macro_editor_trigger_name)).setText(macroBuilder.getTrigger().getName());
 
-        Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>> t = availabilityTable.get(macroBuilder.getTrigger().getDeviceId());
+        ComponentsAvailability t = availabilityTable.get(macroBuilder.getTrigger().getDeviceId());
         if(t == null){
             ((TextView) findViewById(R.id.textview_macro_editor_trigger_device)).setText("on Device with id: "+macroBuilder.getTrigger().getDeviceId());
         }else{
-            ((TextView) findViewById(R.id.textview_macro_editor_trigger_device)).setText("on Device: "+t.getFirst().getModel());
+            ((TextView) findViewById(R.id.textview_macro_editor_trigger_device)).setText("on Device: "+t.getDevice().getModel());
         }
 
         triggerParameters.clear();

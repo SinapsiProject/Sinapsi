@@ -1,5 +1,6 @@
 package com.sinapsi.engine.builder;
 
+import com.sinapsi.android.Lol;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
@@ -17,6 +18,8 @@ import java.util.List;
  * TODO: doku
  */
 public class ActionBuilder {
+
+    private boolean invalid = false;
 
     private String name;
     private int deviceId;
@@ -37,6 +40,8 @@ public class ActionBuilder {
 
         try {
             JSONObject formalJson = action.getFormalParametersJSON();
+
+
             JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
 
             JSONObject actualJson = new JSONObject(action.getActualParameters()).getJSONObject(ActualParamBuilder.PARAMETERS);
@@ -96,5 +101,13 @@ public class ActionBuilder {
 
     public List<ParameterBuilder> getParameters() {
         return parameters;
+    }
+
+    public boolean isInvalid() {
+        return invalid;
+    }
+
+    public void setInvalid(boolean invalid) {
+        this.invalid = invalid;
     }
 }

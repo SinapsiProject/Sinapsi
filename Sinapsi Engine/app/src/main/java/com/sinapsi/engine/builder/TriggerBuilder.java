@@ -1,5 +1,6 @@
 package com.sinapsi.engine.builder;
 
+import com.sinapsi.android.Lol;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
@@ -18,6 +19,8 @@ import java.util.List;
  * TODO: doku
  */
 public class TriggerBuilder {
+
+    private boolean invalid = false;
 
     private String name;
     private int deviceId;
@@ -96,5 +99,13 @@ public class TriggerBuilder {
 
     public List<ParameterBuilder> getParameters() {
         return parameters;
+    }
+
+    public boolean isInvalid() {
+        return invalid;
+    }
+
+    public void setInvalid(boolean invalid) {
+        this.invalid = invalid;
     }
 }
