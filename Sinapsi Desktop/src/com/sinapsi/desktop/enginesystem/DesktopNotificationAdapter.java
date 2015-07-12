@@ -5,7 +5,6 @@ import com.sinapsi.engine.system.NotificationAdapter;
 
 public class DesktopNotificationAdapter implements NotificationAdapter {
 
-
 	@Override
 	public void showSimpleNotification(String title, String message) {
 		try {
