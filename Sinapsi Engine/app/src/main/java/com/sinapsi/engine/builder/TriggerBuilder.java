@@ -1,6 +1,5 @@
 package com.sinapsi.engine.builder;
 
-import com.sinapsi.android.Lol;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
@@ -14,6 +13,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO: doku
@@ -27,15 +27,46 @@ public class TriggerBuilder {
     private List<ParameterBuilder> parameters = new ArrayList<>();
 
 
-    public TriggerBuilder(Trigger trigger) {
-        debuildTrigger(trigger);
+    public TriggerBuilder(int currentDeviceid, Map<Integer, ComponentsAvailability> availabilityMap, Trigger trigger) {
+        if(trigger.getExecutionDevice().getId() == currentDeviceid){
+            debuildTrigger(trigger);
+        }else{
+            int remoteDeviceId = trigger.getExecutionDevice().getId();
+            ComponentsAvailability ca = availabilityMap.get(remoteDeviceId);
+            if(ca == null) invalid = true; //TODO: reason?
+            else{
+                TriggerDescriptor td = ca.getTriggers().get(trigger.getName());
+                if(td == null) invalid = true;
+                else debuildTrigger(td, remoteDeviceId, trigger.getActualParameters());
+            }
+        }
     }
 
     public TriggerBuilder(TriggerDescriptor trigger, int deviceId){
-        debuildTriggerDescriptor(trigger, deviceId);
+        debuildTrigger(trigger, deviceId);
     }
 
-    private void debuildTriggerDescriptor(TriggerDescriptor trigger, int deviceId) {
+    private void debuildTrigger(TriggerDescriptor trigger, int deviceId, String actualParams) {
+        this.name = trigger.getName();
+        this.deviceId = deviceId;
+
+        try {
+            JSONObject formalJson = new JSONObject(trigger.getFormalParameters());
+            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
+
+            JSONObject actualJson = new JSONObject(actualParams).getJSONObject(ActualParamBuilder.PARAMETERS);
+
+            for (int i = 0; i < formalPArray.length(); ++i) {
+                JSONObject fo = formalPArray.getJSONObject(i);
+                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
+                this.parameters.add(pm);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void debuildTrigger(TriggerDescriptor trigger, int deviceId) {
         this.name = trigger.getName();
         this.deviceId = deviceId;
 

@@ -6,7 +6,8 @@
     android:layout_margin="5dp"
 
     android:background="@color/cardview_light_background"
-    app:cardCornerRadius="5dp">
+    app:cardCornerRadius="5dp"
+    android:visibility="visible">
 
     <LinearLayout
         android:layout_width="fill_parent"

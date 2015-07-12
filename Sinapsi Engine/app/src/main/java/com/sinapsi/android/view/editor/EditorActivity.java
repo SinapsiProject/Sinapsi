@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -71,7 +72,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
         input = (MacroInterface) params[0];
 
-        macroBuilder = new MacroBuilder(input);
+
 
         transitionManager = new ViewTransitionManager(new HashMapBuilder<String, List<View>>()
                 .put(States.EDITOR.name(), Arrays.asList(
@@ -84,14 +85,17 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
 
         RecyclerView triggerParamsRecyclerView = (RecyclerView) findViewById(R.id.trigger_parameter_list_recycler);
-        LinearLayoutManager llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
         triggerParamsRecyclerView.setAdapter(triggerParameters);
         triggerParamsRecyclerView.setLayoutManager(llm);
+        triggerParamsRecyclerView.setHasFixedSize(true);
 
         RecyclerView actionListRecyclerView = (RecyclerView) findViewById(R.id.action_list_recycler);
-        LinearLayoutManager llm2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager llm2 = new LinearLayoutManager(this);
         actionListRecyclerView.setAdapter(actionList);
         actionListRecyclerView.setLayoutManager(llm2);
+        actionListRecyclerView.setHasFixedSize(true);
+
 
         /*final TextView tv = ((TextView) findViewById(R.id.test_text));
         tv.setText(input.getName());
@@ -107,7 +111,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
 
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
-
+        Lol.d(this, "Activity created");
     }
 
     @Override
@@ -129,6 +133,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
                         if (t.getFirst().getId() != service.getDevice().getId())
                             availabilityTable.put(t.getFirst().getId(), new ComponentsAvailability(t.getFirst(), t.getSecond(), t.getThird()));
                     }
+                    macroBuilder = new MacroBuilder(service.getDevice().getId(), availabilityTable, input);
                     updateView();
                     transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
                 }
@@ -184,7 +189,9 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
         actionList.clear();
         actionList.addAll(macroBuilder.getActions());
-
+        Lol.d(this, "actionList.size() == " + actionList.size());
+        actionList.notifyDataSetChanged();
+        Lol.d(this, "View updated!");
     }
 
     @Override
@@ -219,7 +226,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
         @Override
         public View onCreateView(ViewGroup parent, int viewType) {
-            return null;//TODO: impl
+            return new View(EditorActivity.this);//TODO: impl
         }
         @Override
         public void onBindViewHolder(ItemViewHolder viewHolder, ParameterBuilder elem, int position) {
@@ -232,10 +239,23 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
         @Override
         public View onCreateView(ViewGroup parent, int viewType) {
-            return null;//TODO: impl
+            Lol.d(this, "onCreateView() called");
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.action_editor_element, parent, false);
+            //TODO: buttons
+            return v;
         }
         @Override
-        public void onBindViewHolder(ItemViewHolder viewHolder, ActionBuilder elem, int position) {
+        public void onBindViewHolder(ItemViewHolder ivh, ActionBuilder elem, int position) {
+            Lol.d(this, "onBindViewHolder() called");
+            View v = ivh.itemView;
+
+            ((TextView) v.findViewById(R.id.textview_macro_editor_action_name)).setText(elem.getName());
+            ComponentsAvailability t = availabilityTable.get(elem.getDeviceId());
+            if(t == null){
+                ((TextView) findViewById(R.id.textview_macro_editor_action_device)).setText("on Device with id: "+elem.getDeviceId());
+            }else{
+                ((TextView) findViewById(R.id.textview_macro_editor_action_device)).setText("on Device: "+t.getDevice().getModel());
+            }
             //TODO: impl
         }
 

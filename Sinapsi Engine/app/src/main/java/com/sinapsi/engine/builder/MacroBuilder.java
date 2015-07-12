@@ -25,26 +25,24 @@ public class MacroBuilder{
     private boolean enabled;
     private TriggerBuilder trigger;
     private List<ActionBuilder> actions = new ArrayList<>();
-    private Map<Integer, ComponentsAvailability> availabilityMap;
 
 
-    public MacroBuilder(MacroInterface inputMacro, Map<Integer, ComponentsAvailability> availabilityMap) {
-        this.availabilityMap = availabilityMap;
+    public MacroBuilder(int currentDeviceId, Map<Integer, ComponentsAvailability> availabilityMap, MacroInterface inputMacro) {
         this.macro = inputMacro;
 
-        debuildMacro();
+        debuildMacro(currentDeviceId, availabilityMap);
     }
 
-    private void debuildMacro() {
+    private void debuildMacro(int currentDeviceId, Map<Integer, ComponentsAvailability> availabilityMap) {
         this.name = macro.getName();
         this.iconName = macro.getIconName();
         this.color = macro.getMacroColor();
         this.valid = macro.isValid();
         this.executionFailurePolicy = macro.getExecutionFailurePolicy();
         this.enabled = macro.isEnabled();
-        this.trigger = new TriggerBuilder(macro.getTrigger());
+        this.trigger = new TriggerBuilder(currentDeviceId, availabilityMap, macro.getTrigger());
         for(Action a: macro.getActions()){
-            this.actions.add(new ActionBuilder(a));
+            this.actions.add(new ActionBuilder(currentDeviceId, availabilityMap, a));
         }
     }
 

@@ -52,7 +52,8 @@
             android:name="com.sinapsi.android.view.editor.EditorActivity"
             android:label="@string/title_activity_editor"
             android:parentActivityName="com.sinapsi.android.view.MainActivity"
-            android:windowSoftInputMode="adjustResize|stateVisible">
+            android:windowSoftInputMode="adjustResize"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sinapsi.android.view.MainActivity" />

@@ -1,6 +1,5 @@
 package com.sinapsi.engine.builder;
 
-import com.sinapsi.android.Lol;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
@@ -13,6 +12,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO: doku
@@ -25,13 +25,26 @@ public class ActionBuilder {
     private int deviceId;
     private List<ParameterBuilder> parameters = new ArrayList<>();
 
-    public ActionBuilder(Action a) {
-        debuildAction(a);
+    public ActionBuilder(int currentDeviceid, Map<Integer, ComponentsAvailability> availabilityMap, Action a) {
+        if(a.getExecutionDevice().getId() == currentDeviceid){
+            debuildAction(a);
+        }else{
+            int remoteDeviceId = a.getExecutionDevice().getId();
+            ComponentsAvailability ca = availabilityMap.get(remoteDeviceId);
+            if(ca == null) invalid = true; //TODO: reason?
+            else{
+                ActionDescriptor ad = ca.getActions().get(a.getName());
+                if(ad == null) invalid = true;
+                else debuildAction(ad, remoteDeviceId, a.getActualParameters());
+            }
+        }
     }
 
     public ActionBuilder(ActionDescriptor a, int deviceId){
-        debuildActionDescriptor(a, deviceId);
+        debuildAction(a, deviceId);
     }
+
+
 
 
     private void debuildAction(Action action) {
@@ -57,7 +70,7 @@ public class ActionBuilder {
     }
 
 
-    private void debuildActionDescriptor(ActionDescriptor action, int deviceId) {
+    private void debuildAction(ActionDescriptor action, int deviceId) {
         this.name = action.getName();
         this.deviceId = deviceId;
 
@@ -65,7 +78,29 @@ public class ActionBuilder {
             JSONObject formalJson = new JSONObject(action.getFormalParameters());
             JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
 
-            JSONObject actualJson = new JSONObject(); //this is from a descriptor, so a new empty actual param obj is ok
+            JSONObject actualJson = new JSONObject(); //this is from a descriptor representing a new inserted action,
+                                                        // so a new empty actual param obj is ok
+
+
+            for (int i = 0; i < formalPArray.length(); ++i) {
+                JSONObject fo = formalPArray.getJSONObject(i);
+                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
+                this.parameters.add(pm);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void debuildAction(ActionDescriptor action, int deviceId, String actualParams) {
+        this.name = action.getName();
+        this.deviceId = deviceId;
+
+        try {
+            JSONObject formalJson = new JSONObject(action.getFormalParameters());
+            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
+
+            JSONObject actualJson = new JSONObject(actualParams).getJSONObject(ActualParamBuilder.PARAMETERS);
 
 
             for (int i = 0; i < formalPArray.length(); ++i) {
