@@ -7,14 +7,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServlet;
-
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.Trigger;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.model.impl.TriggerDescriptor;
@@ -82,6 +79,7 @@ public class EngineDBManager {
             }
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             db.disconnect(c, s, r);
             throw ex;
         }
@@ -117,6 +115,7 @@ public class EngineDBManager {
             }
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             db.disconnect(c, s, r);
             throw ex;
         }
@@ -157,6 +156,7 @@ public class EngineDBManager {
             }
             
         } catch(SQLException ex) {
+            ex.printStackTrace();
             db.disconnect(c, s, r);
             throw ex;
         }
@@ -201,6 +201,7 @@ public class EngineDBManager {
             }
             
         } catch(SQLException ex) {
+            ex.printStackTrace();
             db.disconnect(c, s, r);
             throw ex;
         }
@@ -232,7 +233,7 @@ public class EngineDBManager {
                 id = r.getInt("id");
 
             else {
-                s = c.prepareStatement("INSERT INTO action(name, minversion, parameters) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                s = c.prepareStatement("INSERT INTO action(name, minversion, parameters) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 s.setString(1, name);
                 s.setInt(2, versionAction);
                 s.setString(3, parameters);
@@ -243,6 +244,7 @@ public class EngineDBManager {
             }
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             db.disconnect(c, s, r);
             throw ex;
         }
@@ -274,7 +276,7 @@ public class EngineDBManager {
                 id = r.getInt("id");
 
             else {
-                s = c.prepareStatement("INSERT INTO trigger(name, minversion, parameters) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                s = c.prepareStatement("INSERT INTO trigger(name, minversion, parameters) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 s.setString(1, name);
                 s.setInt(2, minVersion);
                 s.setString(3, parameters);
@@ -285,6 +287,7 @@ public class EngineDBManager {
             }
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             db.disconnect(c, s, r);
             throw ex;
         }
@@ -316,12 +319,75 @@ public class EngineDBManager {
             
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             db.disconnect(c, s, r);
             throw ex;
         }
         db.disconnect(c, s, r);
         return name;
         
+    }
+    
+    /**
+     * Control if there are records in available triggers
+     * @param idDevice id device
+     * @return boolean
+     * @throws SQLException
+     */
+    public boolean emptyAvailableTriggers(int idDevice) throws SQLException {
+       Connection c = null;
+       PreparedStatement s = null;
+       ResultSet r = null;
+       boolean found = true;
+       
+       try {
+           c = db.connect();
+           s = c.prepareStatement("SELECT * FROM availabletrigger WHERE iddevice = ?");
+           s.setInt(1, idDevice);
+           r = s.executeQuery();
+
+           if (r.next())
+               found = false;
+           
+
+       } catch (SQLException ex) {
+           ex.printStackTrace();
+           db.disconnect(c, s, r);
+           throw ex;
+       }
+       db.disconnect(c, s, r);
+       return found;
+    }
+    
+    /**
+     * Control if there are records in available actions
+     * @param idDevice id device
+     * @return boolean
+     * @throws SQLException
+     */
+    public boolean emptyAvailableActions(int idDevice) throws SQLException {
+       Connection c = null;
+       PreparedStatement s = null;
+       ResultSet r = null;
+       boolean found = true;
+       
+       try {
+           c = db.connect();
+           s = c.prepareStatement("SELECT * FROM availableaction WHERE iddevice = ?");
+           s.setInt(1, idDevice);
+           r = s.executeQuery();
+
+           if (r.next())
+               found = false;
+           
+
+       } catch (SQLException ex) {
+           ex.printStackTrace();
+           db.disconnect(c, s, r);
+           throw ex;
+       }
+       db.disconnect(c, s, r);
+       return found;
     }
     
     /**
@@ -339,16 +405,19 @@ public class EngineDBManager {
         c.setAutoCommit(false);
         
         // clean the available triggers
-        try {
-            String query = "DELETE FROM availabletrigger WHERE iddevice = ?";
-            s = c.prepareStatement(query);
-            s.setInt(1, idDevice);
-            r = s.executeQuery();
-            
-        } catch (SQLException e) {
-            c.rollback();
-            db.disconnect(c, s, r);
-            throw e;
+        if(!emptyAvailableTriggers(idDevice)) {
+           try {
+               String query = "DELETE FROM availabletrigger WHERE iddevice = ?";
+               s = c.prepareStatement(query);
+               s.setInt(1, idDevice);
+               s.execute();
+               
+           } catch (SQLException e) {
+               e.printStackTrace();
+               c.rollback();
+               db.disconnect(c, s, r);
+               throw e;
+           }
         }
         
         // add available triggers
@@ -365,7 +434,7 @@ public class EngineDBManager {
                 s = c.prepareStatement(query);
                 s.setInt(1, idTrigger);
                 s.setInt(2, idDevice);
-                r = s.executeQuery();
+                s.execute();
             }
 
         } catch (SQLException e) {
@@ -392,16 +461,19 @@ public class EngineDBManager {
         c.setAutoCommit(false);
         
         // clean the available triggers
-        try {
-            String query = "DELETE FROM availableaction WHERE iddevice = ?";
-            s = c.prepareStatement(query);
-            s.setInt(1, idDevice);
-            r = s.executeQuery();
-            
-        } catch (SQLException e) {
-            c.rollback();
-            db.disconnect(c, s, r);
-            throw e;
+        if(!emptyAvailableActions(idDevice)) {
+           try {
+               String query = "DELETE FROM availableaction WHERE iddevice = ?";
+               s = c.prepareStatement(query);
+               s.setInt(1, idDevice);
+               s.execute();
+               
+           } catch (SQLException e) {
+               e.printStackTrace();
+               c.rollback();
+               db.disconnect(c, s, r);
+               throw e;
+           }
         }
         
         // add available actions
@@ -418,10 +490,11 @@ public class EngineDBManager {
                 s = c.prepareStatement(query);
                 s.setInt(1, idAction);
                 s.setInt(2, idDevice);
-                r = s.executeQuery();
+                s.execute();
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             c.rollback();
             db.disconnect(c, s, r);
             throw e;

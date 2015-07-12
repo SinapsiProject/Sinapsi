@@ -5,19 +5,16 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.TriggerDescriptor;
@@ -124,7 +121,6 @@ public class AvailableComponents extends HttpServlet {
                 decrypter = new Decrypt(keysManager.getServerPrivateKey(email, name, model), 
                                         keysManager.getUserSessionKey(email, name, model));
             // decrypt the jsoned body
-            //String jsonBody = decrypter.decrypt(encryptedJsonbody);
             String jsonBody;
             if(WebServiceConsts.ENCRYPTED_CONNECTION)
                  jsonBody = decrypter.decrypt(cryptedString);
@@ -132,7 +128,7 @@ public class AvailableComponents extends HttpServlet {
                  jsonBody = cryptedJsonbody;
             
             Pair<List<TriggerDescriptor>,List<ActionDescriptor>> newData = gson.fromJson(jsonBody, 
-                    new TypeToken<Pair<List<MacroComponent>, List<MacroComponent>>>() {}.getType());
+                    new TypeToken<Pair<List<TriggerDescriptor>, List<ActionDescriptor>>>() {}.getType());
             
             List<TriggerDescriptor> availableTriggers = newData.getFirst();
             List<ActionDescriptor> avalabbleActions = newData.getSecond();
