@@ -21,7 +21,7 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="are_you_sure_delete_macro">Are you sure you want to delete macro \'%s\'?</string>
     <string name="delete">Delete</string>
-    <string name="title_activity_editor">EditorActivity</string>
+    <string name="title_activity_editor">Macro Editor </string>
     <string name="username_does_not_exist">This username does not exist or is not active</string>
     <string name="log_out">Log out</string>
     <string name="are_you_sure_log_out">Are you sure you want to log out?</string>
@@ -36,5 +36,12 @@
     <string name="drag_to_sort_action">Long press and drag to sort</string>
     <string name="delete_action_text">Delete action</string>
     <string name="parameters_label_text">PARAMETERS:</string>
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="action_done">Done</string>
+    <string name="title_section_trigger">TRIGGER</string>
+    <string name="title_section_actions">ACTIONS</string>
 
 </resources>
