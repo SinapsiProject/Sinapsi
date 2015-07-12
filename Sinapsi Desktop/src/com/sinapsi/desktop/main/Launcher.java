@@ -76,14 +76,15 @@ public class Launcher extends Application {
 	public void createTrayIcon(final Stage stage) {
 		if(SystemTray.isSupported()) {
 			// Get the SystemTray instance
+			String path = "res/rsz_blue_cog.png";
 			tray = SystemTray.getSystemTray();
 			// Loading image
-			try {
-				URL url = new URL("http://www.digitalphotoartistry.com/rose1.jpg");
-				icon = ImageIO.read(url);
-			} catch (IOException ex) {
-				System.out.println(ex);
-			}
+			icon = null;
+	        try {
+	          icon = ImageIO.read(new File(path));
+	        } catch (IOException e) {
+	          e.printStackTrace();
+	        }
 		}
 
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -124,6 +125,8 @@ public class Launcher extends Application {
 		popUpMenu.add(closeItem);
 
 		trayIcon = new TrayIcon(icon, "Sinapsi", popUpMenu);
+		trayIcon.setImageAutoSize(true);
+		trayIcon.setToolTip("Sinapsi");
 		trayIcon.addActionListener(showListener);
 
 		try {

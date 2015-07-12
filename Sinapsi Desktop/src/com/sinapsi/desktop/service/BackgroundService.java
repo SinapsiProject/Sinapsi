@@ -40,7 +40,7 @@ import com.sinapsi.engine.system.SystemFacade;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
-import com.sinapsi.model.impl.ComunicationInfo;
+import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
@@ -88,10 +88,10 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 						ei.getMacro().getId(), 
 						ei.getLocalVars(), 
 						ei.getExecutionStackIndexes()), 
-						new WebServiceCallback<ComunicationInfo>() {
+						new WebServiceCallback<CommunicationInfo>() {
 
 					@Override
-					public void success(ComunicationInfo t, Object response) {
+					public void success(CommunicationInfo t, Object response) {
 						sinapsiLog.log("EXECUTION_CONTINUE", t.getAdditionalInfo());
 					}
 
