@@ -201,7 +201,7 @@ p {
     position: absolute;
     z-index: -1;
     display: grid;
-    opacity: 0.4;
+    opacity: 0.55;
     -webkit-animation : rotation 19s infinite linear;
     -moz-transform: rotation 19s infinite linear;
 }

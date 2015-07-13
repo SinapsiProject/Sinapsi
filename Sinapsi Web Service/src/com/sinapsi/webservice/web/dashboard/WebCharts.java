@@ -78,8 +78,7 @@ public class WebCharts extends HttpServlet {
          e1.printStackTrace();
       }
 
-      Vector<Pair<String, String>> files = new Vector<Pair<String, String>>();
-
+      Vector<Pair<String, String>> files = new Vector<Pair<String, String>>(listOfFiles.length);
       for (int i = 0; i < listOfFiles.length; ++i) {
          if (listOfFiles[i].isFile()) {
             if (listOfFiles[i].getName().substring(0, 9).equals("localhost")) {
@@ -118,9 +117,7 @@ public class WebCharts extends HttpServlet {
                try {
                   d = dateFormat.parse(date);
                   Long dateM = d.getTime();
-
-                  files.add(new Pair<String, String>(dateM.toString(), Integer
-                        .toString(count)));
+                  files.add(new Pair<String, String>(dateM.toString(), Integer.toString(count))); 
                } catch (ParseException e) {
                   e.printStackTrace();
                }
@@ -128,7 +125,7 @@ public class WebCharts extends HttpServlet {
             }
          }
       }
-
+      
       // order data
       Collections.sort(files, new Comparator<Pair<String, String>>() {
          public int compare(Pair<String, String> result1,
@@ -136,6 +133,14 @@ public class WebCharts extends HttpServlet {
             return result1.getFirst().compareTo(result2.getFirst());
          }
       });
+      
+      // remove duplicate
+      for(int i = 1; i < files.size(); ++i) {
+         if(files.get(i-1).getFirst().equals(files.get(i).getFirst())) {
+            files.remove(i-1);
+         }
+      }
+      
       session.setAttribute("server_load", files);
       request.getRequestDispatcher("charts.jsp").forward(request, response);
    }

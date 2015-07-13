@@ -211,7 +211,8 @@
 											height="400" showXAxis="true" showYAxis="true"
 											tooltips="true" tooltipcontent="toolTipContentFunction()"
 											interactive="true" color="colorFunction()"
-											xAxisTickFormat="xAxisTickFormat()" interpolate="monotone">
+											xAxisTickFormat="xAxisTickFormat()" interpolate="cardinal"
+											useInteractiveGuideLine="true">
 										<svg></svg> </nvd3-line-chart>
 									</div>
 								</div>
