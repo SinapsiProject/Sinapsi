@@ -72,16 +72,9 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        actionsFragment = new ActionsSectionFragment();
-        triggerFragment = new TriggerSectionFragment();
-
-        addFragmentForConnectionListening(actionsFragment);
-        addFragmentForConnectionListening(triggerFragment);
 
         setContentView(R.layout.activity_editor);
 
-        Lol.printNullity(this, "params", params);
-        Lol.d(this, "params size: " + params.length);
 
 
 
@@ -97,6 +90,16 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             dataFragment.setEditorInput((MacroInterface) params[0]);
             //LOAD DATA HERE
         }
+
+        actionsFragment = new ActionsSectionFragment();
+        triggerFragment = new TriggerSectionFragment();
+
+        addFragmentForConnectionListening(actionsFragment);
+        addFragmentForConnectionListening(triggerFragment);
+
+
+        Lol.printNullity(this, "params", params);
+        Lol.d(this, "params size: " + params.length);
 
 
         transitionManager = new ViewTransitionManager(new HashMapBuilder<String, List<View>>()
@@ -151,7 +154,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     @Override
     public void onServiceConnected(ComponentName name) {
         super.onServiceConnected(name);
-        Lol.d(this, "onServiceConnected() called");
+        Lol.d(this, "onServiceConnected() called and activity is " + (created?"created":"not created") + "with dataFragment "+(dataFragment==null?"null":"not null"));
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
         updateAvailabilityTable(new AvailabilityUpdateCallback() {
             @Override
@@ -194,7 +197,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         for(int i = 0; i < sectionsPagerAdapter.getCount(); ++i){
             Fragment f = sectionsPagerAdapter.getItem(i);
             if(f instanceof EditorUpdatableFragment){
-                ((EditorUpdatableFragment) f).updateView();
+                ((EditorUpdatableFragment) f).updateView(this);
             }
         }
     }
@@ -350,17 +353,32 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         private ActionListAdapter actionList;
         private View rootView;
 
+        private boolean recallUpdateAfterOnCreate = false;
+
+
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.editor_actions_fragment, container, false);
 
+
+            if(recallUpdateAfterOnCreate){
+                recallUpdateAfterOnCreate = false;
+                updateView((EditorActivityAlpha)getActivity());
+            }
             return rootView;
         }
 
         @Override
-        public void updateView() {
-            DataFragment df = ((EditorActivityAlpha) getActivity()).getDataFragment();
+        public void updateView(EditorActivityAlpha editorActivity) {
+            EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
+            if(activity == null) activity = editorActivity;
+            DataFragment df = activity.getDataFragment();
+            if(rootView == null){
+                recallUpdateAfterOnCreate = true;
+                return;
+            }
+
 
             actionList = new ActionListAdapter(df.getAvailabilityTable());
 
@@ -383,6 +401,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         private ParameterListAdapter triggerParameters = new ParameterListAdapter();
         private View rootView;
 
+        private boolean recallUpdateAfterOnCreate = false;
 
         @Nullable
         @Override
@@ -395,6 +414,10 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             triggerParamsRecyclerView.setLayoutManager(llm);
             triggerParamsRecyclerView.setHasFixedSize(true);
 
+            if(recallUpdateAfterOnCreate){
+                recallUpdateAfterOnCreate = false;
+                updateView((EditorActivityAlpha)getActivity());
+            }
 
             return rootView;
         }
@@ -403,8 +426,15 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
 
         @Override
-        public void updateView() {
-            DataFragment df = ((EditorActivityAlpha) getActivity()).getDataFragment();
+        public void updateView(EditorActivityAlpha editorActivity) {
+            EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
+            if(activity == null) activity = editorActivity;
+            DataFragment df = activity.getDataFragment();
+            Lol.printNullity(this, "df", df);
+            if(rootView == null){
+                recallUpdateAfterOnCreate = true;
+                return;
+            }
             ((TextView) rootView.findViewById(R.id.edittext_macro_editor_macro_name)).setText(df.getMacroBuilder().getName());
             ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_name)).setText(df.getMacroBuilder().getTrigger().getName());
 
@@ -521,7 +551,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     }
 
     public static interface EditorUpdatableFragment {
-        public void updateView();
+        public void updateView(EditorActivityAlpha editorActivity);
     }
 
 }
