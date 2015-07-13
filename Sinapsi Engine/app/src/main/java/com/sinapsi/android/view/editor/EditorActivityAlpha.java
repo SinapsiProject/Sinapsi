@@ -8,6 +8,7 @@ import java.util.Map;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -34,6 +35,7 @@ import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.builder.ActionBuilder;
+import com.sinapsi.engine.builder.ComponentBuilderValidityStatus;
 import com.sinapsi.engine.builder.ComponentsAvailability;
 import com.sinapsi.engine.builder.MacroBuilder;
 import com.sinapsi.engine.builder.ParameterBuilder;
@@ -47,8 +49,6 @@ import com.sinapsi.utils.Triplet;
 import retrofit.RetrofitError;
 
 public class EditorActivityAlpha extends SinapsiActionBarActivity implements ActionBar.TabListener {
-
-
 
 
     SectionsPagerAdapter sectionsPagerAdapter;
@@ -76,12 +76,10 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         setContentView(R.layout.activity_editor);
 
 
-
-
         FragmentManager fm = getSupportFragmentManager();
         dataFragment = (DataFragment) fm.findFragmentByTag("data");
 
-        if(dataFragment == null){
+        if (dataFragment == null) {
             dataFragment = new DataFragment();
             fm.beginTransaction()
                     .add(dataFragment, "data")
@@ -98,9 +96,6 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         addFragmentForConnectionListening(triggerFragment);
 
 
-        Lol.printNullity(this, "params", params);
-        Lol.d(this, "params size: " + params.length);
-
 
         transitionManager = new ViewTransitionManager(new HashMapBuilder<String, List<View>>()
                 .put(States.EDITOR.name(), Collections.singletonList(
@@ -110,7 +105,6 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
                         findViewById(R.id.editor_progress)
                 ))
                 .create());
-
 
 
         // Set up the action bar.
@@ -154,12 +148,13 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     @Override
     public void onServiceConnected(ComponentName name) {
         super.onServiceConnected(name);
-        Lol.d(this, "onServiceConnected() called and activity is " + (created?"created":"not created") + "with dataFragment "+(dataFragment==null?"null":"not null"));
+        Lol.d(this, "onServiceConnected() called and activity is " + (created ? "created" : "not created") + "with dataFragment " + (dataFragment == null ? "null" : "not null"));
         transitionManager.makeTransitionIfDifferent(States.PROGRESS.name());
         updateAvailabilityTable(new AvailabilityUpdateCallback() {
             @Override
             public void onAvailabilityUpdateSuccess(Map<Integer, ComponentsAvailability> availabilityTable) {
-                dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
+                if (dataFragment.getMacroBuilder() == null)
+                    dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
                 dataFragment.setAvailabilityTable(availabilityTable);
                 updateFragments();
                 transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
@@ -176,7 +171,8 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
                                     " of components on other devices from server. Local " +
                                     "components will still be available", false);
                 }
-                dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
+                if (dataFragment.getMacroBuilder() == null)
+                    dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
                 dataFragment.setAvailabilityTable(availabilityTable);
                 updateFragments();
                 transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
@@ -185,7 +181,8 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             @Override
             public void onAvailabilityUpdateOffline(Map<Integer, ComponentsAvailability> availabilityTable) {
                 //TODO: switch to Offline Mode
-                dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
+                if (dataFragment.getMacroBuilder() == null)
+                    dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
                 dataFragment.setAvailabilityTable(availabilityTable);
                 updateFragments();
                 transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
@@ -193,10 +190,11 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         });
     }
 
-    private void updateFragments(){
-        for(int i = 0; i < sectionsPagerAdapter.getCount(); ++i){
+    private void updateFragments() {
+        for (int i = 0; i < sectionsPagerAdapter.getCount(); ++i) {
+            Lol.d("################ UPDATING A FRAGMENT ################");
             Fragment f = sectionsPagerAdapter.getItem(i);
-            if(f instanceof EditorUpdatableFragment){
+            if (f instanceof EditorUpdatableFragment) {
                 ((EditorUpdatableFragment) f).updateView(this);
             }
         }
@@ -204,7 +202,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
     private void updateAvailabilityTable(final EditorActivityAlpha.AvailabilityUpdateCallback callback) {
         final Map<Integer, ComponentsAvailability> availabilityTable = new HashMap<>();
-        if(service.isOnline()){
+        if (service.isOnline()) {
             service.getWeb().getAvailableComponents(service.getDevice(), new SinapsiWebServiceFacade.WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>>() {
                 @Override
                 public void success(List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>> triplets, Object response) {
@@ -224,14 +222,14 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
                     callback.onAvailabilityUpdateFailure(error, availabilityTable);
                 }
             });
-        }else{
+        } else {
             availabilityTable.clear();
             addLocalAvailability(availabilityTable);
             callback.onAvailabilityUpdateOffline(availabilityTable);
         }
     }
 
-    private void addLocalAvailability(Map<Integer, ComponentsAvailability> availabilityTable){
+    private void addLocalAvailability(Map<Integer, ComponentsAvailability> availabilityTable) {
         availabilityTable.put(
                 service.getDevice().getId(),
                 new ComponentsAvailability(
@@ -269,7 +267,6 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     }
 
 
-
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
@@ -285,22 +282,31 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-    private void endEditing(){
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateFragments();
+    }
+
+    private void endEditing() {
 
         MacroInterface result;
-        if(dataFragment.isChanged()) result = dataFragment.getMacroBuilder().build(service.getEngine());
+        if (dataFragment.isChanged())
+            result = dataFragment.getMacroBuilder().build(service.getEngine());
         else result = dataFragment.getEditorInput();
         returnActivity(result, dataFragment.isChanged());
     }
 
-    private void onGoingBack(){
+    private void onGoingBack() {
         //call this to ask confirm to go back discarding changes
         //TODO: impl
     }
 
     public static interface AvailabilityUpdateCallback {
         public void onAvailabilityUpdateSuccess(Map<Integer, ComponentsAvailability> availabilityTable);
+
         public void onAvailabilityUpdateFailure(Throwable error, Map<Integer, ComponentsAvailability> availabilityTable);
+
         public void onAvailabilityUpdateOffline(Map<Integer, ComponentsAvailability> availabilityTable);
     }
 
@@ -317,11 +323,11 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            switch (position){
-                case 0:{
+            switch (position) {
+                case 0: {
                     return triggerFragment;
                 }
-                case 1:{
+                case 1: {
                     return actionsFragment;
                 }
             }
@@ -350,7 +356,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
     public static class ActionsSectionFragment extends SinapsiFragment implements EditorUpdatableFragment {
 
-        private ActionListAdapter actionList;
+        private ActionListAdapter actionList = new ActionListAdapter();
         private View rootView;
 
         private boolean recallUpdateAfterOnCreate = false;
@@ -362,9 +368,16 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             rootView = inflater.inflate(R.layout.editor_actions_fragment, container, false);
 
 
-            if(recallUpdateAfterOnCreate){
+
+            RecyclerView actionListRecyclerView = (RecyclerView) rootView.findViewById(R.id.action_list_recycler);
+            LinearLayoutManager llm2 = new LinearLayoutManager(getActivity());
+            actionListRecyclerView.setAdapter(actionList);
+            actionListRecyclerView.setLayoutManager(llm2);
+            actionListRecyclerView.setHasFixedSize(true);
+
+            if (recallUpdateAfterOnCreate) {
                 recallUpdateAfterOnCreate = false;
-                updateView((EditorActivityAlpha)getActivity());
+                updateView((EditorActivityAlpha) getActivity());
             }
             return rootView;
         }
@@ -372,21 +385,17 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         @Override
         public void updateView(EditorActivityAlpha editorActivity) {
             EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
-            if(activity == null) activity = editorActivity;
+            if (activity == null) activity = editorActivity;
             DataFragment df = activity.getDataFragment();
-            if(rootView == null){
+
+            actionList.setData(df.getAvailabilityTable(), service.getDevice().getId());
+            actionList.clear();
+            actionList.addAll(df.getMacroBuilder().getActions());
+
+            if (rootView == null) {
                 recallUpdateAfterOnCreate = true;
                 return;
             }
-
-
-            actionList = new ActionListAdapter(df.getAvailabilityTable());
-
-            actionList.clear();
-            actionList.addAll(df.getMacroBuilder().getActions());
-            Lol.d(this, "actionList.size() == " + actionList.size());
-            actionList.notifyDataSetChanged();
-            Lol.d(this, "View updated!");
         }
 
         @Override
@@ -414,37 +423,35 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             triggerParamsRecyclerView.setLayoutManager(llm);
             triggerParamsRecyclerView.setHasFixedSize(true);
 
-            if(recallUpdateAfterOnCreate){
+            if (recallUpdateAfterOnCreate) {
                 recallUpdateAfterOnCreate = false;
-                updateView((EditorActivityAlpha)getActivity());
+                updateView((EditorActivityAlpha) getActivity());
             }
 
             return rootView;
         }
 
 
-
-
         @Override
         public void updateView(EditorActivityAlpha editorActivity) {
             EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
-            if(activity == null) activity = editorActivity;
+            if (activity == null) activity = editorActivity;
             DataFragment df = activity.getDataFragment();
             Lol.printNullity(this, "df", df);
-            if(rootView == null){
+            if (rootView == null) {
                 recallUpdateAfterOnCreate = true;
                 return;
             }
             ((TextView) rootView.findViewById(R.id.edittext_macro_editor_macro_name)).setText(df.getMacroBuilder().getName());
             ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_name)).setText(df.getMacroBuilder().getTrigger().getName());
 
-            ComponentsAvailability t = df.getAvailabilityTable().get(df.getMacroBuilder().getTrigger().getDeviceId());
-            if(t == null){
-                ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_device)).setText("on Device with id: " + df.getMacroBuilder().getTrigger().getDeviceId());
-            }else{
-                ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_device)).setText("on Device: "+t.getDevice().getModel());
-            }
-            //TODO: add "(this device)" at the end of the device text when the device is the current
+
+            ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_device)).setText(
+                    getDeviceLabelText(
+                            df.getAvailabilityTable(),
+                            df.getMacroBuilder().getTrigger().getDeviceId(),
+                            service.getDevice().getId()));
+
 
             triggerParameters.clear();
             triggerParameters.addAll(df.getMacroBuilder().getTrigger().getParameters());
@@ -460,10 +467,14 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
     public static class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
 
+        private View rootView;
+
         @Override
         public View onCreateView(ViewGroup parent, int viewType) {
-            return new View(parent.getContext());//TODO: impl
+            rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.parameter_editor_element, parent, false);
+            return rootView;
         }
+
         @Override
         public void onBindViewHolder(ItemViewHolder viewHolder, ParameterBuilder elem, int position) {
             //TODO: impl
@@ -471,40 +482,62 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
     }
 
-    public static class ActionListAdapter extends ArrayListAdapter<ActionBuilder>{
+    public static class ActionListAdapter extends ArrayListAdapter<ActionBuilder> {
 
 
-        private final Map<Integer, ComponentsAvailability> availabilityTable;
+        private Map<Integer, ComponentsAvailability> availabilityTable;
+        private int currentDeviceId;
 
-        public ActionListAdapter(Map<Integer, ComponentsAvailability> availabilityMap){
+
+        public void setData(Map<Integer, ComponentsAvailability> availabilityMap, int currentDeviceId) {
             this.availabilityTable = availabilityMap;
+            this.currentDeviceId = currentDeviceId;
         }
 
         @Override
         public View onCreateView(ViewGroup parent, int viewType) {
             Lol.d(this, "onCreateView() called");
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.action_editor_element, parent, false);
+            RecyclerView parametersRecyclerView = (RecyclerView) v.findViewById(R.id.action_parameter_list_recycler);
+            LinearLayoutManager llm = new LinearLayoutManager(parent.getContext());
+            parametersRecyclerView.setLayoutManager(llm);
+            //TODO: adapter
+
             //TODO: buttons
             return v;
         }
+
         @Override
         public void onBindViewHolder(ItemViewHolder ivh, ActionBuilder elem, int position) {
             Lol.d(this, "onBindViewHolder() called");
             View v = ivh.itemView;
 
-            ((TextView) v.findViewById(R.id.textview_macro_editor_action_name)).setText(elem.getName());
-            ComponentsAvailability t = availabilityTable.get(elem.getDeviceId());
-            if(t == null){
-                ((TextView) v.findViewById(R.id.textview_macro_editor_action_device)).setText("on Device with id: "+elem.getDeviceId());
-            }else{
-                ((TextView) v.findViewById(R.id.textview_macro_editor_action_device)).setText("on Device: "+t.getDevice().getModel());
-            }
+            ((TextView) v.findViewById(R.id.textview_macro_editor_action_name)).setText(elem.getName() + ((elem.getValidity()!= ComponentBuilderValidityStatus.VALID)?" (INVALID)":""));
+
+            ((TextView) v.findViewById(R.id.textview_macro_editor_action_device)).setText(getDeviceLabelText(availabilityTable, elem.getDeviceId(), currentDeviceId));
+
             //TODO: impl
         }
 
     }
 
-    public static class DataFragment extends Fragment{
+    public static String getDeviceLabelText(Map<Integer, ComponentsAvailability> availabilityTable, int deviceId, int currentDeviceId) {
+        String result = "on Device"; //TODO: localization
+        ComponentsAvailability t = availabilityTable.get(deviceId);
+        if (t == null) {
+            result += " with id: " + deviceId;
+        } else {
+            result += ": " + t.getDevice().getModel();
+            if (deviceId == currentDeviceId) {
+                result += " (this device)";
+            } else {
+                result += " (" + t.getDevice().getType() + ")";
+            }
+        }
+        return result;
+    }
+
+    public static class DataFragment extends Fragment {
 
         private boolean changed = false;
         private MacroInterface editorInput;

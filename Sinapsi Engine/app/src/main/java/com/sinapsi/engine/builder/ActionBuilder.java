@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class ActionBuilder {
 
-    private boolean invalid = false;
+    private ComponentBuilderValidityStatus validity = ComponentBuilderValidityStatus.VALID;
 
     private String name;
     private int deviceId;
@@ -31,10 +31,16 @@ public class ActionBuilder {
         }else{
             int remoteDeviceId = a.getExecutionDevice().getId();
             ComponentsAvailability ca = availabilityMap.get(remoteDeviceId);
-            if(ca == null) invalid = true; //TODO: reason?
+            if(ca == null) {
+                validity = ComponentBuilderValidityStatus.INVALID_MISSING_DEVICE;
+                this.name = a.getName();
+                this.deviceId = remoteDeviceId;
+            }
             else{
                 ActionDescriptor ad = ca.getActions().get(a.getName());
-                if(ad == null) invalid = true;
+                if(ad == null) {
+                    validity = ComponentBuilderValidityStatus.INVALID_MISSING_COMPONENT;
+                }
                 else debuildAction(ad, remoteDeviceId, a.getActualParameters());
             }
         }
@@ -138,11 +144,11 @@ public class ActionBuilder {
         return parameters;
     }
 
-    public boolean isInvalid() {
-        return invalid;
+    public ComponentBuilderValidityStatus getValidity() {
+        return validity;
     }
 
-    public void setInvalid(boolean invalid) {
-        this.invalid = invalid;
+    public void setValidity(ComponentBuilderValidityStatus validity) {
+        this.validity = validity;
     }
 }
