@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout
+
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <TextView
+            style="?android:textAppearanceLarge"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center_horizontal"
+            android:text="@string/actions_uppercase_text"
+            android:textColor="@color/sinapsi_blue" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/action_list_recycler"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:clipToPadding="false"
+            android:padding="5dp"
+            android:scrollbars="vertical"
+            android:visibility="visible"
+            android:paddingBottom="80dp"/>
+
+
+    </LinearLayout>
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/new_action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        fab:fab_colorNormal="@color/sinapsi_blue"
+        fab:fab_colorPressed="@color/sinapsi_blue_dark"
+        fab:fab_icon="@drawable/ic_action_add"
+        fab:fab_size="normal" />
+
+</RelativeLayout>

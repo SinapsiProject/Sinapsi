@@ -30,13 +30,14 @@ import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.utils.Triplet;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import retrofit.RetrofitError;
 
-public class EditorActivity extends SinapsiActionBarActivity {
+public class EditorActivityBeta extends SinapsiActionBarActivity {
 
     public static final String NO_CHANGES_BOOLEAN = "NO_CHANGES_BOOLEAN";
 
@@ -65,7 +66,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
                 changed = savedInstanceState.getBoolean(NO_CHANGES_BOOLEAN);
             }
         }
-        setContentView(R.layout.activity_editor);
+        setContentView(R.layout.activity_editor_beta);
 
         Lol.printNullity(this, "params", params);
         Lol.d(this, "params size: " + params.length);
@@ -75,10 +76,10 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
 
         transitionManager = new ViewTransitionManager(new HashMapBuilder<String, List<View>>()
-                .put(States.EDITOR.name(), Arrays.asList(
+                .put(States.EDITOR.name(), Collections.singletonList(
                         findViewById(R.id.editor_layout)
                 ))
-                .put(States.PROGRESS.name(), Arrays.asList(
+                .put(States.PROGRESS.name(), Collections.singletonList(
                         findViewById(R.id.editor_progress)
                 ))
                 .create());
@@ -141,9 +142,9 @@ public class EditorActivity extends SinapsiActionBarActivity {
                 @Override
                 public void failure(Throwable error) {
                     if (error instanceof RetrofitError) {
-                        DialogUtils.handleRetrofitError(error, EditorActivity.this, false);
+                        DialogUtils.handleRetrofitError(error, EditorActivityBeta.this, false);
                     } else {
-                        DialogUtils.showOkDialog(EditorActivity.this,
+                        DialogUtils.showOkDialog(EditorActivityBeta.this,
                                 "Error",
                                 "Something has gone wrong while downloading the availability" +
                                         " of components on other devices from server. Local " +
@@ -151,6 +152,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
                     }
                     availabilityTable.clear();
                     addLocalAvailability();
+                    macroBuilder = new MacroBuilder(service.getDevice().getId(), availabilityTable, input);
                     updateView();
                     transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
                 }
@@ -158,6 +160,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
         }else{
             availabilityTable.clear();
             addLocalAvailability();
+            macroBuilder = new MacroBuilder(service.getDevice().getId(), availabilityTable, input);
             updateView();
             transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
         }
@@ -226,7 +229,7 @@ public class EditorActivity extends SinapsiActionBarActivity {
 
         @Override
         public View onCreateView(ViewGroup parent, int viewType) {
-            return new View(EditorActivity.this);//TODO: impl
+            return new View(EditorActivityBeta.this);//TODO: impl
         }
         @Override
         public void onBindViewHolder(ItemViewHolder viewHolder, ParameterBuilder elem, int position) {
