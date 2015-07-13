@@ -25,6 +25,7 @@ import com.sinapsi.android.persistence.AndroidDiffDBManager;
 import com.sinapsi.android.persistence.AndroidLocalDBManager;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.view.MainActivity;
+import com.sinapsi.android.view.editor.EditorActivityAlpha;
 import com.sinapsi.android.web.AndroidBase64DecodingMethod;
 import com.sinapsi.android.web.AndroidBase64EncodingMethod;
 import com.sinapsi.client.AppConsts;
@@ -37,7 +38,6 @@ import com.sinapsi.client.persistence.InconsistentMacroChangeException;
 import com.sinapsi.client.persistence.UserSettingsFacade;
 import com.sinapsi.client.persistence.syncmodel.MacroSyncConflict;
 import com.sinapsi.engine.builder.ComponentsAvailability;
-import com.sinapsi.engine.builder.MacroBuilder;
 import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.utils.Triplet;
@@ -130,7 +130,7 @@ public class SinapsiBackgroundService extends Service
 
     private MainThreadRedHandler mainThreadRedHandler;
 
-    private Map<Integer, ComponentsAvailability> availabilityTable = new HashMap<>();
+
 
     @Override
     public void onCreate() {
@@ -771,47 +771,6 @@ public class SinapsiBackgroundService extends Service
         msg.sendToTarget();
     }
 
-    public void updateAvailabilityTable(final AvailabilityUpdateCallback callback) {
-        if(isOnline()){
-            getWeb().getAvailableComponents(getDevice(), new SinapsiWebServiceFacade.WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>>() {
-                @Override
-                public void success(List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>> triplets, Object response) {
-                    availabilityTable.clear();
-                    addLocalAvailability();
-                    for (Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>> t : triplets) {
-                        if (t.getFirst().getId() != getDevice().getId())
-                            availabilityTable.put(t.getFirst().getId(), new ComponentsAvailability(t.getFirst(), t.getSecond(), t.getThird()));
-                    }
-                    callback.onAvailabilityUpdateSuccess();
-                }
-
-                @Override
-                public void failure(Throwable error) {
-                    availabilityTable.clear();
-                    addLocalAvailability();
-                    callback.onAvailabilityUpdateFailure(error);
-                }
-            });
-        }else{
-            availabilityTable.clear();
-            addLocalAvailability();
-            callback.onAvailabilityUpdateOffline();
-        }
-    }
-
-    private void addLocalAvailability(){
-        availabilityTable.put(
-                getDevice().getId(),
-                new ComponentsAvailability(
-                        getDevice(),
-                        getEngine().getAvailableTriggerDescriptors(),
-                        getEngine().getAvailableActionDescriptors()
-                ));
-    }
-
-    public Map<Integer, ComponentsAvailability> getAvailabilityTable() {
-        return availabilityTable;
-    }
 
     private void startForegroundMode() {
         //HINT: useful toggles instead of classic content pending intent
@@ -832,12 +791,6 @@ public class SinapsiBackgroundService extends Service
         stopForeground(true);
     }
 
-
-    public static interface AvailabilityUpdateCallback {
-        public void onAvailabilityUpdateSuccess();
-        public void onAvailabilityUpdateFailure(Throwable error);
-        public void onAvailabilityUpdateOffline();
-    }
 
     public static interface BackgroundSyncCallback {
         public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros);
