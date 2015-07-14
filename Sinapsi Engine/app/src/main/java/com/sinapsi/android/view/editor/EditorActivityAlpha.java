@@ -1,5 +1,6 @@
 package com.sinapsi.android.view.editor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +20,17 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.AdapterDataObserver;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.R;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
@@ -38,7 +43,6 @@ import com.sinapsi.engine.builder.ActionBuilder;
 import com.sinapsi.engine.builder.ComponentBuilderValidityStatus;
 import com.sinapsi.engine.builder.ComponentsAvailability;
 import com.sinapsi.engine.builder.MacroBuilder;
-import com.sinapsi.engine.builder.ParameterBuilder;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
@@ -94,7 +98,6 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
         addFragmentForConnectionListening(actionsFragment);
         addFragmentForConnectionListening(triggerFragment);
-
 
 
         transitionManager = new ViewTransitionManager(new HashMapBuilder<String, List<View>>()
@@ -294,7 +297,8 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         if (dataFragment.isChanged())
             result = dataFragment.getMacroBuilder().build(service.getEngine());
         else result = dataFragment.getEditorInput();
-        returnActivity(result, dataFragment.isChanged());
+        //noinspection ConstantConditions
+        returnActivity(result, AndroidAppConsts.DEBUG_EDITOR || dataFragment.isChanged());
     }
 
     private void onGoingBack() {
@@ -356,7 +360,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
     public static class ActionsSectionFragment extends SinapsiFragment implements EditorUpdatableFragment {
 
-        private ActionListAdapter actionList = new ActionListAdapter();
+        private List<ActionBuilder> actionList = new ArrayList<>();
         private View rootView;
 
         private boolean recallUpdateAfterOnCreate = false;
@@ -366,15 +370,6 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             rootView = inflater.inflate(R.layout.editor_actions_fragment, container, false);
-
-
-
-            RecyclerView actionListRecyclerView = (RecyclerView) rootView.findViewById(R.id.action_list_recycler);
-            LinearLayoutManager llm2 = new LinearLayoutManager(getActivity());
-            actionListRecyclerView.setAdapter(actionList);
-            actionListRecyclerView.setLayoutManager(llm2);
-            actionListRecyclerView.setHasFixedSize(true);
-
             if (recallUpdateAfterOnCreate) {
                 recallUpdateAfterOnCreate = false;
                 updateView((EditorActivityAlpha) getActivity());
@@ -388,7 +383,6 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             if (activity == null) activity = editorActivity;
             DataFragment df = activity.getDataFragment();
 
-            actionList.setData(df.getAvailabilityTable(), service.getDevice().getId());
             actionList.clear();
             actionList.addAll(df.getMacroBuilder().getActions());
 
@@ -396,6 +390,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
                 recallUpdateAfterOnCreate = true;
                 return;
             }
+            updateActionList(df.getAvailabilityTable(), service.getDevice().getId());
         }
 
         @Override
@@ -403,6 +398,57 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             Locale l = Locale.getDefault();
             return context.getString(R.string.title_section_actions).toUpperCase(l);
         }
+
+        private void updateActionList(Map<Integer, ComponentsAvailability> availabilityTable,
+                                      int currentDeviceId) {
+            LinearLayout actionListView = (LinearLayout) rootView.findViewById(R.id.action_list);
+            for (int i = 0; i < actionList.size(); ++i) {
+                ActionBuilder ab = actionList.get(i);
+                View iv = onCreateView(actionListView, ab, i, availabilityTable, currentDeviceId);
+                actionListView.addView(iv);
+            }
+        }
+
+
+
+
+
+        public View onCreateView(ViewGroup parent,
+                                 ActionBuilder elem,
+                                 int position,
+                                 Map<Integer, ComponentsAvailability> availabilityTable,
+                                 int currentDeviceId) {
+
+            ParameterListAdapter parameters = new ParameterListAdapter();
+            Lol.d(this, "onCreateView() called");
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.action_editor_element, parent, false);
+            final RecyclerView parametersRecyclerView = (RecyclerView) v.findViewById(R.id.action_parameter_list_recycler);
+            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+            parametersRecyclerView.setLayoutManager(llm);
+            //TODO: buttons
+
+
+            ((TextView) v.findViewById(R.id.textview_macro_editor_action_name)).setText(elem.getName() + ((elem.getValidity() != ComponentBuilderValidityStatus.VALID) ? " (INVALID)" : ""));
+
+            ((TextView) v.findViewById(R.id.textview_macro_editor_action_device)).setText(EditorActivityAlpha.getDeviceLabelText(availabilityTable, elem.getDeviceId(), currentDeviceId));
+
+            parameters.clear();
+            parameters.addAll(elem.getParameters());
+
+            parametersRecyclerView.setAdapter(parameters);
+            parametersRecyclerView.setHasFixedSize(true);
+            //TODO: impl
+
+            ((ImageButton) v.findViewById(R.id.delete_action_button)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //TODO: impl
+                }
+            });
+            return v;
+        }
+
+
     }
 
     public static class TriggerSectionFragment extends SinapsiFragment implements EditorUpdatableFragment {
@@ -464,62 +510,6 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         }
     }
 
-
-    public static class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
-
-        private View rootView;
-
-        @Override
-        public View onCreateView(ViewGroup parent, int viewType) {
-            rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.parameter_editor_element, parent, false);
-            return rootView;
-        }
-
-        @Override
-        public void onBindViewHolder(ItemViewHolder viewHolder, ParameterBuilder elem, int position) {
-            //TODO: impl
-        }
-
-    }
-
-    public static class ActionListAdapter extends ArrayListAdapter<ActionBuilder> {
-
-
-        private Map<Integer, ComponentsAvailability> availabilityTable;
-        private int currentDeviceId;
-
-
-        public void setData(Map<Integer, ComponentsAvailability> availabilityMap, int currentDeviceId) {
-            this.availabilityTable = availabilityMap;
-            this.currentDeviceId = currentDeviceId;
-        }
-
-        @Override
-        public View onCreateView(ViewGroup parent, int viewType) {
-            Lol.d(this, "onCreateView() called");
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.action_editor_element, parent, false);
-            RecyclerView parametersRecyclerView = (RecyclerView) v.findViewById(R.id.action_parameter_list_recycler);
-            LinearLayoutManager llm = new LinearLayoutManager(parent.getContext());
-            parametersRecyclerView.setLayoutManager(llm);
-            //TODO: adapter
-
-            //TODO: buttons
-            return v;
-        }
-
-        @Override
-        public void onBindViewHolder(ItemViewHolder ivh, ActionBuilder elem, int position) {
-            Lol.d(this, "onBindViewHolder() called");
-            View v = ivh.itemView;
-
-            ((TextView) v.findViewById(R.id.textview_macro_editor_action_name)).setText(elem.getName() + ((elem.getValidity()!= ComponentBuilderValidityStatus.VALID)?" (INVALID)":""));
-
-            ((TextView) v.findViewById(R.id.textview_macro_editor_action_device)).setText(getDeviceLabelText(availabilityTable, elem.getDeviceId(), currentDeviceId));
-
-            //TODO: impl
-        }
-
-    }
 
     public static String getDeviceLabelText(Map<Integer, ComponentsAvailability> availabilityTable, int deviceId, int currentDeviceId) {
         String result = "on Device"; //TODO: localization

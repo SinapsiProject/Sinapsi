@@ -29,7 +29,6 @@ import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.utils.HashMapBuilder;
 import com.sinapsi.utils.Triplet;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +90,7 @@ public class EditorActivityBeta extends SinapsiActionBarActivity {
         triggerParamsRecyclerView.setLayoutManager(llm);
         triggerParamsRecyclerView.setHasFixedSize(true);
 
-        RecyclerView actionListRecyclerView = (RecyclerView) findViewById(R.id.action_list_recycler);
+        RecyclerView actionListRecyclerView = (RecyclerView) findViewById(R.id.action_list);
         LinearLayoutManager llm2 = new LinearLayoutManager(this);
         actionListRecyclerView.setAdapter(actionList);
         actionListRecyclerView.setLayoutManager(llm2);

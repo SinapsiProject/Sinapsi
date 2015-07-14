@@ -20,16 +20,23 @@
             android:text="@string/actions_uppercase_text"
             android:textColor="@color/sinapsi_blue" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/action_list_recycler"
+        <ScrollView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:clipToPadding="false"
-            android:padding="5dp"
-            android:scrollbars="vertical"
-            android:visibility="visible"
-            android:paddingBottom="80dp"/>
+            android:layout_height="fill_parent">
+
+            <LinearLayout
+                android:id="@+id/action_list"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:clipToPadding="false"
+                android:padding="5dp"
+                android:orientation="vertical"
+                android:visibility="visible"
+                android:paddingBottom="80dp"/>
+
+        </ScrollView>
+
 
 
     </LinearLayout>

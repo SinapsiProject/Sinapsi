@@ -28,4 +28,6 @@
         <item name="android:textColor">@color/abc_secondary_text_material_light</item>
         <item name="android:layout_height">45dip</item>
     </style>
+
+
 </resources>

@@ -185,7 +185,7 @@
                     android:textColor="@color/sinapsi_blue" />
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/action_list_recycler"
+                    android:id="@+id/action_list"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"

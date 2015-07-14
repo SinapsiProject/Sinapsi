@@ -108,16 +108,20 @@ public class ParameterBuilder {
             switch (pb.getType()){
                 case CHOICE:
                 case STRING:
-                    apb.put(pb.getName(), pb.getStrValue());
+                    if(pb.getStrValue() != null)
+                        apb.put(pb.getName(), pb.getStrValue());
                     break;
                 case INT:
-                    apb.put(pb.getName(), pb.getIntValue());
+                    if(pb.getIntValue() != null)
+                        apb.put(pb.getName(), pb.getIntValue());
                     break;
                 case BOOLEAN:
-                    apb.put(pb.getName(), pb.getBoolValue());
+                    if(pb.getBoolValue() != null)
+                        apb.put(pb.getName(), pb.getBoolValue());
                     break;
                 case STRING_ADVANCED:
-                    apb.put(pb.getName(), pb.getStrValue(), pb.getStringMatchingMode());
+                    if(pb.getBoolValue() != null)
+                        apb.put(pb.getName(), pb.getStrValue(), pb.getStringMatchingMode());
                     break;
             }
         }

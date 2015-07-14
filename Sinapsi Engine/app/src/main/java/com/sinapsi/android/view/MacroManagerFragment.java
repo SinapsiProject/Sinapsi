@@ -313,7 +313,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                             public void onActivityCancel() {
                                 //does nothing
                             }
-                        }, EditorActivityBeta.class, elem);
+                        }, EditorActivityAlpha.class, elem);
                         sl.close();
                     }
                 });

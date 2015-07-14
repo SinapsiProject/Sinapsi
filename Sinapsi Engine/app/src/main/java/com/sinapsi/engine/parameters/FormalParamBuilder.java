@@ -6,6 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Utility class for formal parameter list creation.
  */
@@ -34,6 +37,13 @@ public class FormalParamBuilder {
         ENABLE_DISABLE
     }
 
+    public static final List<String[]> STYLED_BOOL_CONSTANTS = Arrays.asList(
+            new String[]{"TRUE", "FALSE"},
+            new String[]{"ON", "OFF"},
+            new String[]{"ACTIVATE", "DEACTIVATE"},
+            new String[]{"YES", "NO"},
+            new String[]{"ENABLE", "DISABLE"}
+    );
 
     private JSONArray arr = new JSONArray();
     private JSONObject obj = new JSONObject();
