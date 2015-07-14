@@ -1,5 +1,7 @@
 package com.sinapsi.android.view.editor;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -24,7 +27,12 @@ import com.sinapsi.utils.JSONUtils;
  */
 public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
 
+    private final ParametersUpdateListener listener;
     private View rootView;
+
+    public ParameterListAdapter(ParametersUpdateListener listener){
+        this.listener = listener;
+    }
 
     @Override
     public View onCreateView(ViewGroup parent, int viewType) {
@@ -36,7 +44,7 @@ public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
     }
 
     @Override
-    public void onBindViewHolder(ItemViewHolder viewHolder, final ParameterBuilder elem, int position) {
+    public void onBindViewHolder(ItemViewHolder viewHolder, final ParameterBuilder elem, final int position) {
         View v = viewHolder.itemView;
 
         Lol.d("ON BIND VIEW HOLDER CALLED FOR ELEM: " + elem.getName());
@@ -82,9 +90,10 @@ public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
 
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        elem.setStrValue(elem.getChoiceEntries()[position]);
+                    public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
+                        elem.setStrValue(elem.getChoiceEntries()[spinnerPosition]);
                         checkBox.setChecked(elem.getStrValue() != null);
+                        listener.onParameterUpdate(position, elem);
                     }
 
                     @Override
@@ -138,13 +147,14 @@ public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
 
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (position == 0) {
+                    public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
+                        if (spinnerPosition == 0) {
                             elem.setBoolValue(Boolean.TRUE);
                         } else {
                             elem.setBoolValue(Boolean.FALSE);
                         }
                         checkBox.setChecked(elem.getBoolValue() != null);
+                        listener.onParameterUpdate(position, elem);
                     }
 
                     @Override
@@ -158,6 +168,7 @@ public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
 
             case STRING_ADVANCED: {
                 checkBox.setChecked(elem.getStrValue() != null);
+
                 spinner.setVisibility(View.VISIBLE);
                 stringEdittext.setVisibility(View.VISIBLE);
                 numEdittext.setVisibility(View.GONE);
@@ -177,8 +188,9 @@ public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
 
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        elem.setStringMatchingMode(StringMatchingModeChoices.values()[position]);
+                    public void onItemSelected(AdapterView<?> parent, View view, int spinnerPosition, long id) {
+                        elem.setStringMatchingMode(StringMatchingModeChoices.values()[spinnerPosition]);
+                        listener.onParameterUpdate(position, elem);
                     }
 
                     @Override
@@ -190,11 +202,35 @@ public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
             break;
         }
 
-        stringEdittext.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        stringEdittext.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                elem.setStrValue(v.getText().toString());
-                return true;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                elem.setStrValue(s.toString());
+                listener.onParameterUpdate(position, elem);
+            }
+        });
+
+        numEdittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                String original = s.toString();
+                Integer x;
+                if (original.equals("")) {
+                    x = null;
+                } else {
+                    x = Integer.parseInt(s.toString());
+                }
+                elem.setIntValue(x);
+                checkBox.setChecked(elem.getIntValue() != null);
+                listener.onParameterUpdate(position, elem);
             }
         });
 
@@ -210,11 +246,16 @@ public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
                 }
                 elem.setIntValue(x);
                 checkBox.setChecked(elem.getIntValue() != null);
+                listener.onParameterUpdate(position, elem);
                 return true;
             }
         });
 
 
+    }
+
+    public static interface ParametersUpdateListener{
+        public void onParameterUpdate(int position, ParameterBuilder builder);
     }
 
 }

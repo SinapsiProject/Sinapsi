@@ -21,6 +21,8 @@ import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.sinapsi.android.AndroidAppConsts;
+import com.sinapsi.android.ExampleMacroFactory;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiBackgroundService;
@@ -476,59 +478,51 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
         MacroInterface m = service.newEmptyMacro();
         m.setName("New macro");
 
-        // here starts test macro creation TODO: delete
-        m.setTrigger(service.getComponentFactory().newTrigger(
-                TriggerScreenPower.TRIGGER_SCREEN_POWER,
-                new ActualParamBuilder()
-                        .put("screen_power", true)
-                        .create().toString(),
-                m,
-                service.getDevice().getId()));
-        m.addAction(service.getComponentFactory().newAction(
-                ActionToast.ACTION_TOAST,
-                new ActualParamBuilder()
-                        .put("message", "Screen is on. 2")
-                        .create().toString(),
-                service.getDevice().getId()));
-        m.addAction(service.getComponentFactory().newAction(
-                ActionSimpleNotification.ACTION_SIMPLE_NOTIFICATION,
-                new ActualParamBuilder()
-                        .put("notification_title", "Test Distributed Macro")
-                        .put("notification_message", "Gnarf")
-                        .create().toString(),
-                57)); //the web service id for a@bf seems to be 51
+        if(!AndroidAppConsts.DEBUG_MACROS_WITHOUT_EDITOR) {
 
-        // here ends test macro creation //TODO: delete this macro
+            startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
+                @Override
+                public void onActivityReturn(Object... returnValues) {
+                    if (returnValues == null || !((returnValues[0] instanceof MacroInterface) && (returnValues[1] instanceof Boolean))) {
+                        //there is an error in return value mechanism: for now, let's crash
+                        throw new RuntimeException("OnActivityReturn failed");
+                    } else {
+                        Lol.printNullity(this, "returnValues[0]", returnValues[0]);
+                        service.addMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundSyncCallback() {
+                            @Override
+                            public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                                updateContent(true, currentMacros);
+                            }
 
-        startActivity(new SinapsiActionBarActivity.ActivityReturnCallback() {
-            @Override
-            public void onActivityReturn(Object... returnValues) {
-                if (returnValues == null || !((returnValues[0] instanceof MacroInterface) && (returnValues[1] instanceof Boolean))) {
-                    //there is an error in return value mechanism: for now, let's crash
-                    throw new RuntimeException("OnActivityReturn failed");
-                } else {
-                    Lol.printNullity(this, "returnValues[0]", returnValues[0]);
-                    service.addMacro((MacroInterface) returnValues[0], new SinapsiBackgroundService.BackgroundSyncCallback() {
-                        @Override
-                        public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
-                            updateContent(true, currentMacros);
-                        }
+                            @Override
+                            public void onBackgroundSyncFail(Throwable error) {
+                                //already handled by service
+                            }
+                        }, true);
 
-                        @Override
-                        public void onBackgroundSyncFail(Throwable error) {
-                            //already handled by service
-                        }
-                    }, true);
-
+                    }
                 }
-            }
 
-            @Override
-            public void onActivityCancel() {
-                Lol.d(MacroManagerFragment.this, "Editor Activity returned RESULT_CANCELED");
-                //do nothing
-            }
-        }, EditorActivityAlpha.class, m);
+                @Override
+                public void onActivityCancel() {
+                    Lol.d(MacroManagerFragment.this, "Editor Activity returned RESULT_CANCELED");
+                    //do nothing
+                }
+            }, EditorActivityAlpha.class, m);
+        }else{
+            ExampleMacroFactory.example5(service, m);
+            service.addMacro((MacroInterface) m, new SinapsiBackgroundService.BackgroundSyncCallback() {
+                @Override
+                public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {
+                    updateContent(true, currentMacros);
+                }
+
+                @Override
+                public void onBackgroundSyncFail(Throwable error) {
+                    //already handled by service
+                }
+            }, true);
+        }
     }
 
     @Override

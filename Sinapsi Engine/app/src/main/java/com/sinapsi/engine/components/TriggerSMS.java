@@ -23,7 +23,6 @@ public class TriggerSMS extends Trigger{
 
     public static final String TRIGGER_SMS = "TRIGGER_SMS";
 
-
     @Override
     public JSONObject getFormalParametersJSON() throws JSONException {
         return new FormalParamBuilder()

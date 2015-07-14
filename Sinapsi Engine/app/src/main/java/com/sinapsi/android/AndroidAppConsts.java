@@ -9,4 +9,5 @@ public class AndroidAppConsts {
     public static final int CLIENT_VERSION = SinapsiVersions.ANTARES.ordinal();
     public static final boolean DEBUG_LOG_MACRO_CURSORS = true;
     public static final boolean DEBUG_EDITOR = true;
+    public static final boolean DEBUG_MACROS_WITHOUT_EDITOR= true;
 }

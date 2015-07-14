@@ -20,12 +20,15 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.AdapterDataObserver;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,12 +40,12 @@ import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
-import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.builder.ActionBuilder;
 import com.sinapsi.engine.builder.ComponentBuilderValidityStatus;
 import com.sinapsi.engine.builder.ComponentsAvailability;
 import com.sinapsi.engine.builder.MacroBuilder;
+import com.sinapsi.engine.builder.ParameterBuilder;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
@@ -294,7 +297,8 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     private void endEditing() {
 
         MacroInterface result;
-        if (dataFragment.isChanged())
+        //noinspection ConstantConditions
+        if (AndroidAppConsts.DEBUG_EDITOR || dataFragment.isChanged())
             result = dataFragment.getMacroBuilder().build(service.getEngine());
         else result = dataFragment.getEditorInput();
         //noinspection ConstantConditions
@@ -390,7 +394,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
                 recallUpdateAfterOnCreate = true;
                 return;
             }
-            updateActionList(df.getAvailabilityTable(), service.getDevice().getId());
+            updateActionList(df, service.getDevice().getId());
         }
 
         @Override
@@ -399,27 +403,44 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             return context.getString(R.string.title_section_actions).toUpperCase(l);
         }
 
-        private void updateActionList(Map<Integer, ComponentsAvailability> availabilityTable,
+        private void updateActionList(final DataFragment df,
                                       int currentDeviceId) {
             LinearLayout actionListView = (LinearLayout) rootView.findViewById(R.id.action_list);
             for (int i = 0; i < actionList.size(); ++i) {
-                ActionBuilder ab = actionList.get(i);
-                View iv = onCreateView(actionListView, ab, i, availabilityTable, currentDeviceId);
+                final ActionBuilder ab = actionList.get(i);
+                final int finalI = i;
+                View iv = createActionView(
+                        actionListView,
+                        ab,
+                        i,
+                        df.getAvailabilityTable(),
+                        currentDeviceId,
+                        new ActionChangedCallback() {
+                            @Override
+                            public void onActionChanged(ActionBuilder elem) {
+                                df.getMacroBuilder().getActions().remove(finalI);
+                                df.getMacroBuilder().getActions().add(finalI, elem);
+                            }
+                        });
                 actionListView.addView(iv);
             }
         }
 
+        public View createActionView(ViewGroup parent,
+                                     final ActionBuilder elem,
+                                     int position,
+                                     Map<Integer, ComponentsAvailability> availabilityTable,
+                                     int currentDeviceId,
+                                     final ActionChangedCallback actionChangedCallback) {
 
-
-
-
-        public View onCreateView(ViewGroup parent,
-                                 ActionBuilder elem,
-                                 int position,
-                                 Map<Integer, ComponentsAvailability> availabilityTable,
-                                 int currentDeviceId) {
-
-            ParameterListAdapter parameters = new ParameterListAdapter();
+            final ParameterListAdapter parameters = new ParameterListAdapter(new ParameterListAdapter.ParametersUpdateListener() {
+                @Override
+                public void onParameterUpdate(int position, ParameterBuilder builder) {
+                    elem.getParameters().remove(position);
+                    elem.getParameters().add(position, builder);
+                    actionChangedCallback.onActionChanged(elem);
+                }
+            });
             Lol.d(this, "onCreateView() called");
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.action_editor_element, parent, false);
             final RecyclerView parametersRecyclerView = (RecyclerView) v.findViewById(R.id.action_parameter_list_recycler);
@@ -448,12 +469,14 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             return v;
         }
 
-
+        private interface ActionChangedCallback{
+            public void onActionChanged(ActionBuilder elem);
+        }
     }
 
-    public static class TriggerSectionFragment extends SinapsiFragment implements EditorUpdatableFragment {
+    public static class TriggerSectionFragment extends SinapsiFragment implements EditorUpdatableFragment, ParameterListAdapter.ParametersUpdateListener {
 
-        private ParameterListAdapter triggerParameters = new ParameterListAdapter();
+        private ParameterListAdapter triggerParameters = new ParameterListAdapter(this);
         private View rootView;
 
         private boolean recallUpdateAfterOnCreate = false;
@@ -482,14 +505,28 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         public void updateView(EditorActivityAlpha editorActivity) {
             EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
             if (activity == null) activity = editorActivity;
-            DataFragment df = activity.getDataFragment();
+            final DataFragment df = activity.getDataFragment();
             Lol.printNullity(this, "df", df);
             if (rootView == null) {
                 recallUpdateAfterOnCreate = true;
                 return;
             }
-            ((TextView) rootView.findViewById(R.id.edittext_macro_editor_macro_name)).setText(df.getMacroBuilder().getName());
+            EditText macroNameText = (EditText) rootView.findViewById(R.id.edittext_macro_editor_macro_name);
+            macroNameText.setText(df.getMacroBuilder().getName());
+
+            macroNameText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override
+                public void afterTextChanged(Editable s) {
+                    df.getMacroBuilder().setName(s.toString());
+                }
+            });
+
             ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_name)).setText(df.getMacroBuilder().getTrigger().getName());
+
 
 
             ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_device)).setText(
@@ -507,6 +544,22 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         public String getName(Context context) {
             Locale l = Locale.getDefault();
             return context.getString(R.string.title_section_trigger).toUpperCase(l);
+        }
+
+        @Override
+        public void onParameterUpdate(int position, ParameterBuilder builder) {
+            EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
+            if(rootView == null || activity == null || activity.getDataFragment() == null){
+                return;
+            }
+
+            DataFragment df = activity.getDataFragment();
+            Lol.d("UPDATING TRIGGER PARAMETER");
+            Lol.d("builder.getBoolValue() == " + builder.getBoolValue().toString());
+            df.getMacroBuilder().getTrigger().getParameters().remove(position);
+            df.getMacroBuilder().getTrigger().getParameters().add(position, builder);
+
+
         }
     }
 

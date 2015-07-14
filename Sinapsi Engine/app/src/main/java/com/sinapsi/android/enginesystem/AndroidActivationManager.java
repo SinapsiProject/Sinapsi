@@ -11,6 +11,7 @@ import com.sinapsi.android.utils.IntentUtils;
 import com.sinapsi.engine.ActivationManager;
 import com.sinapsi.engine.Event;
 import com.sinapsi.engine.Trigger;
+import com.sinapsi.engine.components.TriggerACPower;
 import com.sinapsi.engine.components.TriggerSMS;
 import com.sinapsi.engine.components.TriggerScreenPower;
 import com.sinapsi.engine.components.TriggerWifi;
@@ -124,6 +125,7 @@ public class AndroidActivationManager extends ActivationManager {
         if (t.getName().equals(TriggerWifi.TRIGGER_WIFI) && wifiActivator!= null) wifiActivator.addTrigger(t);
         if (t.getName().equals(TriggerSMS.TRIGGER_SMS) && smsActivator!= null) smsActivator.addTrigger(t);
         if (t.getName().equals(TriggerScreenPower.TRIGGER_SCREEN_POWER) && screenPowerActivator!= null) screenPowerActivator.addTrigger(t);
+        if (t.getName().equals(TriggerACPower.TRIGGER_AC_POWER) && acPowerActivator != null) acPowerActivator.addTrigger(t);
 
         manageRegistrations();
     }
@@ -135,6 +137,7 @@ public class AndroidActivationManager extends ActivationManager {
         if (t.getName().equals(TriggerWifi.TRIGGER_WIFI) && wifiActivator!= null) wifiActivator.removeTrigger(t);
         if (t.getName().equals(TriggerSMS.TRIGGER_SMS) && smsActivator!= null) smsActivator.removeTrigger(t);
         if (t.getName().equals(TriggerScreenPower.TRIGGER_SCREEN_POWER) && screenPowerActivator!= null) screenPowerActivator.removeTrigger(t);
+        if (t.getName().equals(TriggerACPower.TRIGGER_AC_POWER) && acPowerActivator != null) acPowerActivator.removeTrigger(t);
 
         manageRegistrations();
     }

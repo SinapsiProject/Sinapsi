@@ -53,8 +53,12 @@ public class MacroBuilder{
         macro.setValid(valid);
         macro.setExecutionFailurePolicy(executionFailurePolicy);
         macro.setEnabled(enabled);
+
         macro.setTrigger(trigger.buildTrigger(engine.getComponentFactory(), macro));
+
+        macro.getActions().clear();
         for(ActionBuilder ab: actions){
+
             macro.addAction(ab.buildAction(engine.getComponentFactory()));
         }
         return macro;
