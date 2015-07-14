@@ -21,6 +21,8 @@ import java.net.URI;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import retrofit.http.GET;
 import javafx.application.Application;
@@ -80,11 +82,11 @@ public class Launcher extends Application {
 			tray = SystemTray.getSystemTray();
 			// Loading image
 			icon = null;
-	        try {
-	          icon = ImageIO.read(new File(path));
-	        } catch (IOException e) {
-	          e.printStackTrace();
-	        }
+			try {
+				icon = ImageIO.read(new File(path));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {

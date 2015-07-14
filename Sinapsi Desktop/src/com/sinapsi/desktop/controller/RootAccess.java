@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
-
 public class RootAccess {
 
 	static InputStream is;
@@ -21,6 +20,7 @@ public class RootAccess {
 	}
 
 	public static String getPasswdForRoot() throws IOException {
+		
 		Process p = Runtime.getRuntime().exec(new String[] { "sh", "-c", "sudo -S id" });
 
 		is = p.getErrorStream();
@@ -32,7 +32,7 @@ public class RootAccess {
 
 		JPanel panel = new JPanel(new BorderLayout());
 		JLabel lab = new JLabel(text);
-
+		
 		panel.add(lab, BorderLayout.NORTH);
 		JPasswordField password = new JPasswordField();
 		panel.add(password, BorderLayout.SOUTH);

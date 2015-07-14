@@ -1,8 +1,10 @@
 package com.sinapsi.desktop.controller;
 
+import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.client.web.SinapsiWebServiceFacade.WebServiceCallback;
 import com.sinapsi.desktop.enginesystem.DesktopDeviceInfo;
 import com.sinapsi.desktop.main.Launcher;
+import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
@@ -49,13 +51,30 @@ public class LayoutController {
 										Launcher.bgService.setDevice(device);
 										Launcher.bgService.initEngine();
 										Launcher.bgService.getWSClient().establishConnection();
-										Platform.runLater(new Runnable() {
-											
-											@Override
-											public void run() {
-												stage.close();												
-											}
-										});
+										Launcher.bgService.getWeb().setAvailableComponents(device,
+												Launcher.bgService.getEngine().getAvailableTriggerDescriptors(),
+												Launcher.bgService.getEngine().getAvailableActionDescriptors(),
+												new WebServiceCallback<CommunicationInfo>() {
+													
+													@Override
+													public void success(CommunicationInfo t, Object response) {
+														Platform.runLater(new Runnable() {
+															
+															@Override
+															public void run() {
+																stage.close();												
+															}
+														});
+														
+													}
+													
+													@Override
+													public void failure(Throwable error) {
+														// TODO Auto-generated method stub
+														
+													}
+												});
+										
 										
 									}
 									

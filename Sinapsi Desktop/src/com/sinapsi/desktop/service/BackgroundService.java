@@ -56,6 +56,10 @@ public class BackgroundService implements Runnable, OnlineStatusProvider, WebSoc
 	private SafeSyncManager safeSyncManager;
 	private DesktopDeviceInfo deviceInfo;
 	private String rootPasswd;
+	
+	public MacroEngine getEngine() {
+		return this.macroEngine;
+	}
 
 	public BackgroundService(String rootPasswd) {
 		this.rootPasswd = rootPasswd;
