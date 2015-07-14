@@ -2,11 +2,13 @@ package com.sinapsi.android.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sinapsi.android.SinapsiAndroidApplication;
@@ -56,7 +58,11 @@ public class WelcomeActivity extends Activity {
             }
         });
 
-        ImageView logo = (ImageView) findViewById(R.id.logo);
+        LinearLayout logo = (LinearLayout) findViewById(R.id.logo);
+
+        TextView logoLabel = (TextView) findViewById(R.id.logo_label);
+        Typeface latoFont = Typeface.createFromAsset(getAssets(), "fonts/Lato-Regular.ttf");
+        logoLabel.setTypeface(latoFont);
 
         Animation alpha1 = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
         alpha1.setStartOffset(ANIM_START_OFFSET);
