@@ -14,7 +14,6 @@ import com.sinapsi.client.web.gson.DeviceInterfaceInstanceCreator;
 import com.sinapsi.client.websocket.WSClient;
 import com.sinapsi.engine.execution.RemoteExecutionDescriptor;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
@@ -27,9 +26,10 @@ import com.sinapsi.model.impl.SyncOperation;
 import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
-import com.sinapsi.utils.Triplet;
 import com.sinapsi.webshared.ComponentFactoryProvider;
+import com.sinapsi.webshared.gson.DeviceInterfaceTypeAdapter;
 import com.sinapsi.webshared.gson.MacroTypeAdapter;
+import com.sinapsi.webshared.gson.UserInterfaceTypeAdapter;
 import com.sinapsi.webshared.wsproto.WebSocketEventHandler;
 
 import org.java_websocket.handshake.ServerHandshake;
@@ -106,15 +106,16 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(
                         DeviceInterface.class,
-                        new DeviceInterfaceInstanceCreator(factoryModel))
+                        new DeviceInterfaceTypeAdapter())
+                .registerTypeAdapter(
+                        Device.class,
+                        new DeviceInterfaceTypeAdapter())
                 .registerTypeAdapter(
                         UserInterface.class,
-                        new InstanceCreator<UserInterface>() {
-                            @Override
-                            public UserInterface createInstance(Type type) {
-                                return factoryModel.newUser(-1, null, null, false, null);
-                            }
-                        })
+                        new UserInterfaceTypeAdapter())
+                .registerTypeAdapter(
+                        User.class,
+                        new UserInterfaceTypeAdapter())
                 .registerTypeAdapter(
                         MacroInterface.class,
                         new MacroTypeAdapter(componentFactoryProvider))
@@ -153,7 +154,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
                 .setLog(retrofitLog)
                 .build();
 
-        if (AppConsts.DEBUG) {
+        if (AppConsts.DEBUG_LOGS) {
             cryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
             uncryptedRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
             loginRestAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
@@ -165,7 +166,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
 
         uncryptedRetrofit = uncryptedRestAdapter.create(RetrofitInterface.class);
 
-        if(AppConsts.DEBUG_ENCRYPTED_RETROFIT)
+        if (AppConsts.DEBUG_ENCRYPTED_RETROFIT)
             cryptedRetrofit = cryptedRestAdapter.create(RetrofitInterface.class);
         else
             cryptedRetrofit = uncryptedRetrofit;
@@ -435,11 +436,10 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
 
-
     @Override
-    public void setAvailableComponents(DeviceInterface device, List<TriggerDescriptor> triggers, List<ActionDescriptor> actions, WebServiceCallback<CommunicationInfo> result){
+    public void setAvailableComponents(DeviceInterface device, List<TriggerDescriptor> triggers, List<ActionDescriptor> actions, WebServiceCallback<CommunicationInfo> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.setAvailableComponents(
                 loggedUser.getEmail(),
                 device.getName(),
@@ -449,9 +449,9 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void getAvailableComponents(DeviceInterface device, WebServiceCallback<AvailabilityMap> result){
+    public void getAvailableComponents(DeviceInterface device, WebServiceCallback<AvailabilityMap> result) {
         checkKeys();
-        if(!onlineStatusProvider.isOnline()) return;
+        if (!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAvailableComponents(
                 loggedUser.getEmail(),
                 device.getName(),
@@ -516,7 +516,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
         );
     }
 
-    public void pushChanges(DeviceInterface device, List<Pair<SyncOperation, MacroInterface>> changes, WebServiceCallback<List<Pair<SyncOperation, Integer>>> callback){
+    public void pushChanges(DeviceInterface device, List<Pair<SyncOperation, MacroInterface>> changes, WebServiceCallback<List<Pair<SyncOperation, Integer>>> callback) {
         cryptedRetrofit.pushChanges(
                 loggedUser.getEmail(),
                 device.getName(),

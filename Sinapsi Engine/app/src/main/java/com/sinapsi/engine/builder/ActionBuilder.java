@@ -18,13 +18,9 @@ import java.util.Map;
 /**
  * TODO: doku
  */
-public class ActionBuilder {
+public class ActionBuilder extends ComponentBuilder{
 
-    private ComponentBuilderValidityStatus validity = ComponentBuilderValidityStatus.VALID;
 
-    private String name;
-    private int deviceId;
-    private List<ParameterBuilder> parameters = new ArrayList<>();
 
     public ActionBuilder(int currentDeviceid, Map<Integer, ComponentsAvailability> availabilityMap, Action a) {
         if(a.getExecutionDevice().getId() == currentDeviceid){
@@ -39,9 +35,7 @@ public class ActionBuilder {
             }
             else{
                 ActionDescriptor ad = ca.getActions().get(a.getName());
-                if(ad == null) {
-                    validity = ComponentBuilderValidityStatus.INVALID_MISSING_COMPONENT;
-                }
+                if(ad == null) validity = ComponentBuilderValidityStatus.INVALID_MISSING_COMPONENT;
                 else debuildAction(ad, remoteDeviceId, a.getActualParameters());
             }
         }
@@ -52,72 +46,17 @@ public class ActionBuilder {
     }
 
 
-
-
     private void debuildAction(Action action) {
-        this.name = action.getName();
-        this.deviceId = action.getExecutionDevice().getId();
-
-        try {
-            JSONObject formalJson = action.getFormalParametersJSON();
-
-
-            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
-
-            JSONObject actualJson = new JSONObject(action.getActualParameters()).getJSONObject(ActualParamBuilder.PARAMETERS);
-
-            for (int i = 0; i < formalPArray.length(); ++i) {
-                JSONObject fo = formalPArray.getJSONObject(i);
-                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
-                this.parameters.add(pm);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        super.debuild(action, action.getExecutionDevice().getId(), action.getActualParameters());
     }
 
 
     private void debuildAction(ActionDescriptor action, int deviceId) {
-        this.name = action.getName();
-        this.deviceId = deviceId;
-
-        try {
-            JSONObject formalJson = new JSONObject(action.getFormalParameters());
-            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
-
-            JSONObject actualJson = new JSONObject(); //this is from a descriptor representing a new inserted action,
-                                                        // so a new empty actual param obj is ok
-
-
-            for (int i = 0; i < formalPArray.length(); ++i) {
-                JSONObject fo = formalPArray.getJSONObject(i);
-                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
-                this.parameters.add(pm);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        super.debuild(action, deviceId, null);
     }
 
     private void debuildAction(ActionDescriptor action, int deviceId, String actualParams) {
-        this.name = action.getName();
-        this.deviceId = deviceId;
-
-        try {
-            JSONObject formalJson = new JSONObject(action.getFormalParameters());
-            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
-
-            JSONObject actualJson = new JSONObject(actualParams).getJSONObject(ActualParamBuilder.PARAMETERS);
-
-
-            for (int i = 0; i < formalPArray.length(); ++i) {
-                JSONObject fo = formalPArray.getJSONObject(i);
-                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
-                this.parameters.add(pm);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        super.debuild(action, deviceId, actualParams);
     }
 
     public Action buildAction(ComponentFactory cf) {
@@ -125,31 +64,4 @@ public class ActionBuilder {
         return cf.newAction(name, params, deviceId);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public List<ParameterBuilder> getParameters() {
-        return parameters;
-    }
-
-    public ComponentBuilderValidityStatus getValidity() {
-        return validity;
-    }
-
-    public void setValidity(ComponentBuilderValidityStatus validity) {
-        this.validity = validity;
-    }
 }

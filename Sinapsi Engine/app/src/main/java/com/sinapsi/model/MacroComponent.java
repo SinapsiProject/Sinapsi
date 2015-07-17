@@ -10,6 +10,8 @@ import java.util.HashMap;
  */
 public interface MacroComponent extends Parameterized{
 
+    //TODO: could this contain executionDevice field painlessly?
+
     /**
      * Getter of the metadata name of the class implementing
      * MacroComponent (i.e. TriggerWifi should have a name similar to

@@ -16,7 +16,7 @@ public class Lol {
      * @param message the message
      */
     public static void d(String message){
-        if(AppConsts.DEBUG) Log.d("DEBUGLOL", message);
+        if(AppConsts.DEBUG_LOGS) Log.d("DEBUGLOL", message);
     }
 
     /**
@@ -25,7 +25,7 @@ public class Lol {
      * @param message the message
      */
     public static void d(String tag, String message){
-        if(AppConsts.DEBUG) Log.d(tag, message);
+        if(AppConsts.DEBUG_LOGS) Log.d(tag, message);
     }
 
     /**
@@ -34,7 +34,7 @@ public class Lol {
      * @param message the message
      */
     public static void d(Class clazz, String message){
-        if(AppConsts.DEBUG)Log.d(getTag(clazz), message);
+        if(AppConsts.DEBUG_LOGS)Log.d(getTag(clazz), message);
     }
 
     /**
@@ -43,7 +43,7 @@ public class Lol {
      * @param message the message
      */
     public static void d(Object o, String message){
-        if(AppConsts.DEBUG)Lol.d(getTag(o),message);
+        if(AppConsts.DEBUG_LOGS)Lol.d(getTag(o),message);
     }
 
     public static String getTag(Object o){

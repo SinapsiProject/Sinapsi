@@ -213,7 +213,8 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
     private void updateAvailabilityTable(final EditorActivityAlpha.AvailabilityUpdateCallback callback) {
         final Map<Integer, ComponentsAvailability> availabilityTable = new HashMap<>();
-        if (service.isOnline()) {
+        //noinspection ConstantConditions
+        if (!AndroidAppConsts.DEBUG_EDITOR_OFFLINE && service.isOnline()) {
             service.getWeb().getAvailableComponents(service.getDevice(), new SinapsiWebServiceFacade.WebServiceCallback<AvailabilityMap>() {
                 @Override
                 public void success(AvailabilityMap triplets, Object response) {
@@ -412,6 +413,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         private void updateActionList(final DataFragment df,
                                       int currentDeviceId) {
             LinearLayout actionListView = (LinearLayout) rootView.findViewById(R.id.action_list);
+            actionListView.removeAllViews();
             for (int i = 0; i < actionList.size(); ++i) {
                 final ActionBuilder ab = actionList.get(i);
                 final int finalI = i;

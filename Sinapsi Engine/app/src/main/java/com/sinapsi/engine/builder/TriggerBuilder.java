@@ -19,13 +19,7 @@ import java.util.Map;
 /**
  * TODO: doku
  */
-public class TriggerBuilder {
-
-    private ComponentBuilderValidityStatus validity = ComponentBuilderValidityStatus.VALID;
-
-    private String name;
-    private int deviceId;
-    private List<ParameterBuilder> parameters = new ArrayList<>();
+public class TriggerBuilder extends ComponentBuilder{
 
 
     public TriggerBuilder(int currentDeviceid, Map<Integer, ComponentsAvailability> availabilityMap, Trigger trigger) {
@@ -52,63 +46,15 @@ public class TriggerBuilder {
     }
 
     private void debuildTrigger(TriggerDescriptor trigger, int deviceId, String actualParams) {
-        this.name = trigger.getName();
-        this.deviceId = deviceId;
-
-        try {
-            JSONObject formalJson = new JSONObject(trigger.getFormalParameters());
-            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
-
-            JSONObject actualJson = new JSONObject(actualParams).getJSONObject(ActualParamBuilder.PARAMETERS);
-
-            for (int i = 0; i < formalPArray.length(); ++i) {
-                JSONObject fo = formalPArray.getJSONObject(i);
-                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
-                this.parameters.add(pm);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        super.debuild(trigger, deviceId, actualParams);
     }
 
     private void debuildTrigger(TriggerDescriptor trigger, int deviceId) {
-        this.name = trigger.getName();
-        this.deviceId = deviceId;
-
-        try {
-            JSONObject formalJson = new JSONObject(trigger.getFormalParameters());
-            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
-
-            JSONObject actualJson = new JSONObject(); //this is from a descriptor, so a new empty actual param obj is ok
-
-            for (int i = 0; i < formalPArray.length(); ++i) {
-                JSONObject fo = formalPArray.getJSONObject(i);
-                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
-                this.parameters.add(pm);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        super.debuild(trigger, deviceId, null);
     }
 
     private void debuildTrigger(Trigger trigger) {
-        this.name = trigger.getName();
-        this.deviceId = trigger.getExecutionDevice().getId();
-
-        try {
-            JSONObject formalJson = trigger.getFormalParametersJSON();
-            JSONArray formalPArray = formalJson.getJSONArray(FormalParamBuilder.FORMAL_PARAMETERS);
-
-            JSONObject actualJson = new JSONObject(trigger.getActualParameters()).getJSONObject(ActualParamBuilder.PARAMETERS);
-
-            for (int i = 0; i < formalPArray.length(); ++i) {
-                JSONObject fo = formalPArray.getJSONObject(i);
-                ParameterBuilder pm = new ParameterBuilder(fo, actualJson);
-                this.parameters.add(pm);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        super.debuild(trigger, trigger.getExecutionDevice().getId(), trigger.getActualParameters());
     }
 
     public Trigger buildTrigger(ComponentFactory cf, MacroInterface m) {
@@ -117,31 +63,5 @@ public class TriggerBuilder {
         return cf.newTrigger(name, params, m, deviceId);
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public List<ParameterBuilder> getParameters() {
-        return parameters;
-    }
-
-    public ComponentBuilderValidityStatus getValidity() {
-        return validity;
-    }
-
-    public void setValidity(ComponentBuilderValidityStatus validity) {
-        this.validity = validity;
-    }
 }

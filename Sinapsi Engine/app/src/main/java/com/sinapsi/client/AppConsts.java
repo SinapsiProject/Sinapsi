@@ -5,7 +5,7 @@ package com.sinapsi.client;
  */
 public class AppConsts {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG_LOGS = true;
     public static final boolean DEBUG_TEST_MACROS = false;
     public static final boolean DEBUG_BYPASS_LOGIN = false;
 
@@ -26,5 +26,5 @@ public class AppConsts {
     public static final String DEFAULT_MACRO_ICON = "ic_macro_default";
 
 
-    private AppConsts(){} //Don't instantiate
+    private AppConsts(){} //Don't instantiate plz
 }

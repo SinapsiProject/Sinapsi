@@ -10,4 +10,5 @@ public class AndroidAppConsts {
     public static final boolean DEBUG_LOG_MACRO_CURSORS = true;
     public static final boolean DEBUG_EDITOR = true;
     public static final boolean DEBUG_MACROS_WITHOUT_EDITOR = false;
+    public static final boolean DEBUG_EDITOR_OFFLINE = false;
 }

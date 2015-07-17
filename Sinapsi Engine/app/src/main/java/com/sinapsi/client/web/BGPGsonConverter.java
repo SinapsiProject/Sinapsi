@@ -5,6 +5,7 @@ import com.bgp.codec.EncodingMethod;
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
+import com.sinapsi.client.AppConsts;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -60,7 +61,7 @@ public class BGPGsonConverter extends GsonConverter {
 
             String uncryptedStr = decrypter.decrypt(cryptedString);
 
-            System.out.println("<-- BGPRETROFIT: "+uncryptedStr);
+            if(AppConsts.DEBUG_LOGS) System.out.println("<-- BGPRETROFIT: "+uncryptedStr);
 
             //calls super to convert to object
             final InputStream is = new ByteArrayInputStream(uncryptedStr.getBytes());
@@ -95,7 +96,7 @@ public class BGPGsonConverter extends GsonConverter {
 
         String message = myGson.toJson(object);
 
-        System.out.println("--> BGPRETROFIT: "+message);
+        if(AppConsts.DEBUG_LOGS) System.out.println("--> BGPRETROFIT: "+message);
 
         try {
             // use 128 bits/16bytes lenght key for session
