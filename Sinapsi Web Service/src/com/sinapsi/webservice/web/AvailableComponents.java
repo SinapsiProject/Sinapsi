@@ -3,7 +3,6 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -15,24 +14,19 @@ import javax.servlet.http.HttpServletResponse;
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.DeviceInterface;
-import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.model.impl.AvailabilityMap;
 import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.utils.Pair;
-import com.sinapsi.utils.Triplet;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.engine.WebServiceGsonManager;
 import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
-import com.sinapsi.webshared.gson.DeviceInterfaceTypeAdapter;
-import com.sinapsi.webshared.gson.UserInterfaceTypeAdapter;
 
 /**
  * Get/Set available components for a specific device

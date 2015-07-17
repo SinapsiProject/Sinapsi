@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
-import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
 import com.sinapsi.webservice.engine.WebServiceGsonManager;
@@ -52,7 +51,6 @@ public class LoginServlet extends HttpServlet {
         // objects that manipulate data in the db
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
-        DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
 
         try {
             String email = request.getParameter("email");
@@ -83,10 +81,8 @@ public class LoginServlet extends HttpServlet {
             User user = (User) userManager.getUserByEmail(email);           
             
             if (userManager.checkUser(email, password)) {          
-                // set the connected devices
-                user.setDevices(deviceManager.getUserDevices(email));
                     
-                // and send the encrypted data
+                // send the encrypted data
                 out.print(encrypter.encrypt(gson.toJson(user)));
                 out.flush();
                 

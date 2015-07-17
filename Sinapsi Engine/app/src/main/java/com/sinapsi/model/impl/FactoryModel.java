@@ -26,14 +26,6 @@ public class FactoryModel implements FactoryModelInterface {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.sinapsi.model.FactoryModelInterface#newUser(int, java.lang.String, java.lang.String, java.lang.List)
-	 */
-	@Override
-	public UserInterface newUser(int id, String email, String password, boolean active, String role, List<DeviceInterface> devices) {
-		return new User(id, email, password, active, role, devices);
-	}
-
-	/* (non-Javadoc)
 	 * @see com.sinapsi.model.FactoryModelInterface#newDevice(int, java.lang.String, java.lang.String, java.lang.String, com.sinapsi.model.UserInterface, int)
 	 */
 	@Override

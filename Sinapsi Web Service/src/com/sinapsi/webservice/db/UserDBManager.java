@@ -195,7 +195,6 @@ public class UserDBManager {
         PreparedStatement s = null;
         ResultSet r = null;
         List<UserInterface> users = new ArrayList<UserInterface>();
-        DeviceDBManager devicedb = new DeviceDBManager();
         try {
             c = db.connect();
             String query = "SELECT id, email, password, active, role FROM users";
@@ -208,7 +207,7 @@ public class UserDBManager {
                 String pwd = r.getString("password");
                 boolean active = r.getBoolean("active");
                 String role = r.getString("role");
-                UserInterface user = db.factory.newUser(id, email, pwd, active, role, devicedb.getUserDevices(email));
+                UserInterface user = db.factory.newUser(id, email, pwd, active, role);
                 users.add(user);
             }
 

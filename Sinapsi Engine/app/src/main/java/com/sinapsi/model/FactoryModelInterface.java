@@ -21,17 +21,7 @@ public interface FactoryModelInterface {
      */
     public UserInterface newUser(int id, String email, String password, boolean active, String role);
 
-    /**
-     * Should create a new instance of UserInterface
-     *
-     * @param id the user id in the db
-     * @param email the user's email
-     * @param password the user's password
-     * @return a new UserInterface instance
-     */
-    public UserInterface newUser(int id, String email, String password, boolean active, String role, List<DeviceInterface> devices);
-
-
+    
     /**
      * Should create a new instance of DeviceInterface
      *

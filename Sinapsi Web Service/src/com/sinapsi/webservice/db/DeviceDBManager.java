@@ -64,7 +64,7 @@ public class DeviceDBManager extends UserDBManager {
             s.setInt(1, idDevice);
             r = s.executeQuery();
             if (r.next()) 
-                user = db.factory.newUser(r.getInt("iduser"), r.getString("email"), r.getString("password"), r.getBoolean("active"), r.getString("role"), getUserDevices(r.getString("email")));
+                user = db.factory.newUser(r.getInt("iduser"), r.getString("email"), r.getString("password"), r.getBoolean("active"), r.getString("role"));
             
         } catch(SQLException ex) {
             db.disconnect(c, s, r);
