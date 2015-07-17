@@ -63,10 +63,11 @@ public class AvailableComponents extends HttpServlet {
                 List<DeviceInterface> devicesUser = deviceManager.getUserDevices(email);
                 
                 for(DeviceInterface device : devicesUser) {
+                	device.getUser().setPassword(""); //hiding salted password
                     data.put(
 	                            device,
-	                            engineManager.getAvailableTrigger(device.getId()), 
-	                            engineManager.getAvailableAction(device.getId())
+	                            engineManager.getAvailableTriggers(device.getId()),
+	                            engineManager.getAvailableActions(device.getId())
                             );
                 }
                 
