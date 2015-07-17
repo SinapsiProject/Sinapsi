@@ -24,11 +24,11 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.android.ExampleMacroFactory;
 import com.sinapsi.android.Lol;
+import com.sinapsi.android.R;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
 import com.sinapsi.android.background.SinapsiBackgroundService;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.background.WebServiceConnectionListener;
-import com.sinapsi.android.enginesystem.components.ActionToast;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.utils.GraphicsUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
@@ -36,12 +36,7 @@ import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.android.utils.swipeaction.SmartSwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
 import com.sinapsi.android.view.editor.EditorActivityAlpha;
-import com.sinapsi.android.view.editor.EditorActivityBeta;
 import com.sinapsi.engine.MacroEngine;
-import com.sinapsi.android.R;
-import com.sinapsi.engine.components.ActionSimpleNotification;
-import com.sinapsi.engine.components.TriggerScreenPower;
-import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.utils.HashMapBuilder;
 
@@ -510,7 +505,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                 }
             }, EditorActivityAlpha.class, m);
         }else{
-            ExampleMacroFactory.example5(service, m);
+            ExampleMacroFactory.example1(service, m);
             service.addMacro((MacroInterface) m, new SinapsiBackgroundService.BackgroundSyncCallback() {
                 @Override
                 public void onBackgroundSyncSuccess(List<MacroInterface> currentMacros) {

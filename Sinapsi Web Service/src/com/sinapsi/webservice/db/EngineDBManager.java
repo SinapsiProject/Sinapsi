@@ -58,7 +58,7 @@ public class EngineDBManager {
      * @return list of actions
      * @throws SQLException
      */
-    public List<ActionDescriptor> getAvailableAction(int idDevice) throws SQLException {
+    public List<ActionDescriptor> getAvailableActions(int idDevice) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;
@@ -94,7 +94,7 @@ public class EngineDBManager {
      * @return list of trigger
      * @throws SQLException
      */
-    public List<TriggerDescriptor> getAvailableTrigger(int idDevice) throws SQLException {
+    public List<TriggerDescriptor> getAvailableTriggers(int idDevice) throws SQLException {
         Connection c = null;
         PreparedStatement s = null;
         ResultSet r = null;

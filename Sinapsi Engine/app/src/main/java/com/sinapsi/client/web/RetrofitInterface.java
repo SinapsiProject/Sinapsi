@@ -6,6 +6,7 @@ import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.AvailabilityMap;
 import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.SyncOperation;
@@ -172,7 +173,7 @@ public interface RetrofitInterface {
             @Query("email") String email,
             @Query("name") String deviceName,
             @Query("model") String deviceModel,
-            Callback<List<Triplet<DeviceInterface, List<TriggerDescriptor>,List<ActionDescriptor>>>> result);
+            Callback<AvailabilityMap> result);
 
 
 

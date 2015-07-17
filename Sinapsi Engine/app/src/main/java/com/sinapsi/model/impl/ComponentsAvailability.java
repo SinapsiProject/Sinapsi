@@ -1,4 +1,4 @@
-package com.sinapsi.engine.builder;
+package com.sinapsi.model.impl;
 
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.impl.ActionDescriptor;

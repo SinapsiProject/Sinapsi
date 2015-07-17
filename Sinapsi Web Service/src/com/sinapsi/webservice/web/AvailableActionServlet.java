@@ -53,7 +53,7 @@ public class AvailableActionServlet extends HttpServlet {
                                         keysManager.getServerUncryptedSessionKey(email, device.getName(), device.getModel()));
             
             // get the available actions from the db
-            List<ActionDescriptor> actions = engineManager.getAvailableAction(idDevice);
+            List<ActionDescriptor> actions = engineManager.getAvailableActions(idDevice);
             
             // send the encrypted data
             if(WebServiceConsts.ENCRYPTED_CONNECTION)

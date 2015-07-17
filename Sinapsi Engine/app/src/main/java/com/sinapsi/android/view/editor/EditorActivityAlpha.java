@@ -22,7 +22,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,7 +42,8 @@ import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
 import com.sinapsi.engine.builder.ActionBuilder;
 import com.sinapsi.engine.builder.ComponentBuilderValidityStatus;
-import com.sinapsi.engine.builder.ComponentsAvailability;
+import com.sinapsi.model.impl.AvailabilityMap;
+import com.sinapsi.model.impl.ComponentsAvailability;
 import com.sinapsi.engine.builder.MacroBuilder;
 import com.sinapsi.engine.builder.ParameterBuilder;
 import com.sinapsi.model.DeviceInterface;
@@ -159,15 +159,19 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         updateAvailabilityTable(new AvailabilityUpdateCallback() {
             @Override
             public void onAvailabilityUpdateSuccess(Map<Integer, ComponentsAvailability> availabilityTable) {
+                Lol.d(EditorActivityAlpha.class, "onAvailabilityUpdateSuccess");
                 if (dataFragment.getMacroBuilder() == null)
                     dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
                 dataFragment.setAvailabilityTable(availabilityTable);
                 updateFragments();
                 transitionManager.makeTransitionIfDifferent(States.EDITOR.name());
+
+
             }
 
             @Override
             public void onAvailabilityUpdateFailure(Throwable error, Map<Integer, ComponentsAvailability> availabilityTable) {
+                Lol.d(EditorActivityAlpha.class, "onAvailabilityUpdateFailure");
                 if (error instanceof RetrofitError) {
                     DialogUtils.handleRetrofitError(error, EditorActivityAlpha.this, false);
                 } else {
@@ -186,6 +190,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
             @Override
             public void onAvailabilityUpdateOffline(Map<Integer, ComponentsAvailability> availabilityTable) {
+                Lol.d(EditorActivityAlpha.class, "onAvailabilityUpdateOffline");
                 //TODO: switch to Offline Mode
                 if (dataFragment.getMacroBuilder() == null)
                     dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
@@ -209,14 +214,15 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     private void updateAvailabilityTable(final EditorActivityAlpha.AvailabilityUpdateCallback callback) {
         final Map<Integer, ComponentsAvailability> availabilityTable = new HashMap<>();
         if (service.isOnline()) {
-            service.getWeb().getAvailableComponents(service.getDevice(), new SinapsiWebServiceFacade.WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>>() {
+            service.getWeb().getAvailableComponents(service.getDevice(), new SinapsiWebServiceFacade.WebServiceCallback<AvailabilityMap>() {
                 @Override
-                public void success(List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>> triplets, Object response) {
-                    availabilityTable.clear();
+                public void success(AvailabilityMap triplets, Object response) {
+                    availabilityTable.clear(); //TODO change availabilityTable's type in availability map
                     addLocalAvailability(availabilityTable);
-                    for (Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>> t : triplets) {
-                        if (t.getFirst().getId() != service.getDevice().getId())
-                            availabilityTable.put(t.getFirst().getId(), new ComponentsAvailability(t.getFirst(), t.getSecond(), t.getThird()));
+                    for (ComponentsAvailability t : triplets) {
+                        Lol.d(EditorActivityAlpha.class, "AVAILABILITY: DEVICE ID: " + t.getDevice().getId() + " - MODEL: " + t.getDevice().getModel());
+                        if (t.getDevice().getId() != service.getDevice().getId())
+                            availabilityTable.put(t.getDevice().getId(), t);
                     }
                     callback.onAvailabilityUpdateSuccess(availabilityTable);
                 }

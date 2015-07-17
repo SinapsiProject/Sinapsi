@@ -5,6 +5,7 @@ import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.ComponentsAvailability;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -5,17 +5,20 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.AvailabilityMap;
 import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.utils.Pair;
@@ -54,16 +57,17 @@ public class AvailableComponents extends HttpServlet {
                 encrypter = new Encrypt(keysManager.getUserPublicKey(email, name, model),
                                         keysManager.getServerUncryptedSessionKey(email, name, model));
             
-            List<Triplet<DeviceInterface, List<TriggerDescriptor>,List<ActionDescriptor>>> data = new ArrayList<>();
+            AvailabilityMap data = new AvailabilityMap();
             
             try {
                 List<DeviceInterface> devicesUser = deviceManager.getUserDevices(email);
                 
                 for(DeviceInterface device : devicesUser) {
-                    data.add(new Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>(
-                            device,
-                            engineManager.getAvailableTrigger(device.getId()), 
-                            engineManager.getAvailableAction(device.getId())));   
+                    data.put(
+	                            device,
+	                            engineManager.getAvailableTrigger(device.getId()), 
+	                            engineManager.getAvailableAction(device.getId())
+                            );
                 }
                 
                 if(WebServiceConsts.ENCRYPTED_CONNECTION)
@@ -73,16 +77,15 @@ public class AvailableComponents extends HttpServlet {
                 out.flush();
                 
             } catch(SQLException e) {
-                Triplet<Object, Object, Object> nullTriplet = new Triplet<>(null, null, null);
-                nullTriplet.errorOccured(true);
-                nullTriplet.setErrorDescription("Error during getting available components");
-                List<Triplet<Object, Object, Object>> nullData = new ArrayList<>();
-                nullData.add(nullTriplet);
+                data.clear();
+                data.errorOccured(true);
+                data.setErrorDescription("Error during getting available components");
+                
                 
                 if(WebServiceConsts.ENCRYPTED_CONNECTION)
-                    out.print(encrypter.encrypt(gson.toJson(nullData)));
+                    out.print(encrypter.encrypt(gson.toJson(data)));
                 else
-                    out.print(gson.toJson(nullData));
+                    out.print(gson.toJson(data));
             }
            
 	    } catch(Exception e) {	        

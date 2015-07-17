@@ -75,8 +75,7 @@ public class ExampleMacroFactory {
 
     public static MacroInterface example1(SinapsiBackgroundService service, MacroInterface m){
 
-
-        m.setName("Screen-ToastAndroid-NotifDesktop");
+        m.setName("Screen-ToastAndroid1-NotifAndroid2-NotifDesktop");
         m.setTrigger(service.getComponentFactory().newTrigger(
                 TriggerScreenPower.TRIGGER_SCREEN_POWER,
                 new ActualParamBuilder()
@@ -93,8 +92,15 @@ public class ExampleMacroFactory {
         m.addAction(service.getComponentFactory().newAction(
                 ActionSimpleNotification.ACTION_SIMPLE_NOTIFICATION,
                 new ActualParamBuilder()
-                        .put("notification_title", "Test Distributed Macro")
-                        .put("notification_message", "Notification Example")
+                        .put("notification_title", "Sinapsi Macro")
+                        .put("notification_message", "Screen is ON on Smartphone")
+                        .create().toString(),
+                54));
+        m.addAction(service.getComponentFactory().newAction(
+                ActionSimpleNotification.ACTION_SIMPLE_NOTIFICATION,
+                new ActualParamBuilder()
+                        .put("notification_title", "Sinapsi Macro")
+                        .put("notification_message", "Screen is ON on Smartphone")
                         .create().toString(),
                 PC_LINUX_ID));
 

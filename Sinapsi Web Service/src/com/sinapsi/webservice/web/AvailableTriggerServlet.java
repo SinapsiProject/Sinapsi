@@ -53,7 +53,7 @@ public class AvailableTriggerServlet extends HttpServlet {
                                         keysManager.getServerUncryptedSessionKey(email, device.getName(), device.getModel()));
             
             // get the available triggers from the db
-            List<TriggerDescriptor> triggers = engineManager.getAvailableTrigger(idDevice);
+            List<TriggerDescriptor> triggers = engineManager.getAvailableTriggers(idDevice);
             
             // send the encrypted data
             if(WebServiceConsts.ENCRYPTED_CONNECTION)

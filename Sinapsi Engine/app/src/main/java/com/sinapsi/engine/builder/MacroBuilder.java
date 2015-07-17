@@ -3,6 +3,7 @@ package com.sinapsi.engine.builder;
 import com.sinapsi.engine.Action;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.ComponentsAvailability;
 
 import java.util.ArrayList;
 import java.util.List;

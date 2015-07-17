@@ -5,6 +5,7 @@ import com.sinapsi.engine.Trigger;
 import com.sinapsi.engine.parameters.ActualParamBuilder;
 import com.sinapsi.engine.parameters.FormalParamBuilder;
 import com.sinapsi.model.MacroInterface;
+import com.sinapsi.model.impl.ComponentsAvailability;
 import com.sinapsi.model.impl.TriggerDescriptor;
 
 import org.json.JSONArray;

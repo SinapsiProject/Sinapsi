@@ -19,6 +19,6 @@ public class DeviceInterfaceInstanceCreator implements InstanceCreator<DeviceInt
 
     @Override
     public DeviceInterface createInstance(Type type) {
-        return factory.newDevice(-1, null, null, null, null, -1);
+        return factory.newDevice(-2, null, null, null, null, -1);
     }
 }

@@ -18,6 +18,7 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.AvailabilityMap;
 import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
@@ -448,7 +449,7 @@ public class RetrofitWebServiceFacade implements SinapsiWebServiceFacade, BGPKey
     }
 
     @Override
-    public void getAvailableComponents(DeviceInterface device, WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>> result){
+    public void getAvailableComponents(DeviceInterface device, WebServiceCallback<AvailabilityMap> result){
         checkKeys();
         if(!onlineStatusProvider.isOnline()) return;
         cryptedRetrofit.getAvailableComponents(

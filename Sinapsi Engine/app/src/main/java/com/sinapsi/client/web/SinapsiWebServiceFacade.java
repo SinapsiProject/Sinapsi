@@ -6,6 +6,7 @@ import com.sinapsi.model.MacroComponent;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
 import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.AvailabilityMap;
 import com.sinapsi.model.impl.CommunicationInfo;
 import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.SyncOperation;
@@ -131,7 +132,7 @@ public interface SinapsiWebServiceFacade {
      * @param device the caller device
      * @param result the result callback
      */
-    void getAvailableComponents(DeviceInterface device, WebServiceCallback<List<Triplet<DeviceInterface, List<TriggerDescriptor>, List<ActionDescriptor>>>> result);
+    void getAvailableComponents(DeviceInterface device, WebServiceCallback<AvailabilityMap> result);
 
     /**
      * Asks the server to continued the specified macro on a remote device
