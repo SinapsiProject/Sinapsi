@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.decryption.Decrypt;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,6 +18,7 @@ import com.sinapsi.model.UserInterface;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.engine.WebServiceEngine;
+import com.sinapsi.webservice.engine.WebServiceGsonManager;
 import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 import com.sinapsi.webservice.websocket.Server;
@@ -43,7 +45,7 @@ public class RemoteMacroExecution extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    response.setContentType("application/json");
-	    Gson gson = new Gson();
+	    Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
 	    int deviceTarget = Integer.parseInt(request.getParameter("to_device"));
 	    int fromDevice = Integer.parseInt(request.getParameter("from_device"));
 	    Server wsserver = (Server) getServletContext().getAttribute("wsserver");

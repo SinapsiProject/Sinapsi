@@ -2,15 +2,18 @@ package com.sinapsi.webservice.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.google.gson.Gson;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
+import com.sinapsi.webservice.engine.WebServiceGsonManager;
 
 /**
  * Servlet implementation class RegistrationServlet
@@ -35,7 +38,7 @@ public class RegistrationServlet extends HttpServlet {
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
         response.setContentType("application/json");
         
-        Gson gson = new Gson();
+        Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
         String email = request.getParameter("email");
         String pwd = request.getParameter("password");
 

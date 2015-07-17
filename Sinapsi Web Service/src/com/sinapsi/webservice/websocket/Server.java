@@ -17,6 +17,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import com.google.gson.Gson;
+import com.sinapsi.webservice.engine.WebServiceGsonManager;
 import com.sinapsi.webservice.engine.WebServiceLog;
 import com.sinapsi.webshared.wsproto.SinapsiMessageTypes;
 import com.sinapsi.webshared.wsproto.WebSocketMessage;
@@ -65,7 +66,7 @@ public class Server extends WebSocketServer {
         
         clientDevices.put(handshake.getFieldValue("Username"), Integer.parseInt(handshake.getFieldValue("device")));
         
-        Gson gson = new Gson();
+        Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
         broadcast(gson.toJson(new WebSocketMessage(SinapsiMessageTypes.NEW_CONNECTION, "New connection: " + handshake.getFieldValue("Username"))));
         wslog.log(wslog.getTime(), handshake.getFieldValue("Username") + " connected!");
     }
@@ -75,7 +76,7 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        Gson gson = new Gson();
+        Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
         broadcast(gson.toJson((new WebSocketMessage(SinapsiMessageTypes.CONNECTION_LOST, clientsWS.get(conn) + " disconnected!"))));
         wslog.log(wslog.getTime(), clientsWS.get(conn) + " disconnected!");
         

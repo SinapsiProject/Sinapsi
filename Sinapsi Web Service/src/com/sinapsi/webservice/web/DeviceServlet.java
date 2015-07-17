@@ -20,6 +20,7 @@ import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.User;
 import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
+import com.sinapsi.webservice.engine.WebServiceGsonManager;
 import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
@@ -40,7 +41,7 @@ public class DeviceServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
         String action = request.getParameter("action");
-        Gson gson = new Gson();
+        Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
 
         // get connected device request
         if (action.equals("get")) {
@@ -95,7 +96,7 @@ public class DeviceServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
-        Gson gson = new Gson();
+        Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
 
         // add device request
         if (action.equals("add")) {

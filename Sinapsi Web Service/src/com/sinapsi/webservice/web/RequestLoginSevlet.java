@@ -3,11 +3,13 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.PublicKey;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.encryption.Encrypt;
 import com.bgp.generator.KeyGenerator;
 import com.bgp.keymanager.PrivateKeyManager;
@@ -19,6 +21,7 @@ import com.sinapsi.model.impl.User;
 import com.sinapsi.utils.Pair;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
+import com.sinapsi.webservice.engine.WebServiceGsonManager;
 import com.sinapsi.webservice.utility.BodyReader;
 
 /**
@@ -43,7 +46,7 @@ public class RequestLoginSevlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");
-        Gson gson = new Gson();
+        Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
     

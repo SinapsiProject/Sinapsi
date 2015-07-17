@@ -3,11 +3,13 @@ package com.sinapsi.webservice.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.bgp.decryption.Decrypt;
 import com.bgp.encryption.Encrypt;
 import com.google.gson.Gson;
@@ -18,6 +20,7 @@ import com.sinapsi.webservice.db.DeviceDBManager;
 import com.sinapsi.webservice.db.EngineDBManager;
 import com.sinapsi.webservice.db.KeysDBManager;
 import com.sinapsi.webservice.db.UserDBManager;
+import com.sinapsi.webservice.engine.WebServiceGsonManager;
 import com.sinapsi.webservice.system.WebServiceConsts;
 import com.sinapsi.webservice.utility.BodyReader;
 
@@ -39,7 +42,7 @@ public class AvailableActionServlet extends HttpServlet {
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");
         DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
-        Gson gson = new Gson();
+        Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
 
         int idDevice = Integer.parseInt(request.getParameter("device"));
 
@@ -78,7 +81,7 @@ public class AvailableActionServlet extends HttpServlet {
         KeysDBManager keysManager = (KeysDBManager) getServletContext().getAttribute("keys_db");
         UserDBManager userManager = (UserDBManager) getServletContext().getAttribute("users_db");   
         DeviceDBManager deviceManager = (DeviceDBManager) getServletContext().getAttribute("devices_db");
-        Gson gson = new Gson();
+        Gson gson = WebServiceGsonManager.defaultSinapsiGsonBuilder().create();
 
         int idDevice = Integer.parseInt(request.getParameter("device"));
        
