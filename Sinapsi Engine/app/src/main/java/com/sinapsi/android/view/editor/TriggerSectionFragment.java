@@ -23,7 +23,7 @@ import java.util.Locale;
 /**
  * Created by Giuseppe on 18/07/15.
  */
-public class TriggerSectionFragment extends SinapsiFragment implements EditorActivityAlpha.EditorUpdatableFragment, ParameterListAdapter.ParametersUpdateListener {
+public class TriggerSectionFragment extends SinapsiFragment implements EditorActivity.EditorUpdatableFragment, ParameterListAdapter.ParametersUpdateListener {
 
     private ParameterListAdapter triggerParameters = new ParameterListAdapter(this);
     private View rootView;
@@ -43,7 +43,7 @@ public class TriggerSectionFragment extends SinapsiFragment implements EditorAct
 
         if (recallUpdateAfterOnCreate) {
             recallUpdateAfterOnCreate = false;
-            updateView((EditorActivityAlpha) getActivity());
+            updateView((EditorActivity) getActivity());
         }
 
         return rootView;
@@ -51,10 +51,10 @@ public class TriggerSectionFragment extends SinapsiFragment implements EditorAct
 
 
     @Override
-    public void updateView(EditorActivityAlpha editorActivity) {
-        EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
+    public void updateView(EditorActivity editorActivity) {
+        EditorActivity activity = (EditorActivity) getActivity();
         if (activity == null) activity = editorActivity;
-        final EditorActivityAlpha.DataFragment df = activity.getDataFragment();
+        final EditorActivity.DataFragment df = activity.getDataFragment();
         Lol.printNullity(this, "df", df);
         if (rootView == null) {
             recallUpdateAfterOnCreate = true;
@@ -82,7 +82,7 @@ public class TriggerSectionFragment extends SinapsiFragment implements EditorAct
 
 
         ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_device)).setText(
-                EditorActivityAlpha.getDeviceLabelText(
+                EditorActivity.getDeviceLabelText(
                         df.getAvailabilityTable(),
                         df.getMacroBuilder().getTrigger().getDeviceId(),
                         service.getDevice().getId()));
@@ -100,12 +100,12 @@ public class TriggerSectionFragment extends SinapsiFragment implements EditorAct
 
     @Override
     public void onParameterUpdate(int position, ParameterBuilder builder) {
-        EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
+        EditorActivity activity = (EditorActivity) getActivity();
         if (rootView == null || activity == null || activity.getDataFragment() == null) {
             return;
         }
 
-        EditorActivityAlpha.DataFragment df = activity.getDataFragment();
+        EditorActivity.DataFragment df = activity.getDataFragment();
         Lol.d("UPDATING TRIGGER PARAMETER");
         Lol.d("builder.getBoolValue() == " + builder.getBoolValue().toString());
         df.getMacroBuilder().getTrigger().getParameters().remove(position);

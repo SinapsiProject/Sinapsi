@@ -20,15 +20,13 @@ import com.sinapsi.engine.builder.ComponentBuilderValidityStatus;
 import com.sinapsi.engine.builder.ParameterBuilder;
 import com.sinapsi.model.impl.ComponentsAvailability;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 /**
  * Created by Giuseppe on 18/07/15.
  */
-public class ActionsSectionFragment extends SinapsiFragment implements EditorActivityAlpha.EditorUpdatableFragment {
+public class ActionsSectionFragment extends SinapsiFragment implements EditorActivity.EditorUpdatableFragment {
 
     private View rootView;
 
@@ -41,16 +39,16 @@ public class ActionsSectionFragment extends SinapsiFragment implements EditorAct
         rootView = inflater.inflate(R.layout.editor_actions_fragment, container, false);
         if (recallUpdateAfterOnCreate) {
             recallUpdateAfterOnCreate = false;
-            updateView((EditorActivityAlpha) getActivity());
+            updateView((EditorActivity) getActivity());
         }
         return rootView;
     }
 
     @Override
-    public void updateView(EditorActivityAlpha editorActivity) {
-        EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
+    public void updateView(EditorActivity editorActivity) {
+        EditorActivity activity = (EditorActivity) getActivity();
         if (activity == null) activity = editorActivity;
-        EditorActivityAlpha.DataFragment df = activity.getDataFragment();
+        EditorActivity.DataFragment df = activity.getDataFragment();
 
         if (rootView == null) {
             recallUpdateAfterOnCreate = true;
@@ -65,7 +63,7 @@ public class ActionsSectionFragment extends SinapsiFragment implements EditorAct
         return context.getString(R.string.title_section_actions).toUpperCase(l);
     }
 
-    private void updateActionList(final EditorActivityAlpha.DataFragment df,
+    private void updateActionList(final EditorActivity.DataFragment df,
                                   int currentDeviceId) {
         LinearLayout actionListView = (LinearLayout) rootView.findViewById(R.id.action_list);
         actionListView.removeAllViews();
@@ -94,7 +92,7 @@ public class ActionsSectionFragment extends SinapsiFragment implements EditorAct
     public View createActionView(ViewGroup parent,
                                  final ActionBuilder elem,
                                  int position,
-                                 EditorActivityAlpha.DataFragment df,
+                                 EditorActivity.DataFragment df,
                                  int currentDeviceId,
                                  final ActionChangedCallback actionChangedCallback) {
 
@@ -117,7 +115,7 @@ public class ActionsSectionFragment extends SinapsiFragment implements EditorAct
 
 
         ((TextView) v.findViewById(R.id.textview_macro_editor_action_name)).setText(elem.getName() + ((elem.getValidity() != ComponentBuilderValidityStatus.VALID) ? " (INVALID)" : ""));
-        ((TextView) v.findViewById(R.id.textview_macro_editor_action_device)).setText(EditorActivityAlpha.getDeviceLabelText(availabilityTable, elem.getDeviceId(), currentDeviceId));
+        ((TextView) v.findViewById(R.id.textview_macro_editor_action_device)).setText(EditorActivity.getDeviceLabelText(availabilityTable, elem.getDeviceId(), currentDeviceId));
 
         ImageButton deleteButton = (ImageButton) v.findViewById(R.id.delete_action_button);
         deleteButton.setOnClickListener(new DeleteActionClickListener(position, df, currentDeviceId));
@@ -138,10 +136,10 @@ public class ActionsSectionFragment extends SinapsiFragment implements EditorAct
     private class DeleteActionClickListener implements View.OnClickListener {
 
         private int position;
-        private EditorActivityAlpha.DataFragment dataFragment;
+        private EditorActivity.DataFragment dataFragment;
         private int currentDeviceId;
 
-        public DeleteActionClickListener(int position, EditorActivityAlpha.DataFragment dataFragment, int currentDeviceId) {
+        public DeleteActionClickListener(int position, EditorActivity.DataFragment dataFragment, int currentDeviceId) {
             this.position = position;
             this.dataFragment = dataFragment;
             this.currentDeviceId = currentDeviceId;

@@ -35,9 +35,10 @@ import com.sinapsi.utils.HashMapBuilder;
 
 import retrofit.RetrofitError;
 
-public class EditorActivityAlpha extends SinapsiActionBarActivity implements ActionBar.TabListener {
+public class EditorActivity extends SinapsiActionBarActivity implements ActionBar.TabListener {
 
 
+    private static final String DATA_FRAGMENT_TAG = "data";
     SectionsPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
 
@@ -64,12 +65,12 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
 
         FragmentManager fm = getSupportFragmentManager();
-        dataFragment = (DataFragment) fm.findFragmentByTag("data");
+        dataFragment = (DataFragment) fm.findFragmentByTag(DATA_FRAGMENT_TAG);
 
         if (dataFragment == null) {
             dataFragment = new DataFragment();
             fm.beginTransaction()
-                    .add(dataFragment, "data")
+                    .add(dataFragment, DATA_FRAGMENT_TAG)
                     .commit();
 
             dataFragment.setEditorInput((MacroInterface) params[0]);
@@ -139,7 +140,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         updateAvailabilityTable(new AvailabilityUpdateCallback() {
             @Override
             public void onAvailabilityUpdateSuccess(Map<Integer, ComponentsAvailability> availabilityTable) {
-                Lol.d(EditorActivityAlpha.class, "onAvailabilityUpdateSuccess");
+                Lol.d(EditorActivity.class, "onAvailabilityUpdateSuccess");
                 if (dataFragment.getMacroBuilder() == null)
                     dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
                 dataFragment.setAvailabilityTable(availabilityTable);
@@ -151,11 +152,11 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
             @Override
             public void onAvailabilityUpdateFailure(Throwable error, Map<Integer, ComponentsAvailability> availabilityTable) {
-                Lol.d(EditorActivityAlpha.class, "onAvailabilityUpdateFailure");
+                Lol.d(EditorActivity.class, "onAvailabilityUpdateFailure");
                 if (error instanceof RetrofitError) {
-                    DialogUtils.handleRetrofitError(error, EditorActivityAlpha.this, false);
+                    DialogUtils.handleRetrofitError(error, EditorActivity.this, false);
                 } else {
-                    DialogUtils.showOkDialog(EditorActivityAlpha.this,
+                    DialogUtils.showOkDialog(EditorActivity.this,
                             "Error",
                             "Something has gone wrong while downloading the availability" +
                                     " of components on other devices from server. Local " +
@@ -170,7 +171,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
 
             @Override
             public void onAvailabilityUpdateOffline(Map<Integer, ComponentsAvailability> availabilityTable) {
-                Lol.d(EditorActivityAlpha.class, "onAvailabilityUpdateOffline");
+                Lol.d(EditorActivity.class, "onAvailabilityUpdateOffline");
                 //TODO: switch to Offline Mode
                 if (dataFragment.getMacroBuilder() == null)
                     dataFragment.setMacroBuilder(new MacroBuilder(service.getDevice().getId(), availabilityTable, dataFragment.getEditorInput()));
@@ -191,7 +192,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
         }
     }
 
-    private void updateAvailabilityTable(final EditorActivityAlpha.AvailabilityUpdateCallback callback) {
+    private void updateAvailabilityTable(final EditorActivity.AvailabilityUpdateCallback callback) {
         final Map<Integer, ComponentsAvailability> availabilityTable = new HashMap<>();
         //noinspection ConstantConditions
         if (!AndroidAppConsts.DEBUG_EDITOR_OFFLINE && service.isOnline()) {
@@ -201,7 +202,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
                     availabilityTable.clear(); //TODO change availabilityTable's type in availability map
                     addLocalAvailability(availabilityTable);
                     for (ComponentsAvailability t : triplets) {
-                        Lol.d(EditorActivityAlpha.class, "AVAILABILITY: DEVICE ID: " + t.getDevice().getId() + " - MODEL: " + t.getDevice().getModel());
+                        Lol.d(EditorActivity.class, "AVAILABILITY: DEVICE ID: " + t.getDevice().getId() + " - MODEL: " + t.getDevice().getModel());
                         if (t.getDevice().getId() != service.getDevice().getId())
                             availabilityTable.put(t.getDevice().getId(), t);
                     }
@@ -233,7 +234,8 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     }
 
     public DataFragment getDataFragment() {
-        return dataFragment;
+        final Fragment fragment = getSupportFragmentManager().findFragmentByTag(DATA_FRAGMENT_TAG);
+        return (DataFragment) fragment;
     }
 
     @Override
@@ -340,9 +342,9 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return triggerFragment.getName(EditorActivityAlpha.this);
+                    return triggerFragment.getName(EditorActivity.this);
                 case 1:
-                    return actionsFragment.getName(EditorActivityAlpha.this);
+                    return actionsFragment.getName(EditorActivity.this);
             }
             return null;
         }
@@ -412,7 +414,7 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
     }
 
     public static interface EditorUpdatableFragment {
-        public void updateView(EditorActivityAlpha editorActivity);
+        public void updateView(EditorActivity editorActivity);
     }
 
 }

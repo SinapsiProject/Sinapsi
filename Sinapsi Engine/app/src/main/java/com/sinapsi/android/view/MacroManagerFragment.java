@@ -35,7 +35,7 @@ import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.android.utils.lists.ArrayListAdapter;
 import com.sinapsi.android.utils.swipeaction.SmartSwipeActionButton;
 import com.sinapsi.android.utils.swipeaction.SwipeActionLayoutManager;
-import com.sinapsi.android.view.editor.EditorActivityAlpha;
+import com.sinapsi.android.view.editor.EditorActivity;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.utils.HashMapBuilder;
@@ -310,7 +310,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                             public void onActivityCancel() {
                                 //does nothing
                             }
-                        }, EditorActivityAlpha.class, elem);
+                        }, EditorActivity.class, elem);
                         sl.close();
                     }
                 });
@@ -503,7 +503,7 @@ public class MacroManagerFragment extends SinapsiFragment implements WebServiceC
                     Lol.d(MacroManagerFragment.this, "Editor Activity returned RESULT_CANCELED");
                     //do nothing
                 }
-            }, EditorActivityAlpha.class, m);
+            }, EditorActivity.class, m);
         }else{
             ExampleMacroFactory.example1(service, m);
             service.addMacro((MacroInterface) m, new SinapsiBackgroundService.BackgroundSyncCallback() {

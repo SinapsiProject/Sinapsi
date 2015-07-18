@@ -48,7 +48,7 @@
         </service>
 
         <activity
-            android:name=".view.editor.EditorActivityAlpha"
+            android:name=".view.editor.EditorActivity"
             android:label="@string/title_activity_editor"
             android:parentActivityName=".view.MainActivity"
             android:windowSoftInputMode="adjustResize" >
