@@ -11,12 +11,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.R;
 import com.sinapsi.android.background.SinapsiFragment;
+import com.sinapsi.engine.builder.ActionBuilder;
 import com.sinapsi.engine.builder.ParameterBuilder;
+import com.sinapsi.engine.builder.TriggerBuilder;
+import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.impl.ActionDescriptor;
+import com.sinapsi.model.impl.TriggerDescriptor;
 
 import java.util.Locale;
 
@@ -90,6 +96,28 @@ public class TriggerSectionFragment extends SinapsiFragment implements EditorAct
 
         triggerParameters.clear();
         triggerParameters.addAll(df.getMacroBuilder().getTrigger().getParameters());
+
+        final EditorActivity finalActivity = activity;
+        ((ImageButton) rootView.findViewById(R.id.select_trigger_button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ComponentSelectionDialogBuilder().newTriggerSelectionDialog(
+                        finalActivity,
+                        service.getDevice().getId(),
+                        MacroComponent.ComponentTypes.TRIGGER,
+                        new ComponentSelectionDialogBuilder.ComponentSelectionCallback() {
+                            @Override
+                            public void onComponentSelected(MacroComponent component, int deviceId) {
+                                TriggerDescriptor selected = (TriggerDescriptor) component;
+                                Lol.d("#### SELECTED: '"+selected.getName()+"' on device: "+deviceId);
+                                TriggerBuilder tb = new TriggerBuilder(selected, deviceId);
+                                df.getMacroBuilder().setTrigger(tb);
+                                updateView(finalActivity);
+                            }
+                        }
+                ).show();
+            }
+        });
     }
 
     @Override
