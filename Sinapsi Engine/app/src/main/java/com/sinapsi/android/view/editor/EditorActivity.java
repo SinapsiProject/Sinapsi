@@ -287,8 +287,14 @@ public class EditorActivity extends SinapsiActionBarActivity implements ActionBa
 
         MacroInterface result;
         //noinspection ConstantConditions
-        if (AndroidAppConsts.DEBUG_EDITOR || dataFragment.isChanged())
-            result = dataFragment.getMacroBuilder().build(service.getEngine());
+        if (AndroidAppConsts.DEBUG_EDITOR || dataFragment.isChanged()){
+            if(dataFragment.getMacroBuilder().validate()) {
+                result = dataFragment.getMacroBuilder().build(service.getEngine());
+            }else{
+                DialogUtils.showOkDialog(this, "Invalid macro", "This macro is invalid or incomplete and cannot be saved.", false);
+                return;
+            }
+        }
         else result = dataFragment.getEditorInput();
         //noinspection ConstantConditions
         returnActivity(result, AndroidAppConsts.DEBUG_EDITOR || dataFragment.isChanged());

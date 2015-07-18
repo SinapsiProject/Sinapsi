@@ -111,6 +111,8 @@ public class ParameterListAdapter extends ArrayListAdapter<ParameterBuilder> {
                 numEdittext.setVisibility(View.GONE);
 
                 if (elem.getStrValue() != null) stringEdittext.setText(elem.getStrValue());
+
+
             }
             break;
 

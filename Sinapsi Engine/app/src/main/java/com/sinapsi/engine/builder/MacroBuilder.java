@@ -1,9 +1,12 @@
 package com.sinapsi.engine.builder;
 
+import com.sinapsi.client.AppConsts;
 import com.sinapsi.engine.Action;
+import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.engine.MacroEngine;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.impl.ComponentsAvailability;
+import com.sinapsi.model.impl.Macro;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +48,26 @@ public class MacroBuilder{
         for(Action a: macro.getActions()){
             this.actions.add(new ActionBuilder(currentDeviceId, availabilityMap, a));
         }
+    }
+
+    public boolean validate(){
+        valid = internalValidate();
+        return valid;
+    }
+
+    private boolean internalValidate(){
+        if(name == null || name.isEmpty()) return false;
+        if(iconName==null || iconName.isEmpty()) iconName = AppConsts.DEFAULT_MACRO_ICON;
+        if(color == null || color.isEmpty()) color = AppConsts.DEFAULT_MACRO_COLOR;
+        if(executionFailurePolicy == null || executionFailurePolicy.isEmpty()) executionFailurePolicy = Macro.ABORT_ON_UNAVAILABLE_AT_SWITCH;
+        if(trigger == null || trigger.getName().equals(ComponentFactory.TRIGGER_EMPTY)) return false;
+        if(trigger.getValidity() != ComponentBuilderValidityStatus.VALID) return false;
+        if(trigger.getName() == null || trigger.getName().isEmpty()) return false;
+        for(ActionBuilder ab: actions){
+            if(ab.getName() == null || ab.getName().isEmpty()) return false;
+            if(ab.getValidity() != ComponentBuilderValidityStatus.VALID) return false;
+        }
+        return true;
     }
 
     public MacroInterface build(MacroEngine engine){
