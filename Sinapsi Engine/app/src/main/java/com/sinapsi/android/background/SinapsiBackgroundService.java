@@ -460,6 +460,7 @@ public class SinapsiBackgroundService extends Service
      * Loads all saved macros from a local db.
      */
     public void syncMacros(final BackgroundSyncCallback callback, final boolean userIntention) {
+
         safeSyncManager.getMacros(new BackgroundServiceInternalSyncCallback(callback, userIntention));
     }
 
@@ -806,6 +807,7 @@ public class SinapsiBackgroundService extends Service
 
         @Override
         public void onSyncSuccess(List<MacroInterface> currentMacros) {
+            Lol.d(this, "Sync succeedeed: refreshing macros");
             engine.clearMacros();
             engine.addMacros(currentMacros);
             callback.onBackgroundSyncSuccess(currentMacros);

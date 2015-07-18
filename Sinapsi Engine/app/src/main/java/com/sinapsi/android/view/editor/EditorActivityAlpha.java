@@ -1,6 +1,5 @@
 package com.sinapsi.android.view.editor;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -18,40 +16,22 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.sinapsi.android.AndroidAppConsts;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.R;
 import com.sinapsi.android.background.SinapsiActionBarActivity;
-import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.android.utils.DialogUtils;
 import com.sinapsi.android.utils.animation.ViewTransitionManager;
 import com.sinapsi.client.web.SinapsiWebServiceFacade;
-import com.sinapsi.engine.builder.ActionBuilder;
-import com.sinapsi.engine.builder.ComponentBuilderValidityStatus;
 import com.sinapsi.model.impl.AvailabilityMap;
 import com.sinapsi.model.impl.ComponentsAvailability;
 import com.sinapsi.engine.builder.MacroBuilder;
-import com.sinapsi.engine.builder.ParameterBuilder;
-import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
-import com.sinapsi.model.impl.ActionDescriptor;
-import com.sinapsi.model.impl.TriggerDescriptor;
 import com.sinapsi.utils.HashMapBuilder;
-import com.sinapsi.utils.Triplet;
 
 import retrofit.RetrofitError;
 
@@ -365,209 +345,6 @@ public class EditorActivityAlpha extends SinapsiActionBarActivity implements Act
                     return actionsFragment.getName(EditorActivityAlpha.this);
             }
             return null;
-        }
-    }
-
-
-    public static class ActionsSectionFragment extends SinapsiFragment implements EditorUpdatableFragment {
-
-        private List<ActionBuilder> actionList = new ArrayList<>();
-        private View rootView;
-
-        private boolean recallUpdateAfterOnCreate = false;
-
-
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            rootView = inflater.inflate(R.layout.editor_actions_fragment, container, false);
-            if (recallUpdateAfterOnCreate) {
-                recallUpdateAfterOnCreate = false;
-                updateView((EditorActivityAlpha) getActivity());
-            }
-            return rootView;
-        }
-
-        @Override
-        public void updateView(EditorActivityAlpha editorActivity) {
-            EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
-            if (activity == null) activity = editorActivity;
-            DataFragment df = activity.getDataFragment();
-
-            actionList.clear();
-            actionList.addAll(df.getMacroBuilder().getActions());
-
-            if (rootView == null) {
-                recallUpdateAfterOnCreate = true;
-                return;
-            }
-            updateActionList(df, service.getDevice().getId());
-        }
-
-        @Override
-        public String getName(Context context) {
-            Locale l = Locale.getDefault();
-            return context.getString(R.string.title_section_actions).toUpperCase(l);
-        }
-
-        private void updateActionList(final DataFragment df,
-                                      int currentDeviceId) {
-            LinearLayout actionListView = (LinearLayout) rootView.findViewById(R.id.action_list);
-            actionListView.removeAllViews();
-            for (int i = 0; i < actionList.size(); ++i) {
-                final ActionBuilder ab = actionList.get(i);
-                final int finalI = i;
-                View iv = createActionView(
-                        actionListView,
-                        ab,
-                        i,
-                        df.getAvailabilityTable(),
-                        currentDeviceId,
-                        new ActionChangedCallback() {
-                            @Override
-                            public void onActionChanged(ActionBuilder elem) {
-                                df.getMacroBuilder().getActions().remove(finalI);
-                                df.getMacroBuilder().getActions().add(finalI, elem);
-                            }
-                        });
-                actionListView.addView(iv);
-            }
-        }
-
-        public View createActionView(ViewGroup parent,
-                                     final ActionBuilder elem,
-                                     int position,
-                                     Map<Integer, ComponentsAvailability> availabilityTable,
-                                     int currentDeviceId,
-                                     final ActionChangedCallback actionChangedCallback) {
-
-            final ParameterListAdapter parameters = new ParameterListAdapter(new ParameterListAdapter.ParametersUpdateListener() {
-                @Override
-                public void onParameterUpdate(int position, ParameterBuilder builder) {
-                    elem.getParameters().remove(position);
-                    elem.getParameters().add(position, builder);
-                    actionChangedCallback.onActionChanged(elem);
-                }
-            });
-            Lol.d(this, "onCreateView() called");
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.action_editor_element, parent, false);
-            final RecyclerView parametersRecyclerView = (RecyclerView) v.findViewById(R.id.action_parameter_list_recycler);
-            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-            parametersRecyclerView.setLayoutManager(llm);
-            //TODO: buttons
-
-
-            ((TextView) v.findViewById(R.id.textview_macro_editor_action_name)).setText(elem.getName() + ((elem.getValidity() != ComponentBuilderValidityStatus.VALID) ? " (INVALID)" : ""));
-
-            ((TextView) v.findViewById(R.id.textview_macro_editor_action_device)).setText(EditorActivityAlpha.getDeviceLabelText(availabilityTable, elem.getDeviceId(), currentDeviceId));
-
-            parameters.clear();
-            parameters.addAll(elem.getParameters());
-
-            parametersRecyclerView.setAdapter(parameters);
-            parametersRecyclerView.setHasFixedSize(true);
-            //TODO: impl
-
-            ((ImageButton) v.findViewById(R.id.delete_action_button)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //TODO: impl
-                }
-            });
-            return v;
-        }
-
-        private interface ActionChangedCallback{
-            public void onActionChanged(ActionBuilder elem);
-        }
-    }
-
-    public static class TriggerSectionFragment extends SinapsiFragment implements EditorUpdatableFragment, ParameterListAdapter.ParametersUpdateListener {
-
-        private ParameterListAdapter triggerParameters = new ParameterListAdapter(this);
-        private View rootView;
-
-        private boolean recallUpdateAfterOnCreate = false;
-
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            rootView = inflater.inflate(R.layout.editor_trigger_fragment, container, false);
-
-            RecyclerView triggerParamsRecyclerView = (RecyclerView) rootView.findViewById(R.id.trigger_parameter_list_recycler);
-            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-            triggerParamsRecyclerView.setAdapter(triggerParameters);
-            triggerParamsRecyclerView.setLayoutManager(llm);
-            triggerParamsRecyclerView.setHasFixedSize(true);
-
-            if (recallUpdateAfterOnCreate) {
-                recallUpdateAfterOnCreate = false;
-                updateView((EditorActivityAlpha) getActivity());
-            }
-
-            return rootView;
-        }
-
-
-        @Override
-        public void updateView(EditorActivityAlpha editorActivity) {
-            EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
-            if (activity == null) activity = editorActivity;
-            final DataFragment df = activity.getDataFragment();
-            Lol.printNullity(this, "df", df);
-            if (rootView == null) {
-                recallUpdateAfterOnCreate = true;
-                return;
-            }
-            EditText macroNameText = (EditText) rootView.findViewById(R.id.edittext_macro_editor_macro_name);
-            macroNameText.setText(df.getMacroBuilder().getName());
-
-            macroNameText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {}
-                @Override
-                public void afterTextChanged(Editable s) {
-                    df.getMacroBuilder().setName(s.toString());
-                }
-            });
-
-            ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_name)).setText(df.getMacroBuilder().getTrigger().getName());
-
-
-
-            ((TextView) rootView.findViewById(R.id.textview_macro_editor_trigger_device)).setText(
-                    getDeviceLabelText(
-                            df.getAvailabilityTable(),
-                            df.getMacroBuilder().getTrigger().getDeviceId(),
-                            service.getDevice().getId()));
-
-
-            triggerParameters.clear();
-            triggerParameters.addAll(df.getMacroBuilder().getTrigger().getParameters());
-        }
-
-        @Override
-        public String getName(Context context) {
-            Locale l = Locale.getDefault();
-            return context.getString(R.string.title_section_trigger).toUpperCase(l);
-        }
-
-        @Override
-        public void onParameterUpdate(int position, ParameterBuilder builder) {
-            EditorActivityAlpha activity = (EditorActivityAlpha) getActivity();
-            if(rootView == null || activity == null || activity.getDataFragment() == null){
-                return;
-            }
-
-            DataFragment df = activity.getDataFragment();
-            Lol.d("UPDATING TRIGGER PARAMETER");
-            Lol.d("builder.getBoolValue() == " + builder.getBoolValue().toString());
-            df.getMacroBuilder().getTrigger().getParameters().remove(position);
-            df.getMacroBuilder().getTrigger().getParameters().add(position, builder);
-
-
         }
     }
 
