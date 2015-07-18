@@ -7,8 +7,10 @@ import com.sinapsi.engine.ComponentFactory;
 import com.sinapsi.model.DeviceInterface;
 import com.sinapsi.model.MacroInterface;
 import com.sinapsi.model.UserInterface;
+import com.sinapsi.model.impl.Device;
 import com.sinapsi.model.impl.FactoryModel;
 import com.sinapsi.model.impl.Macro;
+import com.sinapsi.model.impl.User;
 import com.sinapsi.webshared.ComponentFactoryProvider;
 import com.sinapsi.webshared.gson.DeviceInterfaceTypeAdapter;
 import com.sinapsi.webshared.gson.MacroTypeAdapter;
@@ -56,6 +58,8 @@ public class WebServiceGsonManager {
 	public static GsonBuilder defaultSinapsiGsonBuilder(){
 		return new GsonBuilder()
 			.registerTypeAdapter(DeviceInterface.class, new DeviceInterfaceTypeAdapter())
+			.registerTypeAdapter(Device.class, new DeviceInterfaceTypeAdapter())
+			.registerTypeAdapter(User.class, new UserInterfaceTypeAdapter())
 			.registerTypeAdapter(UserInterface.class, new UserInterfaceTypeAdapter());
 	}
 }
