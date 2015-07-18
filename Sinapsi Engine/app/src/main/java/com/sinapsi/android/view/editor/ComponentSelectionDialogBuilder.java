@@ -60,11 +60,21 @@ public class ComponentSelectionDialogBuilder {
                     break;
             }
         }
+        recycler.setAdapter(adapter);
+
+        switch (type){
+            case TRIGGER:
+                result.setTitle("Select Trigger:"); //TODO: localization
+                break;
+            case ACTION:
+                result.setTitle("Select Action:"); //TODO: localization
+                break;
+        }
 
         return result;
     }
 
-    private interface ComponentSelectionCallback {
+    public interface ComponentSelectionCallback {
         public void onComponentSelected(MacroComponent component, int deviceId);
     }
 

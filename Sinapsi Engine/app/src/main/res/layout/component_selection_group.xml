@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="60dp"
+    android:layout_marginTop="10dp"
+    android:gravity="start|center_vertical">
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center_horizontal"
+        android:layout_height="59dp"
+        android:layout_gravity="center"
         android:id="@+id/device_label"
-        style="?android:textAppearanceMedium"
-        android:textColor="@color/sinapsi_blue"/>
+        android:padding="10dp"
+        style="?android:textAppearanceLarge"
+        android:textColor="@color/sinapsi_blue"
+        />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
 </LinearLayout>

@@ -12,12 +12,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.sinapsi.android.Lol;
 import com.sinapsi.android.R;
 import com.sinapsi.android.background.SinapsiFragment;
 import com.sinapsi.engine.builder.ActionBuilder;
 import com.sinapsi.engine.builder.ComponentBuilderValidityStatus;
 import com.sinapsi.engine.builder.ParameterBuilder;
+import com.sinapsi.model.MacroComponent;
+import com.sinapsi.model.impl.ActionDescriptor;
 import com.sinapsi.model.impl.ComponentsAvailability;
 
 import java.util.Locale;
@@ -48,13 +51,35 @@ public class ActionsSectionFragment extends SinapsiFragment implements EditorAct
     public void updateView(EditorActivity editorActivity) {
         EditorActivity activity = (EditorActivity) getActivity();
         if (activity == null) activity = editorActivity;
-        EditorActivity.DataFragment df = activity.getDataFragment();
+        final EditorActivity.DataFragment df = activity.getDataFragment();
 
         if (rootView == null) {
             recallUpdateAfterOnCreate = true;
             return;
         }
         updateActionList(df, service.getDevice().getId());
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.new_action_button);
+        final EditorActivity finalActivity = activity;
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ComponentSelectionDialogBuilder().newTriggerSelectionDialog(
+                        finalActivity,
+                        service.getDevice().getId(),
+                        MacroComponent.ComponentTypes.ACTION,
+                        new ComponentSelectionDialogBuilder.ComponentSelectionCallback() {
+                            @Override
+                            public void onComponentSelected(MacroComponent component, int deviceId) {
+                                ActionDescriptor selected = (ActionDescriptor) component;
+                                Lol.d("#### SELECTED: '"+selected.getName()+"' on device: "+deviceId);
+                                ActionBuilder ab = new ActionBuilder(selected, deviceId);
+                                df.getMacroBuilder().getActions().add(ab);
+                                updateActionList(df, service.getDevice().getId());
+                            }
+                        }
+                ).show();
+            }
+        });
     }
 
     @Override
