@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:id="@+id/logo"
+        android:layout_marginBottom="50dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+
+            />
+
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/app_name"
+            android:id = "@+id/logo_label"
+            android:textSize="50sp"/>
+
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/brought_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Brought to you by:"
+        android:gravity="center"
+        android:textSize="25sp"
+        android:textColor="#ff20647f" />
+
+    <TextView
+        android:id="@+id/names_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/developers"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:clickable="true"
+        android:layout_marginTop="40dp"
+        android:textColor="#ff797272" />
+
+</LinearLayout>

@@ -44,5 +44,6 @@
     <string name="title_section_trigger">TRIGGER</string>
     <string name="title_section_actions">ACTIONS</string>
     <string name="parameter_typelabel"> - Type:</string>
+    <string name="developers">Marco Grillo\nAyoub Ouarrak\nGiuseppe Petrosino</string>
 
 </resources>
