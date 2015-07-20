@@ -75,6 +75,13 @@ public class WebServiceEngine {
             engines.put(user.getId(), macroEngine);
             macroEngine.addMacros(loadSavedMacrosForUser(user));
             macroEngine.startEngine();  
+            
+            try {
+               engineDb.addAvailableTriggers(macroEngine.getDevice().getId(), macroEngine.getAvailableTriggerDescriptors());
+               engineDb.addAvailableActions(macroEngine.getDevice().getId(), macroEngine.getAvailableActionDescriptors());
+            } catch (SQLException e) {
+               e.printStackTrace();
+            }
         }
     }
     

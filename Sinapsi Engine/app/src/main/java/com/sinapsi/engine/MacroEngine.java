@@ -167,6 +167,10 @@ public class MacroEngine {
         result.addAll(getComponentFactory().getAvailableActionDescriptors(activator.executionInterface.getSystemFacade()));
         return result;
     }
+    
+    public DeviceInterface getDevice() {
+       return this.device;
+    }
 
     public class MissingMacroException extends Exception {
     }
