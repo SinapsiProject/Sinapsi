@@ -35,7 +35,7 @@ a.active {
 }
 
 a {
-    color: #256581;
+    color: #fff;
 }
 
 a:hover,
@@ -163,9 +163,9 @@ fieldset[disabled] .btn-primary.active {
 .btn-xl:active,
 .btn-xl.active,
 .open .dropdown-toggle.btn-xl {
-    border-color: #256581;
+    border-color: #1b495d;
     color: #fff;
-    background-color: #256581;
+    background-color: #1b495d;
 }
 
 .btn-xl:active,
@@ -683,13 +683,12 @@ aside.clients img {
 }
 
 section#contact {
-    background-color: #256581;
     background-position: center;
     background-repeat: no-repeat;
 }
 
 section#contact .section-heading {
-    color: #fff;
+    color: #256581;
 }
 
 section#contact .form-group {
@@ -747,11 +746,14 @@ section#contact .text-danger {
 }
 
 footer {
+    background-color: #256581;
+    color: #fff;
     padding: 25px 0;
     text-align: center;
 }
 
 footer span.copyright {
+    color: #fff;
     text-transform: uppercase;
     text-transform: none;
     font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -759,6 +761,7 @@ footer span.copyright {
 }
 
 footer ul.quicklinks {
+    color: #fff;
     margin-bottom: 0;
     text-transform: uppercase;
     text-transform: none;
@@ -775,11 +778,26 @@ ul.social-buttons li a {
     width: 40px;
     height: 40px;
     border-radius: 100%;
-    font-size: 20px;
+    font-size: 30px;
+    line-height: 40px;
+    outline: 0;
+    color: #000000;
+    
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    transition: all .3s;
+}
+
+footer ul.social-buttons li a {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    font-size: 30px;
     line-height: 40px;
     outline: 0;
     color: #fff;
-    background-color: #222;
+    
     -webkit-transition: all .3s;
     -moz-transition: all .3s;
     transition: all .3s;
@@ -788,7 +806,13 @@ ul.social-buttons li a {
 ul.social-buttons li a:hover,
 ul.social-buttons li a:focus,
 ul.social-buttons li a:active {
-    background-color: #fed136;
+    background-color: rgb(226, 226, 226);
+}
+
+footer ul.social-buttons li a:hover,
+footer ul.social-buttons li a:focus,
+footer ul.social-buttons li a:active {
+    background-color: rgb(30, 85, 109);
 }
 
 .btn:focus,
