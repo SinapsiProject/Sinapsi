@@ -261,8 +261,10 @@ fieldset[disabled] .btn-xl.active {
 
 @media(min-width:768px) {
     .navbar-default {
-        padding: 25px 0;
+        padding: 0px 0;
+        margin-top: -2px;
         border: 0;
+        max-height: 90px;
         background-color: transparent;
         -webkit-transition: padding .3s;
         -moz-transition: padding .3s;
