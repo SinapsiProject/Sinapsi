@@ -124,7 +124,7 @@ public class SinapsiBackgroundService extends Service
     private static final UserInterface logoutUser = fm.newUser(-1, "Not logged in yet.", "", false, "user");
     private UserInterface loggedUser = logoutUser;
 
-    private MainThreadRedHandler mainThreadRedHandler;
+    private REDHandler REDHandler;
 
 
 
@@ -132,7 +132,7 @@ public class SinapsiBackgroundService extends Service
     public void onCreate() {
         super.onCreate();
 
-        mainThreadRedHandler = new MainThreadRedHandler(Looper.getMainLooper());
+        REDHandler = new REDHandler(Looper.getMainLooper());
 
         // loading settings from shared preferences -----------------
         settings = new AndroidUserSettingsFacade(AppConsts.PREFS_FILE_NAME, this);
@@ -453,6 +453,7 @@ public class SinapsiBackgroundService extends Service
         SinapsiAndroidApplication app = (SinapsiAndroidApplication) getApplication();
         app.setLoggedIn(false);
         pauseEngine();
+        if(getWSClient().isOpen()) getWSClient().closeConnection();
         stopForegroundMode();
     }
 
@@ -763,7 +764,7 @@ public class SinapsiBackgroundService extends Service
     }
 
     private void handleWsRed(RemoteExecutionDescriptor red){
-        Message msg = mainThreadRedHandler.obtainMessage();
+        Message msg = REDHandler.obtainMessage();
         msg.obj = new Triplet<RemoteExecutionDescriptor, MacroEngine, Boolean>(red, engine, true);
         msg.sendToTarget();
     }
@@ -825,9 +826,9 @@ public class SinapsiBackgroundService extends Service
         }
     }
 
-    private final class MainThreadRedHandler extends Handler{
+    private final class REDHandler extends Handler{
 
-        public MainThreadRedHandler(Looper looper) {
+        public REDHandler(Looper looper) {
             super(looper); //SUPER LOOPER!
         }
 
